@@ -1,5 +1,5 @@
 import click
-from .anime import Anime
+from .anime import Anime, NotFoundError
 
 echo = click.echo
 
@@ -17,7 +17,11 @@ def cli(anime_url, range, playlist, url):
 
         Download your favourite anime.
     """
-    anime = Anime(anime_url)
+    try:
+        anime = Anime(anime_url)
+    except NotFoundError as e:
+        echo(e.args[0])
+        return
 
     if range is None:
         range = '1:'+str(len(anime)+1)

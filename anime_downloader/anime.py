@@ -33,6 +33,10 @@ class Anime:
         r = requests.get(self.url)
         soup = BeautifulSoup(r.text, 'html.parser')
         episodes = soup.find_all('ul', ['episodes'])
+        if episodes == []:
+            err = 'No episodes found in url "{}"'.format(self.url)
+            args = [self.url]
+            raise NotFoundError(err, *args)
         episodes = episodes[:int(len(episodes)/3)]
 
         for x in episodes:
