@@ -5,8 +5,13 @@ from setuptools import setup, find_packages
 setup(
     name='anime-downloader',
     version='1.0',
+    author='Vishnunarayan K.I.',
+    author_email='vishnunarayan6105@gmail.com',
+    description='Download your favourite anime',
     packages=find_packages(),
-    # py_modules=['anime_downloader'],
+    url='https://github.com/vn-ki/anime-downloader',
+    download_url='https://github.com/vn-ki/anime-downloader/archive/1.0.tar.gz',
+    keywords=['anime', 'downloader'],
     install_requires=[
         'bs4',
         'requests',
