@@ -1,9 +1,15 @@
 # Anime Downloader
 
-Download your favourite anime the way you want.
+Download your favourite anime the way you want. Currently only supports 9anime.
 
 ## Installation
 
+You can install the stable release from PyPI.
+```
+$ pip install anime-downloader
+```
+
+If you like to live on the bleeding edge, do the following.
 ``` bash
 # Clone this repo
 $ git clone https://github.com/vn-ki/anime-downloader.git
@@ -17,7 +23,7 @@ $ python3 setup.py install
 
 Run `anime-dl --help` for help text.
 
-``` bash
+``` 
 $ anime-dl --help
 Usage: anime-dl [OPTIONS] ANIME_URL
 
@@ -63,3 +69,7 @@ anime-dl 'https://9anime.is/watch/fullmetal-alchemist-brotherhood.0r7/j69y93' --
 ```
 anime-dl 'https://9anime.is/watch/fullmetal-alchemist-brotherhood.0r7/j69y93' --play vlc --range 1
 ```
+
+# TODO
+
+- Support for more sites
