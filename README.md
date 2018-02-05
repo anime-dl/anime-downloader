@@ -26,10 +26,16 @@ Usage: anime-dl [OPTIONS] ANIME_URL
   Download your favourite anime.
 
 Options:
-  --range TEXT  Range of anime you want to download in the form <start>:<end>
-  --playlist    If falaf is set, saves the stream urls in an m3u file
-  --url         If flag is set, prints the stream url and not download
-  --help        Show this message and exit.
+  --range <int>:<int>         Range of anime you want to download in the form
+                              <start>:<end>
+  --playlist                  If flag is set, saves the stream urls in an m3u
+                              file
+  --url                       If flag is set, prints the stream url and not
+                              download
+  --play PLAYER               Streams in the specified player
+  --no-download               Retrieve without downloading
+  --quality [360p|480p|720p]  Specify the quality of episode. Default-720p.
+  --help                      Show this message and exit.
 ```
 
 #### Examples
@@ -48,7 +54,12 @@ anime-dl 'https://9anime.is/watch/fullmetal-alchemist-brotherhood.0r7/j69y93' --
 anime-dl 'https://9anime.is/watch/fullmetal-alchemist-brotherhood.0r7/j69y93' --range 1:21
 ```
 
-- To get stream url of Fullmetal Alchemist: Brotherhood episode 1. Afterwards the stream can be played by `mpv` or `vlc`.
+- To get stream url of Fullmetal Alchemist: Brotherhood episode 1.
 ```
 anime-dl 'https://9anime.is/watch/fullmetal-alchemist-brotherhood.0r7/j69y93' --url --range 1
+```
+
+- To play using vlc. (On windows use path to exe)
+```
+anime-dl 'https://9anime.is/watch/fullmetal-alchemist-brotherhood.0r7/j69y93' --play vlc --range 1
 ```
