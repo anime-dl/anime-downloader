@@ -7,18 +7,19 @@ echo = click.echo
 
 @click.command()
 @click.argument('anime_url')
-@click.option('--range', 'range_', help="Range of anime you want to"
-              " download in the form <start>:<end>", metavar='<int>:<int>')
-@click.option('--playlist', default=False, help="If flag is set, saves the"
-              " stream urls in an m3u file", type=bool, is_flag=True)
-@click.option('--url', default=False, help="If flag is set, prints the"
-              " stream url and not download", type=bool, is_flag=True)
+@click.option('--range', 'range_', metavar='<int>:<int>',
+              help="Range of anime you want to download in the form <start>:<end>")
+@click.option('--playlist', default=False, type=bool, is_flag=True,
+              help="If flag is set, saves the stream urls in an m3u file")
+@click.option('--url', default=False, type=bool, is_flag=True,
+              help="If flag is set, prints the stream url and not download")
 @click.option('--play', 'player', metavar='PLAYER',
               help="Streams in the specified player")
-@click.option('--no-download', default=False, help="Retrieve without "
-              "downloading", is_flag=True)
+@click.option('--no-download', default=False, is_flag=True,
+              help="Retrieve without downloading")
 @click.option('--quality', type=click.Choice(['360p', '480p', '720p']),
-              default='720p', help='Specify the quality of episode. Default-720p')
+              default='720p',
+              help='Specify the quality of episode. Default-720p')
 def cli(anime_url, range_, playlist, url, player, no_download, quality):
     """ Anime Downloader
 
