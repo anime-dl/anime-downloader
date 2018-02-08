@@ -20,7 +20,9 @@ echo = click.echo
 @click.option('--quality', type=click.Choice(['360p', '480p', '720p']),
               default='720p',
               help='Specify the quality of episode. Default-720p')
-def cli(anime_url, range_, playlist, url, player, no_download, quality):
+@click.option('--force', is_flag=True, default=False,
+              help='Force downloads even if file exists')
+def cli(anime_url, range_, playlist, url, player, no_download, quality, force):
     """ Anime Downloader
 
         Download your favourite anime.
@@ -55,5 +57,5 @@ def cli(anime_url, range_, playlist, url, player, no_download, quality):
             p.wait()
 
         if not no_download:
-            episode.download()
+            episode.download(force)
             print()

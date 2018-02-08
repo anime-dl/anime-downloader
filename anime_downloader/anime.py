@@ -4,6 +4,8 @@ import json
 import re
 import time
 import sys
+import os
+import click
 
 
 QUALITIES = ['360p', '480p', '720p']
@@ -91,23 +93,30 @@ class Episode:
         except IndexError:
             raise NotFoundError("Episode not found")
 
-    def download(self):
+    def download(self, force=False):
         print('[INFO] Downloading {}'.format(self.title))
         path = './' + self.title
         r = requests.get(self.stream_url, stream=True)
 
-        total_size = r.headers['Content-length']
-        downloaded, chunksize = 0, 2048
+        total_size = int(r.headers['Content-length'])
+        downloaded, chunksize = 0, 16384
         start_time = time.time()
 
+        if os.path.exists(path) and not force:
+            if os.stat(path).st_size == total_size:
+                print('[INFO] File already downloaded. Skipping download.')
+                return
+
         if r.status_code == 200:
-            with open(path, 'wb') as f:
-                for chunk in r.iter_content(chunk_size=chunksize):
-                    if chunk:
-                        f.write(chunk)
-                        downloaded += chunksize
-                        write_status((downloaded), (total_size),
-                                     start_time)
+            with click.progressbar(length=int(total_size)) as bar:
+                with open(path, 'wb') as f:
+                    for chunk in r.iter_content(chunk_size=chunksize):
+                        if chunk:
+                            f.write(chunk)
+                            downloaded += chunksize
+                            # write_status((downloaded), (total_size),
+                            #              start_time)
+                            bar.update(chunksize)
 
 
 def write_status(downloaded, total_size, start_time):
@@ -119,5 +128,5 @@ def write_status(downloaded, total_size, start_time):
     status = 'Downloaded: {0:.2f}MB/{1:.2f}MB, Rate: {2:.2f}KB/s'.format(
         downloaded, total_size, rate)
 
-    sys.stdout.write("\r" + status + " "*5 + "\r")
+    sys.stdout.write("\r\n" + status + " "*5 + "\r")
     sys.stdout.flush()
