@@ -1,6 +1,6 @@
 import click
 import subprocess
-from .anime import Anime, NotFoundError
+from anime_downloader.sites.9anime import Anime, NotFoundError
 
 echo = click.echo
 

@@ -6,9 +6,7 @@ import time
 import sys
 import os
 import click
-
-
-QUALITIES = ['360p', '480p', '720p']
+from abc import ABCMeta, abstractmethod
 
 
 class AnimeDLError(Exception):
@@ -23,36 +21,32 @@ class NotFoundError(AnimeDLError):
     pass
 
 
-class Anime:
+class BaseAnime(metaclass=ABCMeta):
     def __init__(self, url, quality='720p', callback=None):
 
-        if quality not in QUALITIES:
+        if quality not in self.QUALITIES:
             raise AnimeDLError('Incorrect quality: "{}"'.format(quality))
 
-        self.url = url
-        self.quality = quality
+        self.url = self.verify_url(url)
+
+        if quality in self.QUALITIES:
+            self.quality = quality
+        else:
+            raise AnimeDLError(f'Quality {quality} not found in {self.QUALITIES}')
+
         self._callback = callback
         if self._callback:
             self._callback('Extracting episode info from page')
         self.getEpisodes()
 
+    def verify_url(self, url):
+        return url
+
     def getEpisodes(self):
         self._episodeIds = []
         r = requests.get(self.url)
         soup = BeautifulSoup(r.text, 'html.parser')
-        episodes = soup.find_all('ul', ['episodes'])
-        if episodes == []:
-            err = 'No episodes found in url "{}"'.format(self.url)
-            if self._callback:
-                self._callback(err)
-            args = [self.url]
-            raise NotFoundError(err, *args)
-        episodes = episodes[:int(len(episodes)/3)]
-
-        for x in episodes:
-            for a in x.find_all('a'):
-                ep_id = a.get('data-id')
-                self._episodeIds.append(ep_id)
+        return self._getEpisodeUrls(soup)
 
     def __len__(self):
         return len(self._episodeIds)
@@ -61,8 +55,12 @@ class Anime:
         ep_id = self._episodeIds[index]
         return Episode(ep_id, self.quality, callback=self._callback)
 
+    @abstractmethod
+    def _getEpisodeUrls(self, soup):
+        return
 
-class Episode:
+
+class BaseEpisode:
     _base_url = r'https://9anime.is/ajax/episode/info?id={0}&server=33'
 
     def __init__(self, episode_id, quality='720p', callback=None):
@@ -80,7 +78,7 @@ class Episode:
     def getData(self):
         url = self._base_url.format(self.episode_id)
         data = json.loads(requests.get(url).text)
-        url = data.get('target')
+        url = data['target']
         title_re = re.compile(r'"og:title" content="(.*)"')
         image_re = re.compile(r'"og:image" content="(.*)"')
 
