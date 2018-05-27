@@ -4,17 +4,20 @@ import json
 import re
 
 import time
-import sys
 import os
 import click
 import logging
 
-from .exceptions import AnimeDLError
+from anime_downloader.sites.exceptions import AnimeDLError
+from anime_downloader import util
 
 
 class BaseAnime():
+    sitename = ''
+    title = ''
+
     QUALITIES = None
-    _episodeClass = None
+    _episodeClass = object
 
     def __init__(self, url, quality='720p'):
 
@@ -26,7 +29,7 @@ class BaseAnime():
         if quality in self.QUALITIES:
             self.quality = quality
         else:
-            raise AnimeDLError(f'Quality {quality} not found in {self.QUALITIES}')
+            raise AnimeDLError('Quality {0} not found in {1}'.format(quality, self.QUALITIES))
 
         logging.info('Extracting episode info from page')
         self.getEpisodes()
@@ -88,9 +91,16 @@ class BaseEpisode:
     def getData(self):
         raise NotImplementedError
 
-    def download(self, force=False):
+    def download(self, force=False, path=None):
         logging.info('Downloading {}'.format(self.title))
-        path = './' + self.title
+
+        if path is None:
+            path = './' + self.title
+        elif path.endswith('.mp4'):
+            path = path
+        else:
+            path += self.title
+
         r = requests.get(self.stream_url, stream=True)
 
         total_size = int(r.headers['Content-length'])
@@ -114,18 +124,5 @@ class BaseEpisode:
                     if chunk:
                         f.write(chunk)
                         downloaded += chunksize
-                        write_status((downloaded), (total_size),
-                                        start_time)
-
-
-def write_status(downloaded, total_size, start_time):
-    elapsed_time = time.time()-start_time
-    rate = (downloaded/1024)/elapsed_time
-    downloaded = float(downloaded)/1048576
-    total_size = float(total_size)/1048576
-
-    status = 'Downloaded: {0:.2f}MB/{1:.2f}MB, Rate: {2:.2f}KB/s'.format(
-        downloaded, total_size, rate)
-
-    sys.stdout.write("\r" + status + " "*5 + "\r")
-    sys.stdout.flush()
+                        util.write_status((downloaded), (total_size),
+                                          start_time)

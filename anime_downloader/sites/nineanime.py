@@ -1,5 +1,5 @@
-from .anime import BaseAnime, BaseEpisode
-from .exceptions import AnimeDLError, URLError, NotFoundError
+from anime_downloader.sites.anime import BaseAnime, BaseEpisode
+from anime_downloader.sites.exceptions import AnimeDLError, URLError, NotFoundError
 
 
 import json
