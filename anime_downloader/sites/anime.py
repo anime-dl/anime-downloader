@@ -109,14 +109,12 @@ class BaseEpisode:
 
         logging.debug(path)
 
-        if os.path.exists(path) and not force:
-            if os.stat(path).st_size == total_size:
+        if os.path.exists(path):
+            if os.stat(path).st_size == total_size and not force:
                 logging.warning('File already downloaded. Skipping download.')
                 return
             else:
                 os.remove(path)
-        else:
-            os.remove(path)
 
         if r.status_code == 200:
             with open(path, 'wb') as f:
