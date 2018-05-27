@@ -2,21 +2,27 @@
 
 from setuptools import setup, find_packages
 
+with open('README.md', 'r') as f:
+    long_description = f.read()
+
+
 setup(
     name='anime-downloader',
-    version='1.1',
+    version='2.0',
     author='Vishnunarayan K.I.',
     author_email='vishnunarayan6105@gmail.com',
     description='Download your favourite anime',
     packages=find_packages(),
     url='https://github.com/vn-ki/anime-downloader',
-    download_url='https://github.com/vn-ki/anime-downloader/archive/1.1.tar.gz',
-    keywords=['anime', 'downloader'],
+    download_url='https://github.com/vn-ki/anime-downloader/archive/2.0.tar.gz',
+    keywords=['anime', 'downloader', '9anime', 'download', 'kissanime'],
     install_requires=[
         'bs4',
         'requests',
         'Click',
     ],
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     entry_points='''
         [console_scripts]
         anime-dl=anime_downloader.cli:cli
