@@ -38,7 +38,12 @@ class BaseAnime():
         self._episodeIds = []
         r = requests.get(self.url)
         soup = BeautifulSoup(r.text, 'html.parser')
-        return self._getEpisodeUrls(soup)
+        self._episodeIds = self._getEpisodeUrls(soup)
+
+        logging.debug('EPISODE IDS: length: {}, ids: {}'.format(
+            len(self._episodeIds), self._episodeIds))
+
+        return self._episodeIds
 
     def __len__(self):
         return len(self._episodeIds)
@@ -78,10 +83,16 @@ class BaseEpisode:
         downloaded, chunksize = 0, 16384
         start_time = time.time()
 
+        logging.debug(path)
+
         if os.path.exists(path) and not force:
             if os.stat(path).st_size == total_size:
                 logging.warning('File already downloaded. Skipping download.')
                 return
+            else:
+                os.remove(path)
+        else:
+            os.remove(path)
 
         if r.status_code == 200:
             with open(path, 'wb') as f:

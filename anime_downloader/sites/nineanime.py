@@ -1,11 +1,15 @@
 from .anime import BaseAnime, BaseEpisode
 from .exceptions import AnimeDLError, URLError, NotFoundError
+
+
 import json
 import requests
 from bs4 import BeautifulSoup
-import json
+
 import re
 import time
+
+import logging
 
 
 __all__ = ['NineAnimeEpisode', 'NineAnime']
@@ -19,13 +23,20 @@ class NineAnimeEpisode(BaseEpisode):
         params = {
             'id': self.episode_id,
             'server': '33',
-            # 'update': 0,
             'ts': self.ts
         }
         params['param_'] = int(generate_(params))
+
+        logging.debug('API call params: {}'.format(params))
+
         url = self._base_url.format(**params)
 
+        logging.debug('API call URL: {}'.format(url))
+
         data = json.loads(requests.get(url).text)
+
+        logging.debug('Returned data: {}'.format(data))
+
         url = data['target']
         title_re = re.compile(r'"og:title" content="(.*)"')
         image_re = re.compile(r'"og:image" content="(.*)"')
@@ -48,19 +59,25 @@ class NineAnime(BaseAnime):
     def _getEpisodeUrls(self, soup):
         ts = soup.find('html')['data-ts']
         self._episodeClass.ts = ts
+        logging.debug('data-ts: {}'.format(ts))
+
         episodes = soup.find_all('ul', ['episodes'])
+
         if episodes == []:
             err = 'No episodes found in url "{}"'.format(self.url)
-            if self._callback:
-                self._callback(err)
             args = [self.url]
             raise NotFoundError(err, *args)
+
         episodes = episodes[:int(len(episodes)/3)]
+
+        episode_ids = []
 
         for x in episodes:
             for a in x.find_all('a'):
                 ep_id = a.get('data-id')
-                self._episodeIds.append(ep_id)
+                episode_ids.append(ep_id)
+
+        return episode_ids
 
 
 def s(t):
