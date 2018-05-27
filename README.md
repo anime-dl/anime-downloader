@@ -1,5 +1,8 @@
 # Anime Downloader
 
+[![Build Status](https://travis-ci.com/vn-ki/anime-downloader.svg?branch=master)](https://travis-ci.com/vn-ki/anime-downloader)
+[![codecov](https://codecov.io/gh/vn-ki/anime-downloader/branch/master/graph/badge.svg)](https://codecov.io/gh/vn-ki/anime-downloader)
+
 Download your favourite anime the way you want. Currently only supports 9anime.
 
 ## Installation
