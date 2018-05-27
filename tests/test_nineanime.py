@@ -4,7 +4,10 @@ import pytest
 
 @pytest.fixture
 def anime():
-    return NineAnime('https://www4.9anime.is/watch/erased.kkw/6n069p')
+    return NineAnime(
+        'https://www4.9anime.is/watch/kochinpa.p6l6/j6ooy2',
+        quality='360p'
+    )
 
 
 def test_length(anime):
@@ -12,16 +15,18 @@ def test_length(anime):
 
 
 def test_title(anime):
-    assert anime.title.lower() == 'erased'
+    assert anime.title.lower() == 'kochinpa!'
 
 
 def test_episode(anime):
     episode1 = anime[0]
 
-    assert episode1.title.lower() == 'kametsu erased 01 bd 1080p hi10 flac 26723cf5.mp4'
+    assert episode1.title.lower(
+    ) == 'tw caffeine chihiro chyuu cthuko ctss damedesuyo dmo eraser evetaku first fff flax hatsuyuki hiryuu kaylith kaitou notsentai p saenaisubs scribbles tsundere watashi yolo kochinpa 01.e.mp4'
     assert episode1.stream_url.endswith('.mp4')
 
 
 def test_download(anime, tmpdir):
-    for ep in anime:
+    eps = (anime[0], anime[6], anime[-1])
+    for ep in eps:
         ep.download(path=str(tmpdir))
