@@ -6,7 +6,6 @@ import time
 import sys
 import os
 import click
-from abc import ABCMeta, abstractmethod
 
 
 class AnimeDLError(Exception):
@@ -21,7 +20,7 @@ class NotFoundError(AnimeDLError):
     pass
 
 
-class BaseAnime(metaclass=ABCMeta):
+class BaseAnime():
     def __init__(self, url, quality='720p', callback=None):
 
         if quality not in self.QUALITIES:
@@ -53,19 +52,20 @@ class BaseAnime(metaclass=ABCMeta):
 
     def __getitem__(self, index):
         ep_id = self._episodeIds[index]
-        return Episode(ep_id, self.quality, callback=self._callback)
+        return self._episodeClass(ep_id, self.quality, callback=self._callback)
 
-    @abstractmethod
     def _getEpisodeUrls(self, soup):
         return
 
 
 class BaseEpisode:
-    _base_url = r'https://9anime.is/ajax/episode/info?id={0}&server=33'
+    QUALITIES = None
+    title = ''
+    stream_url = ''
 
     def __init__(self, episode_id, quality='720p', callback=None):
 
-        if quality not in QUALITIES:
+        if quality not in self.QUALITIES:
             raise AnimeDLError('Incorrect quality: "{}"'.format(quality))
 
         self.episode_id = episode_id
@@ -76,20 +76,7 @@ class BaseEpisode:
         self.getData()
 
     def getData(self):
-        url = self._base_url.format(self.episode_id)
-        data = json.loads(requests.get(url).text)
-        url = data['target']
-        title_re = re.compile(r'"og:title" content="(.*)"')
-        image_re = re.compile(r'"og:image" content="(.*)"')
-
-        r = requests.get(url+'&q='+self.quality)
-        soup = BeautifulSoup(r.text, 'html.parser')
-        try:
-            self.stream_url = soup.find_all('source')[0].get('src')
-            self.title = title_re.findall(r.text)[0]
-            self.image = image_re.findall(r.text)[0]
-        except IndexError:
-            raise NotFoundError("Episode not found")
+        raise NotImplementedError
 
     def download(self, force=False):
         print('[INFO] Downloading {}'.format(self.title))

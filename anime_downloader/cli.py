@@ -1,6 +1,7 @@
 import click
 import subprocess
-from anime_downloader.sites.9anime import Anime, NotFoundError
+from anime_downloader.sites.nineanime import NineAnime
+from anime_downloader.sites.anime import NotFoundError
 
 echo = click.echo
 
@@ -28,8 +29,8 @@ def cli(anime_url, range_, playlist, url, player, no_download, quality, force):
         Download your favourite anime.
     """
     try:
-        anime = Anime(anime_url, quality=quality,
-                      callback=lambda message: print('[INFO] '+message))
+        anime = NineAnime(anime_url, quality=quality,
+                          callback=lambda message: print('[INFO] '+message))
     except NotFoundError as e:
         echo(e.args[0])
         return
