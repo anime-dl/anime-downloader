@@ -53,6 +53,7 @@ class NineAnimeEpisode(BaseEpisode):
 
 
 class NineAnime(BaseAnime):
+    sitename = '9Anime'
     QUALITIES = ['360p', '480p', '720p']
     _episodeClass = NineAnimeEpisode
 
@@ -68,7 +69,9 @@ class NineAnime(BaseAnime):
             args = [self.url]
             raise NotFoundError(err, *args)
 
-        episodes = episodes[:int(len(episodes)/3)]
+        servers = soup.find_all('span', {'class': 'tab'})[:-3]
+
+        episodes = episodes[:int(len(episodes)/len(servers))]
 
         episode_ids = []
 
@@ -78,6 +81,12 @@ class NineAnime(BaseAnime):
                 episode_ids.append(ep_id)
 
         return episode_ids
+
+    def _getMetadata(self, soup):
+        title = soup.find_all('h1', {'class': 'title'})
+        self.title = title[0].contents[0]
+        self._len = int(soup.find_all(
+            'ul', ['episodes'])[-1].find_all('a')[-1]['data-base'])
 
 
 def s(t):

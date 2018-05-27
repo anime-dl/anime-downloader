@@ -38,23 +38,37 @@ class BaseAnime():
         self._episodeIds = []
         r = requests.get(self.url)
         soup = BeautifulSoup(r.text, 'html.parser')
+        self._soup = soup
+
+        self._getMetadata(soup)
+
         self._episodeIds = self._getEpisodeUrls(soup)
+        self._len = len(self._episodeIds)
 
         logging.debug('EPISODE IDS: length: {}, ids: {}'.format(
-            len(self._episodeIds), self._episodeIds))
+            self._len, self._episodeIds))
 
         return self._episodeIds
 
     def __len__(self):
-        return len(self._episodeIds)
+        return self._len
 
     def __getitem__(self, index):
         ep_id = self._episodeIds[index]
         return self._episodeClass(ep_id, self.quality)
 
+    def __repr__(self):
+        return '''
+Site: {name}
+Anime: {title}
+Episode count: {length}
+'''.format(name=self.sitename, title=self.title, length=len(self))
+
     def _getEpisodeUrls(self, soup):
         return
 
+    def _getMetadata(self, soup):
+        return
 
 class BaseEpisode:
     QUALITIES = None

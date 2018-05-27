@@ -23,7 +23,7 @@ $ python3 setup.py install
 
 Run `anime-dl --help` for help text.
 
-``` 
+```
 $ anime-dl --help
 Usage: anime-dl [OPTIONS] ANIME_URL
 
@@ -32,16 +32,19 @@ Usage: anime-dl [OPTIONS] ANIME_URL
   Download your favourite anime.
 
 Options:
-  --range <int>:<int>         Range of anime you want to download in the form
-                              <start>:<end>
-  --playlist                  If flag is set, saves the stream urls in an m3u
-                              file
-  --url                       If flag is set, prints the stream url and not
-                              download
-  --play PLAYER               Streams in the specified player
-  --no-download               Retrieve without downloading
-  --quality [360p|480p|720p]  Specify the quality of episode. Default-720p.
-  --help                      Show this message and exit.
+  -e, --episodes <int>:<int>      Range of anime you want to download in the
+                                  form <start>:<end>
+  -p, --save-playlist             If flag is set, saves the stream urls in an
+                                  m3u file instead of downloading
+  -u, --url                       If flag is set, prints the stream url
+                                  instead of downloading
+  --play PLAYER                   Streams in the specified player
+  --no-download                   Retrieve without downloading
+  -q, --quality [360p|480p|720p]  Specify the quality of episode. Default-720p
+  -f, --force                     Force downloads even if file exists
+  -ll, --log-level [DEBUG|INFO|WARNING|ERROR]
+                                  Sets the level of logger
+  --help                          Show this message and exit.
 ```
 
 #### Examples
@@ -52,23 +55,24 @@ anime-dl 'https://9anime.is/watch/fullmetal-alchemist-brotherhood.0r7/j69y93'
 
 - To download Fullmetal Alchemist: Brotherhood episode 1
 ```
-anime-dl 'https://9anime.is/watch/fullmetal-alchemist-brotherhood.0r7/j69y93' --range 1
+anime-dl 'https://9anime.is/watch/fullmetal-alchemist-brotherhood.0r7/j69y93' --episodes 1
 ```
 
 - To download Fullmetal Alchemist: Brotherhood episode 1 to 20
 ```
-anime-dl 'https://9anime.is/watch/fullmetal-alchemist-brotherhood.0r7/j69y93' --range 1:21
+anime-dl 'https://9anime.is/watch/fullmetal-alchemist-brotherhood.0r7/j69y93' --episodes 1:21
 ```
 
 - To get stream url of Fullmetal Alchemist: Brotherhood episode 1.
 ```
-anime-dl 'https://9anime.is/watch/fullmetal-alchemist-brotherhood.0r7/j69y93' --url --range 1
+anime-dl 'https://9anime.is/watch/fullmetal-alchemist-brotherhood.0r7/j69y93' --url --episodes 1
 ```
 
 - To play using vlc. (On windows use path to exe)
 ```
-anime-dl 'https://9anime.is/watch/fullmetal-alchemist-brotherhood.0r7/j69y93' --play vlc --range 1
+anime-dl 'https://9anime.is/watch/fullmetal-alchemist-brotherhood.0r7/j69y93' --play vlc --episodes 1
 ```
+
 
 # TODO
 
