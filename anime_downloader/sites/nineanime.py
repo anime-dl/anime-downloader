@@ -1,4 +1,5 @@
-from .anime import BaseAnime, BaseEpisode, AnimeDLError, URLError, NotFoundError
+from .anime import BaseAnime, BaseEpisode
+from .exceptions import AnimeDLError, URLError, NotFoundError
 import json
 import requests
 from bs4 import BeautifulSoup
@@ -6,6 +7,8 @@ import json
 import re
 import time
 
+
+__all__ = ['NineAnimeEpisode', 'NineAnime']
 
 class NineAnimeEpisode(BaseEpisode):
     QUALITIES = ['360p', '480p', '720p']
