@@ -45,10 +45,14 @@ class NineAnimeEpisode(BaseEpisode):
         soup = BeautifulSoup(r.text, 'html.parser')
         try:
             self.stream_url = soup.find_all('source')[0].get('src')
-            self.title = title_re.findall(r.text)[0]
-            self.image = image_re.findall(r.text)[0]
         except IndexError:
             raise NotFoundError("Episode not found")
+        try:
+            self.title = title_re.findall(r.text)[0]
+            self.image = image_re.findall(r.text)[0]
+        except Exception as e:
+            logging.debug(e)
+            pass
 
 
 

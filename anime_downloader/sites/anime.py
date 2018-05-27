@@ -8,7 +8,7 @@ import os
 import click
 import logging
 
-from anime_downloader.sites.exceptions import AnimeDLError
+from anime_downloader.sites.exceptions import AnimeDLError, NotFoundError
 from anime_downloader import util
 
 
@@ -58,7 +58,7 @@ class BaseAnime():
 
     def __getitem__(self, index):
         ep_id = self._episodeIds[index]
-        return self._episodeClass(ep_id, self.quality)
+        return self._episodeClass(ep_id, self.quality, parent=self)
 
     def __repr__(self):
         return '''
@@ -78,7 +78,7 @@ class BaseEpisode:
     title = ''
     stream_url = ''
 
-    def __init__(self, episode_id, quality='720p'):
+    def __init__(self, episode_id, quality='720p', parent=None):
 
         if quality not in self.QUALITIES:
             raise AnimeDLError('Incorrect quality: "{}"'.format(quality))
@@ -86,7 +86,20 @@ class BaseEpisode:
         self.episode_id = episode_id
         self.quality = quality
         logging.info("Extracting stream info of id: {}".format(self.episode_id))
-        self.getData()
+
+        try:
+            self.getData()
+        except NotFoundError:
+            for quality in parent.QUALITIES:
+                parent.QUALITIES.remove(self.quality)
+                logging.warning('Quality {} not found. Trying {}.'.format(self.quality, quality))
+                self.quality = quality
+                try:
+                    self.getData()
+                    parent.quality = self.quality
+                    break
+                except NotFoundError:
+                    pass
 
     def getData(self):
         raise NotImplementedError
