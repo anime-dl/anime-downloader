@@ -9,12 +9,20 @@ import time
 
 class NineAnimeEpisode(BaseEpisode):
     QUALITIES = ['360p', '480p', '720p']
-    _base_url = r'https://9anime.is/ajax/episode/info?id={0}&server=33&_=1428&ts=1527426000'
+    _base_url = r'https://9anime.is/ajax/episode/info?id={id}&server={server}&_={param_}&ts={ts}'
+    ts = 0
 
     def getData(self):
-        url = self._base_url.format(self.episode_id)
+        params = {
+            'id': self.episode_id,
+            'server': '33',
+            # 'update': 0,
+            'ts': self.ts
+        }
+        params['param_'] = int(generate_(params))
+        url = self._base_url.format(**params)
+
         data = json.loads(requests.get(url).text)
-        print(data)
         url = data['target']
         title_re = re.compile(r'"og:title" content="(.*)"')
         image_re = re.compile(r'"og:image" content="(.*)"')
@@ -35,6 +43,8 @@ class NineAnime(BaseAnime):
     _episodeClass = NineAnimeEpisode
 
     def _getEpisodeUrls(self, soup):
+        ts = soup.find('html')['data-ts']
+        self._episodeClass.ts = ts
         episodes = soup.find_all('ul', ['episodes'])
         if episodes == []:
             err = 'No episodes found in url "{}"'.format(self.url)
@@ -48,3 +58,28 @@ class NineAnime(BaseAnime):
             for a in x.find_all('a'):
                 ep_id = a.get('data-id')
                 self._episodeIds.append(ep_id)
+
+
+def s(t):
+    i = 0
+    for (idx, char) in enumerate(t):
+        i += ord(char) + idx
+
+    return i
+
+
+def a(t, e):
+    n = sum(ord(c) for c in t) + sum(ord(c) for c in e)
+    return hex(n)[2:]
+
+
+def generate_(data):
+    DD = "iQDWcsGqN"
+    param_ = s(DD)
+
+    for key, value in data.items():
+        trans = a(DD + key, str(value))
+        param_  += s(trans)
+
+
+    return param_
