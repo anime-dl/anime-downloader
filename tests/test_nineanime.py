@@ -20,3 +20,8 @@ def test_episode(anime):
 
     assert episode1.title.lower() == 'kametsu erased 01 bd 1080p hi10 flac 26723cf5.mp4'
     assert episode1.stream_url.endswith('.mp4')
+
+
+def test_download(anime, tmpdir):
+    for ep in anime:
+        ep.download(path=str(tmpdir))
