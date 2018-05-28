@@ -13,41 +13,37 @@ echo = click.echo
 
 @click.command()
 @click.argument('anime_url')
-
 @click.option('--episodes', '-e', 'episode_range', metavar='<int>:<int>',
               help="Range of anime you want to download in the form <start>:<end>")
-
 @click.option('--save-playlist', '-p', 'playlist', default=False, type=bool, is_flag=True,
               help="If flag is set, saves the stream urls in an m3u file instead of downloading")
-
 @click.option('--url', '-u', default=False, type=bool, is_flag=True,
               help="If flag is set, prints the stream url instead of downloading")
-
 @click.option('--play', 'player', metavar='PLAYER',
               help="Streams in the specified player")
-
 @click.option('--no-download', default=False, is_flag=True,
               help="Retrieve without downloading")
-
 @click.option('--quality', '-q', type=click.Choice(['360p', '480p', '720p']),
               default='720p',
               help='Specify the quality of episode. Default-720p')
-
 @click.option('--force', '-f', is_flag=True, default=False,
               help='Force downloads even if file exists')
-
 @click.option('--log-level', '-ll', 'log_level',
               type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR']),
               default='INFO',
               help='Sets the level of logger')
-
 def cli(anime_url, episode_range, playlist, url, player, no_download, quality,
         force, log_level):
     """ Anime Downloader
 
         Download your favourite anime.
     """
+
     util.setup_logger(log_level)
+
+    # HACK/XXX: Should use a regex. But a dirty hack for now :/
+    if '9anime' not in anime_url:
+        anime_url = search(anime_url)
 
     try:
         anime = NineAnime(anime_url, quality=quality)
@@ -80,3 +76,17 @@ def cli(anime_url, episode_range, playlist, url, player, no_download, quality,
         if not no_download:
             episode.download(force)
             print()
+
+
+def search(query):
+    search_results = NineAnime.search(query)
+    print(util.format_search_results(search_results))
+
+    val = click.prompt('Enter the anime no: ', type=int, default=1)
+
+    url = search_results[val-1].url
+    title = search_results[val-1].title
+
+    logging.info('Selected {}'.format(title))
+
+    return url

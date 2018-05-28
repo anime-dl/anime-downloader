@@ -1,4 +1,4 @@
-from anime_downloader.sites.anime import BaseAnime, BaseEpisode
+from anime_downloader.sites.anime import BaseAnime, BaseEpisode, SearchResult
 from anime_downloader.sites.exceptions import AnimeDLError, URLError, NotFoundError
 
 
@@ -60,6 +60,54 @@ class NineAnime(BaseAnime):
     sitename = '9Anime'
     QUALITIES = ['360p', '480p', '720p']
     _episodeClass = NineAnimeEpisode
+
+    @classmethod
+    def search(cls, query):
+        r = requests.get('https://www4.9anime.is/search?',
+                         params={'keyword': query})
+
+        logging.debug(r.url)
+
+        soup = BeautifulSoup(r.text, 'html.parser')
+
+        # 9anime has search result in
+        # <div class="item">
+        #   <div class="inner">
+        #    <a href="https://www4.9anime.is/watch/dragon-ball-super.7jly"
+        #       class="poster tooltipstered" data-tip="ajax/film/tooltip/7jly?5827f020">
+        #       <img src="http://static.akacdn.ru/static/images/2018/03/43012fe439631a2cecfcf248841e15f7.jpg"
+        #            alt="Dragon Ball Super">
+        #       <div class="status">
+        #           <span class="bar">
+        #           </span>
+        #           <div class="ep"> Ep 131/131 </div>
+        #       </div>
+        #     </a>
+        #    <a href="https://www4.9anime.is/watch/dragon-ball-super.7jly"
+        #      data-jtitle="Dragon Ball Super"
+        #      class="name">
+        #           Dragon Ball Super
+        #    </a>
+        #   </div>
+        # </div>
+
+        search_results = soup.find(
+            'div', {'class': 'film-list'}).find_all('div', {'class': 'item'})
+
+        ret = []
+
+        logging.debug('Search results')
+
+        for item in search_results:
+            s = SearchResult(
+                title=item.find('a', {'class': 'name'}).contents[0],
+                url=item.find('a')['href'],
+                poster=item.find('img')['src']
+            )
+            logging.debug(s)
+            ret.append(s)
+
+        return ret
 
     def _getEpisodeUrls(self, soup):
         ts = soup.find('html')['data-ts']

@@ -19,6 +19,10 @@ class BaseAnime():
     QUALITIES = None
     _episodeClass = object
 
+    @classmethod
+    def search(cls, query):
+        return
+
     def __init__(self, url, quality='720p'):
 
         if quality not in self.QUALITIES:
@@ -137,3 +141,10 @@ class BaseEpisode:
                         downloaded += chunksize
                         util.write_status((downloaded), (total_size),
                                           start_time)
+
+
+class SearchResult:
+    def __init__(self, title, url, poster):
+        self.title = title
+        self.url = url
+        self.poster = poster

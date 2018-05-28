@@ -1,6 +1,9 @@
 import logging
 import sys
 import time
+import shutil
+from itertools import zip_longest
+
 
 def setup_logger(log_level):
     if log_level == 'DEBUG':
@@ -25,3 +28,14 @@ def write_status(downloaded, total_size, start_time):
 
     sys.stdout.write("\r" + status + " "*5 + "\r")
     sys.stdout.flush()
+
+
+def format_search_results(search_results):
+    _, height = shutil.get_terminal_size()
+    height -= 4  # Accounting for prompt
+
+    ret = ''
+    for idx, result in enumerate(search_results[:height]):
+        ret += '{}: {}\n'.format(idx+1, result.title)
+
+    return ret
