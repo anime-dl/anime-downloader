@@ -2,25 +2,23 @@
 
 [![Build Status](https://travis-ci.com/vn-ki/anime-downloader.svg?branch=master)](https://travis-ci.com/vn-ki/anime-downloader)
 [![codecov](https://codecov.io/gh/vn-ki/anime-downloader/branch/master/graph/badge.svg)](https://codecov.io/gh/vn-ki/anime-downloader)
+[![PyPI pyversions](https://img.shields.io/badge/python-3.3%2B-blue.svg)](https://pypi.org/project/anime-downloader/)
+
 
 Download your favourite anime the way you want. Currently only supports 9anime.
 
 ## Installation
 
 You can install the stable release from PyPI.
-```
+```bash
 $ pip install anime-downloader
 ```
 
-If you like to live on the bleeding edge, do the following.
-``` bash
-# Clone this repo
-$ git clone https://github.com/vn-ki/anime-downloader.git
-
-# Run setup.py
-$ cd anime-downloader
-$ python3 setup.py install
+To install the dev version
+```bash
+$ pip3 install -U git+https://github.com/vn-ki/anime-downloader.git
 ```
+*NOTE: You might have to use pip3 depending on your system*
 
 ## Usage
 
@@ -76,7 +74,17 @@ anime-dl 'https://9anime.is/watch/fullmetal-alchemist-brotherhood.0r7/j69y93' --
 anime-dl 'https://9anime.is/watch/fullmetal-alchemist-brotherhood.0r7/j69y93' --play vlc --episodes 1
 ```
 
+## Development Instructions
 
-# TODO
+``` bash
+# Clone this repo
+$ git clone https://github.com/vn-ki/anime-downloader.git
+
+# Run setup.py
+$ cd anime-downloader
+$ pip install -e .
+```
+
+## TODO
 
 - Support for more sites
