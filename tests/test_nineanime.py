@@ -30,3 +30,10 @@ def test_download(anime, tmpdir):
     eps = (anime[0], anime[6], anime[-1])
     for ep in eps:
         ep.download(path=str(tmpdir))
+
+
+def test_search():
+    results = NineAnime.search('dragon ball super')
+
+    assert len(results) == 30
+    assert results[0].title.lower() == 'dragon ball super'
