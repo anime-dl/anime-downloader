@@ -5,7 +5,11 @@
 [![PyPI pyversions](https://img.shields.io/badge/python-3.3%2B-blue.svg)](https://pypi.org/project/anime-downloader/)
 
 
-Download your favourite anime the way you want. Currently only supports 9anime.
+Ever dreamt about watching anime for free effortlessly without all those unbearable ads? Ever dreamt of downloading your favourite anime for that long trip? 
+
+![kawaii](https://media.giphy.com/media/f0yOYF0EtwSVa/giphy.gif)
+
+Yeah. Me too! That's why this tool exists.
 
 ## Installation
 
@@ -16,7 +20,7 @@ $ pip install anime-downloader
 
 To install the dev version
 ```bash
-$ pip3 install -U git+https://github.com/vn-ki/anime-downloader.git
+$ pip install -U git+https://github.com/vn-ki/anime-downloader.git
 ```
 *NOTE: You might have to use pip3 depending on your system*
 
@@ -84,6 +88,11 @@ anime-dl 'https://9anime.is/watch/fullmetal-alchemist-brotherhood.0r7/j69y93' --
 anime-dl 'https://9anime.is/watch/fullmetal-alchemist-brotherhood.0r7/j69y93' --play vlc --episodes 1
 ```
 
+### To use `anime_downloader` in your package
+
+This tool can be used as a library. This means you can import it into your own application and search for anime and do many other wonderful things.
+See [documentation](https://github.com/vn-ki/anime-downloader/blob/master/package_usage.md).
+
 ## Development Instructions
 
 ``` bash
@@ -98,3 +107,9 @@ $ pip install -e .
 ## TODO
 
 - Support for more sites
+
+*Don't judge me for not paying for anime. I want to support these animation studios, but being a college student, I can't.*
+
+**arigatou gozaimasu**
+
+![arigato](https://media.giphy.com/media/VUC9YdLSnKuJy/giphy.gif)
