@@ -8,13 +8,13 @@ with open('README.md', 'r') as f:
 
 setup(
     name='anime-downloader',
-    version='2.0',
+    version='2.1',
     author='Vishnunarayan K.I.',
     author_email='vishnunarayan6105@gmail.com',
     description='Download your favourite anime',
     packages=find_packages(),
     url='https://github.com/vn-ki/anime-downloader',
-    download_url='https://github.com/vn-ki/anime-downloader/archive/2.0.tar.gz',
+    download_url='https://github.com/vn-ki/anime-downloader/archive/2.1.tar.gz',
     keywords=['anime', 'downloader', '9anime', 'download', 'kissanime'],
     install_requires=[
         'bs4',
