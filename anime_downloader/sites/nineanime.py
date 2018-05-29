@@ -1,18 +1,16 @@
 from anime_downloader.sites.anime import BaseAnime, BaseEpisode, SearchResult
-from anime_downloader.sites.exceptions import AnimeDLError, URLError, NotFoundError
-
+from anime_downloader.sites.exceptions import NotFoundError
 
 import json
 import requests
 from bs4 import BeautifulSoup
 
 import re
-import time
 
 import logging
 
-
 __all__ = ['NineAnimeEpisode', 'NineAnime']
+
 
 class NineAnimeEpisode(BaseEpisode):
     QUALITIES = ['360p', '480p', '720p']
@@ -53,7 +51,6 @@ class NineAnimeEpisode(BaseEpisode):
         except Exception as e:
             logging.debug(e)
             pass
-
 
 
 class NineAnime(BaseAnime):
@@ -160,7 +157,6 @@ def generate_(data):
 
     for key, value in data.items():
         trans = a(DD + key, str(value))
-        param_  += s(trans)
-
+        param_ += s(trans)
 
     return param_

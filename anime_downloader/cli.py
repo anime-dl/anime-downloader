@@ -1,5 +1,6 @@
 import click
 import subprocess
+import sys
 
 import logging
 
@@ -80,12 +81,17 @@ def cli(anime_url, episode_range, playlist, url, player, no_download, quality,
 
 def search(query):
     search_results = NineAnime.search(query)
-    print(util.format_search_results(search_results))
+    click.echo(util.format_search_results(search_results))
 
     val = click.prompt('Enter the anime no: ', type=int, default=1)
 
-    url = search_results[val-1].url
-    title = search_results[val-1].title
+    try:
+        url = search_results[val-1].url
+        title = search_results[val-1].title
+    except IndexError:
+        logging.error('Only maximum of 30 search results are allowed.'
+                      ' Please input a number less than 31')
+        sys.exit(1)
 
     logging.info('Selected {}'.format(title))
 

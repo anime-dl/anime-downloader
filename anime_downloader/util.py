@@ -2,7 +2,6 @@ import logging
 import sys
 import time
 import shutil
-from itertools import zip_longest
 
 
 def setup_logger(log_level):

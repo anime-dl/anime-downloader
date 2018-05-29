@@ -1,11 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
-import json
-import re
 
 import time
 import os
-import click
 import logging
 
 from anime_downloader.sites.exceptions import AnimeDLError, NotFoundError
@@ -24,9 +21,6 @@ class BaseAnime():
         return
 
     def __init__(self, url, quality='720p'):
-
-        if quality not in self.QUALITIES:
-            raise AnimeDLError('Incorrect quality: "{}"'.format(quality))
 
         self.url = self.verify_url(url)
 
