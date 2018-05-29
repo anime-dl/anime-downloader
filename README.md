@@ -48,7 +48,17 @@ Options:
   --help                          Show this message and exit.
 ```
 
-#### Examples
+You can use this tool to search and download or download directly from the url.
+
+#### Search and download
+
+- To search and download all episodes.
+```bash
+anime-dl 'code geass'
+```
+*NOTE: The above command shows the search results (which would fit you're terminal size :innocent:) and you can select the desired result.*
+
+#### Download directly
 - To download Fullmetal Alchemist: Brotherhood all episodes
 ```
 anime-dl 'https://9anime.is/watch/fullmetal-alchemist-brotherhood.0r7/j69y93'
