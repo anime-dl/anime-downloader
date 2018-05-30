@@ -12,7 +12,12 @@ from . import util
 echo = click.echo
 
 
-@click.command()
+@click.group()
+def cli():
+    pass
+
+
+@cli.command()
 @click.argument('anime_url')
 @click.option('--episodes', '-e', 'episode_range', metavar='<int>:<int>',
               help="Range of anime you want to download in the form <start>:<end>")
@@ -24,6 +29,8 @@ echo = click.echo
               help="Streams in the specified player")
 @click.option('--no-download', default=False, is_flag=True,
               help="Retrieve without downloading")
+@click.option('--download-dir', default='.',
+              help="Specifiy the directory to download to")
 @click.option('--quality', '-q', type=click.Choice(['360p', '480p', '720p']),
               default='720p',
               help='Specify the quality of episode. Default-720p')
@@ -33,8 +40,8 @@ echo = click.echo
               type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR']),
               default='INFO',
               help='Sets the level of logger')
-def cli(anime_url, episode_range, playlist, url, player, no_download, quality,
-        force, log_level):
+def dl(anime_url, episode_range, playlist, url, player, no_download, quality,
+        force, log_level, download_dir):
     """ Anime Downloader
 
         Download your favourite anime.
@@ -47,10 +54,12 @@ def cli(anime_url, episode_range, playlist, url, player, no_download, quality,
         anime_url = search(anime_url)
 
     try:
-        anime = NineAnime(anime_url, quality=quality)
+        anime = NineAnime(anime_url, quality=quality, path=download_dir)
     except NotFoundError as e:
         echo(e.args[0])
         return
+
+    logging.info('Downloading anime: {}'.format(anime.title))
 
     if url or player:
         no_download = True
@@ -77,6 +86,11 @@ def cli(anime_url, episode_range, playlist, url, player, no_download, quality,
         if not no_download:
             episode.download(force)
             print()
+
+
+@cli.command()
+def watch():
+    pass
 
 
 def search(query):

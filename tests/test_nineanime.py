@@ -1,6 +1,7 @@
-from anime_downloader.sites.nineanime import NineAnime, NineAnimeEpisode
+from anime_downloader.sites.nineanime import NineAnime
 
 import pytest
+
 
 @pytest.fixture
 def anime():

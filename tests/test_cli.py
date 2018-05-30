@@ -2,7 +2,7 @@ from anime_downloader import cli
 
 from click.testing import CliRunner
 
-
+import os
 
 
 def assert_lines(lines, test_string):
@@ -14,7 +14,7 @@ def assert_lines(lines, test_string):
 def test_streamurl():
     runner = CliRunner()
     result = runner.invoke(
-        cli.cli,
+        cli.dl,
         [
             'https://www4.9anime.is/watch/the-seven-deadly-sins-signs-of-holy-war.lxqm/39px7y',
             '--url'
@@ -28,10 +28,28 @@ def test_streamurl():
     assert_lines(lines, '.mp4')
 
 
+def test_download(tmpdir):
+    runner = CliRunner()
+    result = runner.invoke(
+        cli.dl,
+        [
+            'https://www4.9anime.is/watch/kochinpa.p6l6/j6ooy2',
+            '--download-dir',
+            str(tmpdir),
+        ]
+    )
+
+    assert result.exit_code == 0
+
+    length = len(tmpdir.listdir())
+
+    assert length == 12
+
+
 def test_range():
     runner = CliRunner()
     result = runner.invoke(
-        cli.cli,
+        cli.dl,
         [
             'https://www4.9anime.is/watch/naruto.xx8z/r9k04y',
             '--url',
@@ -54,7 +72,7 @@ def test_range():
 def test_search():
     runner = CliRunner()
     result = runner.invoke(
-        cli.cli,
+        cli.dl,
         [
             'dragon ball super',
             '--url',
@@ -68,7 +86,7 @@ def test_search():
     assert result.exit_code == 0
 
     result2 = runner.invoke(
-        cli.cli,
+        cli.dl,
         [
             'dragon ball super',
             '--url',

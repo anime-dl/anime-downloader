@@ -20,9 +20,13 @@ class BaseAnime():
     def search(cls, query):
         return
 
-    def __init__(self, url, quality='720p'):
+    def __init__(self, url, quality='720p', path=None):
 
         self.url = self.verify_url(url)
+        self.path = path
+
+        if path:
+            logging.info('Downloading to {}'.format(os.path.abspath(path)))
 
         if quality in self.QUALITIES:
             self.quality = quality
@@ -56,7 +60,8 @@ class BaseAnime():
 
     def __getitem__(self, index):
         ep_id = self._episodeIds[index]
-        return self._episodeClass(ep_id, self.quality, parent=self)
+        return self._episodeClass(ep_id, self.quality, parent=self,
+                                  path=self.path, ep_no=index+1)
 
     def __repr__(self):
         return '''
@@ -71,19 +76,23 @@ Episode count: {length}
     def _getMetadata(self, soup):
         return
 
+
 class BaseEpisode:
     QUALITIES = None
     title = ''
     stream_url = ''
 
-    def __init__(self, episode_id, quality='720p', parent=None):
+    def __init__(self, episode_id, quality='720p', parent=None, path=None,
+                 ep_no=None):
+
+        self.path = path
 
         if quality not in self.QUALITIES:
             raise AnimeDLError('Incorrect quality: "{}"'.format(quality))
 
         self.episode_id = episode_id
         self.quality = quality
-        logging.info("Extracting stream info of id: {}".format(self.episode_id))
+        logging.debug("Extracting stream info of id: {}".format(self.episode_id))
 
         try:
             self.getData()
@@ -106,19 +115,22 @@ class BaseEpisode:
         logging.info('Downloading {}'.format(self.title))
 
         if path is None:
-            path = './' + self.title
-        elif path.endswith('.mp4'):
+            if self.path is None:
+                path = './' + self.title
+            else:
+                path = self.path
+        if path.endswith('.mp4'):
             path = path
         else:
-            path += self.title
+            path = os.path.join(path, self.title)
+
+        logging.info(path)
 
         r = requests.get(self.stream_url, stream=True)
 
         total_size = int(r.headers['Content-length'])
         downloaded, chunksize = 0, 16384
         start_time = time.time()
-
-        logging.debug(path)
 
         if os.path.exists(path):
             if os.stat(path).st_size == total_size and not force:

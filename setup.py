@@ -25,6 +25,6 @@ setup(
     long_description_content_type='text/markdown',
     entry_points='''
         [console_scripts]
-        anime-dl=anime_downloader.cli:cli
+        anime=anime_downloader.cli:cli
     '''
 )
