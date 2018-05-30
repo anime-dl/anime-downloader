@@ -5,7 +5,7 @@
 [![PyPI pyversions](https://img.shields.io/badge/python-3.3%2B-blue.svg)](https://pypi.org/project/anime-downloader/)
 
 
-Ever dreamt about watching anime for free effortlessly without all those unbearable ads? Ever dreamt of downloading your favourite anime for that long trip? 
+Ever dreamt about watching anime for free effortlessly without all those unbearable ads? Ever dreamt of downloading your favourite anime for that long trip?
 
 ![kawaii](https://media.giphy.com/media/f0yOYF0EtwSVa/giphy.gif)
 
@@ -33,7 +33,7 @@ $ pip install -U git+https://github.com/vn-ki/anime-downloader.git
 
 ## Usage
 
-Anime downloader has two sub commands, `dl` and `watch`. `watch` does nothing currently (but it does, it will be awesome!).
+Anime downloader has two sub commands, `dl` and `watch`. `watch` does nothing currently (but when it does, it will be awesome!).
 
 Run `anime dl --help` for help text on `dl` subcommand.
 

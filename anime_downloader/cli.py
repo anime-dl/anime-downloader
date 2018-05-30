@@ -14,6 +14,10 @@ echo = click.echo
 
 @click.group()
 def cli():
+    """Anime Downloader
+
+    Download or watch your favourite anime
+    """
     pass
 
 
@@ -42,9 +46,7 @@ def cli():
               help='Sets the level of logger')
 def dl(anime_url, episode_range, playlist, url, player, no_download, quality,
         force, log_level, download_dir):
-    """ Anime Downloader
-
-        Download your favourite anime.
+    """ Download the anime using the url or search for it.
     """
 
     util.setup_logger(log_level)
