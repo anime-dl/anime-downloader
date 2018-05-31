@@ -15,7 +15,9 @@ def test_streamurl():
         cli.dl,
         [
             'https://www4.9anime.is/watch/the-seven-deadly-sins-signs-of-holy-war.lxqm/39px7y',
-            '--url'
+            '--url',
+            '-q',
+            '720p'
         ]
     )
 
@@ -34,6 +36,8 @@ def test_download(tmpdir):
             'https://www4.9anime.is/watch/kochinpa.p6l6/j6ooy2',
             '--download-dir',
             str(tmpdir),
+            '-q',
+            '720p'
         ]
     )
 
@@ -75,7 +79,9 @@ def test_search():
             'dragon ball super',
             '--url',
             '-e',
-            '50:55'
+            '50:55',
+            '-q',
+            '720p'
         ],
         input='1\n'
     )
@@ -89,7 +95,9 @@ def test_search():
             'dragon ball super',
             '--url',
             '-e',
-            '50:55'
+            '50:55',
+            '-q',
+            '720p'
         ],
         input='77\n'
     )
