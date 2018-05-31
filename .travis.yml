@@ -5,6 +5,10 @@ python:
   - "3.5"
   - "3.6"
   - "3.7-dev"
+matrix:
+  allow_failures:
+    - python: "3.7-dev"
+  fast_finish: true
 before_install:
   - pip install pytest-cov
 install:
