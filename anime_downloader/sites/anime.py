@@ -4,12 +4,12 @@ from bs4 import BeautifulSoup
 import time
 import os
 import logging
+import sys
 
 from anime_downloader.sites.exceptions import AnimeDLError, NotFoundError
-from anime_downloader import util
 
 
-class BaseAnime():
+class BaseAnime:
     sitename = ''
     title = ''
 
@@ -43,7 +43,6 @@ class BaseAnime():
         self._episodeIds = []
         r = requests.get(self.url)
         soup = BeautifulSoup(r.text, 'html.parser')
-        self._soup = soup
 
         self._getMetadata(soup)
 
@@ -69,6 +68,9 @@ Site: {name}
 Anime: {title}
 Episode count: {length}
 '''.format(name=self.sitename, title=self.title, length=len(self))
+
+    def __str__(self):
+        return self.title
 
     def _getEpisodeUrls(self, soup):
         return
@@ -145,8 +147,8 @@ class BaseEpisode:
                     if chunk:
                         f.write(chunk)
                         downloaded += chunksize
-                        util.write_status((downloaded), (total_size),
-                                          start_time)
+                        write_status((downloaded), (total_size),
+                                      start_time)
 
 
 class SearchResult:
@@ -154,3 +156,16 @@ class SearchResult:
         self.title = title
         self.url = url
         self.poster = poster
+
+
+def write_status(downloaded, total_size, start_time):
+    elapsed_time = time.time()-start_time
+    rate = (downloaded/1024)/elapsed_time
+    downloaded = float(downloaded)/1048576
+    total_size = float(total_size)/1048576
+
+    status = 'Downloaded: {0:.2f}MB/{1:.2f}MB, Rate: {2:.2f}KB/s'.format(
+        downloaded, total_size, rate)
+
+    sys.stdout.write("\r" + status + " "*5 + "\r")
+    sys.stdout.flush()

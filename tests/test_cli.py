@@ -2,8 +2,6 @@ from anime_downloader import cli
 
 from click.testing import CliRunner
 
-import os
-
 
 def assert_lines(lines, test_string):
     for line in lines:

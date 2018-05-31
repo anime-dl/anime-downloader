@@ -1,7 +1,8 @@
 import logging
 import sys
-import time
 import shutil
+import click
+from anime_downloader.sites.nineanime import NineAnime
 
 
 def setup_logger(log_level):
@@ -16,19 +17,6 @@ def setup_logger(log_level):
     )
 
 
-def write_status(downloaded, total_size, start_time):
-    elapsed_time = time.time()-start_time
-    rate = (downloaded/1024)/elapsed_time
-    downloaded = float(downloaded)/1048576
-    total_size = float(total_size)/1048576
-
-    status = 'Downloaded: {0:.2f}MB/{1:.2f}MB, Rate: {2:.2f}KB/s'.format(
-        downloaded, total_size, rate)
-
-    sys.stdout.write("\r" + status + " "*5 + "\r")
-    sys.stdout.flush()
-
-
 def format_search_results(search_results):
     _, height = shutil.get_terminal_size()
     height -= 4  # Accounting for prompt
@@ -38,3 +26,30 @@ def format_search_results(search_results):
         ret += '{}: {}\n'.format(idx+1, result.title)
 
     return ret
+
+
+def search(query):
+    search_results = NineAnime.search(query)
+    click.echo(format_search_results(search_results))
+
+    val = click.prompt('Enter the anime no: ', type=int, default=1)
+
+    try:
+        url = search_results[val-1].url
+        title = search_results[val-1].title
+    except IndexError:
+        logging.error('Only maximum of 30 search results are allowed.'
+                      ' Please input a number less than 31')
+        sys.exit(1)
+
+    logging.info('Selected {}'.format(title))
+
+    return url
+
+
+def search_and_get_url(query):
+    # HACK/XXX: Should use a regex. But a dirty hack for now :/
+    if '9anime' not in query:
+            return search(query)
+    else:
+        return query

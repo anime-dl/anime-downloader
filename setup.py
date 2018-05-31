@@ -20,6 +20,7 @@ setup(
         'bs4',
         'requests',
         'Click',
+        'fuzzywuzzy[speedup]'
     ],
     long_description=long_description,
     long_description_content_type='text/markdown',

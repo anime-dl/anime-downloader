@@ -46,8 +46,8 @@ class NineAnimeEpisode(BaseEpisode):
         except IndexError:
             raise NotFoundError("Episode not found")
         try:
-            self.title = title_re.findall(r.text)[0]
-            self.image = image_re.findall(r.text)[0]
+            self.title = str(title_re.findall(r.text)[0])
+            self.image = str(image_re.findall(r.text)[0])
         except Exception as e:
             logging.debug(e)
             pass
@@ -133,7 +133,7 @@ class NineAnime(BaseAnime):
 
     def _getMetadata(self, soup):
         title = soup.find_all('h1', {'class': 'title'})
-        self.title = title[0].contents[0]
+        self.title = str(title[0].contents[0])
         self._len = int(soup.find_all(
             'ul', ['episodes'])[-1].find_all('a')[-1]['data-base'])
 

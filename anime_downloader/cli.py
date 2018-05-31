@@ -7,12 +7,18 @@ import logging
 from anime_downloader.sites.nineanime import NineAnime
 from anime_downloader.sites.exceptions import NotFoundError
 
-from . import util
+
+from anime_downloader import config, util
+from anime_downloader import watch as _watch
 
 echo = click.echo
 
+CONTEXT_SETTINGS = dict(
+    default_map=config.DEFAULT_CONFIG
+)
 
-@click.group()
+
+@click.group(context_settings=CONTEXT_SETTINGS)
 def cli():
     """Anime Downloader
 
@@ -21,39 +27,37 @@ def cli():
     pass
 
 
+# NOTE: Don't put defaults here. Add them to the dict in config
 @cli.command()
 @click.argument('anime_url')
 @click.option('--episodes', '-e', 'episode_range', metavar='<int>:<int>',
               help="Range of anime you want to download in the form <start>:<end>")
-@click.option('--save-playlist', '-p', 'playlist', default=False, type=bool, is_flag=True,
+@click.option('--save-playlist', '-p', 'playlist', type=bool, is_flag=True,
               help="If flag is set, saves the stream urls in an m3u file instead of downloading")
-@click.option('--url', '-u', default=False, type=bool, is_flag=True,
+@click.option('--url', '-u', type=bool, is_flag=True,
               help="If flag is set, prints the stream url instead of downloading")
 @click.option('--play', 'player', metavar='PLAYER',
               help="Streams in the specified player")
-@click.option('--no-download', default=False, is_flag=True,
+@click.option('--no-download', is_flag=True,
               help="Retrieve without downloading")
-@click.option('--download-dir', default='.',
-              help="Specifiy the directory to download to")
+@click.option('--download-dir', help="Specifiy the directory to download to")
 @click.option('--quality', '-q', type=click.Choice(['360p', '480p', '720p']),
-              default='720p',
               help='Specify the quality of episode. Default-720p')
-@click.option('--force', '-f', is_flag=True, default=False,
+@click.option('--force', '-f', is_flag=True,
               help='Force downloads even if file exists')
 @click.option('--log-level', '-ll', 'log_level',
               type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR']),
-              default='INFO',
               help='Sets the level of logger')
-def dl(anime_url, episode_range, playlist, url, player, no_download, quality,
+@click.pass_context
+def dl(ctx, anime_url, episode_range, playlist, url, player, no_download, quality,
         force, log_level, download_dir):
     """ Download the anime using the url or search for it.
     """
 
     util.setup_logger(log_level)
+    config.write_default_config()
 
-    # HACK/XXX: Should use a regex. But a dirty hack for now :/
-    if '9anime' not in anime_url:
-        anime_url = search(anime_url)
+    anime_url = util.search_and_get_url(anime_url)
 
     try:
         anime = NineAnime(anime_url, quality=quality, path=download_dir)
@@ -61,7 +65,7 @@ def dl(anime_url, episode_range, playlist, url, player, no_download, quality,
         echo(e.args[0])
         return
 
-    logging.info('Downloading anime: {}'.format(anime.title))
+    logging.info('Found anime: {}'.format(anime.title))
 
     if url or player:
         no_download = True
@@ -91,24 +95,37 @@ def dl(anime_url, episode_range, playlist, url, player, no_download, quality,
 
 
 @cli.command()
-def watch():
-    pass
+@click.argument('anime_name', required=False)
+@click.option('--new', '-n', type=bool, is_flag=True,
+              help="Create a new anime to watch")
+@click.option('--list', '-l', '_list', type=bool, is_flag=True,
+              help="List all animes in watch list")
+@click.option('--player', metavar='PLAYER',
+              help="Streams in the specified player")
+def watch(anime_name, new, _list, player):
+    watcher = _watch.Watcher()
 
+    if new:
+        if anime_name:
+            query = anime_name
+        else:
+            query = click.prompt('Enter a anime name or url', type=str)
 
-def search(query):
-    search_results = NineAnime.search(query)
-    click.echo(util.format_search_results(search_results))
+        url = util.search_and_get_url(query)
 
-    val = click.prompt('Enter the anime no: ', type=int, default=1)
+        watcher.new(url)
+        sys.exit(0)
 
-    try:
-        url = search_results[val-1].url
-        title = search_results[val-1].title
-    except IndexError:
-        logging.error('Only maximum of 30 search results are allowed.'
-                      ' Please input a number less than 31')
-        sys.exit(1)
+    if _list:
+        watcher.list()
+        sys.exit(0)
 
-    logging.info('Selected {}'.format(title))
+    if anime_name:
+        anime = watcher.get(anime_name)
 
-    return url
+        for episode in anime:
+            if player:
+                p = subprocess.Popen([player, episode.stream_url])
+                exit_code = p.wait()
+
+            print(exit_code)
