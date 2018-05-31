@@ -17,10 +17,11 @@ setup(
     download_url='https://github.com/vn-ki/anime-downloader/archive/2.2.tar.gz',
     keywords=['anime', 'downloader', '9anime', 'download', 'kissanime'],
     install_requires=[
-        'bs4',
-        'requests',
-        'Click',
-        'fuzzywuzzy[speedup]'
+        'beautifulsoup4>=4.6.0',
+        'requests>=2.18.4',
+        'Click>=6.7',
+        'fuzzywuzzy[speedup]>=0.16.0',
+        'PyYAML>=3.12'
     ],
     long_description=long_description,
     long_description_content_type='text/markdown',
