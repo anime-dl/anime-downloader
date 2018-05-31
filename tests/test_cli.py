@@ -5,7 +5,7 @@ from click.testing import CliRunner
 
 def assert_lines(lines, test_string):
     for line in lines:
-        if line and not line.startswith('INFO'):
+        if line and not line.startswith('INFO') and not line.startswith('DEBUG'):
             assert test_string in line
 
 
@@ -17,7 +17,9 @@ def test_streamurl():
             'https://www4.9anime.is/watch/the-seven-deadly-sins-signs-of-holy-war.lxqm/39px7y',
             '--url',
             '-q',
-            '720p'
+            '720p',
+            '-ll',
+            'DEBUG'
         ]
     )
 
@@ -37,7 +39,9 @@ def test_download(tmpdir):
             '--download-dir',
             str(tmpdir),
             '-q',
-            '720p'
+            '720p',
+            '--log-level',
+            'DEBUG'
         ]
     )
 
@@ -58,7 +62,9 @@ def test_range():
             '-e',
             '50:55',
             '-q',
-            '360p'
+            '360p',
+            '-ll',
+            'DEBUG'
         ]
     )
 
@@ -81,7 +87,9 @@ def test_search():
             '-e',
             '50:55',
             '-q',
-            '720p'
+            '720p',
+            '-ll',
+            'DEBUG'
         ],
         input='1\n'
     )
@@ -97,7 +105,9 @@ def test_search():
             '-e',
             '50:55',
             '-q',
-            '720p'
+            '720p',
+            '-ll',
+            'DEBUG'
         ],
         input='77\n'
     )
