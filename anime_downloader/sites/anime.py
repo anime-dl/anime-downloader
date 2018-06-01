@@ -12,6 +12,7 @@ from anime_downloader.sites.exceptions import AnimeDLError, NotFoundError
 class BaseAnime:
     sitename = ''
     title = ''
+    meta = dict()
 
     QUALITIES = None
     _episodeClass = object
@@ -21,8 +22,7 @@ class BaseAnime:
         return
 
     def __init__(self, url, quality='720p', path=None):
-
-        self.url = self.verify_url(url)
+        self.url = url
         self.path = path
 
         if path:
@@ -36,15 +36,21 @@ class BaseAnime:
         logging.info('Extracting episode info from page')
         self.getEpisodes()
 
+    @classmethod
     def verify_url(self, url):
-        return url
+        if self.sitename in url:
+            return True
+        return False
 
     def getEpisodes(self):
         self._episodeIds = []
         r = requests.get(self.url)
         soup = BeautifulSoup(r.text, 'html.parser')
 
-        self._getMetadata(soup)
+        try:
+            self._getMetadata(soup)
+        except Exception as e:
+            logging.debug(e)
 
         self._episodeIds = self._getEpisodeUrls(soup)
         self._len = len(self._episodeIds)
@@ -160,6 +166,7 @@ class SearchResult:
         self.title = title
         self.url = url
         self.poster = poster
+        self.meta = ''
 
 
 def write_status(downloaded, total_size, start_time):

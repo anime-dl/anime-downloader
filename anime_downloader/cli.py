@@ -4,7 +4,7 @@ import sys
 
 import logging
 
-from anime_downloader.sites.nineanime import NineAnime
+from anime_downloader.sites import get_anime_class
 from anime_downloader.sites.exceptions import NotFoundError
 from anime_downloader.players.mpv import mpv
 
@@ -58,10 +58,14 @@ def dl(ctx, anime_url, episode_range, playlist, url, player, no_download, qualit
     util.setup_logger(log_level)
     config.write_default_config()
 
-    anime_url = util.search_and_get_url(anime_url)
+    cls = get_anime_class(anime_url)
+
+    if not cls:
+        anime_url = util.search_and_get_url(anime_url)
+        cls = get_anime_class(anime_url)
 
     try:
-        anime = NineAnime(anime_url, quality=quality, path=download_dir)
+        anime = cls(anime_url, quality=quality, path=download_dir)
     except NotFoundError as e:
         echo(e.args[0])
         return

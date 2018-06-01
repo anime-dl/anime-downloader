@@ -39,7 +39,7 @@ class NineAnimeEpisode(BaseEpisode):
 
 
 class NineAnime(BaseAnime):
-    sitename = '9Anime'
+    sitename = '9anime'
     QUALITIES = ['360p', '480p', '720p']
     _episodeClass = NineAnimeEpisode
 
@@ -86,12 +86,18 @@ class NineAnime(BaseAnime):
                 url=item.find('a')['href'],
                 poster=item.find('img')['src']
             )
+            meta = dict()
+            m = item.find('div', {'class': 'status'})
+            for item in m.find_all('div'):
+                meta[item.attrs['class'][0]] = item.text.strip()
+            s.meta = meta
             logging.debug(s)
             ret.append(s)
 
         return ret
 
     def _getEpisodeUrls(self, soup):
+        self.soup = soup
         ts = soup.find('html')['data-ts']
         self._episodeClass.ts = ts
         logging.debug('data-ts: {}'.format(ts))
@@ -117,10 +123,23 @@ class NineAnime(BaseAnime):
         return episode_ids
 
     def _getMetadata(self, soup):
-        title = soup.find_all('h1', {'class': 'title'})
-        self.title = str(title[0].contents[0])
+        self.title = str(soup.find('div', {'class': 'widget info'}).find(
+            'h2', {'class': 'title'}).text)
+
+        self.image = str(soup.find(
+            'div', {'class': 'widget info'}).find('img')['src'])
+
         self._len = int(soup.find_all(
             'ul', ['episodes'])[-1].find_all('a')[-1]['data-base'])
+
+        meta1 = soup.find('div', {'class': 'widget info'}).find_all('dl')[0]
+        meta2 = soup.find('div', {'class': 'widget info'}).find_all('dl')[1]
+        dd = meta1.find_all('dd') + meta2.find_all('dd')
+        dt = meta1.find_all('dt') + meta2.find_all('dt')
+        self.meta = dict(
+            zip([tag.text.strip(': ') for tag in dt],
+                [tag.text.strip() for tag in dd])
+        )
 
 
 def s(t):

@@ -23,7 +23,9 @@ def format_search_results(search_results):
 
     ret = ''
     for idx, result in enumerate(search_results[:height]):
-        ret += '{}: {}\n'.format(idx+1, result.title)
+        meta = ''
+        meta = ' | '.join(val for _, val in result.meta.items())
+        ret += '{:2}: {:40.40}\t{:20.20}\n'.format(idx+1, result.title, meta)
 
     return ret
 
