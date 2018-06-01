@@ -12,7 +12,7 @@ matrix:
 before_install:
   - pip install pytest-cov
 install:
-  - pip install -e .
+  - pip install -e ".[kissanime]"
 script:
   - python -m pytest tests --cov=.
 after_success:

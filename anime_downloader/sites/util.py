@@ -1,0 +1,39 @@
+import logging
+import json
+import requests
+from bs4 import BeautifulSoup
+import re
+
+from anime_downloader.sites.exceptions import NotFoundError
+
+
+def get_json(url):
+    logging.debug('API call URL: {}'.format(url))
+    data = json.loads(requests.get(url).text)
+    logging.debug('Returned data: {}'.format(data))
+
+    return data
+
+
+def get_stream_url_rapidvideo(url, quality):
+    r = requests.get(url+'&q='+quality)
+    soup = BeautifulSoup(r.text, 'html.parser')
+
+    title_re = re.compile(r'"og:title" content="(.*)"')
+    image_re = re.compile(r'"og:image" content="(.*)"')
+
+    ret_dict = dict()
+    try:
+        ret_dict['stream_url'] = soup.find_all('source')[0].get('src')
+    except IndexError:
+        raise NotFoundError("Episode not found")
+    try:
+        ret_dict['title'] = str(title_re.findall(r.text)[0])
+        ret_dict['image'] = str(image_re.findall(r.text)[0])
+    except Exception as e:
+        ret_dict['title'] = ''
+        ret_dict['image'] = ''
+        logging.debug(e)
+        pass
+
+    return ret_dict

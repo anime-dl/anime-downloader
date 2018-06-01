@@ -23,6 +23,9 @@ setup(
         'fuzzywuzzy[speedup]>=0.16.0',
         'PyYAML>=3.12'
     ],
+    extras_require={
+        'kissanime': ['cfscrape>=1.9.5']
+    },
     long_description=long_description,
     long_description_content_type='text/markdown',
     entry_points='''

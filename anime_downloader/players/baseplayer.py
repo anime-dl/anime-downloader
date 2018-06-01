@@ -42,7 +42,7 @@ class BasePlayer(metaclass=ABCMeta):
             return self._get_executable_posix()
 
     def play(self):
-        cmd = [self._get_executable(), *self.args]
+        cmd = [self._get_executable()] + self.args
         logging.debug('Command: {}'.format(cmd))
         self.process = subprocess.Popen(cmd)
         returncode = self.process.wait()

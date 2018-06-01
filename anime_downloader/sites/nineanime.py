@@ -1,11 +1,9 @@
 from anime_downloader.sites.anime import BaseAnime, BaseEpisode, SearchResult
 from anime_downloader.sites.exceptions import NotFoundError
+from anime_downloader.sites import util
 
-import json
 import requests
 from bs4 import BeautifulSoup
-
-import re
 
 import logging
 
@@ -29,28 +27,15 @@ class NineAnimeEpisode(BaseEpisode):
 
         url = self._base_url.format(**params)
 
-        logging.debug('API call URL: {}'.format(url))
-
-        data = json.loads(requests.get(url).text)
-
-        logging.debug('Returned data: {}'.format(data))
+        data = util.get_json(url)
 
         url = data['target']
-        title_re = re.compile(r'"og:title" content="(.*)"')
-        image_re = re.compile(r'"og:image" content="(.*)"')
 
-        r = requests.get(url+'&q='+self.quality)
-        soup = BeautifulSoup(r.text, 'html.parser')
-        try:
-            self.stream_url = soup.find_all('source')[0].get('src')
-        except IndexError:
-            raise NotFoundError("Episode not found")
-        try:
-            self.title = str(title_re.findall(r.text)[0])
-            self.image = str(image_re.findall(r.text)[0])
-        except Exception as e:
-            logging.debug(e)
-            pass
+        data = util.get_stream_url_rapidvideo(url, self.quality)
+
+        self.stream_url = data['stream_url']
+        self.title = data['title']
+        self.image = data['image']
 
 
 class NineAnime(BaseAnime):
