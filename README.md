@@ -18,6 +18,11 @@ Yeah. Me too! That's why this tool exists.
 - Search available if don't want to copy the url.
 - Save yourselves from those malicious ads.
 
+## Supported Sites
+
+- 9anime
+- KissAnime
+
 ## Installation
 
 You can install the stable release from PyPI.
