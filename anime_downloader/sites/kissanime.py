@@ -1,9 +1,9 @@
 import cfscrape
-from anime_downloader.sites.anime import BaseAnime, BaseEpisode
+from anime_downloader.sites.anime import BaseEpisode
+from anime_downloader.sites.baseanimecf import BaseAnimeCF
 from anime_downloader.sites.exceptions import NotFoundError
 from anime_downloader.sites import util
 from bs4 import BeautifulSoup
-import logging
 import re
 
 scraper = cfscrape.create_scraper()
@@ -49,25 +49,10 @@ class KissanimeEpisode(BaseEpisode):
         self.image = data['image']
 
 
-class Kissanime(BaseAnime):
+class Kissanime(BaseAnimeCF):
     sitename = 'kissanime'
     QUALITIES = ['360p', '480p', '720p']
     _episodeClass = KissanimeEpisode
-
-    def getEpisodes(self):
-        self._episodeIds = []
-        r = scraper.get(self.url, headers=desktop_headers)
-        soup = BeautifulSoup(r.text, 'html.parser')
-
-        self._getMetadata(soup)
-
-        self._episodeIds = self._getEpisodeUrls(soup)
-        self._len = len(self._episodeIds)
-
-        logging.debug('EPISODE IDS: length: {}, ids: {}'.format(
-            self._len, self._episodeIds))
-
-        return self._episodeIds
 
     def _getEpisodeUrls(self, soup):
         ret = soup.find('table', {'class': 'listing'}).find_all('a')

@@ -97,7 +97,6 @@ class NineAnime(BaseAnime):
         return ret
 
     def _getEpisodeUrls(self, soup):
-        self.soup = soup
         ts = soup.find('html')['data-ts']
         self._episodeClass.ts = ts
         logging.debug('data-ts: {}'.format(ts))

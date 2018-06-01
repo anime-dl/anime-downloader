@@ -111,6 +111,9 @@ def dl(ctx, anime_url, episode_range, playlist, url, player, no_download, qualit
               type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR']),
               help='Sets the level of logger', default='INFO')
 def watch(anime_name, new, _list, player, log_level):
+    """
+    WORK IN PROGRESS: MAY NOT WORK
+    """
     util.setup_logger(log_level)
     watcher = _watch.Watcher()
 
