@@ -27,12 +27,13 @@ class Watcher:
 
         click.echo('{:>5} | {:^35} | {:^8} | {:^10}'.format('SlNo', 'Name', 'Eps', 'Type'))
         click.echo('-'*65)
-        fmt_str = '{:5} | {:35.35} |  {:3}/{:<3} | {:10.10}'
+        fmt_str = '{:5} | {:35.35} |  {:3}/{:<3} | {meta:10.10}'
 
         for idx, anime in enumerate(animes):
             meta = anime.meta
             click.echo(fmt_str.format(idx+1, anime.title,
-                                      *anime.progress(), meta.get('Type', '')))
+                                      *anime.progress(),
+                                      meta=meta.get('Type', '')))
 
     def get(self, anime_name):
         animes = self._read_from_watch_file()
