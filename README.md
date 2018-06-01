@@ -36,6 +36,14 @@ $ pip install -U git+https://github.com/vn-ki/anime-downloader.git
 ```
 *NOTE: You might have to use pip3 depending on your system*
 
+KissAnime support is currently only available in master. Use the following command to install with KissAnime support.
+
+```bash
+pip install -U git+https://github.com/vn-ki/anime-downloader.git#egg=anime-downloader'[kissanime]'
+```
+
+**IMP**: For KissAnime scraping [cfscrape](https://github.com/Anorov/cloudflare-scrape) is used. It depends on `node-js`. So if you want to use KissAnime, make sure you have node installed.
+
 ## Usage
 
 Anime downloader has two sub commands, `dl` and `watch`. `watch` does nothing currently (but when it does, it will be awesome!).
