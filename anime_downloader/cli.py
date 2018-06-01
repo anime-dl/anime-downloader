@@ -6,6 +6,7 @@ import logging
 
 from anime_downloader.sites.nineanime import NineAnime
 from anime_downloader.sites.exceptions import NotFoundError
+from anime_downloader.players.mpv import mpv
 
 
 from anime_downloader import config, util
@@ -102,7 +103,11 @@ def dl(ctx, anime_url, episode_range, playlist, url, player, no_download, qualit
               help="List all animes in watch list")
 @click.option('--player', metavar='PLAYER',
               help="Streams in the specified player")
-def watch(anime_name, new, _list, player):
+@click.option('--log-level', '-ll', 'log_level',
+              type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR']),
+              help='Sets the level of logger', default='INFO')
+def watch(anime_name, new, _list, player, log_level):
+    util.setup_logger(log_level)
     watcher = _watch.Watcher()
 
     if new:
@@ -123,9 +128,15 @@ def watch(anime_name, new, _list, player):
     if anime_name:
         anime = watcher.get(anime_name)
 
-        for episode in anime:
-            if player:
-                p = subprocess.Popen([player, episode.stream_url])
-                exit_code = p.wait()
+        logging.info('Got {}'.format(anime.title))
 
-            print(exit_code)
+        for idx, episode in enumerate(anime[anime.episodes_done:]):
+            player = mpv(episode.stream_url)
+            returncode = player.play()
+
+            if returncode == mpv.STOP:
+                break
+            # elif returncode == mpv.CONNECT_ERR:
+            #     retry
+
+            watcher.update(anime, idx+1)

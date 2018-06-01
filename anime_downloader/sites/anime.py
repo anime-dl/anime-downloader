@@ -58,9 +58,13 @@ class BaseAnime:
         return self._len
 
     def __getitem__(self, index):
-        ep_id = self._episodeIds[index]
-        return self._episodeClass(ep_id, self.quality, parent=self,
-                                  path=self.path, ep_no=index+1)
+        if isinstance(index, int):
+            ep_id = self._episodeIds[index]
+            return self._episodeClass(ep_id, self.quality, parent=self,
+                                      path=self.path, ep_no=index+1)
+        elif isinstance(index, slice):
+            self._episodeIds = self._episodeIds[index]
+            return self
 
     def __repr__(self):
         return '''

@@ -29,6 +29,8 @@ def format_search_results(search_results):
 
 
 def search(query):
+    # Since this function outputs to stdout this should ideally be in
+    # cli. But it is used in watch too. :(
     search_results = NineAnime.search(query)
     click.echo(format_search_results(search_results))
 
