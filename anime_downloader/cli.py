@@ -104,14 +104,14 @@ def dl(ctx, anime_url, episode_range, save_playlist, url, player, skip_download,
               help="Create a new anime to watch")
 @click.option('--list', '-l', '_list', type=bool, is_flag=True,
               help="List all animes in watch list")
-@click.option('--player', metavar='PLAYER',
-              help="Streams in the specified player")
+@click.option('--quality', '-q', type=click.Choice(['360p', '480p', '720p']),
+              help='Specify the quality of episode.')
 @click.option('--log-level', '-ll', 'log_level',
               type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR']),
               help='Sets the level of logger', default='INFO')
-def watch(anime_name, new, _list, player, log_level):
+def watch(anime_name, new, _list, quality, log_level):
     """
-    WORK IN PROGRESS: MAY NOT WORK
+    With watch you can keep track of any anime you watch.
     """
     util.setup_logger(log_level)
     watcher = _watch.Watcher()
@@ -133,16 +133,23 @@ def watch(anime_name, new, _list, player, log_level):
 
     if anime_name:
         anime = watcher.get(anime_name)
+        anime.quality = quality
 
-        logging.info('Got {}'.format(anime.title))
+        logging.info('Found {}'.format(anime.title))
+        to_watch = anime[anime.episodes_done:]
 
-        for idx, episode in enumerate(anime[anime.episodes_done:]):
-            player = mpv(episode.stream_url)
-            returncode = player.play()
+        for idx, episode in enumerate(to_watch):
 
-            if returncode == mpv.STOP:
+            for tries in range(5):
+                logging.info('Playing episode {}'.format(anime.episodes_done+1))
+                player = mpv(episode.stream_url)
+                returncode = player.play()
+
+                if returncode == mpv.STOP:
+                    sys.exit(0)
+                elif returncode == mpv.CONNECT_ERR:
+                    logging.warning("Couldn't connect. Retrying.")
+                    continue
+                anime.episodes_done += 1
+                watcher.update(anime)
                 break
-            # elif returncode == mpv.CONNECT_ERR:
-            #     retry
-
-            watcher.update(anime, idx+1)

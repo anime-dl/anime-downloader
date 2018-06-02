@@ -14,7 +14,11 @@ DEFAULT_CONFIG = {
         'download_dir': '.',
         'quality': '720p',
         'force_download': False,
-        'log_level': 'INFO'
+        'log_level': 'INFO',
+    },
+    'watch': {
+        'quality': '720p',
+        'log_level': 'INFO',
     }
 }
 

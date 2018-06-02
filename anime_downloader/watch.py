@@ -25,7 +25,9 @@ class Watcher:
     def list(self):
         animes = self._read_from_watch_file()
 
-        click.echo('{:>5} | {:^35} | {:^8} | {:^10}'.format('SlNo', 'Name', 'Eps', 'Type'))
+        click.echo('{:>5} | {:^35} | {:^8} | {:^10}'.format(
+            'SlNo', 'Name', 'Eps', 'Type'
+        ))
         click.echo('-'*65)
         fmt_str = '{:5} | {:35.35} |  {:3}/{:<3} | {meta:10.10}'
 
@@ -37,24 +39,36 @@ class Watcher:
 
     def get(self, anime_name):
         animes = self._read_from_watch_file()
-
         match = process.extractOne(anime_name, animes, score_cutoff=10)
 
         return match[0]
 
+    def remove(self, anime_name):
+        animes = self._read_from_watch_file()
+        animes = [anime for anime in animes if anime.title != anime_name]
+        self._write_to_watch_file(animes)
+
+    def update(self, changed_anime):
+        animes = self._read_from_watch_file()
+        animes = [anime for anime in animes
+                  if anime.title != changed_anime.title]
+        animes = [changed_anime] + animes
+        self._write_to_watch_file(animes)
+
     def _append_to_watch_file(self, anime):
         if not os.path.exists(self.WATCH_FILE):
-            with open(self.WATCH_FILE, 'wb') as watch_file:
-                pickle.dump([anime], watch_file)
+            self._write_to_watch_file([anime])
             return
 
         with open(self.WATCH_FILE, 'rb') as watch_file:
             data = pickle.load(watch_file)
 
-        data.append(anime)
+        data = [anime] + data
+        self._write_to_watch_file(data)
 
+    def _write_to_watch_file(self, animes):
         with open(self.WATCH_FILE, 'wb') as watch_file:
-            pickle.dump(data, watch_file)
+            pickle.dump(animes, watch_file)
 
     def _read_from_watch_file(self):
         if not os.path.exists(self.WATCH_FILE):
