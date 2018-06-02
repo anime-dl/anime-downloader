@@ -113,3 +113,48 @@ def test_search():
     )
 
     assert result2.exit_code == 1
+
+
+def test_watch_new():
+    runner = CliRunner()
+    result = runner.invoke(
+        cli.watch,
+        [
+            'dragon ball super',
+            '--new',
+        ],
+        input='1\n'
+    )
+
+    # Currently only checking for exit codes
+    assert result.exit_code == 0
+
+
+def test_watch_list():
+    runner = CliRunner()
+    result = runner.invoke(
+        cli.watch,
+        [
+            'dragon ball super',
+            '--list',
+        ],
+    )
+
+    # Currently only checking for exit codes
+    assert result.exit_code == 0
+    assert 'dragon ball super' in result.output.lower()
+
+
+def test_watch_remove():
+    runner = CliRunner()
+    result = runner.invoke(
+        cli.watch,
+        [
+            'dragon ball super',
+            '--remove',
+        ],
+    )
+
+    # Currently only checking for exit codes
+    assert result.exit_code == 0
+    assert 'dragon ball super' not in result.output.lower()

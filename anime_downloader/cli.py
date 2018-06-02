@@ -104,12 +104,14 @@ def dl(ctx, anime_url, episode_range, save_playlist, url, player, skip_download,
               help="Create a new anime to watch")
 @click.option('--list', '-l', '_list', type=bool, is_flag=True,
               help="List all animes in watch list")
+@click.option('--remove', '-r', 'remove', type=bool, is_flag=True,
+              help="Remove the specified anime")
 @click.option('--quality', '-q', type=click.Choice(['360p', '480p', '720p']),
               help='Specify the quality of episode.')
 @click.option('--log-level', '-ll', 'log_level',
               type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR']),
               help='Sets the level of logger', default='INFO')
-def watch(anime_name, new, _list, quality, log_level):
+def watch(anime_name, new, _list, quality, log_level, remove):
     """
     With watch you can keep track of any anime you watch.
     """
@@ -125,6 +127,12 @@ def watch(anime_name, new, _list, quality, log_level):
         url = util.search_and_get_url(query)
 
         watcher.new(url)
+        sys.exit(0)
+
+    if remove:
+        anime = watcher.get(anime_name)
+        watcher.remove(anime.title)
+        logging.info('Removed {}'.format(anime.title))
         sys.exit(0)
 
     if _list:
