@@ -21,7 +21,6 @@ setup(
         'requests>=2.18.4',
         'Click>=6.7',
         'fuzzywuzzy[speedup]>=0.16.0',
-        'PyYAML>=3.12'
     ],
     extras_require={
         'cloudflare': ['cfscrape>=1.9.5']

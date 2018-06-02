@@ -1,39 +1,57 @@
 import click
 import os
 import errno
-import yaml
+import json
 
+APP_NAME = 'anime downloader'
+APP_DIR = click.get_app_dir(APP_NAME)
 DEFAULT_CONFIG = {
     'dl': {
-        'anime_url': None,
-        'episode_range': None,
-        'playlist': False,
+        'save_playlist': False,
         'url': False,
         'player': None,
-        'no_download': False,
+        'skip_download': False,
         'download_dir': '.',
         'quality': '720p',
-        'force': False,
+        'force_download': False,
         'log_level': 'INFO'
     }
 }
 
-APP_NAME = 'anime downloader'
-APP_DIR = click.get_app_dir(APP_NAME)
-CONFIG_FILE = os.path.join(APP_DIR, 'config.yml')
+
+class _Config:
+    CONFIG_FILE = os.path.join(APP_DIR, 'config.json')
+
+    def __init__(self):
+        try:
+            os.makedirs(APP_DIR)
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
+
+        if not os.path.exists(self.CONFIG_FILE):
+            self._write_default_config()
+            self._CONFIG = DEFAULT_CONFIG
+        else:
+            self._CONFIG = self._read_config()
+
+    @property
+    def CONTEXT_SETTINGS(self):
+        return dict(
+            default_map=self._CONFIG
+        )
+
+    def _write_config(self, config_dict):
+        with open(self.CONFIG_FILE, 'w') as configfile:
+            json.dump(config_dict, configfile, indent=4, sort_keys=True)
+
+    def _read_config(self):
+        with open(self.CONFIG_FILE, 'r') as configfile:
+            conf = json.load(configfile)
+        return conf
+
+    def _write_default_config(self):
+        self._write_config(DEFAULT_CONFIG)
 
 
-def write_config(config_dict):
-    with open(CONFIG_FILE, 'w') as configfile:
-        yaml.dump(config_dict, configfile, default_flow_style=False)
-
-
-def write_default_config():
-    try:
-        os.makedirs(APP_DIR)
-    except OSError as e:
-        if e.errno != errno.EEXIST:
-            raise
-
-    if not os.path.exists(CONFIG_FILE):
-        write_config(DEFAULT_CONFIG)
+Config = _Config()

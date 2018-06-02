@@ -1,6 +1,7 @@
 import click
 import subprocess
 import sys
+import os
 
 import logging
 
@@ -9,17 +10,14 @@ from anime_downloader.sites.exceptions import NotFoundError
 from anime_downloader.players.mpv import mpv
 
 
-from anime_downloader import config, util
+from anime_downloader import util
+from anime_downloader.config import Config
 from anime_downloader import watch as _watch
 
 echo = click.echo
 
-CONTEXT_SETTINGS = dict(
-    default_map=config.DEFAULT_CONFIG
-)
 
-
-@click.group(context_settings=CONTEXT_SETTINGS)
+@click.group(context_settings=Config.CONTEXT_SETTINGS)
 def cli():
     """Anime Downloader
 
@@ -33,30 +31,32 @@ def cli():
 @click.argument('anime_url')
 @click.option('--episodes', '-e', 'episode_range', metavar='<int>:<int>',
               help="Range of anime you want to download in the form <start>:<end>")
-@click.option('--save-playlist', '-p', 'playlist', type=bool, is_flag=True,
+@click.option('--save-playlist', '-p', 'save_playlist', type=bool, is_flag=True,
               help="If flag is set, saves the stream urls in an m3u file instead of downloading")
 @click.option('--url', '-u', type=bool, is_flag=True,
               help="If flag is set, prints the stream url instead of downloading")
 @click.option('--play', 'player', metavar='PLAYER',
               help="Streams in the specified player")
-@click.option('--no-download', is_flag=True,
+@click.option('--skip-download', is_flag=True,
               help="Retrieve without downloading")
 @click.option('--download-dir', help="Specifiy the directory to download to")
 @click.option('--quality', '-q', type=click.Choice(['360p', '480p', '720p']),
               help='Specify the quality of episode. Default-720p')
-@click.option('--force', '-f', is_flag=True,
+@click.option('--force-download', '-f', is_flag=True,
               help='Force downloads even if file exists')
 @click.option('--log-level', '-ll', 'log_level',
               type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR']),
               help='Sets the level of logger')
 @click.pass_context
-def dl(ctx, anime_url, episode_range, playlist, url, player, no_download, quality,
-        force, log_level, download_dir):
+def dl(ctx, anime_url, episode_range, save_playlist, url, player, skip_download, quality,
+        force_download, log_level, download_dir):
     """ Download the anime using the url or search for it.
     """
 
     util.setup_logger(log_level)
-    config.write_default_config()
+
+    if url or player:
+        skip_download = True
 
     cls = get_anime_class(anime_url)
 
@@ -69,14 +69,13 @@ def dl(ctx, anime_url, episode_range, playlist, url, player, no_download, qualit
     except NotFoundError as e:
         echo(e.args[0])
         return
-
-    logging.info('Found anime: {}'.format(anime.title))
-
-    if url or player:
-        no_download = True
-
     if episode_range is None:
         episode_range = '1:'+str(len(anime)+1)
+
+    if download_dir:
+        logging.info('Downloading to {}'.format(os.path.abspath(download_dir)))
+
+    logging.info('Found anime: {}'.format(anime.title))
 
     try:
         start, end = [int(x) for x in episode_range.split(':')]
@@ -94,8 +93,8 @@ def dl(ctx, anime_url, episode_range, playlist, url, player, no_download, qualit
             p = subprocess.Popen([player, episode.stream_url])
             p.wait()
 
-        if not no_download:
-            episode.download(force)
+        if not skip_download:
+            episode.download(force_download)
             print()
 
 

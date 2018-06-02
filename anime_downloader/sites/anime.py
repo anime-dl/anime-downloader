@@ -25,9 +25,6 @@ class BaseAnime:
         self.url = url
         self.path = path
 
-        if path:
-            logging.info('Downloading to {}'.format(os.path.abspath(path)))
-
         if quality in self.QUALITIES:
             self.quality = quality
         else:
