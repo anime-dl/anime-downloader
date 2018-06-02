@@ -27,7 +27,7 @@ class KissanimeEpisode(BaseEpisode):
 
     def getData(self):
         url = self._base_url+self.episode_id
-        r = scraper.get(url + '/Mobile/', headers=mobile_headers)
+        r = scraper.get(url)
         soup = BeautifulSoup(r.text, 'html.parser')
 
         if self.VERIFY_HUMAN:
@@ -37,16 +37,21 @@ class KissanimeEpisode(BaseEpisode):
             episode_url = self.episode_id
 
         ret = scraper.get(self._base_url+episode_url)
-
-        rapid_re = re.compile(r'iframe.*src="https://(.*?)"')
-        rapid_url = rapid_re.findall(ret.text)[0]
-
-        data = util.get_stream_url_rapidvideo('https://'+rapid_url,
-                                              self.quality)
+        data = self._scrape_episode(ret)
 
         self.stream_url = data['stream_url']
         self.title = data['title']
         self.image = data['image']
+
+    def _scrape_episode(self, response):
+
+        rapid_re = re.compile(r'iframe.*src="https://(.*?)"')
+        rapid_url = rapid_re.findall(response.text)[0]
+
+        data = util.get_stream_url_rapidvideo('https://'+rapid_url,
+                                              self.quality)
+
+        return data
 
 
 class Kissanime(BaseAnimeCF):

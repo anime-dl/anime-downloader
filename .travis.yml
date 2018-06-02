@@ -12,7 +12,7 @@ matrix:
 before_install:
   - pip install pytest-cov
 install:
-  - pip install -e ".[kissanime]"
+  - pip install -e ".[cloudflare]"
 script:
   - python -m pytest tests --cov=.
 after_success:

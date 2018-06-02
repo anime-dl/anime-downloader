@@ -39,7 +39,7 @@ $ pip install -U git+https://github.com/vn-ki/anime-downloader.git
 KissAnime support is currently only available in master. Use the following command to install with KissAnime support.
 
 ```bash
-pip install -U git+https://github.com/vn-ki/anime-downloader.git#egg=anime-downloader'[kissanime]'
+pip install -U git+https://github.com/vn-ki/anime-downloader.git#egg=anime-downloader'[cloudflare]'
 ```
 
 **IMP**: For KissAnime scraping [cfscrape](https://github.com/Anorov/cloudflare-scrape) is used. It depends on `node-js`. So if you want to use KissAnime, make sure you have node installed.

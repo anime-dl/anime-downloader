@@ -24,7 +24,7 @@ setup(
         'PyYAML>=3.12'
     ],
     extras_require={
-        'kissanime': ['cfscrape>=1.9.5']
+        'cloudflare': ['cfscrape>=1.9.5']
     },
     long_description=long_description,
     long_description_content_type='text/markdown',
