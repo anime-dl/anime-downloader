@@ -131,8 +131,13 @@ def watch(anime_name, new, _list, quality, log_level, remove):
 
     if remove:
         anime = watcher.get(anime_name)
-        watcher.remove(anime.title)
-        logging.info('Removed {}'.format(anime.title))
+        if anime and click.confirm(
+            "Remove '{}'".format(anime.title), abort=True
+        ):
+            watcher.remove(anime.title)
+        else:
+            logging.error("Couldn't find '{}'. Use a better search term.".format(anime_name))
+            sys.exit(1)
         sys.exit(0)
 
     if _list:
@@ -141,6 +146,11 @@ def watch(anime_name, new, _list, quality, log_level, remove):
 
     if anime_name:
         anime = watcher.get(anime_name)
+        if not anime:
+            logging.error(
+                "Couldn't find '{}'. Use a better search term.".format(anime_name))
+            sys.exit(1)
+
         anime.quality = quality
 
         logging.info('Found {}'.format(anime.title))

@@ -39,9 +39,9 @@ class Watcher:
 
     def get(self, anime_name):
         animes = self._read_from_watch_file()
-        match = process.extractOne(anime_name, animes, score_cutoff=10)
-
-        return match[0]
+        match = process.extractOne(anime_name, animes, score_cutoff=40)
+        if match:
+            return match[0]
 
     def remove(self, anime_name):
         animes = self._read_from_watch_file()

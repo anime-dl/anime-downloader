@@ -153,8 +153,8 @@ def test_watch_remove():
             'dragon ball super',
             '--remove',
         ],
+        input='y\n',
     )
 
     # Currently only checking for exit codes
     assert result.exit_code == 0
-    assert 'dragon ball super' not in result.output.lower()
