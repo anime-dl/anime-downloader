@@ -32,26 +32,30 @@ You can install the stable release from PyPI.
 $ pip install anime-downloader
 ```
 
+To install with cloudflare support,
+```bash
+$ pip install anime-downloader[cloudflare]
+```
+
 To install the dev version
 ```bash
 $ pip install -U git+https://github.com/vn-ki/anime-downloader.git
-```
-*NOTE: You might have to use pip3 depending on your system*
 
-Cloudflare support is currently only available in master. Use the following command to install with cloudflare support.
-
-```bash
-pip install -U git+https://github.com/vn-ki/anime-downloader.git#egg=anime-downloader'[cloudflare]'
+# To install with cloudflare support
+$ pip install -U git+https://github.com/vn-ki/anime-downloader.git#egg=anime-downloader[cloudflare]
 ```
 
-**IMP**: For cloudflare scraping [cfscrape](https://github.com/Anorov/cloudflare-scrape) is used. It depends on `node-js`. So if you want to use cloudflare, make sure you have node installed.
+**IMP**:
+- For cloudflare scraping [cfscrape](https://github.com/Anorov/cloudflare-scrape) is used. It depends on `node-js`. So if you want to use cloudflare, make sure you have node installed.
+- You might have to use pip3 depending on your system
+- If you are using zsh, don't forget to escape `[` and `]` using `\`.
 
 ## Usage
 
 Anime downloader has two sub commands, `dl` and `watch`. You can find the documentation in [wiki](https://github.com/vn-ki/anime-downloader/wiki)
 
-- [dl](https://github.com/vn-ki/anime-downloader/wiki/dl-command)
-- [watch](https://github.com/vn-ki/anime-downloader/wiki/watch-command)
+- [dl](https://github.com/vn-ki/anime-downloader/wiki/dl-command): `dl` can download anime.
+- [watch](https://github.com/vn-ki/anime-downloader/wiki/watch-command): `watch` can manage your anime watching. Needs [mpv](https://mpv.io). With `watch` you'll never have to go to any anime sites ever again.
 
 #### Search and download
 
