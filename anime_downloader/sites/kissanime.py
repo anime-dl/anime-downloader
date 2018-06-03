@@ -69,3 +69,7 @@ class Kissanime(BaseAnimeCF):
             raise NotFoundError(err, *args)
 
         return list(reversed(ret))
+
+    def _getMetadata(self, soup):
+        info_div = soup.find('div', {'class': 'barContent'})
+        self.title = info_div.find('a', {'class': 'bigChar'}).text

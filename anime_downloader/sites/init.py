@@ -3,6 +3,7 @@ from anime_downloader.sites.nineanime import NineAnime
 
 try:
     from anime_downloader.sites.kissanime import Kissanime
+    from anime_downloader.sites.kisscartoon import Kisscarton
 except ImportError:
     CFSCRAPE = False
 

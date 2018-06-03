@@ -72,10 +72,10 @@ def dl(ctx, anime_url, episode_range, save_playlist, url, player, skip_download,
     if episode_range is None:
         episode_range = '1:'+str(len(anime)+1)
 
-    if download_dir:
-        logging.info('Downloading to {}'.format(os.path.abspath(download_dir)))
-
     logging.info('Found anime: {}'.format(anime.title))
+
+    if download_dir and not skip_download:
+        logging.info('Downloading to {}'.format(os.path.abspath(download_dir)))
 
     try:
         start, end = [int(x) for x in episode_range.split(':')]
