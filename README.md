@@ -15,7 +15,7 @@ Yeah. Me too! That's why this tool exists.
 
 - Download or stream any episode or episode range of any anime.
 - Specify the quality you want to stream or download.
-- Search available if don't want to copy the url.
+- Search and download. (Only 9anime)
 - Save yourselves from those malicious ads.
 
 ## Supported Sites
@@ -47,34 +47,10 @@ pip install -U git+https://github.com/vn-ki/anime-downloader.git#egg=anime-downl
 
 ## Usage
 
-Anime downloader has two sub commands, `dl` and `watch`. `watch` does nothing currently (but when it does, it will be awesome!).
+Anime downloader has two sub commands, `dl` and `watch`.
 
-Run `anime dl --help` for help text on `dl` subcommand.
-
-```
-$ anime dl --help
-Usage: anime dl [OPTIONS] ANIME_URL
-
-  Download the anime using the url or search for it.
-
-Options:
-  -e, --episodes <int>:<int>      Range of anime you want to download in the
-                                  form <start>:<end>
-  -p, --save-playlist             If flag is set, saves the stream urls in an
-                                  m3u file instead of downloading
-  -u, --url                       If flag is set, prints the stream url
-                                  instead of downloading
-  --play PLAYER                   Streams in the specified player
-  --no-download                   Retrieve without downloading
-  --download-dir TEXT             Specifiy the directory to download to
-  -q, --quality [360p|480p|720p]  Specify the quality of episode. Default-720p
-  -f, --force                     Force downloads even if file exists
-  -ll, --log-level [DEBUG|INFO|WARNING|ERROR]
-                                  Sets the level of logger
-  --help                          Show this message and exit.
-```
-
-You can use this tool to search and download or download directly from the url.
+- [dl](https://github.com/vn-ki/anime-downloader/wiki/dl-command)
+- [watch](https://github.com/vn-ki/anime-downloader/wiki/watch-command)
 
 #### Search and download
 
@@ -125,10 +101,6 @@ $ git clone https://github.com/vn-ki/anime-downloader.git
 $ cd anime-downloader
 $ pip install -e .
 ```
-
-## TODO
-
-- Support for more sites
 
 *Please don't judge me for not paying for anime. I want to support these animation studios, but being a college student, I can't.*
 

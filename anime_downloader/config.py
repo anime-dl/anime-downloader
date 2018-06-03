@@ -7,7 +7,6 @@ APP_NAME = 'anime downloader'
 APP_DIR = click.get_app_dir(APP_NAME)
 DEFAULT_CONFIG = {
     'dl': {
-        'save_playlist': False,
         'url': False,
         'player': None,
         'skip_download': False,

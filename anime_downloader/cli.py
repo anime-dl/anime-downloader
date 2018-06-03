@@ -31,15 +31,14 @@ def cli():
 @click.argument('anime_url')
 @click.option('--episodes', '-e', 'episode_range', metavar='<int>:<int>',
               help="Range of anime you want to download in the form <start>:<end>")
-@click.option('--save-playlist', '-p', 'save_playlist', type=bool, is_flag=True,
-              help="If flag is set, saves the stream urls in an m3u file instead of downloading")
 @click.option('--url', '-u', type=bool, is_flag=True,
               help="If flag is set, prints the stream url instead of downloading")
 @click.option('--play', 'player', metavar='PLAYER',
               help="Streams in the specified player")
 @click.option('--skip-download', is_flag=True,
               help="Retrieve without downloading")
-@click.option('--download-dir', help="Specifiy the directory to download to")
+@click.option('--download-dir', metavar='PATH',
+              help="Specifiy the directory to download to")
 @click.option('--quality', '-q', type=click.Choice(['360p', '480p', '720p']),
               help='Specify the quality of episode. Default-720p')
 @click.option('--force-download', '-f', is_flag=True,
@@ -48,7 +47,7 @@ def cli():
               type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR']),
               help='Sets the level of logger')
 @click.pass_context
-def dl(ctx, anime_url, episode_range, save_playlist, url, player, skip_download, quality,
+def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
         force_download, log_level, download_dir):
     """ Download the anime using the url or search for it.
     """
