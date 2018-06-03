@@ -17,6 +17,7 @@ Yeah. Me too! That's why this tool exists.
 - Specify the quality you want to stream or download.
 - Search and download. (Only 9anime)
 - Save yourselves from those malicious ads.
+- Add any anime to your watch list using `anime watch` and let anime downloader take care of everything for you.
 
 ## Supported Sites
 
@@ -47,7 +48,7 @@ pip install -U git+https://github.com/vn-ki/anime-downloader.git#egg=anime-downl
 
 ## Usage
 
-Anime downloader has two sub commands, `dl` and `watch`.
+Anime downloader has two sub commands, `dl` and `watch`. You can find the documentation in [wiki](https://github.com/vn-ki/anime-downloader/wiki)
 
 - [dl](https://github.com/vn-ki/anime-downloader/wiki/dl-command)
 - [watch](https://github.com/vn-ki/anime-downloader/wiki/watch-command)

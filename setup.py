@@ -20,7 +20,7 @@ setup(
         'beautifulsoup4>=4.6.0',
         'requests>=2.18.4',
         'Click>=6.7',
-        'fuzzywuzzy[speedup]>=0.16.0',
+        'fuzzywuzzy>=0.16.0',
     ],
     extras_require={
         'cloudflare': ['cfscrape>=1.9.5']

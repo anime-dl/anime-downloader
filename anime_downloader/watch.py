@@ -6,7 +6,12 @@ import sys
 import pickle
 import logging
 import click
-from fuzzywuzzy import process
+import warnings
+
+# Don't warn if not using fuzzywuzzy[speedup]
+with warnings.catch_warnings():
+    warnings.simplefilter('ignore')
+    from fuzzywuzzy import process
 
 
 class Watcher:
@@ -39,9 +44,16 @@ class Watcher:
 
     def get(self, anime_name):
         animes = self._read_from_watch_file()
+
+        if isinstance(anime_name, int):
+            return animes[anime_name]
+
         match = process.extractOne(anime_name, animes, score_cutoff=40)
         if match:
             return match[0]
+
+    def add(self, anime):
+        self._append_to_watch_file(anime)
 
     def remove(self, anime_name):
         animes = self._read_from_watch_file()

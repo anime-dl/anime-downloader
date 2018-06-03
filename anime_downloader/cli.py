@@ -140,7 +140,7 @@ def watch(anime_name, new, _list, quality, log_level, remove):
         sys.exit(0)
 
     if _list:
-        watcher.list()
+        list_animes(watcher)
         sys.exit(0)
 
     if anime_name:
@@ -170,3 +170,48 @@ def watch(anime_name, new, _list, quality, log_level, remove):
                 anime.episodes_done += 1
                 watcher.update(anime)
                 break
+
+
+def list_animes(watcher):
+    watcher.list()
+    inp = click.prompt('Select an anime', default=1)
+    try:
+        anime = watcher.get(int(inp)-1)
+    except IndexError:
+        sys.exit(0)
+
+    while True:
+        click.clear()
+        click.secho('Title: ' + click.style(anime.title, fg='green', bold=True))
+        click.echo('episodes_done: {}'.format(click.style(
+            str(anime.episodes_done), bold=True, fg='yellow')))
+        click.echo('Length: {}'.format(len(anime)))
+
+        meta = ''
+        for k, v in anime.meta.items():
+            meta += '{}: {}\n'.format(k, click.style(v, bold=True))
+        click.echo(meta)
+
+        click.echo('You can set title and episodes_done. '
+                   'Ex: set episodes_done=3\n'
+                   'You can remove by remove\n')
+
+        inp = click.prompt('Press q to exit', default='q').strip()
+
+        if inp == 'q':
+            break
+        elif inp == 'remove':
+            watcher.remove(anime.title)
+            break
+        elif 'set' in inp:
+            inp = inp.split('set ')[-1]
+            key, val = [v.strip() for v in inp.split('=')]
+            key = key.lower()
+
+            if key == 'title':
+                watcher.remove(anime)
+                setattr(anime, key, val)
+                watcher.add(anime)
+            elif key == 'episodes_done':
+                setattr(anime, key, int(val))
+                watcher.update(anime)
