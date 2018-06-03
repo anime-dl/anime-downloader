@@ -8,6 +8,7 @@ import logging
 from anime_downloader.sites import get_anime_class
 from anime_downloader.sites.exceptions import NotFoundError
 from anime_downloader.players.mpv import mpv
+from anime_downloader.__version__ import __version__
 
 
 from anime_downloader import util
@@ -18,6 +19,7 @@ echo = click.echo
 
 
 @click.group(context_settings=Config.CONTEXT_SETTINGS)
+@click.version_option(version=__version__)
 def cli():
     """Anime Downloader
 

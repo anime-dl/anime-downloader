@@ -1,20 +1,23 @@
 #!/usr/bin/env python3
 
 from setuptools import setup, find_packages
+import re
 
 with open('README.md', 'r') as f:
     long_description = f.read()
 
+with open('anime_downloader/__version__.py', 'rt', encoding='utf8') as f:
+    version = re.search(r'__version__ = \'(.*?)\'', f.read()).group(1)
+
 
 setup(
     name='anime-downloader',
-    version='2.3',
+    version=version,
     author='Vishnunarayan K.I.',
     author_email='vishnunarayan6105@gmail.com',
     description='Download your favourite anime',
     packages=find_packages(),
     url='https://github.com/vn-ki/anime-downloader',
-    download_url='https://github.com/vn-ki/anime-downloader/archive/2.3.tar.gz',
     keywords=['anime', 'downloader', '9anime', 'download', 'kissanime'],
     install_requires=[
         'beautifulsoup4>=4.6.0',

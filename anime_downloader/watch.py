@@ -7,6 +7,7 @@ import pickle
 import logging
 import click
 import warnings
+from time import time
 
 # Don't warn if not using fuzzywuzzy[speedup]
 with warnings.catch_warnings():
@@ -21,7 +22,7 @@ class Watcher:
         pass
 
     def new(self, url):
-        anime = AnimeInfo(url)
+        anime = AnimeInfo(url, timestamp=time())
 
         self._append_to_watch_file(anime)
 
@@ -50,7 +51,16 @@ class Watcher:
 
         match = process.extractOne(anime_name, animes, score_cutoff=40)
         if match:
-            return match[0]
+            anime = match[0]
+
+            if (time() - anime._timestamp) > 4*24*60*60:
+                anime_name = anime.title
+                anime.getEpisodes()
+                anime.title = anime_name
+                self.update(anime)
+                return anime
+
+            return anime
 
     def add(self, anime):
         self._append_to_watch_file(anime)
@@ -85,7 +95,7 @@ class Watcher:
     def _read_from_watch_file(self):
         if not os.path.exists(self.WATCH_FILE):
             logging.error('Add something to watch list first.')
-            sys.exit(-1)
+            sys.exit(1)
 
         with open(self.WATCH_FILE, 'rb') as watch_file:
             data = pickle.load(watch_file)
@@ -95,7 +105,8 @@ class Watcher:
 
 class AnimeInfo(NineAnime):
     def __init__(self, *args, **kwargs):
-        self.episodes_done = kwargs.pop('epiosdes_done', 0)
+        self.episodes_done = kwargs.pop('episodes_done', 0)
+        self._timestamp = kwargs.pop('timestamp')
 
         super(NineAnime, self).__init__(*args, **kwargs)
 
