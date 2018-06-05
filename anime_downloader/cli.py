@@ -62,9 +62,7 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
     """
 
     util.setup_logger(log_level)
-
-    if url or player:
-        skip_download = True
+    util.print_info(__version__)
 
     cls = get_anime_class(anime_url)
 
@@ -82,28 +80,10 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
 
     logging.info('Found anime: {}'.format(anime.title))
 
-    if download_dir and not skip_download:
-        logging.info('Downloading to {}'.format(os.path.abspath(download_dir)))
-
-    try:
-        start, end = [int(x) for x in episode_range.split(':')]
-        anime._episodeIds = anime._episodeIds[start-1:end-1]
-    except ValueError:
-        # Only one episode specified
-        anime = [anime[int(episode_range)-1]]
-
-    for episode in anime:
-        if url:
-            print(episode.stream_url)
-            continue
-
-        if player:
-            p = subprocess.Popen([player, episode.stream_url])
-            p.wait()
-
-        if not skip_download:
-            episode.download(force=force_download, path=download_dir)
-            print()
+    anime = util.split_anime(anime, episode_range)
+    util.process_anime(anime, player=player, force_download=force_download,
+                       download_dir=download_dir, url=url,
+                       skip_download=skip_download)
 
 
 @cli.command()
@@ -127,8 +107,16 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
 def watch(anime_name, new, _list, quality, log_level, remove):
     """
     With watch you can keep track of any anime you watch.
+
+    Available Commands after selection of an anime:
+    set    : set episodes_done and title. Ex: set episodes_done=3
+    remove : remove selected anime from watch list
+    update : Update the episodes of the currrent anime
+    watch  : Watch selected anime
     """
     util.setup_logger(log_level)
+    util.print_info(__version__)
+
     watcher = _watch.Watcher()
 
     if new:
@@ -147,7 +135,7 @@ def watch(anime_name, new, _list, quality, log_level, remove):
         if anime and click.confirm(
             "Remove '{}'".format(anime.title), abort=True
         ):
-            watcher.remove(anime.title)
+            watcher.remove(anime)
         else:
             logging.error("Couldn't find '{}'. "
                           "Use a better search term.".format(anime_name))
@@ -155,7 +143,7 @@ def watch(anime_name, new, _list, quality, log_level, remove):
         sys.exit(0)
 
     if _list:
-        list_animes(watcher)
+        list_animes(watcher, quality)
         sys.exit(0)
 
     if anime_name:
@@ -169,34 +157,19 @@ def watch(anime_name, new, _list, quality, log_level, remove):
         anime.quality = quality
 
         logging.info('Found {}'.format(anime.title))
-        to_watch = anime[anime.episodes_done:]
-
-        for idx, episode in enumerate(to_watch):
-
-            for tries in range(5):
-                logging.info(
-                    'Playing episode {}'.format(anime.episodes_done+1)
-                )
-                player = mpv(episode.stream_url)
-                returncode = player.play()
-
-                if returncode == mpv.STOP:
-                    sys.exit(0)
-                elif returncode == mpv.CONNECT_ERR:
-                    logging.warning("Couldn't connect. Retrying.")
-                    continue
-                anime.episodes_done += 1
-                watcher.update(anime)
-                break
+        watch_anime(watcher, anime)
 
 
-def list_animes(watcher):
+def list_animes(watcher, quality):
     watcher.list()
     inp = click.prompt('Select an anime', default=1)
     try:
         anime = watcher.get(int(inp)-1)
     except IndexError:
         sys.exit(0)
+
+    # Make the selected anime first result
+    watcher.update(anime)
 
     while True:
         click.clear()
@@ -211,18 +184,22 @@ def list_animes(watcher):
             meta += '{}: {}\n'.format(k, click.style(v, bold=True))
         click.echo(meta)
 
-        click.echo('You can set title and episodes_done. '
-                   'Ex: set episodes_done=3\n'
-                   'You can remove by remove\n')
+        click.echo('Available Commands: set, remove, update, watch\n')
 
         inp = click.prompt('Press q to exit', default='q').strip()
 
         if inp == 'q':
             break
         elif inp == 'remove':
-            watcher.remove(anime.title)
+            watcher.remove(anime)
             break
-        elif 'set' in inp:
+        elif inp == 'update':
+            watcher.update_anime(anime)
+        elif inp == 'watch':
+            anime.quality = quality
+            watch_anime(watcher, anime)
+            sys.exit(0)
+        elif inp.startswith('set '):
             inp = inp.split('set ')[-1]
             key, val = [v.strip() for v in inp.split('=')]
             key = key.lower()
@@ -234,3 +211,25 @@ def list_animes(watcher):
             elif key == 'episodes_done':
                 setattr(anime, key, int(val))
                 watcher.update(anime)
+
+
+def watch_anime(watcher, anime):
+    to_watch = anime[anime.episodes_done:]
+
+    for idx, episode in enumerate(to_watch):
+
+        for tries in range(5):
+            logging.info(
+                'Playing episode {}'.format(anime.episodes_done+1)
+            )
+            player = mpv(episode.stream_url)
+            returncode = player.play()
+
+            if returncode == mpv.STOP:
+                sys.exit(0)
+            elif returncode == mpv.CONNECT_ERR:
+                logging.warning("Couldn't connect. Retrying.")
+                continue
+            anime.episodes_done += 1
+            watcher.update(anime)
+            break

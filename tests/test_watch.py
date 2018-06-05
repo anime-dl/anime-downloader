@@ -37,5 +37,5 @@ class TestWatcher:
 
     def test_remove(self):
         anime = self.watch.get('shippu')
-        self.watch.remove(anime.title)
+        self.watch.remove(anime)
         assert len(self.watch._TEST_LIST) == 1

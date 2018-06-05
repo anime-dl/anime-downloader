@@ -54,18 +54,21 @@ class Watcher:
             anime = match[0]
 
             if (time() - anime._timestamp) > 4*24*60*60:
-                anime_name = anime.title
-                anime.getEpisodes()
-                anime.title = anime_name
-                self.update(anime)
-                return anime
-
+                anime = self.update_anime(anime)
             return anime
+
+    def update_anime(self, anime):
+        anime_name = anime.title
+        anime.getEpisodes()
+        anime.title = anime_name
+        self.update(anime)
+        return anime
 
     def add(self, anime):
         self._append_to_watch_file(anime)
 
-    def remove(self, anime_name):
+    def remove(self, anime):
+        anime_name = anime.title
         animes = self._read_from_watch_file()
         animes = [anime for anime in animes if anime.title != anime_name]
         self._write_to_watch_file(animes)
