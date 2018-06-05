@@ -45,6 +45,8 @@ $ pip install -U git+https://github.com/vn-ki/anime-downloader.git
 $ pip install -U git+https://github.com/vn-ki/anime-downloader.git#egg=anime-downloader[cloudflare]
 ```
 
+If you have trouble installing, see extended installation instructions [here](https://github.com/vn-ki/anime-downloader/wiki/Installation).
+
 **IMP**:
 - For cloudflare scraping [cfscrape](https://github.com/Anorov/cloudflare-scrape) is used. It depends on `node-js`. So if you want to use cloudflare, make sure you have node installed.
 - You might have to use pip3 depending on your system
