@@ -25,6 +25,7 @@ Yeah. Me too! That's why this tool exists.
 - 9anime
 - KissAnime [cloudflare]
 - KissCartoon [cloudflare]
+- Gogoanime
 
 ## Installation
 
