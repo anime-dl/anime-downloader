@@ -7,6 +7,7 @@ import logging
 import sys
 
 from anime_downloader.sites.exceptions import AnimeDLError, NotFoundError
+from anime_downloader.sites import util
 
 
 class BaseAnime:
@@ -21,9 +22,8 @@ class BaseAnime:
     def search(cls, query):
         return
 
-    def __init__(self, url, quality='720p', path=None):
+    def __init__(self, url, quality='720p'):
         self.url = url
-        self.path = path
 
         if quality in self.QUALITIES:
             self.quality = quality
@@ -64,7 +64,7 @@ class BaseAnime:
         if isinstance(index, int):
             ep_id = self._episodeIds[index]
             return self._episodeClass(ep_id, self.quality, parent=self,
-                                      path=self.path, ep_no=index+1)
+                                      ep_no=index+1)
         elif isinstance(index, slice):
             self._episodeIds = self._episodeIds[index]
             return self
@@ -91,11 +91,8 @@ class BaseEpisode:
     title = ''
     stream_url = ''
 
-    def __init__(self, episode_id, quality='720p', parent=None, path=None,
+    def __init__(self, episode_id, quality='720p', parent=None,
                  ep_no=None):
-
-        self.path = path
-
         if quality not in self.QUALITIES:
             raise AnimeDLError('Incorrect quality: "{}"'.format(quality))
 
@@ -123,15 +120,14 @@ class BaseEpisode:
     def download(self, force=False, path=None):
         logging.info('Downloading {}'.format(self.title))
 
+        file_name = util.slugify(self.title)
+
         if path is None:
-            if self.path is None:
-                path = './' + self.title
-            else:
-                path = self.path
+            path = './' + file_name
         if path.endswith('.mp4'):
             path = path
         else:
-            path = os.path.join(path, self.title)
+            path = os.path.join(path, file_name)
 
         logging.info(path)
 

@@ -11,7 +11,7 @@ __all__ = ['NineAnimeEpisode', 'NineAnime']
 
 
 class NineAnimeEpisode(BaseEpisode):
-    QUALITIES = ['360p', '480p', '720p']
+    QUALITIES = ['360p', '480p', '720p', '1080p']
     _base_url = r'https://9anime.is/ajax/episode/info?id={id}&server={server}&_={param_}&ts={ts}'
     ts = 0
 
@@ -40,7 +40,7 @@ class NineAnimeEpisode(BaseEpisode):
 
 class NineAnime(BaseAnime):
     sitename = '9anime'
-    QUALITIES = ['360p', '480p', '720p']
+    QUALITIES = ['360p', '480p', '720p', '1080p']
     _episodeClass = NineAnimeEpisode
 
     @classmethod

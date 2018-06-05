@@ -37,3 +37,8 @@ def get_stream_url_rapidvideo(url, quality):
         pass
 
     return ret_dict
+
+
+def slugify(file_name):
+    file_name = str(file_name).strip().replace(' ', '_')
+    return re.sub(r'(?u)[^-\w.]', '', file_name)
