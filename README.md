@@ -18,6 +18,7 @@ Yeah. Me too! That's why this tool exists.
 - Search and download. (Only 9anime)
 - Save yourselves from those malicious ads.
 - Add any anime to your watch list using `anime watch` and let anime downloader take care of everything for you.
+- Configurable using `config.json`. See [doc](https://github.com/vn-ki/anime-downloader/wiki/Config).
 
 ## Supported Sites
 
