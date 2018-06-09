@@ -7,7 +7,7 @@
 
 Ever dreamt about watching anime for free effortlessly without all those unbearable ads? Ever dreamt of downloading your favourite anime for that long trip?
 
-![kawaii](https://media.giphy.com/media/f0yOYF0EtwSVa/giphy.gif)
+![kawaii](https://thumbs.gfycat.com/IgnorantYoungDowitcher-size_restricted.gif)
 
 Yeah. Me too! That's why this tool exists.
 

@@ -75,7 +75,7 @@ def split_anime(anime, episode_range):
     return anime
 
 
-def print_epiosdeurl(episode):
+def print_episodeurl(episode):
     print(episode.stream_url)
 
 

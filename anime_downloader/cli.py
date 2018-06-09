@@ -99,7 +99,8 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
             util.play_episode(episode)
 
         if not skip_download:
-            util.download_episode(episode)
+            util.download_episode(episode, force_download=force_download,
+                                  download_dir=download_dir)
 
 
 
