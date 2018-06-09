@@ -44,6 +44,9 @@ class _Config:
             default_map=self._CONFIG
         )
 
+    def __getitem__(self, attr):
+        return self._CONFIG[attr]
+
     def _write_config(self, config_dict):
         with open(self.CONFIG_FILE, 'w') as configfile:
             json.dump(config_dict, configfile, indent=4, sort_keys=True)

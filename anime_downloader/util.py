@@ -5,7 +5,6 @@ import click
 from anime_downloader.sites.nineanime import NineAnime
 import subprocess
 import platform
-import os
 
 
 def setup_logger(log_level):
@@ -76,26 +75,18 @@ def split_anime(anime, episode_range):
     return anime
 
 
-def process_anime(anime, *, url, player, force_download, download_dir,
-                  skip_download):
-    if url or player:
-        skip_download = True
+def print_epiosdeurl(episode):
+    print(episode.stream_url)
 
-    if download_dir and not skip_download:
-        logging.info('Downloading to {}'.format(os.path.abspath(download_dir)))
 
-    for episode in anime:
-        if url:
-            print(episode.stream_url)
-            continue
+def download_episode(episode, *, force_download, download_dir):
+    episode.download(force=force_download, path=download_dir)
+    print()
 
-        if player:
-            p = subprocess.Popen([player, episode.stream_url])
-            p.wait()
 
-        if not skip_download:
-            episode.download(force=force_download, path=download_dir)
-            print()
+def play_epiosde(episode, *, player):
+    p = subprocess.Popen([player, episode.stream_url])
+    p.wait()
 
 
 def print_info(version):

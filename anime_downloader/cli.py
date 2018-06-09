@@ -1,5 +1,4 @@
 import click
-import subprocess
 import sys
 import os
 
@@ -55,9 +54,13 @@ def cli():
     '--log-level', '-ll', 'log_level',
     type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR']),
     help='Sets the level of logger')
+@click.option(
+    '--name-fmt', '-nf',
+    help='Format for how the files to be downloaded be named.'
+)
 @click.pass_context
 def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
-        force_download, log_level, download_dir):
+        force_download, log_level, download_dir, name_fmt):
     """ Download the anime using the url or search for it.
     """
 
@@ -81,9 +84,23 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
     logging.info('Found anime: {}'.format(anime.title))
 
     anime = util.split_anime(anime, episode_range)
-    util.process_anime(anime, player=player, force_download=force_download,
-                       download_dir=download_dir, url=url,
-                       skip_download=skip_download)
+
+    if url or player:
+        skip_download = True
+
+    if download_dir and not skip_download:
+        logging.info('Downloading to {}'.format(os.path.abspath(download_dir)))
+
+    for episode in anime:
+        if url:
+            util.print_episodeurl(episode)
+
+        if player:
+            util.play_episode(episode)
+
+        if not skip_download:
+            util.download_episode(episode)
+
 
 
 @cli.command()
@@ -108,11 +125,12 @@ def watch(anime_name, new, _list, quality, log_level, remove):
     """
     With watch you can keep track of any anime you watch.
 
-    Available Commands after selection of an anime:
-    set    : set episodes_done and title. Ex: set episodes_done=3
-    remove : remove selected anime from watch list
-    update : Update the episodes of the currrent anime
-    watch  : Watch selected anime
+    Available Commands after selection of an anime:\n
+    set      : set episodes_done and title. Ex: set episodes_done=3\n
+    remove   : remove selected anime from watch list\n
+    update   : Update the episodes of the currrent anime\n
+    watch    : Watch selected anime\n
+    download : Download episodes of selected anime
     """
     util.setup_logger(log_level)
     util.print_info(__version__)
@@ -188,6 +206,8 @@ def list_animes(watcher, quality):
 
         inp = click.prompt('Press q to exit', default='q').strip()
 
+        # TODO: A better way to handle commands. Use regex. Refractor to class?
+        # Decorator?
         if inp == 'q':
             break
         elif inp == 'remove':
@@ -199,6 +219,17 @@ def list_animes(watcher, quality):
             anime.quality = quality
             watch_anime(watcher, anime)
             sys.exit(0)
+        elif inp.startswith('download'):
+            try:
+                inp = inp.split('download ')[1]
+            except IndexError:
+                inp = ':'
+            inp = str(anime.episodes_done+1)+inp if inp.startswith(':') else inp
+            inp = inp+str(len(anime)) if inp.endswith(':') else inp
+            anime = util.split_anime(anime, inp)
+            for episode in anime:
+                util.download_episode(episode, force_download=False,
+                                      download_dir=Config['dl']['download_dir'])
         elif inp.startswith('set '):
             inp = inp.split('set ')[-1]
             key, val = [v.strip() for v in inp.split('=')]

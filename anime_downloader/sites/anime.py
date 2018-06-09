@@ -96,6 +96,7 @@ class BaseEpisode:
         if quality not in self.QUALITIES:
             raise AnimeDLError('Incorrect quality: "{}"'.format(quality))
 
+        self.ep_no = ep_no
         self.episode_id = episode_id
         self.quality = quality
         logging.debug("Extracting stream info of id: {}".format(self.episode_id))
@@ -134,7 +135,7 @@ class BaseEpisode:
         r = requests.get(self.stream_url, stream=True)
 
         total_size = int(r.headers['Content-length'])
-        downloaded, chunksize = 0, 16384
+        downloaded, chunksize = 0, 2048
         start_time = time.time()
 
         if os.path.exists(path):
