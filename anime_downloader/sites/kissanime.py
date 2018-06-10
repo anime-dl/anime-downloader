@@ -5,6 +5,7 @@ from anime_downloader.sites.exceptions import NotFoundError
 from anime_downloader.sites import util
 from bs4 import BeautifulSoup
 import re
+import logging
 
 scraper = cfscrape.create_scraper()
 
@@ -27,6 +28,7 @@ class KissanimeEpisode(BaseEpisode):
 
     def getData(self):
         url = self._base_url+self.episode_id
+        logging.debug('Calling url: {}'.format(url))
         r = scraper.get(url)
         soup = BeautifulSoup(r.text, 'html.parser')
 
@@ -68,7 +70,8 @@ class Kissanime(BaseAnimeCF):
             args = [self.url]
             raise NotFoundError(err, *args)
 
-        return list(reversed(ret))
+        ret = ret[::-1]
+        return ret
 
     def _getMetadata(self, soup):
         info_div = soup.find('div', {'class': 'barContent'})

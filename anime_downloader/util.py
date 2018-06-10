@@ -90,7 +90,7 @@ def download_episode(episode, **kwargs):
     print()
 
 
-def play_epiosde(episode, *, player):
+def play_episode(episode, *, player):
     p = subprocess.Popen([player, episode.stream_url])
     p.wait()
 

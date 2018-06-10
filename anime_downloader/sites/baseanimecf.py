@@ -33,4 +33,7 @@ class BaseAnimeCF(BaseAnime):
         logging.debug('EPISODE IDS: length: {}, ids: {}'.format(
             self._len, self._episodeIds))
 
+        self._episodeIds = [(no+1, id) for no, id in
+                            enumerate(self._episodeIds)]
+
         return self._episodeIds
