@@ -55,12 +55,12 @@ def cli():
     type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR']),
     help='Sets the level of logger')
 @click.option(
-    '--name-fmt', '-nf',
+    '--file-format', '-ff', default='{anime_title}/{anime_title}_{ep_no}',
     help='Format for how the files to be downloaded be named.'
 )
 @click.pass_context
 def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
-        force_download, log_level, download_dir, name_fmt):
+        force_download, log_level, download_dir, file_format):
     """ Download the anime using the url or search for it.
     """
 
@@ -99,9 +99,10 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
             util.play_episode(episode)
 
         if not skip_download:
-            util.download_episode(episode, force_download=force_download,
-                                  download_dir=download_dir)
-
+            episode.download(force=force_download,
+                             path=download_dir,
+                             format=file_format)
+            print()
 
 
 @cli.command()
@@ -203,7 +204,7 @@ def list_animes(watcher, quality):
             meta += '{}: {}\n'.format(k, click.style(v, bold=True))
         click.echo(meta)
 
-        click.echo('Available Commands: set, remove, update, watch\n')
+        click.echo('Available Commands: set, remove, update, watch, download\n')
 
         inp = click.prompt('Press q to exit', default='q').strip()
 
@@ -229,8 +230,9 @@ def list_animes(watcher, quality):
             inp = inp+str(len(anime)) if inp.endswith(':') else inp
             anime = util.split_anime(anime, inp)
             for episode in anime:
-                util.download_episode(episode, force_download=False,
-                                      download_dir=Config['dl']['download_dir'])
+                episode.download(force=False,
+                                 path=Config['dl']['download_dir'],
+                                 format=Config['dl']['file_format'])
         elif inp.startswith('set '):
             inp = inp.split('set ')[-1]
             key, val = [v.strip() for v in inp.split('=')]

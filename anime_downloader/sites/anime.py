@@ -5,6 +5,7 @@ import time
 import os
 import logging
 import sys
+import copy
 
 from anime_downloader.sites.exceptions import AnimeDLError, NotFoundError
 from anime_downloader.sites import util
@@ -55,6 +56,9 @@ class BaseAnime:
         logging.debug('EPISODE IDS: length: {}, ids: {}'.format(
             self._len, self._episodeIds))
 
+        self._episodeIds = [(no+1, id) for no, id in
+                            enumerate(self._episodeIds)]
+
         return self._episodeIds
 
     def __len__(self):
@@ -63,10 +67,11 @@ class BaseAnime:
     def __getitem__(self, index):
         if isinstance(index, int):
             ep_id = self._episodeIds[index]
-            return self._episodeClass(ep_id, self.quality, parent=self,
-                                      ep_no=index+1)
+            return self._episodeClass(ep_id[1], self.quality, parent=self,
+                                      ep_no=ep_id[0])
         elif isinstance(index, slice):
-            self._episodeIds = self._episodeIds[index]
+            anime = copy.deepcopy(self)
+            anime._episodeIds = anime._episodeIds[index]
             return self
 
     def __repr__(self):
@@ -99,6 +104,9 @@ class BaseEpisode:
         self.ep_no = ep_no
         self.episode_id = episode_id
         self.quality = quality
+        self._parent = parent
+        self.pretty_title = '{}-{}'.format(self._parent.title, self.ep_no)
+
         logging.debug("Extracting stream info of id: {}".format(self.episode_id))
 
         try:
@@ -118,10 +126,11 @@ class BaseEpisode:
     def getData(self):
         raise NotImplementedError
 
-    def download(self, force=False, path=None):
-        logging.info('Downloading {}'.format(self.title))
-
-        file_name = util.slugify(self.title)
+    def download(self, force=False, path=None,
+                 format='{anime_title}_{ep_no}'):
+        logging.info('Downloading {}'.format(self.pretty_title))
+        if format:
+            file_name = util.format_filename(format, self)+'.mp4'
 
         if path is None:
             path = './' + file_name
@@ -133,6 +142,8 @@ class BaseEpisode:
         logging.info(path)
 
         r = requests.get(self.stream_url, stream=True)
+
+        util.make_dir(path.rsplit('/', 1)[0])
 
         total_size = int(r.headers['Content-length'])
         downloaded, chunksize = 0, 2048

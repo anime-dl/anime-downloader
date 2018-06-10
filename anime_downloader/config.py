@@ -14,6 +14,7 @@ DEFAULT_CONFIG = {
         'quality': '720p',
         'force_download': False,
         'log_level': 'INFO',
+        'file_format': '{anime_title}/{anime_title}_{ep_no}'
     },
     'watch': {
         'quality': '720p',
@@ -38,6 +39,15 @@ class _Config:
         else:
             self._CONFIG = self._read_config()
 
+            def update(gkey):
+                for key, val in DEFAULT_CONFIG[gkey].items():
+                    if key not in self._CONFIG[gkey].keys():
+                        self._CONFIG[gkey][key] = val
+
+            for key in ['dl', 'watch']:
+                update(key)
+            self.write()
+
     @property
     def CONTEXT_SETTINGS(self):
         return dict(
@@ -46,6 +56,9 @@ class _Config:
 
     def __getitem__(self, attr):
         return self._CONFIG[attr]
+
+    def write(self):
+        self._write_config(self._CONFIG)
 
     def _write_config(self, config_dict):
         with open(self.CONFIG_FILE, 'w') as configfile:

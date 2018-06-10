@@ -2,9 +2,11 @@ import logging
 import sys
 import shutil
 import click
-from anime_downloader.sites.nineanime import NineAnime
 import subprocess
 import platform
+
+
+from anime_downloader.sites.nineanime import NineAnime
 
 
 def setup_logger(log_level):
@@ -83,8 +85,8 @@ def print_episodeurl(episode):
     print(episode.stream_url)
 
 
-def download_episode(episode, *, force_download, download_dir):
-    episode.download(force=force_download, path=download_dir)
+def download_episode(episode, **kwargs):
+    episode.download(**kwargs)
     print()
 
 
@@ -94,6 +96,6 @@ def play_epiosde(episode, *, player):
 
 
 def print_info(version):
-    logging.info('Version: {}'.format(version))
+    logging.info('anime-downloader {}'.format(version))
     logging.debug('Platform: {}'.format(platform.platform()))
     logging.debug('Python {}'.format(platform.python_version()))

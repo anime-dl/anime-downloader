@@ -3,6 +3,8 @@ import json
 import requests
 from bs4 import BeautifulSoup
 import re
+import os
+import errno
 
 from anime_downloader.sites.exceptions import NotFoundError
 
@@ -42,3 +44,22 @@ def get_stream_url_rapidvideo(url, quality):
 def slugify(file_name):
     file_name = str(file_name).strip().replace(' ', '_')
     return re.sub(r'(?u)[^-\w.]', '', file_name)
+
+
+def format_filename(filename, epiosde):
+    rep_dict = {
+        'anime_title': slugify(epiosde._parent.title),
+        'ep_no': epiosde.ep_no,
+    }
+
+    filename = filename.format(**rep_dict)
+
+    return filename
+
+
+def make_dir(path):
+    try:
+        os.makedirs(path)
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise

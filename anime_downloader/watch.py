@@ -58,11 +58,13 @@ class Watcher:
             return anime
 
     def update_anime(self, anime):
-        anime_name = anime.title
-        anime.getEpisodes()
-        anime.title = anime_name
-        self.update(anime)
-        return anime
+        logging.info('Updating anime {}'.format(anime.title))
+        newanime = AnimeInfo(anime.url, episodes_done=anime.episodes_done,
+                             timestamp=time())
+        newanime.title = anime.title
+
+        self.update(newanime)
+        return newanime
 
     def add(self, anime):
         self._append_to_watch_file(anime)
