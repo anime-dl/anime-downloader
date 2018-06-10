@@ -41,7 +41,9 @@ def test_download(tmpdir):
             '-q',
             '720p',
             '--log-level',
-            'DEBUG'
+            'DEBUG',
+            '--file-format',
+            '{anime_title}_{ep_no}',
         ]
     )
 
@@ -158,3 +160,28 @@ def test_watch_remove():
 
     # Currently only checking for exit codes
     assert result.exit_code == 0
+
+
+def test_watch_download(tmpdir):
+    runner = CliRunner()
+
+    # First add the anime
+    runner.invoke(
+        cli.watch,
+        [
+            'https://www5.9anime.is/watch/kochinpa.p6l6',
+            '--new',
+        ],
+    )
+
+    # Now test the download
+    with runner.isolated_filesystem():
+        result = runner.invoke(
+            cli.watch,
+            [
+                '--list',
+            ],
+            input='1\ndownload 6:7\n'
+        )
+
+        assert result.exit_code == 0

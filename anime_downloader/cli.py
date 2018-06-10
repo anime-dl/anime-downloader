@@ -120,10 +120,13 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
     '--quality', '-q', type=click.Choice(['360p', '480p', '720p', '1080p']),
     help='Specify the quality of episode.')
 @click.option(
+    '--download-dir', metavar='PATH',
+    help="Specifiy the directory to download to")
+@click.option(
     '--log-level', '-ll', 'log_level',
     type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR']),
     help='Sets the level of logger', default='INFO')
-def watch(anime_name, new, _list, quality, log_level, remove):
+def watch(anime_name, new, _list, quality, log_level, remove, download_dir):
     """
     With watch you can keep track of any anime you watch.
 
@@ -163,7 +166,7 @@ def watch(anime_name, new, _list, quality, log_level, remove):
         sys.exit(0)
 
     if _list:
-        list_animes(watcher, quality)
+        list_animes(watcher, quality, download_dir)
         sys.exit(0)
 
     if anime_name:
@@ -180,7 +183,7 @@ def watch(anime_name, new, _list, quality, log_level, remove):
         watch_anime(watcher, anime)
 
 
-def list_animes(watcher, quality):
+def list_animes(watcher, quality, download_dir):
     watcher.list()
     inp = click.prompt('Select an anime', default=1)
     try:
@@ -228,7 +231,12 @@ def list_animes(watcher, quality):
                 inp = ':'
             inp = str(anime.episodes_done+1)+inp if inp.startswith(':') else inp
             inp = inp+str(len(anime)) if inp.endswith(':') else inp
+
             anime = util.split_anime(anime, inp)
+
+            if not download_dir:
+                download_dir = Config['dl']['download_dir']
+
             for episode in anime:
                 episode.download(force=False,
                                  path=Config['dl']['download_dir'],
@@ -249,12 +257,13 @@ def list_animes(watcher, quality):
 
 def watch_anime(watcher, anime):
     to_watch = anime[anime.episodes_done:]
+    logging.debug('Sliced epiosdes: {}'.format(to_watch._episodeIds))
 
     for idx, episode in enumerate(to_watch):
 
         for tries in range(5):
             logging.info(
-                'Playing episode {}'.format(anime.episodes_done+1)
+                'Playing episode {}'.format(episode.ep_no)
             )
             player = mpv(episode.stream_url)
             returncode = player.play()

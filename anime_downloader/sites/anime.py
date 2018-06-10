@@ -72,7 +72,7 @@ class BaseAnime:
         elif isinstance(index, slice):
             anime = copy.deepcopy(self)
             anime._episodeIds = anime._episodeIds[index]
-            return self
+            return anime
 
     def __repr__(self):
         return '''
