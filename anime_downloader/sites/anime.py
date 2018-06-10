@@ -152,7 +152,7 @@ class BaseEpisode:
                         f.write(chunk)
                         downloaded += chunksize
                         write_status((downloaded), (total_size),
-                                      start_time)
+                                     start_time)
 
 
 class SearchResult:
@@ -161,6 +161,9 @@ class SearchResult:
         self.url = url
         self.poster = poster
         self.meta = ''
+
+    def __repr__(self):
+        return '<SearchResult Title: {} URL: {}>'.format(self.title, self.url)
 
 
 def write_status(downloaded, total_size, start_time):

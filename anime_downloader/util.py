@@ -11,7 +11,7 @@ def setup_logger(log_level):
     if log_level == 'DEBUG':
         format = '%(levelname)s %(name)s: %(message)s'
     else:
-        format = 'anime: %(message)s'
+        format = click.style('anime', fg='green') + ': %(message)s'
 
     logging.basicConfig(
         level=logging.getLevelName(log_level),
@@ -38,7 +38,11 @@ def format_search_results(search_results):
 def search(query):
     # Since this function outputs to stdout this should ideally be in
     # cli. But it is used in watch too. :(
-    search_results = NineAnime.search(query)
+    try:
+        search_results = NineAnime.search(query)
+    except Exception as e:
+        logging.error(click.style(str(e), fg='red'))
+        sys.exit(1)
     click.echo(format_search_results(search_results))
 
     val = click.prompt('Enter the anime no: ', type=int, default=1)

@@ -75,8 +75,8 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
 
     try:
         anime = cls(anime_url, quality=quality)
-    except NotFoundError as e:
-        echo(e.args[0])
+    except Exception as e:
+        echo(click.style(str(e), fg='red'))
         return
     if episode_range is None:
         episode_range = '1:'+str(len(anime)+1)
