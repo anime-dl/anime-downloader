@@ -2,11 +2,12 @@
 
 from setuptools import setup, find_packages
 import re
+import io
 
 with open('README.md', 'r') as f:
     long_description = f.read()
 
-with open('anime_downloader/__version__.py', 'rt', encoding='utf8') as f:
+with io.open('anime_downloader/__version__.py', 'rt', encoding='utf8') as f:
     version = re.search(r'__version__ = \'(.*?)\'', f.read()).group(1)
 
 
@@ -24,6 +25,9 @@ setup(
         'requests>=2.18.4',
         'Click>=6.7',
         'fuzzywuzzy>=0.16.0',
+    ],
+    tests_require=[
+        'pytest',
     ],
     extras_require={
         'cloudflare': ['cfscrape>=1.9.5']
