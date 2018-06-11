@@ -1,13 +1,15 @@
+from anime_downloader import get_anime_class
 from anime_downloader.sites.nineanime import NineAnime
 
 import pytest
 
 
 @pytest.fixture
-def anime():
-    return NineAnime(
-        'https://www4.9anime.is/watch/kochinpa.p6l6/j6ooy2',
-        quality='360p'
+def anime(anime_url):
+    cls = get_anime_class(anime_url)
+
+    return cls(
+        anime_url, quality='360p'
     )
 
 
@@ -16,14 +18,11 @@ def test_length(anime):
 
 
 def test_title(anime):
-    assert anime.title.lower() == 'kochinpa!'
+    assert anime.title.lower() in ['kochinpa!', 'kochin pa!']
 
 
 def test_episode(anime):
     episode1 = anime[0]
-
-    assert episode1.title.lower(
-    ) == 'tw caffeine chihiro chyuu cthuko ctss damedesuyo dmo eraser evetaku first fff flax hatsuyuki hiryuu kaylith kaitou notsentai p saenaisubs scribbles tsundere watashi yolo kochinpa 01.e.mp4'
     assert episode1.stream_url.endswith('.mp4')
 
 

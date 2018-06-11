@@ -1,0 +1,49 @@
+pip-run: &pip-install
+  name: Install Python dependencies
+  command: |
+    python3 -m venv venv
+    . venv/bin/activate
+    pip install pytest
+    pip install -e .[cloudflare]
+
+
+version: 2
+jobs:
+  nineanime:
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - checkout
+      - run: *pip-install
+      - run: venv/bin/python -m pytest tests/test_anime.py --anime-url https://www4.9anime.is/watch/kochinpa.p6l6/j6ooy2
+  kissanime:
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - checkout
+      - run: *pip-install
+      - run: venv/bin/python -m pytest tests/test_anime.py --anime-url http://kissanime.ru/Anime/Kochin-Pa
+  gogoanime:
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - checkout
+      - run: *pip-install
+      - run: venv/bin/python -m pytest tests/test_anime.py --anime-url https://www2.gogoanime.se/category/kochin-pa-
+
+workflows:
+  version: 2
+  nightly:
+    jobs:
+      - nineanime
+      - gogoanime
+      # Kissanime will always fail on remote servers due to cloudflare
+      # - kissanime
+
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
