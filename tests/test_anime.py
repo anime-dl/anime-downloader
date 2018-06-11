@@ -1,13 +1,15 @@
+from anime_downloader import get_anime_class
 from anime_downloader.sites.nineanime import NineAnime
 
 import pytest
 
 
 @pytest.fixture
-def anime():
-    return NineAnime(
-        'https://www4.9anime.is/watch/kochinpa.p6l6/j6ooy2',
-        quality='360p'
+def anime(anime_url):
+    cls = get_anime_class(anime_url)
+
+    return cls(
+        anime_url, quality='360p'
     )
 
 
