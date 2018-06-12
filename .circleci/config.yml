@@ -33,17 +33,17 @@ jobs:
 
 workflows:
   version: 2
-  nightly:
+  commit:
     jobs:
       - nineanime
       - gogoanime
       # Kissanime will always fail on remote servers due to cloudflare
       # - kissanime
 
-    triggers:
-      - schedule:
-          cron: "0 0 * * *"
-          filters:
-            branches:
-              only:
-                - master
+    # triggers:
+    #   - schedule:
+    #       cron: "0 0 * * *"
+    #       filters:
+    #         branches:
+    #           only:
+    #             - master
