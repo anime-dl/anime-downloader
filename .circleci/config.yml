@@ -15,21 +15,21 @@ jobs:
     steps:
       - checkout
       - run: *pip-install
-      - run: venv/bin/python -m pytest tests/test_anime.py --anime-url https://www4.9anime.is/watch/kochinpa.p6l6/j6ooy2
+      - run: venv/bin/python -m pytest tests/test_anime.py --anime-site nineanime
   kissanime:
     docker:
       - image: circleci/python:3.6
     steps:
       - checkout
       - run: *pip-install
-      - run: venv/bin/python -m pytest tests/test_anime.py --anime-url http://kissanime.ru/Anime/Kochin-Pa
+      - run: venv/bin/python -m pytest tests/test_anime.py --anime-site kissanime
   gogoanime:
     docker:
       - image: circleci/python:3.6
     steps:
       - checkout
       - run: *pip-install
-      - run: venv/bin/python -m pytest tests/test_anime.py --anime-url https://www2.gogoanime.se/category/kochin-pa-
+      - run: venv/bin/python -m pytest tests/test_anime.py --anime-site gogoanime
 
 workflows:
   version: 2
