@@ -1,4 +1,4 @@
-from anime_downloader import util, config
+from anime_downloader import config
 from anime_downloader.sites.nineanime import NineAnime
 
 import os

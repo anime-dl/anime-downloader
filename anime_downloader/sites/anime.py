@@ -146,7 +146,7 @@ class BaseEpisode:
         util.make_dir(path.rsplit('/', 1)[0])
 
         total_size = int(r.headers['Content-length'])
-        downloaded, chunksize = 0, 2048
+        downloaded, chunksize = 0, 16384
         start_time = time.time()
 
         if os.path.exists(path):
@@ -179,7 +179,7 @@ class SearchResult:
 
 def write_status(downloaded, total_size, start_time):
     elapsed_time = time.time()-start_time
-    rate = (downloaded/1024)/elapsed_time
+    rate = (downloaded/1024)/elapsed_time if elapsed_time else 'x'
     downloaded = float(downloaded)/1048576
     total_size = float(total_size)/1048576
 
