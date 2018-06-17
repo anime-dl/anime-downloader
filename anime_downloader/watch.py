@@ -45,13 +45,7 @@ class Watcher:
 
     def anime_list(self):
         # Stores list of anime names in watcher's list
-        anime_names = []
-        animes = self._read_from_watch_file()
-
-        for idx, anime_name in enumerate(animes):
-            anime_names.append(anime_name)
-        
-        return anime_names
+        return self._read_from_watch_file()
 
     def get(self, anime_name):
         animes = self._read_from_watch_file()
