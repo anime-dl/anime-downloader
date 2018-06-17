@@ -1,4 +1,4 @@
-from anime_downloader import config
+﻿from anime_downloader import config
 from anime_downloader.sites.nineanime import NineAnime
 
 import os
@@ -42,6 +42,10 @@ class Watcher:
             click.echo(fmt_str.format(idx+1, anime.title,
                                       *anime.progress(),
                                       meta=meta.get('Type', '')))
+
+    def anime_list(self):
+        # Stores list of anime names in watcher's list
+        return self._read_from_watch_file()
 
     def get(self, anime_name):
         animes = self._read_from_watch_file()
