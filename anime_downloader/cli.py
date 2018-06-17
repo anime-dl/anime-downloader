@@ -1,4 +1,4 @@
-import click
+﻿import click
 import sys
 import os
 
@@ -117,25 +117,29 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
     '--remove', '-r', 'remove', type=bool, is_flag=True,
     help="Remove the specified anime")
 @click.option(
+    '--update-all', '-u', 'update_all', type=bool, is_flag=True,
+    help="Update the episodes of all anime in your list"
+)
+@click.option(
     '--quality', '-q', type=click.Choice(['360p', '480p', '720p', '1080p']),
     help='Specify the quality of episode.')
 @click.option(
     '--download-dir', metavar='PATH',
-    help="Specifiy the directory to download to")
+    help="Specify the directory to download to")
 @click.option(
     '--log-level', '-ll', 'log_level',
     type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR']),
     help='Sets the level of logger', default='INFO')
-def watch(anime_name, new, _list, quality, log_level, remove, download_dir):
+def watch(anime_name, new, update_all, _list, quality, log_level, remove, download_dir):
     """
     With watch you can keep track of any anime you watch.
 
     Available Commands after selection of an anime:\n
-    set      : set episodes_done and title. Ex: set episodes_done=3\n
-    remove   : remove selected anime from watch list\n
-    update   : Update the episodes of the currrent anime\n
-    watch    : Watch selected anime\n
-    download : Download episodes of selected anime
+    set        : set episodes_done and title. Ex: set episodes_done=3\n
+    remove     : remove selected anime from watch list\n
+    update     : Update the episodes of the currrent anime\n
+    watch      : Watch selected anime\n
+    download   : Download episodes of selected anime
     """
     util.setup_logger(log_level)
     util.print_info(__version__)
@@ -164,6 +168,11 @@ def watch(anime_name, new, _list, quality, log_level, remove, download_dir):
                           "Use a better search term.".format(anime_name))
             sys.exit(1)
         sys.exit(0)
+
+    if update_all:
+        animes = watcher.anime_list()
+        for anime in animes:
+            watcher.update_anime(anime)
 
     if _list:
         list_animes(watcher, quality, download_dir)
