@@ -44,7 +44,6 @@ class Watcher:
                                       meta=meta.get('Type', '')))
 
     def anime_list(self):
-        # Stores list of anime names in watcher's list
         return self._read_from_watch_file()
 
     def get(self, anime_name):
@@ -63,13 +62,14 @@ class Watcher:
             return anime
 
     def update_anime(self, anime):
-        logging.info('Updating anime {}'.format(anime.title))
-        newanime = AnimeInfo(anime.url, episodes_done=anime.episodes_done,
-                             timestamp=time())
-        newanime.title = anime.title
+        if anime.meta['Status'].lower() == 'airing':
+            logging.info('Updating anime {}'.format(anime.title))
+            newanime = AnimeInfo(anime.url, episodes_done=anime.episodes_done,
+                                timestamp=time())
+            newanime.title = anime.title
 
-        self.update(newanime)
-        return newanime
+            self.update(newanime)
+            return newanime
 
     def add(self, anime):
         self._append_to_watch_file(anime)

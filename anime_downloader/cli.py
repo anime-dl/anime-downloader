@@ -280,7 +280,7 @@ def watch_anime(watcher, anime):
             if returncode == mpv.STOP:
                 sys.exit(0)
             elif returncode == mpv.CONNECT_ERR:
-                logging.warning("Couldn't connect. Retrying.")
+                logging.warning("Couldn't connect. Retrying. Attempt #{}".format(tries+1))
                 continue
             anime.episodes_done += 1
             watcher.update(anime)
