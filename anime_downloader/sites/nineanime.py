@@ -155,7 +155,7 @@ def a(t, e):
 
 
 def generate_(data):
-    DD = "iQDWcsGqN"
+    DD = "bVZX0bdD"
     param_ = s(DD)
 
     for key, value in data.items():
