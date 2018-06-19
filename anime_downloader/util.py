@@ -42,11 +42,11 @@ def search(query):
     # cli. But it is used in watch too. :(
     try:
         search_results = NineAnime.search(query)
+        if not search_results:
+            logging.error('No such Anime found. Please ensure correct spelling.')
+            sys.exit(1)
     except Exception as e:
         logging.error(click.style(str(e), fg='red'))
-        sys.exit(1)
-    if not search_results:
-        logging.error('No such Anime found. Please ensure correct spelling.')
         sys.exit(1)
     click.echo(format_search_results(search_results))
     
