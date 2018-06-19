@@ -157,12 +157,15 @@ def s(t):
 
 
 def a(t, e):
-    n = sum(ord(c) for c in t) + sum(ord(c) for c in e)
+    n = 0
+    for i in range(max(len(t), len(e))):
+        n += ord(e[i]) if i < len(e) else i
+        n += ord(t[i]) if i < len(t) else i
     return hex(n)[2:]
 
 
 def generate_(data):
-    DD = "8s5IB3Gt"
+    DD = "X8uEFlj2"
     param_ = s(DD)
 
     for key, value in data.items():

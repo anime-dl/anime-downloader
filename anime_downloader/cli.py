@@ -282,6 +282,7 @@ def list_animes(watcher, quality, download_dir):
                 newanime = watcher.new(url)
                 newanime.episodes_done = anime.episodes_done
                 newanime._timestamp = anime._timestamp
+                watcher.update(newanime)
                 anime = newanime
 
 
