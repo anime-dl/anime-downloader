@@ -1,6 +1,7 @@
 from anime_downloader.sites.anime import BaseAnime, BaseEpisode, SearchResult
 from anime_downloader.sites.exceptions import NotFoundError, AnimeDLError
 from anime_downloader.sites import util
+from anime_downloader.const import desktop_headers
 
 import requests
 from bs4 import BeautifulSoup
@@ -38,7 +39,10 @@ class NineAnimeEpisode(BaseEpisode):
                 'If it has not been reported yet, please open a new issue'
             ) from e
 
-        data = util.get_stream_url_rapidvideo(url, self.quality)
+        headers = desktop_headers
+        headers['referer'] = 'www5.9anime.is'
+
+        data = util.get_stream_url_rapidvideo(url, self.quality, headers)
 
         self.stream_url = data['stream_url']
         self.title = data['title']

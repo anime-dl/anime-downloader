@@ -18,8 +18,10 @@ def get_json(url):
     return data
 
 
-def get_stream_url_rapidvideo(url, quality):
-    r = requests.get(url+'&q='+quality)
+def get_stream_url_rapidvideo(url, quality, headers):
+    url = url+'&q='+quality
+    logging.debug('Calling Rapid url: {}'.format(url))
+    r = requests.get(url, headers=headers)
     soup = BeautifulSoup(r.text, 'html.parser')
 
     title_re = re.compile(r'"og:title" content="(.*)"')
