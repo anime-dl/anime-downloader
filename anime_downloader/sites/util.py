@@ -7,11 +7,12 @@ import os
 import errno
 
 from anime_downloader.sites.exceptions import NotFoundError
+from anime_downloader.const import desktop_headers
 
 
 def get_json(url):
     logging.debug('API call URL: {}'.format(url))
-    data = json.loads(requests.get(url).text)
+    data = json.loads(requests.get(url, headers=desktop_headers).text)
     logging.debug('Returned data: {}'.format(data))
 
     return data
