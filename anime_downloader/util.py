@@ -45,11 +45,10 @@ def search(query):
     except Exception as e:
         logging.error(click.style(str(e), fg='red'))
         sys.exit(1)
-    click.echo(format_search_results(search_results))
-    
     if not search_results:
         logging.error('No such Anime found. Please ensure correct spelling.')
         sys.exit(1)
+    click.echo(format_search_results(search_results))
     
     val = click.prompt('Enter the anime no: ', type=int, default=1)
 
