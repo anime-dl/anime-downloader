@@ -47,7 +47,7 @@ def search(query):
         sys.exit(1)
     click.echo(format_search_results(search_results))
     if not search_results: 
-        print('No such Anime found')
+        logging.error('No such Anime found')
         sys.exit(1)
     val = click.prompt('Enter the anime no: ', type=int, default=1)
 
@@ -56,7 +56,7 @@ def search(query):
         title = search_results[val-1].title
     except IndexError:
         logging.error('Only maximum of {} search results are allowed.'
-                      ' Please input a number less than {}'.format(val-1,val))
+                      ' Please input a number less than {}'.format(len(search_results),len(search_results)+1)
         sys.exit(1)
 
     logging.info('Selected {}'.format(title))
