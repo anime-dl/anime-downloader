@@ -56,7 +56,7 @@ def search(query):
         title = search_results[val-1].title
     except IndexError:
         logging.error('Only maximum of {} search results are allowed.'
-                      ' Please input a number less than {}'.format(val-1,val))
+                      ' Please input a number less than {}'.format(val-2,val-1))
         sys.exit(1)
 
     logging.info('Selected {}'.format(title))
