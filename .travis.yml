@@ -14,7 +14,10 @@ before_install:
 install:
   - pip install -e ".[cloudflare]"
 script:
-  - python -m pytest tests --cov=.
+  # - python -m pytest tests --cov=.
+  - python -m pytest tests/test_anime.py
+  - python -m pytest tests/test_player.py
+  - python -m pytest tests/test_watch.py
 after_success:
   - pip install codecov
   - codecov
