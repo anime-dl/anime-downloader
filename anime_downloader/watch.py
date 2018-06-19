@@ -65,7 +65,7 @@ class Watcher:
         if anime.meta['Status'].lower() == 'airing':
             logging.info('Updating anime {}'.format(anime.title))
             newanime = AnimeInfo(anime.url, episodes_done=anime.episodes_done,
-                                timestamp=time())
+                                 timestamp=time())
             newanime.title = anime.title
 
             self.update(newanime)

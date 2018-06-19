@@ -1,5 +1,5 @@
 from anime_downloader.sites.anime import BaseAnime, BaseEpisode, SearchResult
-from anime_downloader.sites.exceptions import NotFoundError
+from anime_downloader.sites.exceptions import NotFoundError, AnimeDLError
 from anime_downloader.sites import util
 
 import requests
@@ -29,7 +29,14 @@ class NineAnimeEpisode(BaseEpisode):
 
         data = util.get_json(url)
 
-        url = data['target']
+        try:
+            url = data['target']
+        except KeyError as e:
+            raise AnimeDLError(
+                '9anime probably changed their API again. Check the issues'
+                'here https://github.com/vn-ki/anime-downloader/issues. '
+                'If it has not been reported yet, please open a new issue'
+            ) from e
 
         data = util.get_stream_url_rapidvideo(url, self.quality)
 
@@ -155,7 +162,7 @@ def a(t, e):
 
 
 def generate_(data):
-    DD = "bVZX0bdD"
+    DD = "8s5IB3Gt"
     param_ = s(DD)
 
     for key, value in data.items():
