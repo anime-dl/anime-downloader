@@ -27,18 +27,10 @@ class KissanimeEpisode(BaseEpisode):
     VERIFY_HUMAN = True
 
     def getData(self):
-        url = self._base_url+self.episode_id
-        logging.debug('Calling url: {}'.format(url))
-        r = scraper.get(url)
-        soup = BeautifulSoup(r.text, 'html.parser')
+        episode_url = self._base_url+self.episode_id+'&s=rapidvideo'
+        logging.debug('Calling url: {}'.format(episode_url))
 
-        if self.VERIFY_HUMAN:
-            episode_url = soup.find('form',
-                                    {'id': 'formVerify'}).find('a')['href']
-        else:
-            episode_url = self.episode_id
-
-        ret = scraper.get(self._base_url+episode_url)
+        ret = scraper.get(episode_url)
         data = self._scrape_episode(ret)
 
         self.stream_url = data['stream_url']
@@ -68,7 +60,8 @@ class Kissanime(BaseAnimeCF):
             data={
                 'type': 'Anime',
                 'keyword': query,
-            }
+            },
+            headers=desktop_headers,
         )
 
         soup = BeautifulSoup(res.text, 'html.parser')
