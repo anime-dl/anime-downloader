@@ -59,6 +59,13 @@ class Kissanime(BaseAnimeCF):
 
         soup = BeautifulSoup(res.text, 'html.parser')
 
+        if soup.title.text.strip().lower() != "find anime":
+            return [SearchResult(
+                title=soup.find('a', 'bigChar').text,
+                url='https://kissanime.ru'+soup.find('a', 'bigChar').get('href'),
+                poster='',
+            )]
+
         searched = [s for i, s in enumerate(soup.find_all('td')) if not i % 2]
 
         ret = []
