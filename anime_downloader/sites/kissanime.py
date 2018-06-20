@@ -1,24 +1,16 @@
 import cfscrape
-from anime_downloader.sites.anime import BaseEpisode
-from anime_downloader.sites.baseanimecf import BaseAnimeCF
-from anime_downloader.sites.exceptions import NotFoundError
-from anime_downloader.sites import util
 from bs4 import BeautifulSoup
 import re
 import logging
 
+from anime_downloader.sites.anime import BaseEpisode, SearchResult
+from anime_downloader.sites.baseanimecf import BaseAnimeCF
+from anime_downloader.sites.exceptions import NotFoundError
+from anime_downloader.sites import util
+from anime_downloader.const import desktop_headers
+
+
 scraper = cfscrape.create_scraper()
-
-mobile_headers = {
-    'user-agent': "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0_1 like Mac OS X) \
-                  AppleWebKit/604.1.38 (KHTML, like Gecko) \
-                  Version/11.0 Mobile/15A402 Safari/604.1"
-}
-
-desktop_headers = {
-    'user-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 \
-Firefox/56.0"
-}
 
 
 class KissanimeEpisode(BaseEpisode):
@@ -27,18 +19,10 @@ class KissanimeEpisode(BaseEpisode):
     VERIFY_HUMAN = True
 
     def getData(self):
-        url = self._base_url+self.episode_id
-        logging.debug('Calling url: {}'.format(url))
-        r = scraper.get(url)
-        soup = BeautifulSoup(r.text, 'html.parser')
+        episode_url = self._base_url+self.episode_id+'&s=rapidvideo'
+        logging.debug('Calling url: {}'.format(episode_url))
 
-        if self.VERIFY_HUMAN:
-            episode_url = soup.find('form',
-                                    {'id': 'formVerify'}).find('a')['href']
-        else:
-            episode_url = self.episode_id
-
-        ret = scraper.get(self._base_url+episode_url)
+        ret = scraper.get(episode_url)
         data = self._scrape_episode(ret)
 
         self.stream_url = data['stream_url']
@@ -60,6 +44,33 @@ class Kissanime(BaseAnimeCF):
     sitename = 'kissanime'
     QUALITIES = ['360p', '480p', '720p']
     _episodeClass = KissanimeEpisode
+
+    @classmethod
+    def search(cls, query):
+        res = scraper.post(
+            'http://kissanime.ru/Search/Anime',
+            data={
+                'type': 'Anime',
+                'keyword': query,
+            },
+            headers=desktop_headers,
+        )
+
+        soup = BeautifulSoup(res.text, 'html.parser')
+
+        searched = [s for i, s in enumerate(soup.find_all('td')) if not i % 2]
+
+        ret = []
+        for res in searched:
+            res = SearchResult(
+                title=res.text.strip(),
+                url='https://kissanime.ru'+res.find('a').get('href'),
+                poster='',
+            )
+            logging.debug(res)
+            ret.append(res)
+
+        return ret
 
     def _getEpisodeUrls(self, soup):
         ret = soup.find('table', {'class': 'listing'}).find_all('a')

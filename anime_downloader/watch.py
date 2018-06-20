@@ -1,9 +1,9 @@
 ﻿from anime_downloader import config
-from anime_downloader.sites.nineanime import NineAnime
+from anime_downloader.sites import get_anime_class
 
 import os
 import sys
-import pickle
+import json
 import logging
 import click
 import warnings
@@ -22,11 +22,13 @@ class Watcher:
         pass
 
     def new(self, url):
+        AnimeInfo = self._get_anime_info_class(url)
         anime = AnimeInfo(url, timestamp=time())
 
         self._append_to_watch_file(anime)
 
         logging.info('Added {:.50} to watch list.'.format(anime.title))
+        return anime
 
     def list(self):
         animes = self._read_from_watch_file()
@@ -64,6 +66,7 @@ class Watcher:
     def update_anime(self, anime):
         if anime.meta['Status'].lower() == 'airing':
             logging.info('Updating anime {}'.format(anime.title))
+            AnimeInfo = self._get_anime_info_class(anime.url)
             newanime = AnimeInfo(anime.url, episodes_done=anime.episodes_done,
                                  timestamp=time())
             newanime.title = anime.title
@@ -92,33 +95,45 @@ class Watcher:
             self._write_to_watch_file([anime])
             return
 
-        with open(self.WATCH_FILE, 'rb') as watch_file:
-            data = pickle.load(watch_file)
-
+        data = self._read_from_watch_file()
         data = [anime] + data
+
         self._write_to_watch_file(data)
 
     def _write_to_watch_file(self, animes):
-        with open(self.WATCH_FILE, 'wb') as watch_file:
-            pickle.dump(animes, watch_file)
+        animes = [anime.__dict__ for anime in animes]
+        with open(self.WATCH_FILE, 'w') as watch_file:
+            json.dump(animes, watch_file)
 
     def _read_from_watch_file(self):
         if not os.path.exists(self.WATCH_FILE):
             logging.error('Add something to watch list first.')
             sys.exit(1)
 
-        with open(self.WATCH_FILE, 'rb') as watch_file:
-            data = pickle.load(watch_file)
+        with open(self.WATCH_FILE, 'r') as watch_file:
+            data = json.load(watch_file)
 
-        return data
+        ret = []
+        for anime_dict in data:
+            AnimeInfo = self._get_anime_info_class(anime_dict['url'])
+            anime = AnimeInfo(_skip_online_data=True)
+            anime.__dict__ = anime_dict
+            ret.append(anime)
 
+        return ret
 
-class AnimeInfo(NineAnime):
-    def __init__(self, *args, **kwargs):
-        self.episodes_done = kwargs.pop('episodes_done', 0)
-        self._timestamp = kwargs.pop('timestamp')
+    def _get_anime_info_class(self, url):
+        cls = get_anime_class(url)
 
-        super(NineAnime, self).__init__(*args, **kwargs)
+        # TODO: Maybe this is better off as a mixin
+        class AnimeInfo(cls):
+            def __init__(self, *args, **kwargs):
+                self.episodes_done = kwargs.pop('episodes_done', 0)
+                self._timestamp = kwargs.pop('timestamp', 0)
 
-    def progress(self):
-        return (self.episodes_done, len(self))
+                super(cls, self).__init__(*args, **kwargs)
+
+            def progress(self):
+                return (self.episodes_done, len(self))
+
+        return AnimeInfo

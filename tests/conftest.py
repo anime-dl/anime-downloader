@@ -5,7 +5,7 @@ def pytest_addoption(parser):
     parser.addoption(
         '--anime-site',
         action='store',
-        default='nineanime',
+        default='gogoanime',
         help='A specific anime site'
     )
 

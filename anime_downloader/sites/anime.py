@@ -9,6 +9,7 @@ import copy
 
 from anime_downloader.sites.exceptions import AnimeDLError, NotFoundError
 from anime_downloader.sites import util
+from anime_downloader.const import desktop_headers
 
 
 class BaseAnime:
@@ -23,7 +24,7 @@ class BaseAnime:
     def search(cls, query):
         return
 
-    def __init__(self, url, quality='720p'):
+    def __init__(self, url=None, quality='720p', _skip_online_data=False):
         self.url = url
 
         if quality in self.QUALITIES:
@@ -31,8 +32,9 @@ class BaseAnime:
         else:
             raise AnimeDLError('Quality {0} not found in {1}'.format(quality, self.QUALITIES))
 
-        logging.info('Extracting episode info from page')
-        self.getEpisodes()
+        if not _skip_online_data:
+            logging.info('Extracting episode info from page')
+            self.getEpisodes()
 
     @classmethod
     def verify_url(self, url):
@@ -42,7 +44,7 @@ class BaseAnime:
 
     def getEpisodes(self):
         self._episodeIds = []
-        r = requests.get(self.url)
+        r = requests.get(self.url, headers=desktop_headers)
         soup = BeautifulSoup(r.text, 'html.parser')
 
         try:

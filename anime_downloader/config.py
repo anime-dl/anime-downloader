@@ -14,11 +14,13 @@ DEFAULT_CONFIG = {
         'quality': '720p',
         'force_download': False,
         'log_level': 'INFO',
-        'file_format': '{anime_title}/{anime_title}_{ep_no}'
+        'file_format': '{anime_title}/{anime_title}_{ep_no}',
+        'provider': '9anime',
     },
     'watch': {
         'quality': '720p',
         'log_level': 'INFO',
+        'provider': '9anime',
     }
 }
 

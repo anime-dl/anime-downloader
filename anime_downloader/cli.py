@@ -58,9 +58,14 @@ def cli():
     '--file-format', '-ff', default='{anime_title}/{anime_title}_{ep_no}',
     help='Format for how the files to be downloaded be named.'
 )
+@click.option(
+    '--provider',
+    help='The anime provider (website) for search.',
+    type=click.Choice(['9anime', 'kissanime'])
+)
 @click.pass_context
 def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
-        force_download, log_level, download_dir, file_format):
+        force_download, log_level, download_dir, file_format, provider):
     """ Download the anime using the url or search for it.
     """
 
@@ -70,7 +75,7 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
     cls = get_anime_class(anime_url)
 
     if not cls:
-        anime_url = util.search_and_get_url(anime_url)
+        anime_url = util.search(anime_url, provider)
         cls = get_anime_class(anime_url)
 
     try:
@@ -127,15 +132,22 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
     '--download-dir', metavar='PATH',
     help="Specify the directory to download to")
 @click.option(
+    '--provider',
+    help='The anime provider (website) for search.',
+    type=click.Choice(['9anime', 'kissanime'])
+)
+@click.option(
     '--log-level', '-ll', 'log_level',
     type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR']),
     help='Sets the level of logger', default='INFO')
-def watch(anime_name, new, update_all, _list, quality, log_level, remove, download_dir):
+def watch(anime_name, new, update_all, _list, quality, log_level, remove,
+          download_dir, provider):
     """
     With watch you can keep track of any anime you watch.
 
     Available Commands after selection of an anime:\n
-    set        : set episodes_done and title. Ex: set episodes_done=3\n
+    set        : set episodes_done, provider and title.
+                 Ex: set episodes_done=3\n
     remove     : remove selected anime from watch list\n
     update     : Update the episodes of the currrent anime\n
     watch      : Watch selected anime\n
@@ -152,7 +164,7 @@ def watch(anime_name, new, update_all, _list, quality, log_level, remove, downlo
         else:
             query = click.prompt('Enter a anime name or url', type=str)
 
-        url = util.search_and_get_url(query)
+        url = util.search(query, provider)
 
         watcher.new(url)
         sys.exit(0)
@@ -210,13 +222,15 @@ def list_animes(watcher, quality, download_dir):
         click.echo('episodes_done: {}'.format(click.style(
             str(anime.episodes_done), bold=True, fg='yellow')))
         click.echo('Length: {}'.format(len(anime)))
+        click.echo('Provider: {}'.format(anime.sitename))
 
         meta = ''
         for k, v in anime.meta.items():
             meta += '{}: {}\n'.format(k, click.style(v, bold=True))
         click.echo(meta)
 
-        click.echo('Available Commands: set, remove, update, watch, download\n')
+        click.echo('Available Commands: set, remove, update, watch,'
+                   ' download.\n')
 
         inp = click.prompt('Press q to exit', default='q').strip()
 
@@ -262,6 +276,14 @@ def list_animes(watcher, quality, download_dir):
             elif key == 'episodes_done':
                 setattr(anime, key, int(val))
                 watcher.update(anime)
+            elif key == 'provider':
+                url = util.search(anime.title, val)
+                watcher.remove(anime)
+                newanime = watcher.new(url)
+                newanime.episodes_done = anime.episodes_done
+                newanime._timestamp = anime._timestamp
+                watcher.update(newanime)
+                anime = newanime
 
 
 def watch_anime(watcher, anime):

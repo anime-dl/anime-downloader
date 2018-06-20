@@ -9,7 +9,7 @@ def anime(anime_url):
     cls = get_anime_class(anime_url)
 
     return cls(
-        anime_url, quality='360p'
+        anime_url, quality='480p'
     )
 
 
