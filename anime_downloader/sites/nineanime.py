@@ -22,22 +22,32 @@ class NineAnimeEpisode(BaseEpisode):
             'server': '33',
             'ts': self.ts
         }
-        params['param_'] = int(generate_(params))
 
-        logging.debug('API call params: {}'.format(params))
+        def get_stream_url(base_url, params):
+            params['param_'] = int(generate_(params))
+            logging.debug('API call params: {}'.format(params))
+            url = base_url.format(**params)
+            data = util.get_json(url)
 
-        url = self._base_url.format(**params)
-
-        data = util.get_json(url)
+            return data['target']
 
         try:
-            url = data['target']
-        except KeyError as e:
-            raise AnimeDLError(
-                '9anime probably changed their API again. Check the issues'
-                'here https://github.com/vn-ki/anime-downloader/issues. '
-                'If it has not been reported yet, please open a new issue'
-            ) from e
+            url = get_stream_url(self._base_url, params)
+        except KeyError:
+            try:
+                del params['param_']
+                del params['ts']
+                # I don't know if this is reliable or not.
+                # For now it works.
+                url = get_stream_url(
+                    'http://9anime.cloud/ajax/episode/info?id={id}&server={server}',
+                    params)
+            except Exception as e:
+                raise AnimeDLError(
+                    '9anime probably changed their API again. Check the issues'
+                    'here https://github.com/vn-ki/anime-downloader/issues. '
+                    'If it has not been reported yet, please open a new issue'
+                ) from e
 
         headers = desktop_headers
         headers['referer'] = 'www5.9anime.is'
