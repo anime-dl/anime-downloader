@@ -35,7 +35,8 @@ class KissanimeEpisode(BaseEpisode):
         rapid_url = rapid_re.findall(response.text)[0]
 
         data = util.get_stream_url_rapidvideo('https://'+rapid_url,
-                                              self.quality)
+                                              self.quality,
+                                              headers=desktop_headers)
 
         return data
 
