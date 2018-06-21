@@ -5,6 +5,7 @@
 [![PyPI pyversions](https://img.shields.io/badge/python-3.3%2B-blue.svg)](https://pypi.org/project/anime-downloader/)
 [![PyPI](https://img.shields.io/pypi/v/anime-downloader.svg)](https://pypi.org/project/anime-downloader/)
 
+#### NOTE: **9anime support has been experiencing issues for the past week. Kissanime still works as expected.**
 
 Ever dreamt about watching anime for free effortlessly without all those unbearable ads? Ever dreamt of downloading your favourite anime for that long trip?
 
@@ -25,10 +26,12 @@ Yeah. Me too! That's why this tool exists.
 
 [![CircleCI](https://circleci.com/gh/vn-ki/anime-downloader/tree/master.svg?style=svg)](https://circleci.com/gh/vn-ki/anime-downloader/tree/master)
 
-- 9anime
+- 9anime (Temporarily not working)
 - KissAnime [cloudflare]
 - KissCartoon [cloudflare]
 - Gogoanime
+
+NOTE: To download from sites marked `[cloudflare]`, anime-downloader has to be installed with cloudflare support(See below).
 
 ## Installation
 
@@ -53,7 +56,7 @@ $ pip install -U git+https://github.com/vn-ki/anime-downloader.git#egg=anime-dow
 If you have trouble installing, see extended installation instructions [here](https://github.com/vn-ki/anime-downloader/wiki/Installation).
 
 **IMP**:
-- For cloudflare scraping [cfscrape](https://github.com/Anorov/cloudflare-scrape) is used. It depends on `node-js`. So if you want to use cloudflare, make sure you have node installed.
+- For cloudflare scraping [cfscrape](https://github.com/Anorov/cloudflare-scrape) is used. It depends on [`node-js`](https://nodejs.org/en/). So if you want to use cloudflare, make sure you have [node-js](https://nodejs.org/en/) installed.
 - You might have to use pip3 depending on your system
 - If you are using zsh, don't forget to escape `[` and `]` using `\`.
 
