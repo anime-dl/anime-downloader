@@ -83,6 +83,12 @@ class Kissanime(BaseAnimeCF):
     def _getEpisodeUrls(self, soup):
         ret = soup.find('table', {'class': 'listing'}).find_all('a')
         ret = [str(a['href']) for a in ret]
+        logging.debug('Unfiltered episodes : {}'.format(ret))
+        filter_list = ['opening', 'ending', 'special', 'recap']
+        ret = list(filter(
+            lambda x: not any(s in x.lower() for s in filter_list), ret
+        ))
+        logging.debug('Filtered episodes : {}'.format(ret))
 
         if ret == []:
             err = 'No episodes found in url "{}"'.format(self.url)

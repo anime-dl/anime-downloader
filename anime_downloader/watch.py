@@ -64,7 +64,8 @@ class Watcher:
             return anime
 
     def update_anime(self, anime):
-        if anime.meta['Status'].lower() == 'airing':
+        if not hasattr(anime, 'meta') or not anime.meta.get('Status') or \
+                anime.meta['Status'].lower() == 'airing':
             logging.info('Updating anime {}'.format(anime.title))
             AnimeInfo = self._get_anime_info_class(anime.url)
             newanime = AnimeInfo(anime.url, episodes_done=anime.episodes_done,
