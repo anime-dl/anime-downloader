@@ -23,8 +23,8 @@ class NineAnimeEpisode(BaseEpisode):
             'ts': self.ts
         }
 
-        def get_stream_url(base_url, params):
-            params['param_'] = int(generate_(params))
+        def get_stream_url(base_url, params, DD=None):
+            params['param_'] = int(generate_(params, DD=DD))
             logging.debug('API call params: {}'.format(params))
             url = base_url.format(**params)
             data = util.get_json(url)
@@ -36,12 +36,11 @@ class NineAnimeEpisode(BaseEpisode):
         except KeyError:
             try:
                 del params['param_']
-                del params['ts']
                 # I don't know if this is reliable or not.
                 # For now it works.
                 url = get_stream_url(
-                    'http://9anime.cloud/ajax/episode/info?id={id}&server={server}',
-                    params)
+                    'http://9anime.cloud/ajax/episode/info?ts={ts}&_={param_}id={id}&server={server}',
+                    params, DD="iQDWcsGqN")
             except Exception as e:
                 raise AnimeDLError(
                     '9anime probably changed their API again. Check the issues'
@@ -178,12 +177,24 @@ def a(t, e):
     return hex(n)[2:]
 
 
-def generate_(data):
-    DD = "a29856fa"
+def a_old(t, e):
+    n = 0
+    for i in range(max(len(t), len(e))):
+        n += ord(e[i]) if i < len(e) else 0
+        n += ord(t[i]) if i < len(t) else 0
+    return hex(n)[2:]
+
+
+def generate_(data, DD=None):
+    if DD is None:
+        DD = "a29856fa"
     param_ = s(DD)
 
     for key, value in data.items():
-        trans = a(DD + key, str(value))
+        if DD is None:
+            trans = a(DD + key, str(value))
+        else:
+            trans = a_old(DD + key, str(value))
         param_ += s(trans)
 
     return param_

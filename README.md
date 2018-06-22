@@ -5,7 +5,7 @@
 [![PyPI pyversions](https://img.shields.io/badge/python-3.3%2B-blue.svg)](https://pypi.org/project/anime-downloader/)
 [![PyPI](https://img.shields.io/pypi/v/anime-downloader.svg)](https://pypi.org/project/anime-downloader/)
 
-#### NOTE: **9anime support has been experiencing issues for the past week. Kissanime still works as expected.**
+#### NOTE: **9anime support has been experiencing issues for the past week. It might work but not 100% reliable. Kissanime still works as expected.**
 
 Ever dreamt about watching anime for free effortlessly without all those unbearable ads? Ever dreamt of downloading your favourite anime for that long trip?
 
