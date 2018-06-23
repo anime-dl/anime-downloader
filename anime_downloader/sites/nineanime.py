@@ -39,7 +39,7 @@ class NineAnimeEpisode(BaseEpisode):
                 # I don't know if this is reliable or not.
                 # For now it works.
                 url = get_stream_url(
-                    'http://9anime.cloud/ajax/episode/info?ts={ts}&_={param_}id={id}&server={server}',
+                    'http://9anime.cloud/ajax/episode/info?ts={ts}&_={param_}&id={id}&server={server}',
                     params, DD="iQDWcsGqN")
             except Exception as e:
                 raise AnimeDLError(
