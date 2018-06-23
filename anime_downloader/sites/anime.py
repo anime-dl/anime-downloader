@@ -114,8 +114,8 @@ class BaseEpisode:
         try:
             self.getData()
         except NotFoundError:
+            parent.QUALITIES.remove(self.quality)
             for quality in parent.QUALITIES:
-                parent.QUALITIES.remove(self.quality)
                 logging.warning('Quality {} not found. Trying {}.'.format(self.quality, quality))
                 self.quality = quality
                 try:
@@ -123,7 +123,7 @@ class BaseEpisode:
                     parent.quality = self.quality
                     break
                 except NotFoundError:
-                    pass
+                    parent.QUALITIES.remove(self.quality)
 
     def getData(self):
         raise NotImplementedError
