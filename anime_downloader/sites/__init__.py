@@ -1,1 +1,1 @@
-from .init import ALL_ANIME_CLASSES, get_anime_class
+from .init import get_anime_class

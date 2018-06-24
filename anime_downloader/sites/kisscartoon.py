@@ -26,7 +26,7 @@ class KisscartoonEpisode(BaseEpisode):
                 'Episode')[-1].split('?')[0]
 
 
-class Kisscarton(Kissanime):
+class KissCarton(Kissanime):
     sitename = 'kisscartoon'
     _episodeClass = KisscartoonEpisode
 
