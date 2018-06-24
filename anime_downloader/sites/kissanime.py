@@ -59,6 +59,8 @@ class Kissanime(BaseAnimeCF):
 
         soup = BeautifulSoup(res.text, 'html.parser')
 
+        # If only one anime found, kissanime redirects to anime page.
+        # We don't want that
         if soup.title.text.strip().lower() != "find anime":
             return [SearchResult(
                 title=soup.find('a', 'bigChar').text,

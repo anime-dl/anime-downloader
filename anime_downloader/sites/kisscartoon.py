@@ -1,6 +1,7 @@
 from anime_downloader.sites.kissanime import Kissanime
 from anime_downloader.sites.anime import BaseEpisode
 from anime_downloader.sites.exceptions import NotFoundError
+from anime_downloader.const import desktop_headers
 
 import requests
 
@@ -8,17 +9,23 @@ import requests
 class KisscartoonEpisode(BaseEpisode):
     _base_url = ''
     VERIFY_HUMAN = False
-    _api_url = 'https://kisscartoon.ac/ajax/anime/load_episodes?v=1.1&episode_id={}'
+    _episode_list_url = 'https://kisscartoon.ac/ajax/anime/load_episodes'
     QUALITIES = ['720p']
 
     def get_data(self):
-        ep_id = self.episode_id.split('id=')[-1]
-        url = self._api_url.format(ep_id)
-        res = requests.get(url)
+        params = {
+            'v': '1.1',
+            'epiosde_id': self.episode_id.split('id=')[-1],
+        }
+        headers = desktop_headers
+        headers['referer'] = self.episode_id
+        res = requests.get(self._episode_list_url,
+                           params=params, headers=headers)
         url = res.json()['value']
 
-        headers = {'referer': self.episode_id}
-        res = requests.get('https:' + url, headers=headers)
+        headers = desktop_headers
+        headers['referer'] = self.episode_id
+        res = requests.get('https://' + url, headers=headers)
 
         self.stream_url = res.json()['playlist'][0]['file']
         self.title = self.episode_id.split(

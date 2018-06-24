@@ -23,17 +23,19 @@ class GogoanimeEpisode(BaseEpisode):
 class Gogoanime(BaseAnime):
     sitename = 'gogoanime'
     QUALITIES = ['360p', '480p', '720p']
-    _api_url = 'https://www2.gogoanime.se//load-list-episode?ep_start=1&'\
-               'ep_end={ep_end}&id={id}&default_ep=0'
+    _episode_list_url = 'https://www2.gogoanime.se//load-list-episode'
     _episodeClass = GogoanimeEpisode
 
     def _scarpe_episodes(self, soup):
-        ep_end = 999999  # Using a very big number works :)
+        anime_id = soup.find('input', {'id': 'movie_id'}).attrs['value']
+        params = {
+            'default_ep': 0,
+            'ep_start': 0,
+            'ep_end': 999999,  # Using a very big number works :)
+            'id': anime_id,
+        }
 
-        id = soup.find('input', {'id': 'movie_id'}).attrs['value']
-
-        url = self._api_url.format(id=id, ep_end=ep_end)
-        res = requests.get(url)
+        res = requests.get(self._episode_list_url, params=params)
         soup = BeautifulSoup(res.text, 'html.parser')
 
         epurls = list(reversed([a.get('href').strip()
