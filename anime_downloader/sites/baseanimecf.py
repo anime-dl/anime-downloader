@@ -20,14 +20,14 @@ scraper = cfscrape.create_scraper()
 
 
 class BaseAnimeCF(BaseAnime):
-    def getEpisodes(self):
+    def get_data(self):
         self._episodeIds = []
         r = scraper.get(self.url, headers=desktop_headers)
         soup = BeautifulSoup(r.text, 'html.parser')
 
-        self._getMetadata(soup)
+        self._scrape_metadata(soup)
 
-        self._episodeIds = self._getEpisodeUrls(soup)
+        self._episodeIds = self._scarpe_episodes(soup)
         self._len = len(self._episodeIds)
 
         logging.debug('EPISODE IDS: length: {}, ids: {}'.format(

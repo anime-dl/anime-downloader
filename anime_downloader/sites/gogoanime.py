@@ -8,7 +8,7 @@ class GogoanimeEpisode(BaseEpisode):
     QUALITIES = ['360p', '480p', '720p']
     _base_url = 'https://www2.gogoanime.se'
 
-    def getData(self):
+    def get_data(self):
         url = self._base_url + self.episode_id
         soup = BeautifulSoup(requests.get(url).text, 'html.parser')
         url = 'https:'+soup.select_one('li.anime a').get('data-video')
@@ -27,11 +27,8 @@ class Gogoanime(BaseAnime):
                'ep_end={ep_end}&id={id}&default_ep=0'
     _episodeClass = GogoanimeEpisode
 
-    def _getEpisodeUrls(self, soup):
-        ep_end = max([int(a.attrs['ep_end'])
-                     for a in soup.find(
-                         'ul', {'id': 'episode_page'}
-                     ).find_all('a')])
+    def _scarpe_episodes(self, soup):
+        ep_end = 999999  # Using a very big number works :)
 
         id = soup.find('input', {'id': 'movie_id'}).attrs['value']
 
@@ -44,7 +41,7 @@ class Gogoanime(BaseAnime):
 
         return epurls
 
-    def _getMetadata(self, soup):
+    def _scrape_metadata(self, soup):
         meta = soup.find('div', {'class': 'anime_info_body_bg'})
         self.title = meta.find('h1').text
         self.poster = meta.find('img').get('src')

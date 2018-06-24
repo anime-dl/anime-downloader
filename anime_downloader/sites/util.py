@@ -10,7 +10,7 @@ from anime_downloader.sites.exceptions import NotFoundError
 from anime_downloader.const import desktop_headers
 
 
-def get_json(url):
+def get_json(url, params=None):
     logging.debug('API call URL: {}'.format(url))
     data = json.loads(requests.get(url, headers=desktop_headers).text)
     logging.debug('Returned data: {}'.format(data))
@@ -19,6 +19,7 @@ def get_json(url):
 
 
 def get_stream_url_rapidvideo(url, quality, headers):
+    # TODO: Refractor this into a EmbedUrlProcessor
     url = url+'&q='+quality
     logging.debug('Calling Rapid url: {}'.format(url))
     r = requests.get(url, headers=headers)

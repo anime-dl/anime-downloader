@@ -11,7 +11,7 @@ class KisscartoonEpisode(BaseEpisode):
     _api_url = 'https://kisscartoon.ac/ajax/anime/load_episodes?v=1.1&episode_id={}'
     QUALITIES = ['720p']
 
-    def getData(self):
+    def get_data(self):
         ep_id = self.episode_id.split('id=')[-1]
         url = self._api_url.format(ep_id)
         res = requests.get(url)
@@ -30,7 +30,7 @@ class Kisscarton(Kissanime):
     sitename = 'kisscartoon'
     _episodeClass = KisscartoonEpisode
 
-    def _getEpisodeUrls(self, soup):
+    def _scarpe_episodes(self, soup):
         ret = soup.find('div', {'class': 'listing'}).find_all('a')
         ret = [str(a['href']) for a in ret]
 

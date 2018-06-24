@@ -18,7 +18,7 @@ class KissanimeEpisode(BaseEpisode):
     _base_url = 'http://kissanime.ru'
     VERIFY_HUMAN = True
 
-    def getData(self):
+    def get_data(self):
         episode_url = self._base_url+self.episode_id+'&s=rapidvideo'
         logging.debug('Calling url: {}'.format(episode_url))
 
@@ -80,7 +80,7 @@ class Kissanime(BaseAnimeCF):
 
         return ret
 
-    def _getEpisodeUrls(self, soup):
+    def _scarpe_episodes(self, soup):
         ret = soup.find('table', {'class': 'listing'}).find_all('a')
         ret = [str(a['href']) for a in ret]
         logging.debug('Unfiltered episodes : {}'.format(ret))
@@ -98,6 +98,6 @@ class Kissanime(BaseAnimeCF):
         ret = ret[::-1]
         return ret
 
-    def _getMetadata(self, soup):
+    def _scrape_metadata(self, soup):
         info_div = soup.find('div', {'class': 'barContent'})
         self.title = info_div.find('a', {'class': 'bigChar'}).text

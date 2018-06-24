@@ -34,7 +34,7 @@ class BaseAnime:
 
         if not _skip_online_data:
             logging.info('Extracting episode info from page')
-            self.getEpisodes()
+            self.get_data()
 
     @classmethod
     def verify_url(self, url):
@@ -42,17 +42,17 @@ class BaseAnime:
             return True
         return False
 
-    def getEpisodes(self):
+    def get_data(self):
         self._episodeIds = []
         r = requests.get(self.url, headers=desktop_headers)
         soup = BeautifulSoup(r.text, 'html.parser')
 
         try:
-            self._getMetadata(soup)
+            self._scrape_metadata(soup)
         except Exception as e:
             logging.debug(e)
 
-        self._episodeIds = self._getEpisodeUrls(soup)
+        self._episodeIds = self._scarpe_episodes(soup)
         self._len = len(self._episodeIds)
 
         logging.debug('EPISODE IDS: length: {}, ids: {}'.format(
@@ -86,10 +86,10 @@ Episode count: {length}
     def __str__(self):
         return self.title
 
-    def _getEpisodeUrls(self, soup):
+    def _scarpe_episodes(self, soup):
         return
 
-    def _getMetadata(self, soup):
+    def _scrape_metadata(self, soup):
         return
 
 
@@ -112,20 +112,20 @@ class BaseEpisode:
         logging.debug("Extracting stream info of id: {}".format(self.episode_id))
 
         try:
-            self.getData()
+            self.get_data()
         except NotFoundError:
             parent.QUALITIES.remove(self.quality)
             for quality in parent.QUALITIES:
                 logging.warning('Quality {} not found. Trying {}.'.format(self.quality, quality))
                 self.quality = quality
                 try:
-                    self.getData()
+                    self.get_data()
                     parent.quality = self.quality
                     break
                 except NotFoundError:
                     parent.QUALITIES.remove(self.quality)
 
-    def getData(self):
+    def get_data(self):
         raise NotImplementedError
 
     def download(self, force=False, path=None,

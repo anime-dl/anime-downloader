@@ -16,7 +16,7 @@ class NineAnimeEpisode(BaseEpisode):
     _base_url = r'https://9anime.is/ajax/episode/info?id={id}&server={server}&_={param_}&ts={ts}'
     ts = 0
 
-    def getData(self):
+    def get_data(self):
         params = {
             'id': self.episode_id,
             'server': '33',
@@ -116,7 +116,7 @@ class NineAnime(BaseAnime):
 
         return ret
 
-    def _getEpisodeUrls(self, soup):
+    def _scarpe_episodes(self, soup):
         ts = soup.find('html')['data-ts']
         self._episodeClass.ts = ts
         logging.debug('data-ts: {}'.format(ts))
@@ -141,7 +141,7 @@ class NineAnime(BaseAnime):
 
         return episode_ids
 
-    def _getMetadata(self, soup):
+    def _scrape_metadata(self, soup):
         self.title = str(soup.find('div', {'class': 'widget info'}).find(
             'h2', {'class': 'title'}).text)
 
