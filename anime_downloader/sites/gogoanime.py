@@ -27,7 +27,7 @@ class Gogoanime(BaseAnime):
     _episodeClass = GogoanimeEpisode
 
     def _scarpe_episodes(self, soup):
-        anime_id = soup.find('input', {'id': 'movie_id'}).attrs['value']
+        anime_id = soup.select_one('input#movie_id').attrs['value']
         params = {
             'default_ep': 0,
             'ep_start': 0,
@@ -44,7 +44,7 @@ class Gogoanime(BaseAnime):
         return epurls
 
     def _scrape_metadata(self, soup):
-        meta = soup.find('div', {'class': 'anime_info_body_bg'})
+        meta = soup.select_one('.anime_info_body_bg')
         self.title = meta.find('h1').text
         self.poster = meta.find('img').get('src')
 
