@@ -290,8 +290,10 @@ def watch_anime(watcher, anime):
     to_watch = anime[anime.episodes_done:]
     logging.debug('Sliced epiosdes: {}'.format(to_watch._episodeIds))
 
-    for idx, episode in enumerate(to_watch):
-
+    while anime.episodes_done < len(anime):
+        episode = anime[anime.episodes_done]
+        anime.episodes_done += 1
+        watcher.update(anime)
         for tries in range(5):
             logging.info(
                 'Playing episode {}'.format(episode.ep_no)
@@ -299,11 +301,15 @@ def watch_anime(watcher, anime):
             player = mpv(episode.stream_url)
             returncode = player.play()
 
-            if returncode == mpv.STOP:
+            if returncode == player.STOP:
                 sys.exit(0)
-            elif returncode == mpv.CONNECT_ERR:
-                logging.warning("Couldn't connect. Retrying. Attempt #{}".format(tries+1))
+            elif returncode == player.CONNECT_ERR:
+                logging.warning("Couldn't connect. Retrying. "
+                                "Attempt #{}".format(tries+1))
                 continue
-            anime.episodes_done += 1
-            watcher.update(anime)
-            break
+            elif returncode == player.PREV:
+                anime.episodes_done -= 2
+                watcher.update(anime)
+                break
+            else:
+                break
