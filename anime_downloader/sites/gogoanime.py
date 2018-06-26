@@ -20,7 +20,7 @@ class GogoanimeEpisode(BaseEpisode):
         self.stream_url = self._stream_urls[0]
 
 
-class Gogoanime(BaseAnime):
+class GogoAnime(BaseAnime):
     sitename = 'gogoanime'
     QUALITIES = ['360p', '480p', '720p']
     _api_url = 'https://www2.gogoanime.se//load-list-episode?ep_start=1&'\

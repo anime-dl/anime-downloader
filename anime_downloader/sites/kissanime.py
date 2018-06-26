@@ -41,7 +41,7 @@ class KissanimeEpisode(BaseEpisode):
         return data
 
 
-class Kissanime(BaseAnimeCF):
+class KissAnime(BaseAnimeCF):
     sitename = 'kissanime'
     QUALITIES = ['360p', '480p', '720p']
     _episodeClass = KissanimeEpisode
