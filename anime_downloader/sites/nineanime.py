@@ -25,7 +25,6 @@ class NineAnimeEpisode(BaseEpisode):
 
         def get_stream_url(base_url, params, DD=None):
             params['_'] = int(generate_(params, DD=DD))
-            logging.debug('API call params: {}'.format(params))
             data = util.get_json(base_url, params=params)
 
             return data['target']
@@ -35,11 +34,12 @@ class NineAnimeEpisode(BaseEpisode):
         except KeyError:
             try:
                 del params['_']
+                del params['ts']
                 # I don't know if this is reliable or not.
                 # For now it works.
-                url = get_stream_url(
-                    'http://9anime.cloud/ajax/episode/info?ts={ts}&_={param_}&id={id}&server={server}',
-                    params, DD="iQDWcsGqN")
+                data = util.get_json(
+                    'http://9anime.cloud/ajax/episode/info', params=params)
+                url = data['target']
             except Exception as e:
                 raise AnimeDLError(
                     '9anime probably changed their API again. Check the issues'
@@ -171,8 +171,8 @@ def s(t):
 def a(t, e):
     n = 0
     for i in range(max(len(t), len(e))):
-        n += ord(e[i]) if i < len(e) else i
-        n += ord(t[i]) if i < len(t) else i
+        n *= ord(e[i]) if i < len(e) else 8
+        n *= ord(t[i]) if i < len(t) else 8
     return hex(n)[2:]
 
 
@@ -186,11 +186,11 @@ def a_old(t, e):
 
 def generate_(data, DD=None):
     if DD is None:
-        DD = "a29856fa"
+        DD = "bfcad671"
     param_ = s(DD)
 
     for key, value in data.items():
-        if DD is None:
+        if DD == "bfcad671":
             trans = a(DD + key, str(value))
         else:
             trans = a_old(DD + key, str(value))

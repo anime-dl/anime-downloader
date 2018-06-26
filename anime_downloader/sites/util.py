@@ -10,8 +10,10 @@ from anime_downloader.const import desktop_headers
 
 
 def get_json(url, params=None):
-    logging.debug('API call URL: {}'.format(url))
-    data = requests.get(url, headers=desktop_headers).json()
+    logging.debug('API call URL: {} with params {!r}'.format(url, params))
+    res = requests.get(url, headers=desktop_headers, params=params)
+    logging.debug('URL: {}'.format(res.url))
+    data = res.json()
     logging.debug('Returned data: {}'.format(data))
 
     return data
