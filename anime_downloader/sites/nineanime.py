@@ -13,10 +13,10 @@ __all__ = ['NineAnimeEpisode', 'NineAnime']
 
 class NineAnimeEpisode(BaseEpisode):
     QUALITIES = ['360p', '480p', '720p', '1080p']
-    _base_url = r'https://9anime.is/ajax/episode/info?id={id}&server={server}&_={param_}&ts={ts}'
+    _base_url = r'https://9anime.is/ajax/episode/info'
     ts = 0
 
-    def getData(self):
+    def get_data(self):
         params = {
             'id': self.episode_id,
             'server': '33',
@@ -24,10 +24,9 @@ class NineAnimeEpisode(BaseEpisode):
         }
 
         def get_stream_url(base_url, params, DD=None):
-            params['param_'] = int(generate_(params, DD=DD))
+            params['_'] = int(generate_(params, DD=DD))
             logging.debug('API call params: {}'.format(params))
-            url = base_url.format(**params)
-            data = util.get_json(url)
+            data = util.get_json(base_url, params=params)
 
             return data['target']
 
@@ -35,7 +34,7 @@ class NineAnimeEpisode(BaseEpisode):
             url = get_stream_url(self._base_url, params)
         except KeyError:
             try:
-                del params['param_']
+                del params['_']
                 # I don't know if this is reliable or not.
                 # For now it works.
                 url = get_stream_url(
@@ -116,7 +115,7 @@ class NineAnime(BaseAnime):
 
         return ret
 
-    def _getEpisodeUrls(self, soup):
+    def _scarpe_episodes(self, soup):
         ts = soup.find('html')['data-ts']
         self._episodeClass.ts = ts
         logging.debug('data-ts: {}'.format(ts))
@@ -141,7 +140,7 @@ class NineAnime(BaseAnime):
 
         return episode_ids
 
-    def _getMetadata(self, soup):
+    def _scrape_metadata(self, soup):
         self.title = str(soup.find('div', {'class': 'widget info'}).find(
             'h2', {'class': 'title'}).text)
 
