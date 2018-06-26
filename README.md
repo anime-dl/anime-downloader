@@ -40,7 +40,7 @@ You can install the stable release from PyPI.
 $ pip install anime-downloader
 ```
 
-To install with cloudflare support,
+To install with cloudflare support, (Read note below)
 ```bash
 $ pip install anime-downloader[cloudflare]
 ```
@@ -55,67 +55,30 @@ $ pip install -U git+https://github.com/vn-ki/anime-downloader.git#egg=anime-dow
 
 If you have trouble installing, see extended installation instructions [here](https://github.com/vn-ki/anime-downloader/wiki/Installation).
 
-**IMP**:
+**NOTE**:
 - For cloudflare scraping [cfscrape](https://github.com/Anorov/cloudflare-scrape) is used. It depends on [`node-js`](https://nodejs.org/en/). So if you want to use cloudflare, make sure you have [node-js](https://nodejs.org/en/) installed.
 - You might have to use pip3 depending on your system
 - If you are using zsh, don't forget to escape `[` and `]` using `\`.
 
 ## Usage
 
-Anime downloader has two sub commands, `dl` and `watch`. You can find the documentation in [wiki](https://github.com/vn-ki/anime-downloader/wiki)
+See [wiki](https://github.com/vn-ki/anime-downloader/wiki).
+
+Anime downloader has two sub commands, `dl` and `watch`.
 
 - [dl](https://github.com/vn-ki/anime-downloader/wiki/dl-command): `dl` can download anime.
-- [watch](https://github.com/vn-ki/anime-downloader/wiki/watch-command): `watch` can manage your anime watching. Needs [mpv](https://mpv.io). With `watch` you'll never have to go to any anime sites ever again.
-
-#### Search and download
-
-- To search and download all episodes.
-```bash
-anime dl 'code geass'
-```
-*NOTE: The above command shows the search results (which would fit you're terminal size :innocent:) and you can select the desired result.*
-
-#### Download directly
-- To download Fullmetal Alchemist: Brotherhood all episodes
-```
-anime dl 'https://9anime.is/watch/fullmetal-alchemist-brotherhood.0r7/j69y93'
-```
-
-- To download Fullmetal Alchemist: Brotherhood episode 1
-```
-anime dl 'https://9anime.is/watch/fullmetal-alchemist-brotherhood.0r7/j69y93' --episodes 1
-```
-
-- To download Fullmetal Alchemist: Brotherhood episode 1 to 20
-```
-anime dl 'https://9anime.is/watch/fullmetal-alchemist-brotherhood.0r7/j69y93' --episodes 1:21
-```
-
-- To get stream url of Fullmetal Alchemist: Brotherhood episode 1.
-```
-anime dl 'https://9anime.is/watch/fullmetal-alchemist-brotherhood.0r7/j69y93' --url --episodes 1
-```
-
-- To play using vlc. (On windows use path to exe)
-```
-anime dl 'https://9anime.is/watch/fullmetal-alchemist-brotherhood.0r7/j69y93' --play vlc --episodes 1
-```
+- [watch](https://github.com/vn-ki/anime-downloader/wiki/watch-command): `watch` can manage your anime watch list. Needs [mpv](https://mpv.io). With `watch` you'll never have to go to any anime sites ever again.
 
 ### To use `anime_downloader` in your package
 
 This tool can be used as a library. This means you can import it into your own application and search for anime and do many other wonderful things.
-See [documentation](https://github.com/vn-ki/anime-downloader/blob/master/package_usage.md).
+See [documentation](https://github.com/vn-ki/anime-downloader/wiki/Package-documentation).
 
-## Development Instructions
+### Development Instructions
 
-``` bash
-# Clone this repo
-$ git clone https://github.com/vn-ki/anime-downloader.git
+See [wiki](https://github.com/vn-ki/anime-downloader/wiki/Development-Instructions)
 
-# Run setup.py
-$ cd anime-downloader
-$ pip install -e .
-```
+---
 
 *Please don't judge me for not paying for anime. I want to support these animation studios, but being a college student, I can't.*
 
