@@ -1,6 +1,6 @@
 from anime_downloader.sites.anime import BaseAnime, BaseEpisode, SearchResult
 from anime_downloader.sites.exceptions import NotFoundError, AnimeDLError
-from anime_downloader.sites import util
+from anime_downloader import util
 from anime_downloader.const import desktop_headers
 
 import requests

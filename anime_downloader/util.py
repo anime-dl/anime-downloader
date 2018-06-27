@@ -4,8 +4,18 @@ import shutil
 import click
 import subprocess
 import platform
+import requests
+import re
+import os
+import errno
+import time
+
+from bs4 import BeautifulSoup
+
 
 from anime_downloader.sites import get_anime_class
+from anime_downloader.sites.exceptions import NotFoundError
+from anime_downloader.const import desktop_headers
 
 
 def setup_logger(log_level):
@@ -98,3 +108,102 @@ def print_info(version):
     logging.info('anime-downloader {}'.format(version))
     logging.debug('Platform: {}'.format(platform.platform()))
     logging.debug('Python {}'.format(platform.python_version()))
+
+
+def get_json(url, params=None):
+    logging.debug('API call URL: {} with params {!r}'.format(url, params))
+    res = requests.get(url, headers=desktop_headers, params=params)
+    logging.debug('URL: {}'.format(res.url))
+    data = res.json()
+    logging.debug('Returned data: {}'.format(data))
+
+    return data
+
+
+def get_stream_url_rapidvideo(url, quality, headers):
+    # TODO: Refractor this into a EmbedUrlProcessor
+    url = url+'&q='+quality
+    logging.debug('Calling Rapid url: {}'.format(url))
+    r = requests.get(url, headers=headers)
+    soup = BeautifulSoup(r.text, 'html.parser')
+
+    title_re = re.compile(r'"og:title" content="(.*)"')
+    image_re = re.compile(r'"og:image" content="(.*)"')
+
+    ret_dict = dict()
+    try:
+        ret_dict['stream_url'] = soup.find_all('source')[0].get('src')
+    except IndexError:
+        raise NotFoundError("Episode not found")
+    try:
+        ret_dict['title'] = str(title_re.findall(r.text)[0])
+        ret_dict['image'] = str(image_re.findall(r.text)[0])
+    except Exception as e:
+        ret_dict['title'] = ''
+        ret_dict['image'] = ''
+        logging.debug(e)
+        pass
+
+    return ret_dict
+
+
+def slugify(file_name):
+    file_name = str(file_name).strip().replace(' ', '_')
+    return re.sub(r'(?u)[^-\w.]', '', file_name)
+
+
+def format_filename(filename, episode):
+    rep_dict = {
+        'anime_title': slugify(episode._parent.title),
+        'ep_no': episode.ep_no,
+    }
+
+    filename = filename.format(**rep_dict)
+
+    return filename
+
+
+def format_command(cmd, episode, file_format):
+    cmd_dict = {
+        '{aria2}': 'aria2c {stream_url} -x 12 -s 12 -j 12 -k 10M -o '
+                   '{file_format}'
+    }
+    rep_dict = {
+        'stream_url': episode.stream_url,
+        'file_format': file_format,
+    }
+
+    if cmd in cmd_dict:
+        cmd = cmd_dict[cmd]
+
+    cmd = cmd.split(' ')
+    cmd = [c.format(**rep_dict) for c in cmd]
+    cmd = [format_filename(c, episode) for c in cmd]
+
+    return cmd
+
+
+def external_download(cmd, episode, file_format):
+    logging.debug('cmd: ', cmd)
+    logging.debug('episode: ', episode)
+    logging.debug('file format: ', file_format)
+
+    cmd = format_command(cmd, episode, file_format)
+
+    logging.debug('formatted cmd: ', ' '.join(cmd))
+
+    p = subprocess.Popen(cmd)
+    return_code = p.wait()
+
+    if return_code != 0:
+        # Sleep for a while to make sure downloader exits correctly
+        time.sleep(2)
+        sys.exit(1)
+
+
+def make_dir(path):
+    try:
+        os.makedirs(path)
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise

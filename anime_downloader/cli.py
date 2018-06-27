@@ -56,16 +56,24 @@ def cli():
     help='Sets the level of logger')
 @click.option(
     '--file-format', '-ff', default='{anime_title}/{anime_title}_{ep_no}',
-    help='Format for how the files to be downloaded be named.'
+    help='Format for how the files to be downloaded be named.',
+    metavar='FORMAT STRING'
 )
 @click.option(
     '--provider',
     help='The anime provider (website) for search.',
     type=click.Choice(['9anime', 'kissanime'])
 )
+@click.option(
+    '--external-downloader', '-xd',
+    help='Use an external downloader command to download. '
+         'Use "{aria2}" to use aria2 as downloader. See github wiki.',
+    metavar='DOWNLOAD COMMAND'
+)
 @click.pass_context
 def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
-        force_download, log_level, download_dir, file_format, provider):
+       force_download, log_level, download_dir, file_format, provider,
+       external_downloader):
     """ Download the anime using the url or search for it.
     """
 
@@ -104,6 +112,12 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
             util.play_episode(episode, player=player)
 
         if not skip_download:
+            if external_downloader:
+                logging.info('Using external downloader')
+                util.external_download(external_downloader, episode,
+                                       file_format)
+                continue
+
             episode.download(force=force_download,
                              path=download_dir,
                              format=file_format)
