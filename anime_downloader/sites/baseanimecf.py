@@ -16,11 +16,11 @@ desktop_headers = {
 Firefox/56.0"
 }
 
-scraper = cfscrape.create_scraper()
+scraper = cfscrape.create_scraper(delay=10)
 
 
 class BaseAnimeCF(BaseAnime):
-    def get_data(self):
+    def _get_data(self):
         self._episodeIds = []
         r = scraper.get(self.url, headers=desktop_headers)
         soup = BeautifulSoup(r.text, 'html.parser')

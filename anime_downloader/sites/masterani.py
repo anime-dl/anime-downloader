@@ -10,7 +10,7 @@ class Masterani(BaseAnime):
     QUALITIES = ['360p', '480p', '720p']
     _api_url = 'https://www.masterani.me/api/anime/{}/detailed'
 
-    def get_data(self):
+    def _get_sources(self):
         anime_id = self.url.split('info/')[-1].split('-')[0]
         url = self._api_url.format(anime_id)
         res = requests.get(url)

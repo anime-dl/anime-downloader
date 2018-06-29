@@ -16,7 +16,7 @@ class NineAnimeEpisode(BaseEpisode):
     _base_url = r'https://9anime.is/ajax/episode/info'
     ts = 0
 
-    def get_data(self):
+    def _get_sources(self):
         params = {
             'id': self.episode_id,
             'server': '33',
@@ -47,14 +47,9 @@ class NineAnimeEpisode(BaseEpisode):
                     'If it has not been reported yet, please open a new issue'
                 ) from e
 
-        headers = desktop_headers
-        headers['referer'] = 'www5.9anime.is'
-
-        data = util.get_stream_url_rapidvideo(url, self.quality, headers)
-
-        self.stream_url = data['stream_url']
-        self.title = data['title']
-        self.image = data['image']
+        return [
+            ('rapidvideo', url),
+        ]
 
 
 class NineAnime(BaseAnime):

@@ -6,11 +6,10 @@ import logging
 from anime_downloader.sites.anime import BaseEpisode, SearchResult
 from anime_downloader.sites.baseanimecf import BaseAnimeCF
 from anime_downloader.sites.exceptions import NotFoundError
-from anime_downloader import util
 from anime_downloader.const import desktop_headers
 
 
-scraper = cfscrape.create_scraper()
+scraper = cfscrape.create_scraper(delay=10)
 
 
 class KissanimeEpisode(BaseEpisode):
@@ -18,27 +17,20 @@ class KissanimeEpisode(BaseEpisode):
     _base_url = 'http://kissanime.ru'
     VERIFY_HUMAN = True
 
-    def get_data(self):
+    def _get_sources(self):
         episode_url = self._base_url+self.episode_id+'&s=rapidvideo'
         logging.debug('Calling url: {}'.format(episode_url))
 
         ret = scraper.get(episode_url)
         data = self._scrape_episode(ret)
 
-        self.stream_url = data['stream_url']
-        self.title = data['title']
-        self.image = data['image']
+        return data
 
     def _scrape_episode(self, response):
-
         rapid_re = re.compile(r'iframe.*src="https://(.*?)"')
         rapid_url = rapid_re.findall(response.text)[0]
 
-        data = util.get_stream_url_rapidvideo('https://'+rapid_url,
-                                              self.quality,
-                                              headers=desktop_headers)
-
-        return data
+        return [('rapidvideo', rapid_url+'&q='+self.quality)]
 
 
 class KissAnime(BaseAnimeCF):

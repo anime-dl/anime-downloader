@@ -12,7 +12,7 @@ class KisscartoonEpisode(BaseEpisode):
     _episode_list_url = 'https://kisscartoon.ac/ajax/anime/load_episodes'
     QUALITIES = ['720p']
 
-    def get_data(self):
+    def _get_sources(self):
         params = {
             'v': '1.1',
             'epiosde_id': self.episode_id.split('id=')[-1],
@@ -27,10 +27,10 @@ class KisscartoonEpisode(BaseEpisode):
         headers['referer'] = self.episode_id
         res = requests.get('https://' + url, headers=headers)
 
-        self.stream_url = res.json()['playlist'][0]['file']
-        self.title = self.episode_id.split(
-            'Cartoon/')[-1].split('.')[0] + self.episode_id.split(
-                'Episode')[-1].split('?')[0]
+        return [(
+            'no_extractor',
+            res.json()['playlist'][0]['file']
+        )]
 
 
 class KissCarton(Kissanime):

@@ -91,7 +91,7 @@ def split_anime(anime, episode_range):
 
 
 def print_episodeurl(episode):
-    print(episode.stream_url)
+    print(episode.source().stream_url)
 
 
 def download_episode(episode, **kwargs):
@@ -100,7 +100,7 @@ def download_episode(episode, **kwargs):
 
 
 def play_episode(episode, *, player):
-    p = subprocess.Popen([player, episode.stream_url])
+    p = subprocess.Popen([player, episode.source().stream_url])
     p.wait()
 
 
@@ -118,33 +118,6 @@ def get_json(url, params=None):
     logging.debug('Returned data: {}'.format(data))
 
     return data
-
-
-def get_stream_url_rapidvideo(url, quality, headers):
-    # TODO: Refractor this into a EmbedUrlProcessor
-    url = url+'&q='+quality
-    logging.debug('Calling Rapid url: {}'.format(url))
-    r = requests.get(url, headers=headers)
-    soup = BeautifulSoup(r.text, 'html.parser')
-
-    title_re = re.compile(r'"og:title" content="(.*)"')
-    image_re = re.compile(r'"og:image" content="(.*)"')
-
-    ret_dict = dict()
-    try:
-        ret_dict['stream_url'] = soup.find_all('source')[0].get('src')
-    except IndexError:
-        raise NotFoundError("Episode not found")
-    try:
-        ret_dict['title'] = str(title_re.findall(r.text)[0])
-        ret_dict['image'] = str(image_re.findall(r.text)[0])
-    except Exception as e:
-        ret_dict['title'] = ''
-        ret_dict['image'] = ''
-        logging.debug(e)
-        pass
-
-    return ret_dict
 
 
 def slugify(file_name):
@@ -169,7 +142,7 @@ def format_command(cmd, episode, file_format):
                    '{file_format}'
     }
     rep_dict = {
-        'stream_url': episode.stream_url,
+        'stream_url': episode.source().stream_url,
         'file_format': file_format,
     }
 

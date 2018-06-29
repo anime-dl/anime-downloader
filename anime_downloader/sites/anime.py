@@ -10,6 +10,7 @@ import copy
 from anime_downloader.sites.exceptions import AnimeDLError, NotFoundError
 from anime_downloader import util
 from anime_downloader.const import desktop_headers
+from anime_downloader.extractors import get_extractor
 
 
 class BaseAnime:
@@ -46,11 +47,12 @@ class BaseAnime:
         self._episodeIds = []
         r = requests.get(self.url, headers=desktop_headers)
         soup = BeautifulSoup(r.text, 'html.parser')
-
+        print(self.url)
+        print(r.text)
         try:
             self._scrape_metadata(soup)
         except Exception as e:
-            logging.debug(e)
+            logging.debug('Metadata scraping error: {}'.format(e))
 
         self._episodeIds = self._scarpe_episodes(soup)
         self._len = len(self._episodeIds)
@@ -107,6 +109,7 @@ class BaseEpisode:
         self.episode_id = episode_id
         self.quality = quality
         self._parent = parent
+        self._sources = None
         self.pretty_title = '{}-{}'.format(self._parent.title, self.ep_no)
 
         logging.debug("Extracting stream info of id: {}".format(self.episode_id))
@@ -125,7 +128,19 @@ class BaseEpisode:
                 except NotFoundError:
                     parent.QUALITIES.remove(self.quality)
 
+    def source(self, index=0):
+        if not self._sources:
+            self.get_data()
+
+        sitename, url = self._sources[index]
+
+        extractor = get_extractor(sitename)
+        return extractor(url)
+
     def get_data(self):
+        self._sources = self._get_sources()
+
+    def _get_sources(self):
         raise NotImplementedError
 
     def download(self, force=False, path=None,
@@ -143,7 +158,7 @@ class BaseEpisode:
 
         logging.info(path)
 
-        r = requests.get(self.stream_url, stream=True)
+        r = requests.get(self.source(), stream=True)
 
         util.make_dir(path.rsplit('/', 1)[0])
 

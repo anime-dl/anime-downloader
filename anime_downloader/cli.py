@@ -312,7 +312,7 @@ def watch_anime(watcher, anime):
             logging.info(
                 'Playing episode {}'.format(episode.ep_no)
             )
-            player = mpv(episode.stream_url)
+            player = mpv(episode.source().stream_url)
             returncode = player.play()
 
             if returncode == player.STOP:

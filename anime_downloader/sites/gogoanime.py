@@ -8,7 +8,7 @@ class GogoanimeEpisode(BaseEpisode):
     QUALITIES = ['360p', '480p', '720p']
     _base_url = 'https://www2.gogoanime.se'
 
-    def get_data(self):
+    def _get_sources(self):
         url = self._base_url + self.episode_id
         soup = BeautifulSoup(requests.get(url).text, 'html.parser')
         url = 'https:'+soup.select_one('li.anime a').get('data-video')
@@ -16,8 +16,8 @@ class GogoanimeEpisode(BaseEpisode):
         res = requests.get(url)
         ep_re = re.compile(r"file:.*?'(.*?)'")
 
-        self._stream_urls = ep_re.findall(res.text)
-        self.stream_url = self._stream_urls[0]
+        stream_urls = ep_re.findall(res.text)
+        return [('no_extractor', url) for url in stream_urls]
 
 
 class GogoAnime(BaseAnime):
