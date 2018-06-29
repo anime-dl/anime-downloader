@@ -47,8 +47,7 @@ class BaseAnime:
         self._episodeIds = []
         r = requests.get(self.url, headers=desktop_headers)
         soup = BeautifulSoup(r.text, 'html.parser')
-        print(self.url)
-        print(r.text)
+
         try:
             self._scrape_metadata(soup)
         except Exception as e:

@@ -85,7 +85,8 @@ def split_anime(anime, episode_range):
         anime._episodeIds = anime._episodeIds[start-1:end-1]
     except ValueError:
         # Only one episode specified
-        anime = [anime[int(episode_range)-1]]
+        episode = int(episode_range)
+        anime = anime[episode-1:episode]
 
     return anime
 
@@ -136,14 +137,14 @@ def format_filename(filename, episode):
     return filename
 
 
-def format_command(cmd, episode, file_format):
+def format_command(cmd, episode, file_format, path):
     cmd_dict = {
         '{aria2}': 'aria2c {stream_url} -x 12 -s 12 -j 12 -k 10M -o '
-                   '{file_format}'
+                   '{file_format} --continue=true'
     }
     rep_dict = {
         'stream_url': episode.source().stream_url,
-        'file_format': file_format,
+        'file_format': os.path.abspath(path) + file_format,
     }
 
     if cmd in cmd_dict:
@@ -156,14 +157,14 @@ def format_command(cmd, episode, file_format):
     return cmd
 
 
-def external_download(cmd, episode, file_format):
-    logging.debug('cmd: ', cmd)
-    logging.debug('episode: ', episode)
-    logging.debug('file format: ', file_format)
+def external_download(cmd, episode, file_format, path=''):
+    logging.debug('cmd: ' + cmd)
+    logging.debug('episode: {!r}'.format(episode))
+    logging.debug('file format: ' + file_format)
 
-    cmd = format_command(cmd, episode, file_format)
+    cmd = format_command(cmd, episode, file_format, path=path)
 
-    logging.debug('formatted cmd: ', ' '.join(cmd))
+    logging.debug('formatted cmd: ' + ' '.join(cmd))
 
     p = subprocess.Popen(cmd)
     return_code = p.wait()
