@@ -140,11 +140,12 @@ def format_filename(filename, episode):
 def format_command(cmd, episode, file_format, path):
     cmd_dict = {
         '{aria2}': 'aria2c {stream_url} -x 12 -s 12 -j 12 -k 10M -o '
-                   '{file_format} --continue=true'
+                   '{file_format} --continue=true --dir={download_dir}'
     }
     rep_dict = {
         'stream_url': episode.source().stream_url,
-        'file_format': os.path.abspath(path) + file_format,
+        'file_format': file_format,
+        'download_dir': os.path.abspath(path),
     }
 
     if cmd in cmd_dict:
