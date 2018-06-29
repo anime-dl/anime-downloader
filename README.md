@@ -17,9 +17,10 @@ Yeah. Me too! That's why this tool exists.
 
 - Download or stream any episode or episode range of any anime.
 - Specify the quality you want to stream or download.
-- Search and download. (Only 9anime)
+- Search and download.
 - Save yourselves from those malicious ads.
 - Add any anime to your watch list using `anime watch` and let anime downloader take care of everything for you.
+- Download using external downloader ([aria2](https://aria2.github.io/) recommended).
 - Configurable using `config.json`. See [doc](https://github.com/vn-ki/anime-downloader/wiki/Config).
 
 ## Supported Sites
@@ -76,7 +77,7 @@ See [documentation](https://github.com/vn-ki/anime-downloader/wiki/Package-docum
 
 ### Development Instructions
 
-See [wiki](https://github.com/vn-ki/anime-downloader/wiki/Development-Instructions)
+See [development instructions](https://github.com/vn-ki/anime-downloader/wiki/Development-Instructions)
 
 ---
 

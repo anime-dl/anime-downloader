@@ -8,7 +8,7 @@ from anime_downloader.extractors.base_extractor import BaseExtractor
 
 class RapidVideo(BaseExtractor):
     def _get_data(self):
-        url = self.url
+        url = self.url + '&q=' + self.quality
         logging.debug('Calling Rapid url: {}'.format(url))
         r = requests.get(url, headers=self.headers)
         soup = BeautifulSoup(r.text, 'html.parser')

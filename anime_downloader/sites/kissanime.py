@@ -30,7 +30,7 @@ class KissanimeEpisode(BaseEpisode):
         rapid_re = re.compile(r'iframe.*src="https://(.*?)"')
         rapid_url = rapid_re.findall(response.text)[0]
 
-        return [('rapidvideo', rapid_url+'&q='+self.quality)]
+        return [('rapidvideo', rapid_url)]
 
 
 class KissAnime(BaseAnimeCF):

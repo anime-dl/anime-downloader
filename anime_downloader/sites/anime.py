@@ -113,8 +113,11 @@ class BaseEpisode:
 
         logging.debug("Extracting stream info of id: {}".format(self.episode_id))
 
+        # TODO: New flag: online_data=False
         try:
             self.get_data()
+            # Just to verify the source is acquired
+            self.source().stream_url
         except NotFoundError:
             parent.QUALITIES.remove(self.quality)
             for quality in parent.QUALITIES:
@@ -134,7 +137,7 @@ class BaseEpisode:
         sitename, url = self._sources[index]
 
         extractor = get_extractor(sitename)
-        return extractor(url)
+        return extractor(url, quality=self.quality)
 
     def get_data(self):
         self._sources = self._get_sources()
@@ -157,7 +160,7 @@ class BaseEpisode:
 
         logging.info(path)
 
-        r = requests.get(self.source(), stream=True)
+        r = requests.get(self.source().stream_url, stream=True)
 
         util.make_dir(path.rsplit('/', 1)[0])
 

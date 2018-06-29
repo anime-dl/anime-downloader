@@ -16,6 +16,7 @@ DEFAULT_CONFIG = {
         'log_level': 'INFO',
         'file_format': '{anime_title}/{anime_title}_{ep_no}',
         'provider': '9anime',
+        'external_downloader': '',
     },
     'watch': {
         'quality': '720p',
