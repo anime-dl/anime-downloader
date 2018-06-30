@@ -134,10 +134,16 @@ class BaseEpisode:
         if not self._sources:
             self.get_data()
 
-        sitename, url = self._sources[index]
+        try:
+            sitename, url = self._sources[index]
+        except TypeError:
+            return self._sources[index]
 
         extractor = get_extractor(sitename)
-        return extractor(url, quality=self.quality)
+        ext = extractor(url, quality=self.quality)
+        self._sources[index] = ext
+
+        return ext
 
     def get_data(self):
         self._sources = self._get_sources()
