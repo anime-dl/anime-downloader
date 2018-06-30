@@ -9,8 +9,7 @@ class GogoanimeEpisode(BaseEpisode):
     _base_url = 'https://www2.gogoanime.se'
 
     def _get_sources(self):
-        url = self._base_url + self.episode_id
-        soup = BeautifulSoup(requests.get(url).text, 'html.parser')
+        soup = BeautifulSoup(requests.get(self.url).text, 'html.parser')
         url = 'https:'+soup.select_one('li.anime a').get('data-video')
 
         res = requests.get(url)
@@ -38,8 +37,10 @@ class GogoAnime(BaseAnime):
         res = requests.get(self._episode_list_url, params=params)
         soup = BeautifulSoup(res.text, 'html.parser')
 
-        epurls = list(reversed([a.get('href').strip()
-                                for a in soup.select('li a')]))
+        epurls = list(
+            reversed(['https://www2.gogoanime.se'+a.get('href').strip()
+                      for a in soup.select('li a')])
+        )
 
         return epurls
 

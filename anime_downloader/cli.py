@@ -310,7 +310,7 @@ def list_animes(watcher, quality, download_dir):
 
 def watch_anime(watcher, anime):
     to_watch = anime[anime.episodes_done:]
-    logging.debug('Sliced epiosdes: {}'.format(to_watch._episodeIds))
+    logging.debug('Sliced epiosdes: {}'.format(to_watch._episode_urls))
 
     while anime.episodes_done < len(anime):
         episode = anime[anime.episodes_done]

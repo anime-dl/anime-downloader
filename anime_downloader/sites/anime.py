@@ -44,7 +44,7 @@ class BaseAnime:
         return False
 
     def get_data(self):
-        self._episodeIds = []
+        self._episode_urls = []
         r = requests.get(self.url, headers=desktop_headers)
         soup = BeautifulSoup(r.text, 'html.parser')
 
@@ -53,28 +53,28 @@ class BaseAnime:
         except Exception as e:
             logging.debug('Metadata scraping error: {}'.format(e))
 
-        self._episodeIds = self._scarpe_episodes(soup)
-        self._len = len(self._episodeIds)
+        self._episode_urls = self._scarpe_episodes(soup)
+        self._len = len(self._episode_urls)
 
         logging.debug('EPISODE IDS: length: {}, ids: {}'.format(
-            self._len, self._episodeIds))
+            self._len, self._episode_urls))
 
-        self._episodeIds = [(no+1, id) for no, id in
-                            enumerate(self._episodeIds)]
+        self._episode_urls = [(no+1, id) for no, id in
+                            enumerate(self._episode_urls)]
 
-        return self._episodeIds
+        return self._episode_urls
 
     def __len__(self):
         return self._len
 
     def __getitem__(self, index):
         if isinstance(index, int):
-            ep_id = self._episodeIds[index]
+            ep_id = self._episode_urls[index]
             return self._episodeClass(ep_id[1], self.quality, parent=self,
                                       ep_no=ep_id[0])
         elif isinstance(index, slice):
             anime = copy.deepcopy(self)
-            anime._episodeIds = anime._episodeIds[index]
+            anime._episode_urls = anime._episode_urls[index]
             return anime
 
     def __repr__(self):
@@ -99,19 +99,19 @@ class BaseEpisode:
     title = ''
     stream_url = ''
 
-    def __init__(self, episode_id, quality='720p', parent=None,
+    def __init__(self, url, quality='720p', parent=None,
                  ep_no=None):
         if quality not in self.QUALITIES:
             raise AnimeDLError('Incorrect quality: "{}"'.format(quality))
 
         self.ep_no = ep_no
-        self.episode_id = episode_id
+        self.url = url
         self.quality = quality
         self._parent = parent
         self._sources = None
         self.pretty_title = '{}-{}'.format(self._parent.title, self.ep_no)
 
-        logging.debug("Extracting stream info of id: {}".format(self.episode_id))
+        logging.debug("Extracting stream info of id: {}".format(self.url))
 
         # TODO: New flag: online_data=False
         try:

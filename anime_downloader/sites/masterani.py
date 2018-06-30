@@ -7,14 +7,15 @@ scraper = cfscrape.create_scraper()
 
 
 class MasteraniEpisode(BaseEpisode):
-    QUALITIES = ['360p', '480p', '720p']
+    QUALITIES = ['360p', '480p', '720p', '1080p']
 
-    # def _get_sources(self):
+    def _get_sources(self):
+        res = scraper.get(self.url)
 
 
 class Masterani(BaseAnime):
     sitename = 'masterani'
-    QUALITIES = ['360p', '480p', '720p']
+    QUALITIES = ['360p', '480p', '720p', '1080p']
     _api_url = 'https://www.masterani.me/api/anime/{}/detailed'
     _episodeClass = MasteraniEpisode
 
@@ -31,7 +32,7 @@ class Masterani(BaseAnime):
             url = base_url + episode['info']['episode']
             episode_urls.append(url)
 
-        self._episodeIds = episode_urls
+        self._episode_urls = episode_urls
         self.meta = res['info']
 
-        return self._episodeIds
+        return self._episode_urls

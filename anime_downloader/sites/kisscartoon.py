@@ -15,16 +15,16 @@ class KisscartoonEpisode(BaseEpisode):
     def _get_sources(self):
         params = {
             'v': '1.1',
-            'epiosde_id': self.episode_id.split('id=')[-1],
+            'epiosde_id': self.url.split('id=')[-1],
         }
         headers = desktop_headers
-        headers['referer'] = self.episode_id
+        headers['referer'] = self.url
         res = requests.get(self._episode_list_url,
                            params=params, headers=headers)
         url = res.json()['value']
 
         headers = desktop_headers
-        headers['referer'] = self.episode_id
+        headers['referer'] = self.url
         res = requests.get('https://' + url, headers=headers)
 
         return [(

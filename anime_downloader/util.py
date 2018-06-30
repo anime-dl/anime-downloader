@@ -82,7 +82,7 @@ def search(query, provider):
 def split_anime(anime, episode_range):
     try:
         start, end = [int(x) for x in episode_range.split(':')]
-        anime._episodeIds = anime._episodeIds[start-1:end-1]
+        anime = anime[start-1:end-1]
     except ValueError:
         # Only one episode specified
         episode = int(episode_range)

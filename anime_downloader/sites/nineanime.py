@@ -18,7 +18,7 @@ class NineAnimeEpisode(BaseEpisode):
 
     def _get_sources(self):
         params = {
-            'id': self.episode_id,
+            'id': self.url,
             'server': '33',
             'ts': self.ts
         }
