@@ -116,6 +116,10 @@ class Watcher:
 
         ret = []
         for anime_dict in data:
+            # For backwards compatibility
+            if '_episodeIds' in anime_dict:
+                anime_dict['_episode_urls'] = anime_dict['_episodeIds']
+
             AnimeInfo = self._get_anime_info_class(anime_dict['url'])
             anime = AnimeInfo(_skip_online_data=True)
             anime.__dict__ = anime_dict
