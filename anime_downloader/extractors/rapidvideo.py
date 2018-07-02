@@ -15,13 +15,18 @@ class RapidVideo(BaseExtractor):
 
         # TODO: Make these a different function. Can be reused in other classes
         #       too
+        src_re = re.compile(r'src: "(.*)"')
         title_re = re.compile(r'"og:title" content="(.*)"')
         image_re = re.compile(r'"og:image" content="(.*)"')
 
         try:
             stream_url = soup.find_all('source')[0].get('src')
         except IndexError:
-            stream_url = None
+            try:
+                stream_url = str(src_re.findall(r.text)[0])
+            except IndexError:
+                stream_url = None
+
         try:
             title = str(title_re.findall(r.text)[0])
             thumbnail = str(image_re.findall(r.text)[0])
