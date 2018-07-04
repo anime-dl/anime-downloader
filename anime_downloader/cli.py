@@ -320,7 +320,14 @@ def watch_anime(watcher, anime):
             logging.info(
                 'Playing episode {}'.format(episode.ep_no)
             )
-            player = mpv(episode.source().stream_url)
+            try:
+                player = mpv(episode.source().stream_url)
+            except Exception as e:
+                anime.episodes_done -= 1
+                watcher.update(anime)
+                logging.error(str(e))
+                sys.exit(1)
+
             returncode = player.play()
 
             if returncode == player.STOP:

@@ -1,4 +1,4 @@
-from anime_downloader.sites.kissanime import Kissanime
+from anime_downloader.sites.kissanime import KissAnime
 from anime_downloader.sites.anime import BaseEpisode
 from anime_downloader.sites.exceptions import NotFoundError
 from anime_downloader.const import desktop_headers
@@ -15,7 +15,7 @@ class KisscartoonEpisode(BaseEpisode):
     def _get_sources(self):
         params = {
             'v': '1.1',
-            'epiosde_id': self.url.split('id=')[-1],
+            'episode_id': self.url.split('id=')[-1],
         }
         headers = desktop_headers
         headers['referer'] = self.url
@@ -25,7 +25,7 @@ class KisscartoonEpisode(BaseEpisode):
 
         headers = desktop_headers
         headers['referer'] = self.url
-        res = requests.get('https://' + url, headers=headers)
+        res = requests.get('https:' + url, headers=headers)
 
         return [(
             'no_extractor',
@@ -33,7 +33,7 @@ class KisscartoonEpisode(BaseEpisode):
         )]
 
 
-class KissCarton(Kissanime):
+class KissCartoon(KissAnime):
     sitename = 'kisscartoon'
     _episodeClass = KisscartoonEpisode
 

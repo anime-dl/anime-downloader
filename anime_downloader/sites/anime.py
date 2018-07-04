@@ -120,17 +120,19 @@ class BaseEpisode:
             self.source().stream_url
         except NotFoundError:
             # Issue #28
-            # parent.QUALITIES.remove(self.quality)
-            for quality in parent.QUALITIES:
+            qualities = self.QUALITIES
+            qualities.remove(self.quality)
+            for quality in qualities:
                 logging.warning('Quality {} not found. Trying {}.'.format(self.quality, quality))
                 self.quality = quality
                 try:
                     self.get_data()
+                    self.source().stream_url
                     # parent.quality = self.quality
                     break
                 except NotFoundError:
                     # Issue #28
-                    # parent.QUALITIES.remove(self.quality)
+                    qualities.remove(self.quality)
                     pass
 
     def source(self, index=0):

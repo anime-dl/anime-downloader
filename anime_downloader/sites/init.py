@@ -20,6 +20,7 @@ def get_anime_class(url):
             except ImportError as e:
                 # TODO: This should raise an error instead of logging.
                 # I'm lazy af right now.
+                raise
                 logging.debug("Coudn't import {}, '{}'".format(site[0], e.msg))
                 logging.warning("Provider '{}' not used. Make sure you have "
                                 "cfscrape and node-js installed".format(site[0]))
