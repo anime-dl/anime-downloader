@@ -25,6 +25,7 @@ setup(
         'requests>=2.18.4',
         'Click>=6.7',
         'fuzzywuzzy>=0.16.0',
+        'pget==0.5.0'
     ],
     tests_require=[
         'pytest',

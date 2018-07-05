@@ -6,6 +6,8 @@ import os
 import logging
 import sys
 import copy
+from pget import down
+import shutil
 
 from anime_downloader.sites.exceptions import AnimeDLError, NotFoundError
 from anime_downloader import util
@@ -175,7 +177,11 @@ class BaseEpisode:
 
         util.make_dir(path.rsplit('/', 1)[0])
 
-        total_size = int(r.headers['Content-length'])
+        try:
+            total_size = int(r.headers['Content-length'])
+        except KeyError:
+            logging.warning('m3u8 downloading not supported yet')
+            return
         downloaded, chunksize = 0, 16384
         start_time = time.time()
 
@@ -186,14 +192,31 @@ class BaseEpisode:
             else:
                 os.remove(path)
 
-        if r.status_code == 200:
-            with open(path, 'wb') as f:
-                for chunk in r.iter_content(chunk_size=chunksize):
-                    if chunk:
-                        f.write(chunk)
-                        downloaded += chunksize
-                        write_status((downloaded), (total_size),
-                                     start_time)
+        # if r.status_code == 200:
+        #     with open(path, 'wb') as f:
+        #         for chunk in r.iter_content(chunk_size=chunksize):
+        #             if chunk:
+        #                 f.write(chunk)
+        #                 downloaded += chunksize
+        #                 write_status((downloaded), (total_size),
+        #                              start_time)
+        # return
+
+        downloader = down.Downloader(self.source().stream_url, path, 16)
+        downloader.start()
+
+        def callback(d):
+            rate = d.readable_speed
+            downloaded = float(d.total_downloaded)/1048576
+            total_size = float(d.total_length)/1048576
+            status_to_stdout(downloaded, total_size, rate)
+
+        downloader.subscribe(download_callback, 256)
+        try:
+            downloader.wait_for_finish()
+        except KeyboardInterrupt:
+            downloader.stop()
+            raise
 
 
 class SearchResult:
@@ -212,9 +235,56 @@ def write_status(downloaded, total_size, start_time):
     rate = (downloaded/1024)/elapsed_time if elapsed_time else 'x'
     downloaded = float(downloaded)/1048576
     total_size = float(total_size)/1048576
+    status_to_stdout(downloaded, total_size, str(rate)+'KB/s')
 
-    status = 'Downloaded: {0:.2f}MB/{1:.2f}MB, Rate: {2:.2f}KB/s'.format(
+
+def status_to_stdout(downloaded, total_size, rate):
+    status = 'Downloaded: {0:.2f}MB/{1:.2f}MB, Rate: {2}'.format(
         downloaded, total_size, rate)
 
     sys.stdout.write("\r" + status + " "*5 + "\r")
     sys.stdout.flush()
+
+
+def download_callback(downloader):
+    term_width, term_height = shutil.get_terminal_size()
+    if term_width >= 100:
+        term_width = 100
+
+    if downloader.get_state() == down.Downloader.DOWNLOADING:
+        written_update = "[{:3}%] [{}/sec]"
+        percent_downloaded = int(100 * (float(downloader.total_downloaded) / downloader.total_length))
+        written_update = written_update.format(
+            percent_downloaded,
+            downloader.readable_speed
+        )
+
+        if len(written_update) < term_width * 3 / 4:
+            fill_in_area = term_width - (len(written_update) + 3)
+            done = int(fill_in_area * percent_downloaded / 100) * '='
+            remaining = (fill_in_area - len(done)) * ' '
+            written_update += ' [{}{}]'.format(done, remaining)
+        else:
+            written_update += (' ' * (term_width - len(written_update)))
+
+        if downloader.total_downloaded == downloader.total_length:
+            written_update += '\n'
+
+        sys.stdout.write('\r' + written_update)
+        sys.stdout.flush()
+    elif downloader.get_state() == down.Downloader.MERGING:
+        written_update = "[Merging {:5}/{:5}]".format(down.readable_bytes(downloader.total_merged),
+                                                      down.readable_bytes(downloader.total_length))
+        if len(written_update) < term_width * 3 / 4:
+            fill_in_area = term_width - (len(written_update) + 3)
+            done = int((downloader.total_merged * fill_in_area) / downloader.total_length) * '='
+            remaining = (fill_in_area - len(done)) * ' '
+            written_update += ' [{}{}]'.format(done, remaining)
+        else:
+            written_update += (' ' * (term_width - len(written_update)))
+
+        if downloader.total_merged == downloader.total_length:
+            written_update += '\n'
+
+        sys.stdout.write('\r' + written_update)
+        sys.stdout.flush()
