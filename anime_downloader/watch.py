@@ -74,6 +74,7 @@ class Watcher:
 
             self.update(newanime)
             return newanime
+        return anime
 
     def add(self, anime):
         self._append_to_watch_file(anime)
