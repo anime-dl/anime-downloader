@@ -141,6 +141,7 @@ def format_command(cmd, episode, file_format, path):
     cmd_dict = {
         '{aria2}': 'aria2c {stream_url} -x 12 -s 12 -j 12 -k 10M -o '
                    '{file_format}.mp4 --continue=true --dir={download_dir}'
+                   ' --stream-piece-selector=inorder --min-split-size=5M'
     }
     rep_dict = {
         'stream_url': episode.source().stream_url,
