@@ -26,6 +26,6 @@ class BaseAnimeCF(BaseAnime):
             self._len, self._episode_urls))
 
         self._episode_urls = [(no+1, id) for no, id in
-                            enumerate(self._episode_urls)]
+                              enumerate(self._episode_urls)]
 
         return self._episode_urls

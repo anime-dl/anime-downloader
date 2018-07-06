@@ -31,7 +31,8 @@ class BaseAnime:
         if quality in self.QUALITIES:
             self.quality = quality
         else:
-            raise AnimeDLError('Quality {0} not found in {1}'.format(quality, self.QUALITIES))
+            raise AnimeDLError(
+                'Quality {0} not found in {1}'.format(quality, self.QUALITIES))
 
         if not _skip_online_data:
             logging.info('Extracting episode info from page')
@@ -60,7 +61,7 @@ class BaseAnime:
             self._len, self._episode_urls))
 
         self._episode_urls = [(no+1, id) for no, id in
-                            enumerate(self._episode_urls)]
+                              enumerate(self._episode_urls)]
 
         return self._episode_urls
 
@@ -123,7 +124,8 @@ class BaseEpisode:
             qualities = self.QUALITIES
             qualities.remove(self.quality)
             for quality in qualities:
-                logging.warning('Quality {} not found. Trying {}.'.format(self.quality, quality))
+                logging.warning('Quality {} not found. Trying {}.'.format(
+                    self.quality, quality))
                 self.quality = quality
                 try:
                     self.get_data()

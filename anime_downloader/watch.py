@@ -57,7 +57,8 @@ class Watcher:
         match = process.extractOne(anime_name, animes, score_cutoff=40)
         if match:
             anime = match[0]
-            logging.debug('Anime: {!r}, episodes_done: {}'.format(anime, anime.episodes_done))
+            logging.debug('Anime: {!r}, episodes_done: {}'.format(
+                anime, anime.episodes_done))
 
             if (time() - anime._timestamp) > 4*24*60*60:
                 anime = self.update_anime(anime)

@@ -23,7 +23,9 @@ def get_anime_class(url):
                 raise
                 logging.debug("Coudn't import {}, '{}'".format(site[0], e.msg))
                 logging.warning("Provider '{}' not used. Make sure you have "
-                                "cfscrape and node-js installed".format(site[0]))
+                                "cfscrape and node-js installed".format(
+                                    site[0])
+                                )
                 continue
 
             return getattr(module, site[2])

@@ -19,5 +19,8 @@ ALL_EXTRACTORS = [
 def get_extractor(name):
     for extractor in ALL_EXTRACTORS:
         if extractor['regex'] in name:
-            module = import_module('anime_downloader.extractors.{}'.format(extractor['modulename']))
+            module = import_module(
+                'anime_downloader.extractors.{}'.format(
+                    extractor['modulename'])
+            )
             return getattr(module, extractor['class'])

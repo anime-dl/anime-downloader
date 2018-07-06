@@ -52,7 +52,8 @@ class GogoAnime(BaseAnime):
         metdata = {}
         for elem in meta.find_all('p'):
             try:
-                key, val = [v.strip(' :') for v in elem.text.strip().split('\n')]
+                key, val = [v.strip(' :')
+                            for v in elem.text.strip().split('\n')]
             except Exception:
                 continue
             metdata[key] = val

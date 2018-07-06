@@ -6,7 +6,7 @@ import logging
 from anime_downloader.sites.anime import BaseEpisode, SearchResult
 from anime_downloader.sites.baseanimecf import BaseAnimeCF
 from anime_downloader.sites.exceptions import NotFoundError
-from anime_downloader.const import desktop_headers, get_random_header
+from anime_downloader.const import get_random_header
 
 
 scraper = cfscrape.create_scraper(delay=10)
@@ -59,7 +59,8 @@ class KissAnime(BaseAnimeCF):
         if soup.title.text.strip().lower() != "find anime":
             return [SearchResult(
                 title=soup.find('a', 'bigChar').text,
-                url='https://kissanime.ru'+soup.find('a', 'bigChar').get('href'),
+                url='https://kissanime.ru' +
+                    soup.find('a', 'bigChar').get('href'),
                 poster='',
             )]
 

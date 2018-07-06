@@ -10,11 +10,7 @@ import os
 import errno
 import time
 
-from bs4 import BeautifulSoup
-
-
 from anime_downloader.sites import get_anime_class
-from anime_downloader.sites.exceptions import NotFoundError
 from anime_downloader.const import desktop_headers
 
 
