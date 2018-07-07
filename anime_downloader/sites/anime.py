@@ -121,7 +121,7 @@ class BaseEpisode:
             self.source().stream_url
         except NotFoundError:
             # Issue #28
-            qualities = self.QUALITIES
+            qualities = copy.copy(self.QUALITIES)
             qualities.remove(self.quality)
             for quality in qualities:
                 logging.warning('Quality {} not found. Trying {}.'.format(

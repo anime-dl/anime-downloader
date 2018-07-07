@@ -88,7 +88,10 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
     try:
         anime = cls(anime_url, quality=quality)
     except Exception as e:
-        echo(click.style(str(e), fg='red'))
+        if log_level != 'DEBUG':
+            echo(click.style(str(e), fg='red'))
+        else:
+            raise
         return
 
     # TODO: Refractor this somewhere else. (util?)

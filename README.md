@@ -29,6 +29,7 @@ Yeah. Me too! That's why this tool exists.
 
 - 9anime
 - KissAnime [cloudflare]
+- Masterani.me [cloudlfare]
 - KissCartoon [cloudflare]
 - Gogoanime
 

@@ -13,12 +13,18 @@ ALL_EXTRACTORS = [
         'regex': 'no_extractor',
         'class': 'AnimeVideo',
     },
+    {
+        'sitename': 'stream.moe',
+        'modulename': 'moe',
+        'regex': 'stream.moe',
+        'class': 'StreamMoe',
+    },
 ]
 
 
 def get_extractor(name):
     for extractor in ALL_EXTRACTORS:
-        if extractor['regex'] in name:
+        if extractor['regex'] in name.lower():
             module = import_module(
                 'anime_downloader.extractors.{}'.format(
                     extractor['modulename'])
