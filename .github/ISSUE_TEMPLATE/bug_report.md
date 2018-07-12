@@ -8,6 +8,8 @@ about: Create a report to help us improve
 <!---
 A clear and concise description of what the bug is.
 -->
+
+
 **To reproduce**
 <!---
 Paste the command in the space below
@@ -16,10 +18,15 @@ Paste the command in the space below
 
 ```
 
-**Log**
+
+<details>
+<summary>LOG</summary>
 <!--
 Run the program with --log-level DEBUG and paste the output in the space below
 -->
 ```
 
+
 ```
+
+</details>
