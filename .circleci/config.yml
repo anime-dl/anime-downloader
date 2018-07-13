@@ -35,7 +35,7 @@ workflows:
   version: 2
   commit:
     jobs:
-      # - nineanime
+      - nineanime
       - gogoanime
       # Kissanime will always fail on remote servers due to cloudflare
       # - kissanime
