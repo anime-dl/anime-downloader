@@ -160,11 +160,11 @@ def a_old(t, e):
 
 def generate_(data, DD=None):
     if DD is None:
-        DD = "3d1a44de"
+        DD = "0a9de5a4"
     param_ = s(DD)
 
     for key, value in data.items():
-        if DD == "3d1a44de":
+        if DD == "0a9de5a4":
             trans = a(DD + key, str(value))
         else:
             trans = a_old(DD + key, str(value))
