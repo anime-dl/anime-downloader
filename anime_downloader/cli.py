@@ -61,7 +61,7 @@ def cli():
 @click.option(
     '--provider',
     help='The anime provider (website) for search.',
-    type=click.Choice(['9anime', 'kissanime'])
+    type=click.Choice(['9anime', 'kissanime', 'twist.moe'])
 )
 @click.option(
     '--external-downloader', '-xd',

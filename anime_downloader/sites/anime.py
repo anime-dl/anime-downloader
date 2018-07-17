@@ -208,6 +208,9 @@ class SearchResult:
     def __repr__(self):
         return '<SearchResult Title: {} URL: {}>'.format(self.title, self.url)
 
+    def __str__(self):
+        return self.title
+
 
 def write_status(downloaded, total_size, start_time):
     elapsed_time = time.time()-start_time
