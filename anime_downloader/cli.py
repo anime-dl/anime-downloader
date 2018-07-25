@@ -158,7 +158,7 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
 @click.option(
     '--provider',
     help='The anime provider (website) for search.',
-    type=click.Choice(['9anime', 'kissanime'])
+    type=click.Choice(['9anime', 'kissanime', 'twist.moe'])
 )
 @click.option(
     '--log-level', '-ll', 'log_level',

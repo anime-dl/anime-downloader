@@ -10,7 +10,9 @@ class RapidVideo(BaseExtractor):
     def _get_data(self):
         url = self.url + '&q=' + self.quality
         logging.debug('Calling Rapid url: {}'.format(url))
-        r = requests.get(url, headers=self.headers)
+        headers = self.headers
+        headers['referer'] = url
+        r = requests.get(url, headers=headers)
         soup = BeautifulSoup(r.text, 'html.parser')
 
         # TODO: Make these a different function. Can be reused in other classes
