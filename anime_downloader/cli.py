@@ -69,10 +69,16 @@ def cli():
          'Use "{aria2}" to use aria2 as downloader. See github wiki.',
     metavar='DOWNLOAD COMMAND'
 )
+@click.option(
+    '--chunk-size',
+    help='Chunk size for downloading in chunks(in MB). Use this if you '
+         'experience throttling.',
+    type=int
+)
 @click.pass_context
 def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
        force_download, log_level, download_dir, file_format, provider,
-       external_downloader):
+       external_downloader, chunk_size):
     """ Download the anime using the url or search for it.
     """
 
@@ -127,10 +133,13 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
                 util.external_download(external_downloader, episode,
                                        file_format, path=download_dir)
                 continue
-
+            if chunk_size is not None:
+                chunk_size *= 1e6
+                chunk_size = int(chunk_size)
             episode.download(force=force_download,
                              path=download_dir,
-                             format=file_format)
+                             format=file_format,
+                             range_size=chunk_size)
             print()
 
 
@@ -160,6 +169,7 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
     help='The anime provider (website) for search.',
     type=click.Choice(['9anime', 'kissanime', 'twist.moe'])
 )
+
 @click.option(
     '--log-level', '-ll', 'log_level',
     type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR']),
