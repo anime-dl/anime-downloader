@@ -38,4 +38,4 @@ def test_search():
     results = NineAnime.search('dragon ball super')
 
     assert len(results) == 30
-    assert results[0].title.lower() == 'dragon ball super'
+    assert results[0].title.lower() in ['dragon ball super', 'dragon ball super movie']
