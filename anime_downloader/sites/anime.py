@@ -11,7 +11,7 @@ from anime_downloader.sites.exceptions import AnimeDLError, NotFoundError
 from anime_downloader import util
 from anime_downloader.const import desktop_headers
 from anime_downloader.extractors import get_extractor
-
+from anime_downloader.downloader import get_downloader
 
 class BaseAnime:
     sitename = ''
@@ -159,7 +159,7 @@ class BaseEpisode:
         raise NotImplementedError
 
     def download(self, force=False, path=None,
-                 format='{anime_title}_{ep_no}'):
+                 format='{anime_title}_{ep_no}', range_size=None):
         logging.info('Downloading {}'.format(self.pretty_title))
         if format:
             file_name = util.format_filename(format, self)+'.mp4'
@@ -171,32 +171,11 @@ class BaseEpisode:
         else:
             path = os.path.join(path, file_name)
 
-        logging.info(path)
+        Downloader = get_downloader('http')
+        downloader = Downloader(self.source(),
+                                path, force, range_size=range_size)
 
-        r = requests.get(self.source().stream_url, stream=True)
-
-        util.make_dir(path.rsplit('/', 1)[0])
-
-        total_size = int(r.headers['Content-length'])
-        downloaded, chunksize = 0, 16384
-        start_time = time.time()
-
-        if os.path.exists(path):
-            if os.stat(path).st_size == total_size and not force:
-                logging.warning('File already downloaded. Skipping download.')
-                return
-            else:
-                os.remove(path)
-
-        if r.status_code == 200:
-            with open(path, 'wb') as f:
-                for chunk in r.iter_content(chunk_size=chunksize):
-                    if chunk:
-                        f.write(chunk)
-                        downloaded += chunksize
-                        write_status((downloaded), (total_size),
-                                     start_time)
-
+        downloader.download()
 
 class SearchResult:
     def __init__(self, title, url, poster):
