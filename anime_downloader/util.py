@@ -9,6 +9,7 @@ import re
 import os
 import errno
 import time
+import ast
 
 from anime_downloader.sites import get_anime_class
 from anime_downloader.const import desktop_headers
@@ -179,3 +180,14 @@ def make_dir(path):
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
+
+
+class ClickListOption(click.Option):
+
+    def type_cast_value(self, ctx, value):
+        try:
+            if isinstance(value, list):
+                return value
+            return ast.literal_eval(value)
+        except:
+            raise click.BadParameter(value)

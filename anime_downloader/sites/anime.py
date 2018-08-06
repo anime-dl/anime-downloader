@@ -25,8 +25,11 @@ class BaseAnime:
     def search(cls, query):
         return
 
-    def __init__(self, url=None, quality='720p', _skip_online_data=False):
+    def __init__(self, url=None, quality='720p',
+                 fallback_qualities=['720p', '480p', '360p'],
+                 _skip_online_data=False):
         self.url = url
+        self._fallback_qualities = fallback_qualities
 
         if quality in self.QUALITIES:
             self.quality = quality
@@ -121,8 +124,11 @@ class BaseEpisode:
             self.source().stream_url
         except NotFoundError:
             # Issue #28
-            qualities = copy.copy(self.QUALITIES)
-            qualities.remove(self.quality)
+            qualities = copy.copy(self._parent._fallback_qualities)
+            try:
+                qualities.remove(self.quality)
+            except ValueError:
+                pass
             for quality in qualities:
                 logging.warning('Quality {} not found. Trying {}.'.format(
                     self.quality, quality))
@@ -134,7 +140,7 @@ class BaseEpisode:
                     break
                 except NotFoundError:
                     # Issue #28
-                    qualities.remove(self.quality)
+                    # qualities.remove(self.quality)
                     pass
 
     def source(self, index=0):
