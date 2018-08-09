@@ -94,16 +94,21 @@ class NineAnime(BaseAnime):
         self._episodeClass.ts = ts
         logging.debug('data-ts: {}'.format(ts))
 
-        episodes = soup.find_all('ul', ['episodes'])
+        # TODO: !HACK!
+        # The below code should be refractored whenever I'm not lazy.
+        # This was done as a fix to 9anime's switch to lazy loading of
+        # episodes. I'm busy and lazy now, so I'm writing bad code.
+        # Gomen'nasai
+        api_url = "https://www8.9anime.is/ajax/film/servers/{}"
+        api_url = api_url.format(self.url.rsplit('/', 1)[0].rsplit('.', 1)[1])
+        soup = BeautifulSoup(requests.get(api_url).json()['html'], 'html.parser')
+        episodes = soup.find('div', {'class': 'server', 'data-name': 33})
+        episodes = episodes.find_all('li')
 
         if episodes == []:
             err = 'No episodes found in url "{}"'.format(self.url)
             args = [self.url]
             raise NotFoundError(err, *args)
-
-        servers = soup.find_all('span', {'class': 'tab'})[:-3]
-
-        episodes = episodes[:int(len(episodes)/len(servers))]
 
         episode_ids = []
 
