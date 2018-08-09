@@ -100,7 +100,7 @@ class NineAnime(BaseAnime):
         # episodes. I'm busy and lazy now, so I'm writing bad code.
         # Gomen'nasai
         api_url = "https://www8.9anime.is/ajax/film/servers/{}"
-        api_url = api_url.format(self.url.rsplit('/', 1)[0].rsplit('.', 1)[1])
+        api_url = api_url.format(self.url.rsplit('watch/', 1)[1].rsplit('.', 1)[1].split('/')[0])
         soup = BeautifulSoup(requests.get(api_url).json()['html'], 'html.parser')
         episodes = soup.find('div', {'class': 'server', 'data-name': 33})
         episodes = episodes.find_all('li')
