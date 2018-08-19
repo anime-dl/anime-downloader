@@ -28,6 +28,7 @@ Yeah. Me too! That's why this tool exists.
 <!-- [![CircleCI](https://circleci.com/gh/vn-ki/anime-downloader/tree/master.svg?style=svg)](https://circleci.com/gh/vn-ki/anime-downloader/tree/master) -->
 
 - 9anime
+- twist.moe
 - KissAnime [cloudflare]
 - Masterani.me [cloudlfare]
 - KissCartoon [cloudflare]
