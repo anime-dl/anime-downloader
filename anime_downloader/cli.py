@@ -47,6 +47,9 @@ def cli():
     '--quality', '-q', type=click.Choice(['360p', '480p', '720p', '1080p']),
     help='Specify the quality of episode. Default-720p')
 @click.option(
+    '--fallback-qualities', '-fq', cls=util.ClickListOption,
+    help='Specifiy the order of fallback qualities as a list.')
+@click.option(
     '--force-download', '-f', is_flag=True,
     help='Force downloads even if file exists')
 @click.option(
@@ -61,7 +64,7 @@ def cli():
 @click.option(
     '--provider',
     help='The anime provider (website) for search.',
-    type=click.Choice(['9anime', 'kissanime'])
+    type=click.Choice(['9anime', 'kissanime', 'twist.moe', 'animepahe'])
 )
 @click.option(
     '--external-downloader', '-xd',
@@ -69,10 +72,16 @@ def cli():
          'Use "{aria2}" to use aria2 as downloader. See github wiki.',
     metavar='DOWNLOAD COMMAND'
 )
+@click.option(
+    '--chunk-size',
+    help='Chunk size for downloading in chunks(in MB). Use this if you '
+         'experience throttling.',
+    type=int
+)
 @click.pass_context
 def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
        force_download, log_level, download_dir, file_format, provider,
-       external_downloader):
+       external_downloader, chunk_size, fallback_qualities):
     """ Download the anime using the url or search for it.
     """
 
@@ -86,7 +95,8 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
         cls = get_anime_class(anime_url)
 
     try:
-        anime = cls(anime_url, quality=quality)
+        anime = cls(anime_url, quality=quality,
+                    fallback_qualities=fallback_qualities)
     except Exception as e:
         if log_level != 'DEBUG':
             echo(click.style(str(e), fg='red'))
@@ -127,10 +137,13 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
                 util.external_download(external_downloader, episode,
                                        file_format, path=download_dir)
                 continue
-
+            if chunk_size is not None:
+                chunk_size *= 1e6
+                chunk_size = int(chunk_size)
             episode.download(force=force_download,
                              path=download_dir,
-                             format=file_format)
+                             format=file_format,
+                             range_size=chunk_size)
             print()
 
 
@@ -158,8 +171,9 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
 @click.option(
     '--provider',
     help='The anime provider (website) for search.',
-    type=click.Choice(['9anime', 'kissanime'])
+    type=click.Choice(['9anime', 'kissanime', 'twist.moe'])
 )
+
 @click.option(
     '--log-level', '-ll', 'log_level',
     type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR']),

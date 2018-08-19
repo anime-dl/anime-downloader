@@ -11,7 +11,7 @@ from anime_downloader.sites.exceptions import AnimeDLError, NotFoundError
 from anime_downloader import util
 from anime_downloader.const import desktop_headers
 from anime_downloader.extractors import get_extractor
-
+from anime_downloader.downloader import get_downloader
 
 class BaseAnime:
     sitename = ''
@@ -25,8 +25,11 @@ class BaseAnime:
     def search(cls, query):
         return
 
-    def __init__(self, url=None, quality='720p', _skip_online_data=False):
+    def __init__(self, url=None, quality='720p',
+                 fallback_qualities=['720p', '480p', '360p'],
+                 _skip_online_data=False):
         self.url = url
+        self._fallback_qualities = fallback_qualities
 
         if quality in self.QUALITIES:
             self.quality = quality
@@ -121,8 +124,11 @@ class BaseEpisode:
             self.source().stream_url
         except NotFoundError:
             # Issue #28
-            qualities = copy.copy(self.QUALITIES)
-            qualities.remove(self.quality)
+            qualities = copy.copy(self._parent._fallback_qualities)
+            try:
+                qualities.remove(self.quality)
+            except ValueError:
+                pass
             for quality in qualities:
                 logging.warning('Quality {} not found. Trying {}.'.format(
                     self.quality, quality))
@@ -134,7 +140,7 @@ class BaseEpisode:
                     break
                 except NotFoundError:
                     # Issue #28
-                    qualities.remove(self.quality)
+                    # qualities.remove(self.quality)
                     pass
 
     def source(self, index=0):
@@ -159,7 +165,7 @@ class BaseEpisode:
         raise NotImplementedError
 
     def download(self, force=False, path=None,
-                 format='{anime_title}_{ep_no}'):
+                 format='{anime_title}_{ep_no}', range_size=None):
         logging.info('Downloading {}'.format(self.pretty_title))
         if format:
             file_name = util.format_filename(format, self)+'.mp4'
@@ -171,32 +177,11 @@ class BaseEpisode:
         else:
             path = os.path.join(path, file_name)
 
-        logging.info(path)
+        Downloader = get_downloader('http')
+        downloader = Downloader(self.source(),
+                                path, force, range_size=range_size)
 
-        r = requests.get(self.source().stream_url, stream=True)
-
-        util.make_dir(path.rsplit('/', 1)[0])
-
-        total_size = int(r.headers['Content-length'])
-        downloaded, chunksize = 0, 16384
-        start_time = time.time()
-
-        if os.path.exists(path):
-            if os.stat(path).st_size == total_size and not force:
-                logging.warning('File already downloaded. Skipping download.')
-                return
-            else:
-                os.remove(path)
-
-        if r.status_code == 200:
-            with open(path, 'wb') as f:
-                for chunk in r.iter_content(chunk_size=chunksize):
-                    if chunk:
-                        f.write(chunk)
-                        downloaded += chunksize
-                        write_status((downloaded), (total_size),
-                                     start_time)
-
+        downloader.download()
 
 class SearchResult:
     def __init__(self, title, url, poster):
@@ -207,6 +192,9 @@ class SearchResult:
 
     def __repr__(self):
         return '<SearchResult Title: {} URL: {}>'.format(self.title, self.url)
+
+    def __str__(self):
+        return self.title
 
 
 def write_status(downloaded, total_size, start_time):
