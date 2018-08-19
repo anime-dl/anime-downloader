@@ -1,39 +1,31 @@
 import cfscrape
-from anime_downloader.sites.anime import BaseAnime
 from bs4 import BeautifulSoup
 import logging
 
-scraper = cfscrape.create_scraper()
-
-mobile_headers = {
-    'user-agent': "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0_1 like Mac OS X) \
-                  AppleWebKit/604.1.38 (KHTML, like Gecko) \
-                  Version/11.0 Mobile/15A402 Safari/604.1"
-}
-
-desktop_headers = {
-    'user-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 \
-Firefox/56.0"
-}
+from anime_downloader.sites.anime import BaseAnime
+from anime_downloader.const import get_random_header
 
 scraper = cfscrape.create_scraper()
 
 
 class BaseAnimeCF(BaseAnime):
-    def getEpisodes(self):
-        self._episodeIds = []
-        r = scraper.get(self.url, headers=desktop_headers)
+    def get_data(self):
+        headers = get_random_header()
+        if hasattr(self, '_referer'):
+            headers['referer'] = self._referer
+
+        r = scraper.get(self.url, headers=get_random_header())
         soup = BeautifulSoup(r.text, 'html.parser')
 
-        self._getMetadata(soup)
+        self._scrape_metadata(soup)
 
-        self._episodeIds = self._getEpisodeUrls(soup)
-        self._len = len(self._episodeIds)
+        self._episode_urls = self._scarpe_episodes(soup)
+        self._len = len(self._episode_urls)
 
         logging.debug('EPISODE IDS: length: {}, ids: {}'.format(
-            self._len, self._episodeIds))
+            self._len, self._episode_urls))
 
-        self._episodeIds = [(no+1, id) for no, id in
-                            enumerate(self._episodeIds)]
+        self._episode_urls = [(no+1, id) for no, id in
+                              enumerate(self._episode_urls)]
 
-        return self._episodeIds
+        return self._episode_urls

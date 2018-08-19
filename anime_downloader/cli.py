@@ -5,7 +5,6 @@ import os
 import logging
 
 from anime_downloader.sites import get_anime_class
-from anime_downloader.sites.exceptions import NotFoundError
 from anime_downloader.players.mpv import mpv
 from anime_downloader.__version__ import __version__
 
@@ -48,6 +47,9 @@ def cli():
     '--quality', '-q', type=click.Choice(['360p', '480p', '720p', '1080p']),
     help='Specify the quality of episode. Default-720p')
 @click.option(
+    '--fallback-qualities', '-fq', cls=util.ClickListOption,
+    help='Specifiy the order of fallback qualities as a list.')
+@click.option(
     '--force-download', '-f', is_flag=True,
     help='Force downloads even if file exists')
 @click.option(
@@ -56,16 +58,30 @@ def cli():
     help='Sets the level of logger')
 @click.option(
     '--file-format', '-ff', default='{anime_title}/{anime_title}_{ep_no}',
-    help='Format for how the files to be downloaded be named.'
+    help='Format for how the files to be downloaded be named.',
+    metavar='FORMAT STRING'
 )
 @click.option(
     '--provider',
     help='The anime provider (website) for search.',
-    type=click.Choice(['9anime', 'kissanime'])
+    type=click.Choice(['9anime', 'kissanime', 'twist.moe'])
+)
+@click.option(
+    '--external-downloader', '-xd',
+    help='Use an external downloader command to download. '
+         'Use "{aria2}" to use aria2 as downloader. See github wiki.',
+    metavar='DOWNLOAD COMMAND'
+)
+@click.option(
+    '--chunk-size',
+    help='Chunk size for downloading in chunks(in MB). Use this if you '
+         'experience throttling.',
+    type=int
 )
 @click.pass_context
 def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
-        force_download, log_level, download_dir, file_format, provider):
+       force_download, log_level, download_dir, file_format, provider,
+       external_downloader, chunk_size, fallback_qualities):
     """ Download the anime using the url or search for it.
     """
 
@@ -79,12 +95,22 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
         cls = get_anime_class(anime_url)
 
     try:
-        anime = cls(anime_url, quality=quality)
+        anime = cls(anime_url, quality=quality,
+                    fallback_qualities=fallback_qualities)
     except Exception as e:
-        echo(click.style(str(e), fg='red'))
+        if log_level != 'DEBUG':
+            echo(click.style(str(e), fg='red'))
+        else:
+            raise
         return
+
+    # TODO: Refractor this somewhere else. (util?)
     if episode_range is None:
-        episode_range = '1:'+str(len(anime)+1)
+        episode_range = '1:'
+    if episode_range.endswith(':'):
+        episode_range += str(len(anime)+1)
+    if episode_range.startswith(':'):
+        episode_range = '1' + episode_range
 
     logging.info('Found anime: {}'.format(anime.title))
 
@@ -104,9 +130,20 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
             util.play_episode(episode, player=player)
 
         if not skip_download:
+            if external_downloader:
+                logging.info('Downloading episode {} of {}'.format(
+                    episode.ep_no, anime.title)
+                )
+                util.external_download(external_downloader, episode,
+                                       file_format, path=download_dir)
+                continue
+            if chunk_size is not None:
+                chunk_size *= 1e6
+                chunk_size = int(chunk_size)
             episode.download(force=force_download,
                              path=download_dir,
-                             format=file_format)
+                             format=file_format,
+                             range_size=chunk_size)
             print()
 
 
@@ -134,8 +171,9 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
 @click.option(
     '--provider',
     help='The anime provider (website) for search.',
-    type=click.Choice(['9anime', 'kissanime'])
+    type=click.Choice(['9anime', 'kissanime', 'twist.moe'])
 )
+
 @click.option(
     '--log-level', '-ll', 'log_level',
     type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR']),
@@ -252,7 +290,8 @@ def list_animes(watcher, quality, download_dir):
                 inp = inp.split('download ')[1]
             except IndexError:
                 inp = ':'
-            inp = str(anime.episodes_done+1)+inp if inp.startswith(':') else inp
+            inp = str(anime.episodes_done+1) + \
+                inp if inp.startswith(':') else inp
             inp = inp+str(len(anime)) if inp.endswith(':') else inp
 
             anime = util.split_anime(anime, inp)
@@ -288,22 +327,35 @@ def list_animes(watcher, quality, download_dir):
 
 def watch_anime(watcher, anime):
     to_watch = anime[anime.episodes_done:]
-    logging.debug('Sliced epiosdes: {}'.format(to_watch._episodeIds))
+    logging.debug('Sliced epiosdes: {}'.format(to_watch._episode_urls))
 
-    for idx, episode in enumerate(to_watch):
-
+    while anime.episodes_done < len(anime):
+        episode = anime[anime.episodes_done]
+        anime.episodes_done += 1
+        watcher.update(anime)
         for tries in range(5):
             logging.info(
                 'Playing episode {}'.format(episode.ep_no)
             )
-            player = mpv(episode.stream_url)
+            try:
+                player = mpv(episode.source().stream_url)
+            except Exception as e:
+                anime.episodes_done -= 1
+                watcher.update(anime)
+                logging.error(str(e))
+                sys.exit(1)
+
             returncode = player.play()
 
-            if returncode == mpv.STOP:
+            if returncode == player.STOP:
                 sys.exit(0)
-            elif returncode == mpv.CONNECT_ERR:
-                logging.warning("Couldn't connect. Retrying. Attempt #{}".format(tries+1))
+            elif returncode == player.CONNECT_ERR:
+                logging.warning("Couldn't connect. Retrying. "
+                                "Attempt #{}".format(tries+1))
                 continue
-            anime.episodes_done += 1
-            watcher.update(anime)
-            break
+            elif returncode == player.PREV:
+                anime.episodes_done -= 2
+                watcher.update(anime)
+                break
+            else:
+                break

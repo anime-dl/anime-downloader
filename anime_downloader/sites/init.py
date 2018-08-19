@@ -1,23 +1,33 @@
-from anime_downloader.sites.anime import BaseAnime
-from anime_downloader.sites.nineanime import NineAnime
-from anime_downloader.sites.gogoanime import Gogoanime
+from importlib import import_module
+import logging
 
-try:
-    from anime_downloader.sites.kissanime import Kissanime
-    from anime_downloader.sites.kisscartoon import Kisscarton
-except ImportError:
-    CFSCRAPE = False
-
-import inspect
-
-ALL_ANIME_CLASSES = [
-    anime
-    for name, anime in globals().items()
-    if inspect.isclass(anime) and issubclass(anime, BaseAnime) and not name.startswith('Base')
+ALL_ANIME_SITES = [
+    # ('filename', 'sitename', 'classname')
+    ('nineanime', '9anime', 'NineAnime'),
+    ('gogoanime', 'gogoanime', 'GogoAnime'),
+    ('kissanime', 'kissanime', 'KissAnime'),
+    ('kisscartoon', 'kisscartoon', 'KissCartoon'),
+    ('masterani', 'masterani', 'Masterani'),
+    ('twistmoe', 'twist.moe', 'TwistMoe'),
 ]
 
 
 def get_anime_class(url):
-    for cls in ALL_ANIME_CLASSES:
-        if cls.verify_url(url):
-            return cls
+    for site in ALL_ANIME_SITES:
+        if site[1] in url:
+            try:
+                module = import_module(
+                    'anime_downloader.sites.{}'.format(site[0])
+                )
+            except ImportError as e:
+                # TODO: This should raise an error instead of logging.
+                # I'm lazy af right now.
+                raise
+                logging.debug("Coudn't import {}, '{}'".format(site[0], e.msg))
+                logging.warning("Provider '{}' not used. Make sure you have "
+                                "cfscrape and node-js installed".format(
+                                    site[0])
+                                )
+                continue
+
+            return getattr(module, site[2])

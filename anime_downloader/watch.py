@@ -57,14 +57,16 @@ class Watcher:
         match = process.extractOne(anime_name, animes, score_cutoff=40)
         if match:
             anime = match[0]
-            logging.debug('Anime: {!r}, episodes_done: {}'.format(anime, anime.episodes_done))
+            logging.debug('Anime: {!r}, episodes_done: {}'.format(
+                anime, anime.episodes_done))
 
             if (time() - anime._timestamp) > 4*24*60*60:
                 anime = self.update_anime(anime)
             return anime
 
     def update_anime(self, anime):
-        if anime.meta['Status'].lower() == 'airing':
+        if not hasattr(anime, 'meta') or not anime.meta.get('Status') or \
+                anime.meta['Status'].lower() == 'airing':
             logging.info('Updating anime {}'.format(anime.title))
             AnimeInfo = self._get_anime_info_class(anime.url)
             newanime = AnimeInfo(anime.url, episodes_done=anime.episodes_done,
@@ -73,6 +75,7 @@ class Watcher:
 
             self.update(newanime)
             return newanime
+        return anime
 
     def add(self, anime):
         self._append_to_watch_file(anime)
@@ -115,6 +118,10 @@ class Watcher:
 
         ret = []
         for anime_dict in data:
+            # For backwards compatibility
+            if '_episodeIds' in anime_dict:
+                anime_dict['_episode_urls'] = anime_dict['_episodeIds']
+
             AnimeInfo = self._get_anime_info_class(anime_dict['url'])
             anime = AnimeInfo(_skip_online_data=True)
             anime.__dict__ = anime_dict
