@@ -124,7 +124,7 @@ class AnimePahe(BaseAnimeCF):
 
             for i in range(start_page, end_page):
                 self.params['page'] = i
-                resp = util.get(self.api_url, params=self.params)
+                resp = util.get_json(self.api_url, params=self.params)
 
                 episodes = self._collect_episodes(resp['data'], episodes)
 
