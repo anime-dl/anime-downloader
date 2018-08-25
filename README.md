@@ -4,6 +4,7 @@
 [![codecov](https://codecov.io/gh/vn-ki/anime-downloader/branch/master/graph/badge.svg)](https://codecov.io/gh/vn-ki/anime-downloader)
 [![PyPI pyversions](https://img.shields.io/badge/python-3.3%2B-blue.svg)](https://pypi.org/project/anime-downloader/)
 [![PyPI](https://img.shields.io/pypi/v/anime-downloader.svg)](https://pypi.org/project/anime-downloader/)
+[![Discord](https://img.shields.io/discord/483008720167632929.svg)](https://discord.gg/sSCYJgP)
 
 <!-- #### NOTE: **9anime support has been experiencing issues for the past week. It might work but not 100% reliable. Kissanime still works as expected.** -->
 
