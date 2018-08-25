@@ -129,8 +129,8 @@ class NineAnime(BaseAnime):
         self.image = str(soup.find(
             'div', {'class': 'widget info'}).find('img')['src'])
 
-        self._len = int(soup.find_all(
-            'ul', ['episodes'])[-1].find_all('a')[-1]['data-base'])
+        # self._len = int(soup.find_all(
+            # 'ul', ['episodes'])[-1].find_all('a')[-1]['data-base'])
 
         meta1 = soup.find('div', {'class': 'widget info'}).find_all('dl')[0]
         meta2 = soup.find('div', {'class': 'widget info'}).find_all('dl')[1]
