@@ -12,11 +12,14 @@ class RapidVideo(BaseExtractor):
         logging.debug('Calling Rapid url: {}'.format(url))
         headers = self.headers
         headers['referer'] = url
-        r = requests.post(url, {
-            'cursor.x': 12,
-            'cursor.y': 12,
-            'block': 1,
-        }, headers=headers)
+        try:
+            r = requests.get(url, headers=headers)
+        except:
+            r = requests.post(url, {
+                'cursor.x': 12,
+                'cursor.y': 12,
+                'block': 1,
+            }, headers=headers)
         soup = BeautifulSoup(r.text, 'html.parser')
 
         # TODO: Make these a different function. Can be reused in other classes

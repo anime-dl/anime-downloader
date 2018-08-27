@@ -101,7 +101,10 @@ class NineAnime(BaseAnime):
         # Gomen'nasai
         api_url = "https://www8.9anime.is/ajax/film/servers/{}"
         api_url = api_url.format(self.url.rsplit('watch/', 1)[1].rsplit('.', 1)[1].split('/')[0])
-        soup = BeautifulSoup(requests.get(api_url).json()['html'], 'html.parser')
+        params = {}
+        params['_'] = int(generate_(params))
+        params['_'] = 648
+        soup = BeautifulSoup(requests.get(api_url,params=params).json()['html'], 'html.parser')
         episodes = soup.find('div', {'class': 'server', 'data-name': 33})
         episodes = episodes.find_all('li')
 
@@ -126,8 +129,8 @@ class NineAnime(BaseAnime):
         self.image = str(soup.find(
             'div', {'class': 'widget info'}).find('img')['src'])
 
-        self._len = int(soup.find_all(
-            'ul', ['episodes'])[-1].find_all('a')[-1]['data-base'])
+        # self._len = int(soup.find_all(
+            # 'ul', ['episodes'])[-1].find_all('a')[-1]['data-base'])
 
         meta1 = soup.find('div', {'class': 'widget info'}).find_all('dl')[0]
         meta2 = soup.find('div', {'class': 'widget info'}).find_all('dl')[1]
@@ -165,11 +168,11 @@ def a_old(t, e):
 
 def generate_(data, DD=None):
     if DD is None:
-        DD = "0a9de5a4"
+        DD = "e7b83f76"
     param_ = s(DD)
 
     for key, value in data.items():
-        if DD == "0a9de5a4":
+        if DD == "e7b83f76":
             trans = a(DD + key, str(value))
         else:
             trans = a_old(DD + key, str(value))
