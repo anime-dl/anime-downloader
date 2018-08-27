@@ -19,6 +19,12 @@ ALL_EXTRACTORS = [
         'regex': 'stream.moe',
         'class': 'StreamMoe',
     },
+    {
+        'sitename': 'mp4upload',
+        'modulename': 'mp4upload',
+        'regex': 'mp4upload',
+        'class': 'MP4Upload'
+    }
 ]
 
 

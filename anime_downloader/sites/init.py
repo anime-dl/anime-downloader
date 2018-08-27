@@ -9,6 +9,7 @@ ALL_ANIME_SITES = [
     ('kisscartoon', 'kisscartoon', 'KissCartoon'),
     ('masterani', 'masterani', 'Masterani'),
     ('twistmoe', 'twist.moe', 'TwistMoe'),
+    ('animepahe', 'animepahe', 'AnimePahe')
 ]
 
 

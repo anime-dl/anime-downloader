@@ -34,6 +34,7 @@ Yeah. Me too! That's why this tool exists.
 - Masterani.me [cloudlfare]
 - KissCartoon [cloudflare]
 - Gogoanime
+- AnimePahe [cloudflare]
 
 NOTE: To download from sites marked `[cloudflare]`, anime-downloader has to be installed with cloudflare support(See below).
 
