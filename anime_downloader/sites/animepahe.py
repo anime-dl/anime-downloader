@@ -101,8 +101,11 @@ class AnimePahe(BaseAnimeCF):
         # from the length of the episodes list to get correct episode
         # numbers
         for no, anime_ep in enumerate(ani_json, len(episodes)):
+            epi_no = anime_ep['episode']
+
             episodes.append(
-                (no+1, self.url + '/' + str(anime_ep['id']),)
+                (epi_no if not epi_no.startswith('0') else epi_no[1:],
+                 self.url + '/' + str(anime_ep['id']),)
             )
 
         return episodes
