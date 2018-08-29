@@ -67,14 +67,11 @@ class KissCartoon(KissAnime):
             logging.debug(res)
             ret.append(res)
 
-        print(ret)
-
         return ret
 
     def _scarpe_episodes(self, soup):
         ret = soup.find('div', {'class': 'listing'}).find_all('a')
         ret = [str(a['href']) for a in ret]
-        print(ret)
 
         if ret == []:
             err = 'No episodes found in url "{}"'.format(self.url)
