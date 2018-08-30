@@ -44,7 +44,7 @@ def format_search_results(search_results):
 
     return ret
 
-
+    
 def search(query, provider):
     # Since this function outputs to stdout this should ideally be in
     # cli. But it is used in watch too. :(
