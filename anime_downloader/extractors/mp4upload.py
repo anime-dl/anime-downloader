@@ -16,7 +16,7 @@ class MP4Upload(BaseExtractor):
         # code I saw from github user py7hon in his/her mp4upload-direct
         # program as inspiration for this. Only with regex.
         source_parts_re = re.compile(
-                                r'.*?(www\d+?).*?\|video\|(.*?)\|(\d+)\|.*?',
+                                r'.*?(www\d+).*?\|video\|(.*?)\|(\d+)\|.*?',
                                 re.DOTALL)
 
         mp4u_embed = requests.get(self.url).text
@@ -30,7 +30,7 @@ class MP4Upload(BaseExtractor):
         mp4u_page = BeautifulSoup(requests.get(url).text, 'html.parser')
 
         title = mp4u_page.find('span', {'class': 'dfilename'}).text
-        title = title[:title.rfind('_') or title.rfind('.')]
+        title = title[:title.rfind('_')][:title.rfind('.')].replace(' ', '_')
 
         logging.debug('Title is %s' % title)
 
