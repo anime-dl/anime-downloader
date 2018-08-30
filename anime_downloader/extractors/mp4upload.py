@@ -1,3 +1,4 @@
+import logging
 import re
 import requests
 from bs4 import BeautifulSoup
@@ -21,6 +22,9 @@ class MP4Upload(BaseExtractor):
         mp4u_embed = requests.get(self.url).text
         domain, video_id, protocol = source_parts_re.match(mp4u_embed).groups()
 
+        logging.debug('Domain: %s, Video ID: %s, Protocol: %s' %
+                      (domain, video_id, protocol))
+
         url = self.url.replace('embed-', '')
         # Return to non-embed page to collect title
         mp4u_page = BeautifulSoup(requests.get(url).text, 'html.parser')
@@ -28,9 +32,13 @@ class MP4Upload(BaseExtractor):
         title = mp4u_page.find('span', {'class': 'dfilename'}).text
         title = title[:title.rfind('_')]
 
+        logging.debug('Title is %s' % title)
+
         # Create the stream url
         stream_url = 'https://{}.mp4upload.com:{}/d/{}/{}.mp4'
         stream_url = stream_url.format(domain, protocol, video_id, title)
+
+        logging.debug('Stream URL: %s' % stream_url)
 
         return {
             'stream_url': stream_url,
