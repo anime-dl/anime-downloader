@@ -1,9 +1,14 @@
 from anime_downloader.sites.kissanime import KissAnime
-from anime_downloader.sites.anime import BaseEpisode
+from anime_downloader.sites.anime import BaseEpisode, SearchResult
 from anime_downloader.sites.exceptions import NotFoundError
-from anime_downloader.const import desktop_headers
+from anime_downloader.const import desktop_headers, get_random_header
 
 import requests
+from bs4 import BeautifulSoup
+import cfscrape
+import logging
+
+scraper = cfscrape.create_scraper()
 
 
 class KisscartoonEpisode(BaseEpisode):
@@ -36,6 +41,32 @@ class KisscartoonEpisode(BaseEpisode):
 class KissCartoon(KissAnime):
     sitename = 'kisscartoon'
     _episodeClass = KisscartoonEpisode
+
+    @classmethod
+    def search(cls, query):
+        headers = get_random_header()
+        headers['referer'] = 'http://kisscartoon.ac/'
+        res = scraper.get(
+            'http://kisscartoon.ac/Search/',
+            params={
+                's': query,
+            },
+            headers=headers,
+        )
+        logging.debug('Result url: {}'.format(res.url))
+
+        soup = BeautifulSoup(res.text, 'html.parser')
+        ret = []
+        for res in soup.select_one('.listing').find_all('a'):
+            res = SearchResult(
+                title=res.text.strip('Watch '),
+                url=res.get('href'),
+                poster='',
+            )
+            logging.debug(res)
+            ret.append(res)
+
+        return ret
 
     def _scarpe_episodes(self, soup):
         ret = soup.find('div', {'class': 'listing'}).find_all('a')
