@@ -30,7 +30,7 @@ class MP4Upload(BaseExtractor):
         mp4u_page = BeautifulSoup(requests.get(url).text, 'html.parser')
 
         title = mp4u_page.find('span', {'class': 'dfilename'}).text
-        title = title[:title.rfind('_')]
+        title = title[:title.rfind('_') or title.rfind('.')]
 
         logging.debug('Title is %s' % title)
 
