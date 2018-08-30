@@ -97,10 +97,7 @@ class AnimePahe(BaseAnimeCF):
         # Avoid changing original list
         episodes = episodes[:]
 
-        # If episodes is not an empty list we ensure that we start off
-        # from the length of the episodes list to get correct episode
-        # numbers
-        for no, anime_ep in enumerate(ani_json, len(episodes)):
+        for anime_ep in ani_json:
             epi_no = anime_ep['episode']
 
             episodes.append(
