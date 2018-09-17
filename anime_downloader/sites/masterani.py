@@ -40,14 +40,12 @@ class MasteraniEpisode(BaseEpisode):
 
             ret.append((source['host']['name'].lower(), url))
 
-        # TODO: Clean this up. Why it looks like this, I don't know.
-        ret_1 = [(name, url) for name, url in ret if name in ['stream.moe']]
-        ret_1 += [(name, url) for name, url in ret if name == 'rapidvideo']
-        ret_1 += [(name, url) for name, url in ret if name == 'mp4upload']
+        sources = ['stream.moe', 'rapidvideo', 'mp4upload']
+        ret = [(name, url) for name, url in ret if name in sources]
 
-        logging.debug(ret_1)
+        logging.debug(ret)
 
-        return ret_1
+        return ret
 
 
 class Masterani(BaseAnime):
