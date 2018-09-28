@@ -20,7 +20,7 @@ class BaseDownloader:
 
         self.chunksize = 16384
 
-        r = requests.get(self.url, stream=True)
+        r = requests.get(self.url, stream=True, verify=False)
 
         self.total_size = int(r.headers['Content-length'])
         if os.path.exists(path):

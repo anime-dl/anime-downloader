@@ -21,7 +21,7 @@ class HTTPDownloader(BaseDownloader):
         with open(self.path, 'w'):
             pass
 
-        r = requests.get(self.url, stream=True)
+        r = requests.get(self.url, stream=True, verify=False)
         while self.downloaded < self.total_size:
             r = requests.get(self.url,
                              headers=set_range(range_start, range_end),
@@ -41,7 +41,7 @@ class HTTPDownloader(BaseDownloader):
                 range_end = ''
 
     def _non_range_download(self):
-        r = requests.get(self.url, stream=True)
+        r = requests.get(self.url, stream=True, verify=False)
 
         if r.status_code == 200:
             with open(self.path, 'wb') as f:
