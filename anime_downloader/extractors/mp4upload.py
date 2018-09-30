@@ -19,7 +19,7 @@ class MP4Upload(BaseExtractor):
                                 r'.*?(www\d+).*?\|video\|(.*?)\|(\d+)\|.*?',
                                 re.DOTALL)
 
-        mp4u_embed = requests.get(self.url, verify=False).text
+        mp4u_embed = requests.get(self.url).text
         domain, video_id, protocol = source_parts_re.match(mp4u_embed).groups()
 
         logging.debug('Domain: %s, Video ID: %s, Protocol: %s' %

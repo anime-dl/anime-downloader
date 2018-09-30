@@ -8,19 +8,20 @@ from anime_downloader import util
 
 
 class BaseDownloader:
-    def __init__(self, source, path, force, range_size=None):
+    def __init__(self, source, path, force, range_size=None, no_ssl=True):
         logging.info(path)
 
         self.url = source.stream_url
         self.referer = source.referer
         self.path = path
         self.range_size = range_size
+        self.no_ssl = no_ssl
 
         util.make_dir(path.rsplit('/', 1)[0])
 
         self.chunksize = 16384
 
-        r = requests.get(self.url, stream=True, verify=False)
+        r = requests.get(self.url, stream=True, verify=no_ssl)
 
         self.total_size = int(r.headers['Content-length'])
         if os.path.exists(path):
