@@ -102,7 +102,6 @@ class BaseEpisode:
     QUALITIES = None
     title = ''
     stream_url = ''
-    ssl = True
 
     def __init__(self, url, quality='720p', parent=None,
                  ep_no=None):
@@ -167,7 +166,7 @@ class BaseEpisode:
         raise NotImplementedError
 
     def download(self, force=False, path=None,
-                 format='{anime_title}_{ep_no}', range_size=None, ssl=ssl):
+                 format='{anime_title}_{ep_no}', range_size=None, ssl=True):
         logging.info('Downloading {}'.format(self.pretty_title))
         if format:
             file_name = util.format_filename(format, self)+'.mp4'
