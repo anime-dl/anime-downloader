@@ -12,6 +12,7 @@ scraper = cfscrape.create_scraper()
 
 class MasteraniEpisode(BaseEpisode):
     QUALITIES = ['360p', '480p', '720p', '1080p']
+    ssl = False
 
     def _get_sources(self):
         logging.debug('[cfscrape] Calling {}'.format(self.url))

@@ -4,6 +4,7 @@ import os
 
 import logging
 
+from anime_downloader.sites.masterani import Masterani
 from anime_downloader.sites import get_anime_class
 from anime_downloader.players.mpv import mpv
 from anime_downloader.__version__ import __version__
@@ -23,7 +24,6 @@ def cli():
     Download or watch your favourite anime
     """
     pass
-
 
 # NOTE: Don't put defaults here. Add them to the dict in config
 @cli.command()
@@ -140,7 +140,14 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
             if chunk_size is not None:
                 chunk_size *= 1e6
                 chunk_size = int(chunk_size)
-            episode.download(force=force_download,
+            if cls == Masterani:
+                episode.download(force=force_download,
+                             path=download_dir,
+                             format=file_format,
+                             range_size=chunk_size,
+                             ssl=False)
+            else:
+                episode.download(force=force_download,
                              path=download_dir,
                              format=file_format,
                              range_size=chunk_size)

@@ -75,7 +75,6 @@ def search(query, provider):
 
     return url
 
-
 def split_anime(anime, episode_range):
     try:
         start, end = [int(x) for x in episode_range.split(':')]
