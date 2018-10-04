@@ -6,6 +6,7 @@ import requests
 from bs4 import BeautifulSoup
 import warnings
 
+from anime_downloader import util
 from anime_downloader.sites.anime import BaseAnime, BaseEpisode, SearchResult
 
 
@@ -33,7 +34,7 @@ class TwistMoe(BaseAnime):
 
     @classmethod
     def search(self, query):
-        r = requests.get('https://twist.moe')
+        r = requests.get('https://twist.moe', **util.get_requests_options())
         soup = BeautifulSoup(r.text, 'html.parser')
         all_anime = soup.select_one('nav.series').select('li')
         animes = []
@@ -53,7 +54,8 @@ class TwistMoe(BaseAnime):
             url,
             headers={
                 'x-access-token': '1rj2vRtegS8Y60B3w3qNZm5T2Q0TN2NR'
-            }
+            },
+            **util.get_requests_options()
         )
         episodes = episodes.json()
         self.title = anime_name

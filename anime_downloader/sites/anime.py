@@ -49,7 +49,7 @@ class BaseAnime:
 
     def get_data(self):
         self._episode_urls = []
-        r = requests.get(self.url, headers=desktop_headers)
+        r = requests.get(self.url, headers=desktop_headers, **util.get_requests_options())
         soup = BeautifulSoup(r.text, 'html.parser')
 
         try:
@@ -104,7 +104,7 @@ class BaseEpisode:
     stream_url = ''
 
     def __init__(self, url, quality='720p', parent=None,
-                 ep_no=None):
+                 ep_no=None, requests_options=None):
         if quality not in self.QUALITIES:
             raise AnimeDLError('Incorrect quality: "{}"'.format(quality))
 
@@ -114,6 +114,7 @@ class BaseEpisode:
         self._parent = parent
         self._sources = None
         self.pretty_title = '{}-{}'.format(self._parent.title, self.ep_no)
+        self.requests_options = requests_options or {}
 
         logging.debug("Extracting stream info of id: {}".format(self.url))
 
