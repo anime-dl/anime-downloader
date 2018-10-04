@@ -166,7 +166,7 @@ class BaseEpisode:
         raise NotImplementedError
 
     def download(self, force=False, path=None,
-                 format='{anime_title}_{ep_no}', range_size=None):
+                 format='{anime_title}_{ep_no}', range_size=None, ssl=True):
         logging.info('Downloading {}'.format(self.pretty_title))
         if format:
             file_name = util.format_filename(format, self)+'.mp4'
@@ -180,7 +180,7 @@ class BaseEpisode:
 
         Downloader = get_downloader('http')
         downloader = Downloader(self.source(),
-                                path, force, range_size=range_size)
+                                path, force, range_size=range_size, ssl=ssl)
 
         downloader.download()
 
