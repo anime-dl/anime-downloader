@@ -96,6 +96,7 @@ class AnimePahe(BaseAnimeCF):
     def _collect_episodes(self, ani_json, episodes=[]):
         # Avoid changing original list
         episodes = episodes[:]
+
         # If episodes is not an empty list we ensure that we start off
         # from the length of the episodes list to get correct episode
         # numbers
@@ -103,6 +104,7 @@ class AnimePahe(BaseAnimeCF):
             episodes.append(
                 (no+1, self.url + '/' + str(anime_ep['id']),)
             )
+
         return episodes
 
     def _scrape_episodes(self, ani_json):
