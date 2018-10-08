@@ -78,7 +78,7 @@ class KissAnime(BaseAnimeCF):
 
         return ret
 
-    def _scarpe_episodes(self, soup):
+    def _scrape_episodes(self, soup):
         ret = soup.find('table', {'class': 'listing'}).find_all('a')
         ret = ['http://kissanime.ru'+str(a['href']) for a in ret]
         logging.debug('Unfiltered episodes : {}'.format(ret))

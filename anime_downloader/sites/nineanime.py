@@ -89,7 +89,7 @@ class NineAnime(BaseAnime):
 
         return ret
 
-    def _scarpe_episodes(self, soup):
+    def _scrape_episodes(self, soup):
         ts = soup.find('html')['data-ts']
         self._episodeClass.ts = ts
         logging.debug('data-ts: {}'.format(ts))

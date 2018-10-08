@@ -25,7 +25,7 @@ class GogoAnime(BaseAnime):
     _episode_list_url = 'https://www2.gogoanime.se//load-list-episode'
     _episodeClass = GogoanimeEpisode
 
-    def _scarpe_episodes(self, soup):
+    def _scrape_episodes(self, soup):
         anime_id = soup.select_one('input#movie_id').attrs['value']
         params = {
             'default_ep': 0,

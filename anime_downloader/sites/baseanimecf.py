@@ -19,7 +19,7 @@ class BaseAnimeCF(BaseAnime):
 
         self._scrape_metadata(soup)
 
-        self._episode_urls = self._scarpe_episodes(soup)
+        self._episode_urls = self._scrape_episodes(soup)
         self._len = len(self._episode_urls)
 
         logging.debug('EPISODE IDS: length: {}, ids: {}'.format(

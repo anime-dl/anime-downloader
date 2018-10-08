@@ -68,7 +68,7 @@ class KissCartoon(KissAnime):
 
         return ret
 
-    def _scarpe_episodes(self, soup):
+    def _scrape_episodes(self, soup):
         ret = soup.find('div', {'class': 'listing'}).find_all('a')
         ret = [str(a['href']) for a in ret]
 

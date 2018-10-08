@@ -57,7 +57,7 @@ class BaseAnime:
         except Exception as e:
             logging.debug('Metadata scraping error: {}'.format(e))
 
-        self._episode_urls = self._scarpe_episodes(soup)
+        self._episode_urls = self._scrape_episodes(soup)
         self._len = len(self._episode_urls)
 
         logging.debug('EPISODE IDS: length: {}, ids: {}'.format(
@@ -91,7 +91,7 @@ Episode count: {length}
     def __str__(self):
         return self.title
 
-    def _scarpe_episodes(self, soup):
+    def _scrape_episodes(self, soup):
         return
 
     def _scrape_metadata(self, soup):
@@ -160,7 +160,7 @@ class BaseEpisode:
 
     def get_data(self):
         self._sources = self._get_sources()
-        logging.debug('Sources : '.format(self._sources))
+        logging.debug('Sources : {0}'.format(self._sources))
 
     def _get_sources(self):
         raise NotImplementedError
