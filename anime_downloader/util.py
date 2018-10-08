@@ -30,22 +30,21 @@ def setup_logger(log_level):
     logger.setLevel(logging.WARNING)
 
 
-def format_search_results(search_results):
+def format_search_results(search_results, title_length):
     _, height = shutil.get_terminal_size()
     height -= 4  # Accounting for prompt
-
     ret = ''
     for idx, result in enumerate(search_results[:height]):
         try:
             meta = ' | '.join(val for _, val in result.meta.items())
         except AttributeError:
             meta = ''
-        ret += '{:2}: {:40.40}\t{:20.20}\n'.format(idx+1, result.title, meta)
+        ret += '{:2}: {}\t{:20.20}\n'.format(idx+1, result.title[:title_length+1], meta)
 
     return ret
 
 
-def search(query, provider):
+def search(query, provider, title_length=40):
     # Since this function outputs to stdout this should ideally be in
     # cli. But it is used in watch too. :(
     cls = get_anime_class(provider)
@@ -54,7 +53,7 @@ def search(query, provider):
     except Exception as e:
         logging.error(click.style(str(e), fg='red'))
         sys.exit(1)
-    click.echo(format_search_results(search_results))
+    click.echo(format_search_results(search_results, title_length))
 
     if not search_results:
         logging.error('No such Anime found. Please ensure correct spelling.')

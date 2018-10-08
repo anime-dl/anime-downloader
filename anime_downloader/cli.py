@@ -179,13 +179,17 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
     help='The anime provider (website) for search.',
     type=click.Choice(['9anime', 'kissanime', 'twist.moe', 'kisscartoon'])
 )
+@click.option(
+    '--title', '-t', type=int, default=40,
+    help='Set the length of the title to display'
+)
 
 @click.option(
     '--log-level', '-ll', 'log_level',
     type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR']),
     help='Sets the level of logger', default='INFO')
 def watch(anime_name, new, update_all, _list, quality, log_level, remove,
-          download_dir, provider):
+          download_dir, provider, title):
     """
     With watch you can keep track of any anime you watch.
 
@@ -208,7 +212,7 @@ def watch(anime_name, new, update_all, _list, quality, log_level, remove,
         else:
             query = click.prompt('Enter a anime name or url', type=str)
 
-        url = util.search(query, provider)
+        url = util.search(query, provider, title)
 
         watcher.new(url)
         sys.exit(0)
