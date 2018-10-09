@@ -8,3 +8,5 @@ anime-downloader = {editable = true, path = "."}
 
 [dev-packages]
 twine = "*"
+sphinx = "*"
+sphinx-rtd-theme = "*"

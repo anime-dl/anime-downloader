@@ -1,19 +1,43 @@
+"""
+anime.py contains the base classes required for other anime classes.
+"""
+import requests
 from bs4 import BeautifulSoup
 
 import os
 import logging
 import copy
 
-from anime_downloader import session
 from anime_downloader.sites.exceptions import AnimeDLError, NotFoundError
 from anime_downloader import util
-from anime_downloader.sites import helpers
-from anime_downloader.const import desktop_headers
 from anime_downloader.extractors import get_extractor
 from anime_downloader.downloader import get_downloader
 
 
 class Anime:
+    """
+    Base class for all anime classes.
+
+    Parameters
+    ----------
+    url: string
+        URL of the anime.
+    quality: One of ['360p', '480p', '720p', '1080p']
+        Quality of episodes
+    fallback_qualities: list
+        The order of fallback.
+
+    Attributes
+    ----------
+    sitename: string
+        name of the site
+    title: string
+        Title of the anime
+    meta: dict
+        metadata about the anime. [Can be empty]
+    QUALITIES: list
+        Possible qualities for the site
+    """
     sitename = ''
     title = ''
     meta = dict()
@@ -24,6 +48,12 @@ class Anime:
 
     @classmethod
     def search(cls, query):
+        """
+        Search searches for the anime using the query given.
+
+        query :
+            query is
+        """
         return
 
     def __init__(self, url=None, quality='720p',
