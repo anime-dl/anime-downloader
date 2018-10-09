@@ -7,3 +7,5 @@ name = "pypi"
 anime-downloader = {editable = true, path = "."}
 
 [dev-packages]
+sphinx = "*"
+sphinx-rtd-theme = "*"
