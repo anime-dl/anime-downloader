@@ -12,6 +12,7 @@ import time
 import ast
 from copy import deepcopy
 
+from anime_downloader.session import session
 from anime_downloader.sites import get_anime_class
 from anime_downloader.const import desktop_headers
 
@@ -21,10 +22,6 @@ _requests_options = dict()
 def set_default_requests_options(**options):
     _requests_options.clear()
     _requests_options.update(options)
-
-
-def get_requests_options():
-    return deepcopy(_requests_options)
 
 
 def setup_logger(log_level):
@@ -122,7 +119,7 @@ def print_info(version):
 
 def get_json(url, params=None):
     logging.debug('API call URL: {} with params {!r}'.format(url, params))
-    res = requests.get(url, headers=desktop_headers, params=params, **get_requests_options())
+    res = session.get(url, headers=desktop_headers, params=params)
     logging.debug('URL: {}'.format(res.url))
     data = res.json()
     logging.debug('Returned data: {}'.format(data))

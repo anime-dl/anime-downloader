@@ -4,12 +4,13 @@ import base64
 
 from anime_downloader import util
 from anime_downloader.extractors.base_extractor import BaseExtractor
+from anime_downloader.session import session
 
 
 class StreamMoe(BaseExtractor):
     def _get_data(self):
         url = self.url
-        res = requests.get(url, **util.get_requests_options())
+        res = session.get(url)
         content_re = re.compile(r"= atob\('(.*?)'\)")
         source_re = re.compile(r'source src="(.*?)"')
 

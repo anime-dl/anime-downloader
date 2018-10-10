@@ -1,4 +1,5 @@
 from anime_downloader import util
+from anime_downloader.session import session
 from anime_downloader.sites.kissanime import KissAnime
 from anime_downloader.sites.anime import BaseEpisode, SearchResult
 from anime_downloader.sites.exceptions import NotFoundError
@@ -25,13 +26,12 @@ class KisscartoonEpisode(BaseEpisode):
         }
         headers = desktop_headers
         headers['referer'] = self.url
-        res = requests.get(self._episode_list_url,
-                           params=params, headers=headers, **util.get_requests_options())
+        res = session.get(self._episode_list_url, params=params, headers=headers)
         url = res.json()['value']
 
         headers = desktop_headers
         headers['referer'] = self.url
-        res = requests.get('https:' + url, headers=headers, **util.get_requests_options())
+        res = session.get('https:' + url, headers=headers)
 
         return [(
             'no_extractor',

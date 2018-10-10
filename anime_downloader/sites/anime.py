@@ -7,6 +7,7 @@ import logging
 import sys
 import copy
 
+from anime_downloader.session import session
 from anime_downloader.sites.exceptions import AnimeDLError, NotFoundError
 from anime_downloader import util
 from anime_downloader.const import desktop_headers
@@ -49,7 +50,7 @@ class BaseAnime:
 
     def get_data(self):
         self._episode_urls = []
-        r = requests.get(self.url, headers=desktop_headers, **util.get_requests_options())
+        r = session.get(self.url, headers=desktop_headers)
         soup = BeautifulSoup(r.text, 'html.parser')
 
         try:

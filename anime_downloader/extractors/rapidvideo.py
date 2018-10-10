@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 
 from anime_downloader import util
 from anime_downloader.extractors.base_extractor import BaseExtractor
+from anime_downloader.session import session
 
 
 class RapidVideo(BaseExtractor):
@@ -14,13 +15,13 @@ class RapidVideo(BaseExtractor):
         headers = self.headers
         headers['referer'] = url
         try:
-            r = requests.get(url, headers=headers, **util.get_requests_options())
+            r = session.get(url, headers=headers)
         except:
-            r = requests.post(url, {
+            r = session.post(url, {
                 'cursor.x': 12,
                 'cursor.y': 12,
                 'block': 1,
-            }, headers=headers, **util.get_requests_options())
+            }, headers=headers)
         soup = BeautifulSoup(r.text, 'html.parser')
 
         # TODO: Make these a different function. Can be reused in other classes

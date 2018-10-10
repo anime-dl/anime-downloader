@@ -5,6 +5,7 @@ import logging
 import sys
 
 from anime_downloader import util
+from anime_downloader.session import session
 
 
 class BaseDownloader:
@@ -20,7 +21,7 @@ class BaseDownloader:
 
         self.chunksize = 16384
 
-        r = requests.get(self.url, stream=True, **util.get_requests_options())
+        r = session.get(self.url, stream=True)
 
         self.total_size = int(r.headers['Content-length'])
         if os.path.exists(path):
