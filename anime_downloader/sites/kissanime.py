@@ -13,7 +13,7 @@ scraper = cfscrape.create_scraper(delay=10)
 
 
 class KissanimeEpisode(BaseEpisode):
-    QUALITIES = ['360p', '480p', '720p']
+    QUALITIES = ['360p', '480p', '720p', '1080p']
     _base_url = 'http://kissanime.ru'
     VERIFY_HUMAN = True
 
@@ -36,7 +36,7 @@ class KissanimeEpisode(BaseEpisode):
 class KissAnime(BaseAnimeCF):
     sitename = 'kissanime'
     _referer = 'http://kissanime.ru/'
-    QUALITIES = ['360p', '480p', '720p']
+    QUALITIES = ['360p', '480p', '720p', '1080p']
     _episodeClass = KissanimeEpisode
 
     @classmethod

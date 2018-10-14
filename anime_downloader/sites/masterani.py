@@ -2,9 +2,10 @@ import json
 import re
 import cfscrape
 import logging
+import requests
 from bs4 import BeautifulSoup
 
-from anime_downloader.sites.anime import BaseAnime, BaseEpisode
+from anime_downloader.sites.anime import BaseAnime, BaseEpisode, SearchResult
 from anime_downloader.const import desktop_headers
 
 scraper = cfscrape.create_scraper()
@@ -53,6 +54,33 @@ class Masterani(BaseAnime):
     QUALITIES = ['360p', '480p', '720p', '1080p']
     _api_url = 'https://www.masterani.me/api/anime/{}/detailed'
     _episodeClass = MasteraniEpisode
+
+    @classmethod
+    def search(cls, query):
+        r = requests.get('https://masterani.me/api/anime/filter?',
+                         params={'search': query, 'order': 'relevance_desc'})
+
+        logging.debug(r.url)
+
+        search_result = r.json()['data']
+
+        ret = []
+
+        logging.debug('Search results')
+
+        for item in search_result:
+            s = SearchResult(
+                title=item['title'],
+                url='https://masterani.me/anime/info/{}'.format(item['slug']),
+                poster='https://cdn.masterani.me/{}{}'.format(
+                    item['poster']['path'], item['poster']['file']
+                )
+            )
+            logging.debug(s)
+            ret.append(s)
+
+        return ret
+
 
     def get_data(self):
         anime_id = self.url.split('info/')[-1].split('-')[0]
