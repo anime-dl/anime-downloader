@@ -29,9 +29,9 @@ class Anime:
 
     Attributes
     ----------
-    sitename: string
+    sitename: str
         name of the site
-    title: string
+    title: str
         Title of the anime
     meta: dict
         metadata about the anime. [Can be empty]
@@ -51,8 +51,15 @@ class Anime:
         """
         Search searches for the anime using the query given.
 
-        query :
-            query is
+        Parameters
+        ----------
+        query: str
+            query is the query keyword to be searched.
+
+        Returns
+        -------
+        list
+            List of :py:class:`~anime_downloader.sites.anime.SearchResult`
         """
         return
 
@@ -70,7 +77,8 @@ class Anime:
 
         if not _skip_online_data:
             logging.info('Extracting episode info from page')
-            self.get_data()
+            self._episode_urls = self.get_data()
+            self._len = len(self._episode_urls)
 
     @classmethod
     def verify_url(self, url):
@@ -87,6 +95,28 @@ class Anime:
         return cls.subclasses[sitename]
 
     def get_data(self):
+        """
+        get_data is called inside the :code:`__init__` of
+        :py:class:`~anime_downloader.sites.anime.BaseAnime`. It is used to get
+        the necessary data about the anime and it's episodes.
+
+        This function calls
+        :py:class:`~anime_downloader.sites.anime.BaseAnime._scarpe_episodes`
+        and
+        :py:class:`~anime_downloader.sites.anime.BaseAnime._scrape_metadata`
+
+        TODO: Refactor this so that classes which need not be soupified don't
+        have to overload this function.
+
+        Returns
+        -------
+        list
+            A list of tuples of episodes containing episode name and
+            episode url.
+            Ex::
+                [('1', 'https://9anime.is/.../...', ...)]
+
+        """
         self._episode_urls = []
         try:
             self._scrape_metadata()
@@ -128,10 +158,35 @@ Episode count: {length}
     def __str__(self):
         return self.title
 
-    def _scrape_episodes(self):
+    def _scarpe_episodes(self, soup):
+        """
+        _scarpe_episodes is function which has to be overridden by the base
+        classes to scrape the episode urls from the web page.
+
+        Parameters
+        ----------
+        soup: `bs4.BeautifulSoup`
+            soup is the html of the anime url after passing through
+            BeautifulSoup.
+
+        Returns
+        -------
+        :code:`list` of :code:`str`
+            A list of episode urls.
+        """
         return
 
-    def _scrape_metadata(self):
+    def _scrape_metadata(self, soup):
+        """
+        _scrape_metadata is function which has to be overridden by the base
+        classes to scrape the metadata of anime from the web page.
+
+        Parameters
+        ----------
+        soup: :py:class:`bs4.BeautifulSoup`
+            soup is the html of the anime url after passing through
+            BeautifulSoup.
+        """
         return
 
 
@@ -234,11 +289,38 @@ class AnimeEpisode:
 
 
 class SearchResult:
-    def __init__(self, title, url, poster):
+    """
+    SearchResult class holds the search result of a search done by an Anime
+    class
+
+    Parameters
+    ----------
+    title: str
+        Title of the anime.
+    url: str
+        URL of the anime
+    poster: str
+        URL for the poster of the anime.
+    meta: dict
+        Additional metadata regarding the anime.
+
+    Attributes
+    ----------
+    title: str
+        Title of the anime.
+    url: str
+        URL of the anime
+    poster: str
+        URL for the poster of the anime.
+    meta: dict
+        Additional metadata regarding the anime.
+    """
+
+    def __init__(self, title, url, poster, meta=''):
         self.title = title
         self.url = url
         self.poster = poster
-        self.meta = ''
+        self.meta = meta
 
     def __repr__(self):
         return '<SearchResult Title: {} URL: {}>'.format(self.title, self.url)

@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-anime-downloader = {editable = true, path = "."}
+anime-downloader = {editable = true, path = ".", extras = ["cloudflare"]}
 
 [dev-packages]
 twine = "*"

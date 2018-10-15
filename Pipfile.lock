@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "3c226d0611904abe8b253ddaa90b12046c1c6363b5920e508f067e2d5830e130"
+            "sha256": "b39a35608ce09e57197e0564221771979dcb36be0f7866a5c73298da5a98b4d5"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -16,6 +16,9 @@
     "default": {
         "anime-downloader": {
             "editable": true,
+            "extras": [
+                "cloudflare"
+            ],
             "path": "."
         },
         "beautifulsoup4": {
@@ -32,6 +35,12 @@
                 "sha256:b26104d6835d1f5e49452a26eb2ff87fe7090b89dfcaee5ea2212697e1e1d7ae"
             ],
             "version": "==2019.3.9"
+        },
+        "cfscrape": {
+            "hashes": [
+                "sha256:cb9159955d0e6e82cf4ad8cc9b19413e68ebfed1ce98a26e51f62e66d45146f1"
+            ],
+            "version": "==1.9.5"
         },
         "chardet": {
             "hashes": [
