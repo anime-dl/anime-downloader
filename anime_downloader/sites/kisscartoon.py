@@ -1,11 +1,9 @@
-from anime_downloader import util
-from anime_downloader.session import session
+from anime_downloader import session
 from anime_downloader.sites.kissanime import KissAnime
 from anime_downloader.sites.anime import BaseEpisode, SearchResult
 from anime_downloader.sites.exceptions import NotFoundError
 from anime_downloader.const import desktop_headers, get_random_header
 
-import requests
 from bs4 import BeautifulSoup
 import cfscrape
 import logging
@@ -20,18 +18,19 @@ class KisscartoonEpisode(BaseEpisode):
     QUALITIES = ['720p']
 
     def _get_sources(self):
+        s = session.get_session()
         params = {
             'v': '1.1',
             'episode_id': self.url.split('id=')[-1],
         }
         headers = desktop_headers
         headers['referer'] = self.url
-        res = session.get(self._episode_list_url, params=params, headers=headers)
+        res = s.get(self._episode_list_url, params=params, headers=headers)
         url = res.json()['value']
 
         headers = desktop_headers
         headers['referer'] = self.url
-        res = session.get('https:' + url, headers=headers)
+        res = s.get('https:' + url, headers=headers)
 
         return [(
             'no_extractor',

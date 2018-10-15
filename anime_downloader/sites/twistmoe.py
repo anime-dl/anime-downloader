@@ -2,12 +2,10 @@ from Crypto import Random
 from Crypto.Cipher import AES
 import base64
 from hashlib import md5
-import requests
 from bs4 import BeautifulSoup
 import warnings
 
-from anime_downloader import util
-from anime_downloader.session import session
+from anime_downloader import session
 from anime_downloader.sites.anime import BaseAnime, BaseEpisode, SearchResult
 
 
@@ -35,7 +33,7 @@ class TwistMoe(BaseAnime):
 
     @classmethod
     def search(self, query):
-        r = session.get('https://twist.moe')
+        r = session.get_session().get('https://twist.moe')
         soup = BeautifulSoup(r.text, 'html.parser')
         all_anime = soup.select_one('nav.series').select('li')
         animes = []
@@ -51,7 +49,7 @@ class TwistMoe(BaseAnime):
     def get_data(self):
         anime_name = self.url.split('/a/')[-1].split('/')[0]
         url = self._api_url.format(anime_name)
-        episodes = session.get(
+        episodes = session.get_session().get(
             url,
             headers={
                 'x-access-token': '1rj2vRtegS8Y60B3w3qNZm5T2Q0TN2NR'

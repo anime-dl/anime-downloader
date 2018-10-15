@@ -1,10 +1,9 @@
-from anime_downloader.session import session
+from anime_downloader import session
 from anime_downloader.sites.anime import BaseAnime, BaseEpisode, SearchResult
 from anime_downloader.sites.exceptions import NotFoundError, AnimeDLError
 from anime_downloader import util
 from anime_downloader.const import desktop_headers
 
-import requests
 from bs4 import BeautifulSoup
 
 import logging
@@ -60,7 +59,7 @@ class NineAnime(BaseAnime):
 
     @classmethod
     def search(cls, query):
-        r = session.get('https://www4.9anime.is/search?', params={'keyword': query}, headers=desktop_headers)
+        r = session.get_session().get('https://www4.9anime.is/search?', params={'keyword': query}, headers=desktop_headers)
 
         logging.debug(r.url)
 
@@ -104,7 +103,7 @@ class NineAnime(BaseAnime):
         params = {}
         params['_'] = int(generate_(params))
         params['_'] = 648
-        soup = BeautifulSoup(session.get(api_url, params=params).json()['html'], 'html.parser')
+        soup = BeautifulSoup(session.get_session().get(api_url, params=params).json()['html'], 'html.parser')
         episodes = soup.find('div', {'class': 'server', 'data-name': 33})
         episodes = episodes.find_all('li')
 

@@ -1,5 +1,4 @@
-from anime_downloader import util
-from anime_downloader.session import session
+from anime_downloader import session
 from anime_downloader.sites.anime import BaseAnime, BaseEpisode
 import requests
 import re
@@ -11,7 +10,7 @@ class GogoanimeEpisode(BaseEpisode):
     _base_url = 'https://www2.gogoanime.se'
 
     def _get_sources(self):
-        soup = BeautifulSoup(session.get(self.url).text, 'html.parser')
+        soup = BeautifulSoup(session.get_session().get(self.url).text, 'html.parser')
         url = 'https:'+soup.select_one('li.anime a').get('data-video')
 
         res = requests.get(url)
@@ -36,7 +35,7 @@ class GogoAnime(BaseAnime):
             'id': anime_id,
         }
 
-        res = session.get(self._episode_list_url, params=params)
+        res = session.get_session().get(self._episode_list_url, params=params)
         soup = BeautifulSoup(res.text, 'html.parser')
 
         epurls = list(

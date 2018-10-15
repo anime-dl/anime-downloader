@@ -3,9 +3,8 @@ import re
 import requests
 from bs4 import BeautifulSoup
 
-from anime_downloader import util
 from anime_downloader.extractors.base_extractor import BaseExtractor
-from anime_downloader.session import session
+from anime_downloader import session
 
 
 class MP4Upload(BaseExtractor):
@@ -22,7 +21,8 @@ class MP4Upload(BaseExtractor):
                                 r'.*?(www\d+).*?\|video\|(.*?)\|(\d+)\|.*?',
                                 re.DOTALL)
 
-        mp4u_embed = session.get(self.url).text
+        s = session.get_session()
+        mp4u_embed = s.get(self.url).text
         domain, video_id, protocol = source_parts_re.match(mp4u_embed).groups()
 
         logging.debug('Domain: %s, Video ID: %s, Protocol: %s' %
@@ -30,7 +30,7 @@ class MP4Upload(BaseExtractor):
 
         url = self.url.replace('embed-', '')
         # Return to non-embed page to collect title
-        mp4u_page = BeautifulSoup(session.get(url).text, 'html.parser')
+        mp4u_page = BeautifulSoup(s.get(url).text, 'html.parser')
 
         title = mp4u_page.find('span', {'class': 'dfilename'}).text
         title = title[:title.rfind('_')][:title.rfind('.')].replace(' ', '_')

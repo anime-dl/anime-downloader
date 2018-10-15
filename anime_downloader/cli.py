@@ -4,7 +4,7 @@ import os
 
 import logging
 
-from anime_downloader.session import session
+from anime_downloader import session
 from anime_downloader.sites import get_anime_class
 from anime_downloader.players.mpv import mpv
 from anime_downloader.__version__ import __version__
@@ -96,7 +96,7 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
     cls = get_anime_class(anime_url)
 
     disable_ssl = cls and cls.__name__ == 'Masterani' or disable_ssl
-    session.verify = not disable_ssl
+    session.get_session().verify = not disable_ssl
 
     if not cls:
         anime_url = util.search(anime_url, provider)

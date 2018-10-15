@@ -1,4 +1,3 @@
-import requests
 from bs4 import BeautifulSoup
 
 import time
@@ -7,7 +6,7 @@ import logging
 import sys
 import copy
 
-from anime_downloader.session import session
+from anime_downloader import session
 from anime_downloader.sites.exceptions import AnimeDLError, NotFoundError
 from anime_downloader import util
 from anime_downloader.const import desktop_headers
@@ -50,7 +49,7 @@ class BaseAnime:
 
     def get_data(self):
         self._episode_urls = []
-        r = session.get(self.url, headers=desktop_headers)
+        r = session.get_session().get(self.url, headers=desktop_headers)
         soup = BeautifulSoup(r.text, 'html.parser')
 
         try:
@@ -105,7 +104,7 @@ class BaseEpisode:
     stream_url = ''
 
     def __init__(self, url, quality='720p', parent=None,
-                 ep_no=None, requests_options=None):
+                 ep_no=None):
         if quality not in self.QUALITIES:
             raise AnimeDLError('Incorrect quality: "{}"'.format(quality))
 
@@ -115,7 +114,6 @@ class BaseEpisode:
         self._parent = parent
         self._sources = None
         self.pretty_title = '{}-{}'.format(self._parent.title, self.ep_no)
-        self.requests_options = requests_options or {}
 
         logging.debug("Extracting stream info of id: {}".format(self.url))
 
