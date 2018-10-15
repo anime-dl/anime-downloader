@@ -103,13 +103,7 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
             raise
         return
 
-    # TODO: Refractor this somewhere else. (util?)
-    if episode_range is None:
-        episode_range = '1:'
-    if episode_range.endswith(':'):
-        episode_range += str(len(anime)+1)
-    if episode_range.startswith(':'):
-        episode_range = '1' + episode_range
+    episode_range = util.parse_episode_range(anime, episode_range)
 
     logging.info('Found anime: {}'.format(anime.title))
 
