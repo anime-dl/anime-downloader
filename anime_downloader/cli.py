@@ -32,7 +32,7 @@ def cli():
     help="Range of anime you want to download in the form <start>:<end>")
 @click.option(
     '--grammar', '-g', 'grammar', metavar='<string>',
-    help='''Collect only specific episodes for example "1,10-12" will get
+    help='''Collect only specific episodes for example "1,10:12" will get
             episodes 1, 10, 11, 12''')
 @click.option(
     '--url', '-u', type=bool, is_flag=True,
