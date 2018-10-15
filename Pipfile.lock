@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a971214a4fa9225a057569fbb473217aeef781d12401708efce16be16f89c058"
+            "sha256": "54da4be4430c724afa98d1708634f470271cabed924a09bb5bd16ce32a6fb74a"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -16,6 +16,9 @@
     "default": {
         "anime-downloader": {
             "editable": true,
+            "extras": [
+                "cloudflare"
+            ],
             "path": "."
         },
         "beautifulsoup4": {
@@ -28,10 +31,16 @@
         },
         "certifi": {
             "hashes": [
-                "sha256:376690d6f16d32f9d1fe8932551d80b23e9d393a8578c5633a2ed39a64861638",
-                "sha256:456048c7e371c089d0a77a5212fb37a2c2dce1e24146e3b7e0261736aaeaa22a"
+                "sha256:339dc09518b07e2fa7eda5450740925974815557727d6bd35d319c1524a04a4c",
+                "sha256:6d58c986d22b038c8c0df30d639f23a3e6d172a05c3583e766f4c0b785c0986a"
             ],
-            "version": "==2018.8.24"
+            "version": "==2018.10.15"
+        },
+        "cfscrape": {
+            "hashes": [
+                "sha256:cb9159955d0e6e82cf4ad8cc9b19413e68ebfed1ce98a26e51f62e66d45146f1"
+            ],
+            "version": "==1.9.5"
         },
         "chardet": {
             "hashes": [
@@ -95,10 +104,10 @@
         },
         "certifi": {
             "hashes": [
-                "sha256:376690d6f16d32f9d1fe8932551d80b23e9d393a8578c5633a2ed39a64861638",
-                "sha256:456048c7e371c089d0a77a5212fb37a2c2dce1e24146e3b7e0261736aaeaa22a"
+                "sha256:339dc09518b07e2fa7eda5450740925974815557727d6bd35d319c1524a04a4c",
+                "sha256:6d58c986d22b038c8c0df30d639f23a3e6d172a05c3583e766f4c0b785c0986a"
             ],
-            "version": "==2018.8.24"
+            "version": "==2018.10.15"
         },
         "chardet": {
             "hashes": [
