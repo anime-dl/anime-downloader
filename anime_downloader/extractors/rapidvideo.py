@@ -5,18 +5,19 @@ from bs4 import BeautifulSoup
 from anime_downloader.extractors.base_extractor import BaseExtractor
 from anime_downloader import session
 
+session = session.get_session()
+
 
 class RapidVideo(BaseExtractor):
     def _get_data(self):
-        s = session.get_session()
         url = self.url + '&q=' + self.quality
         logging.debug('Calling Rapid url: {}'.format(url))
         headers = self.headers
         headers['referer'] = url
         try:
-            r = s.get(url, headers=headers)
+            r = session.get(url, headers=headers)
         except:
-            r = s.post(url, {
+            r = session.post(url, {
                 'cursor.x': 12,
                 'cursor.y': 12,
                 'block': 1,

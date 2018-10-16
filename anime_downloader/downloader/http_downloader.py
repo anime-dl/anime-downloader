@@ -3,6 +3,8 @@ import os
 from anime_downloader.downloader.base_downloader import BaseDownloader
 from anime_downloader import session
 
+session = session.get_session()
+
 
 class HTTPDownloader(BaseDownloader):
     def _download(self):
@@ -21,12 +23,11 @@ class HTTPDownloader(BaseDownloader):
         with open(self.path, 'w'):
             pass
 
-        s = session.get_session()
-        r = s.get(self.url, stream=True)
+        r = session.get(self.url, stream=True)
         while self.downloaded < self.total_size:
-            r = s.get(self.url,
-                      headers=set_range(range_start, range_end),
-                      stream=True)
+            r = session.get(self.url,
+                            headers=set_range(range_start, range_end),
+                            stream=True)
             if r.status_code == 206:
                 with open(self.path, 'ab') as f:
                     for chunk in r.iter_content(chunk_size=self.chunksize):
@@ -42,7 +43,7 @@ class HTTPDownloader(BaseDownloader):
                 range_end = ''
 
     def _non_range_download(self):
-        r = session.get_session().get(self.url, stream=True)
+        r = session.get(self.url, stream=True)
 
         if r.status_code == 200:
             with open(self.path, 'wb') as f:

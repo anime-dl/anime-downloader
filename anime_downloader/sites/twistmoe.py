@@ -16,6 +16,7 @@ with warnings.catch_warnings():
 
 BLOCK_SIZE = 16
 KEY = b"k8B$B@0L8D$tDYHGmRg98sQ7!%GOEGOX27T"
+session = session.get_session()
 
 
 class TwistMoeEpisode(BaseEpisode):
@@ -33,7 +34,7 @@ class TwistMoe(BaseAnime):
 
     @classmethod
     def search(self, query):
-        r = session.get_session().get('https://twist.moe')
+        r = session.get('https://twist.moe')
         soup = BeautifulSoup(r.text, 'html.parser')
         all_anime = soup.select_one('nav.series').select('li')
         animes = []
@@ -49,7 +50,7 @@ class TwistMoe(BaseAnime):
     def get_data(self):
         anime_name = self.url.split('/a/')[-1].split('/')[0]
         url = self._api_url.format(anime_name)
-        episodes = session.get_session().get(
+        episodes = session.get(
             url,
             headers={
                 'x-access-token': '1rj2vRtegS8Y60B3w3qNZm5T2Q0TN2NR'

@@ -4,13 +4,15 @@ import requests
 import re
 from bs4 import BeautifulSoup
 
+session = session.get_session()
+
 
 class GogoanimeEpisode(BaseEpisode):
     QUALITIES = ['360p', '480p', '720p']
     _base_url = 'https://www2.gogoanime.se'
 
     def _get_sources(self):
-        soup = BeautifulSoup(session.get_session().get(self.url).text, 'html.parser')
+        soup = BeautifulSoup(session.get(self.url).text, 'html.parser')
         url = 'https:'+soup.select_one('li.anime a').get('data-video')
 
         res = requests.get(url)
@@ -35,7 +37,7 @@ class GogoAnime(BaseAnime):
             'id': anime_id,
         }
 
-        res = session.get_session().get(self._episode_list_url, params=params)
+        res = session.get(self._episode_list_url, params=params)
         soup = BeautifulSoup(res.text, 'html.parser')
 
         epurls = list(

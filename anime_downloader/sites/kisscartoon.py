@@ -9,6 +9,7 @@ import cfscrape
 import logging
 
 scraper = cfscrape.create_scraper()
+session = session.get_session()
 
 
 class KisscartoonEpisode(BaseEpisode):
@@ -18,19 +19,18 @@ class KisscartoonEpisode(BaseEpisode):
     QUALITIES = ['720p']
 
     def _get_sources(self):
-        s = session.get_session()
         params = {
             'v': '1.1',
             'episode_id': self.url.split('id=')[-1],
         }
         headers = desktop_headers
         headers['referer'] = self.url
-        res = s.get(self._episode_list_url, params=params, headers=headers)
+        res = session.get(self._episode_list_url, params=params, headers=headers)
         url = res.json()['value']
 
         headers = desktop_headers
         headers['referer'] = self.url
-        res = s.get('https:' + url, headers=headers)
+        res = session.get('https:' + url, headers=headers)
 
         return [(
             'no_extractor',

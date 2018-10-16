@@ -10,6 +10,8 @@ import logging
 
 __all__ = ['NineAnimeEpisode', 'NineAnime']
 
+session = session.get_session()
+
 
 class NineAnimeEpisode(BaseEpisode):
     QUALITIES = ['360p', '480p', '720p', '1080p']
@@ -59,7 +61,7 @@ class NineAnime(BaseAnime):
 
     @classmethod
     def search(cls, query):
-        r = session.get_session().get('https://www4.9anime.is/search?', params={'keyword': query}, headers=desktop_headers)
+        r = session.get('https://www4.9anime.is/search?', params={'keyword': query}, headers=desktop_headers)
 
         logging.debug(r.url)
 
@@ -103,7 +105,7 @@ class NineAnime(BaseAnime):
         params = {}
         params['_'] = int(generate_(params))
         params['_'] = 648
-        soup = BeautifulSoup(session.get_session().get(api_url, params=params).json()['html'], 'html.parser')
+        soup = BeautifulSoup(session.get(api_url, params=params).json()['html'], 'html.parser')
         episodes = soup.find('div', {'class': 'server', 'data-name': 33})
         episodes = episodes.find_all('li')
 
