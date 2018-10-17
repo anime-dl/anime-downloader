@@ -23,9 +23,9 @@ Run the program with --log-level DEBUG and paste the output in the space below
 -->
 <details>
 <summary>LOG</summary>
-```
-
-
 
 ```
-</details>
+
+
+
+```
