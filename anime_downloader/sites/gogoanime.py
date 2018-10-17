@@ -1,7 +1,10 @@
-from anime_downloader.sites.anime import BaseAnime, BaseEpisode
-import requests
+import logging
 import re
+import requests
 from bs4 import BeautifulSoup
+
+from anime_downloader.sites.anime import BaseAnime, BaseEpisode, SearchResult
+from anime_downloader import util
 
 
 class GogoanimeEpisode(BaseEpisode):
@@ -24,6 +27,31 @@ class GogoAnime(BaseAnime):
     QUALITIES = ['360p', '480p', '720p']
     _episode_list_url = 'https://www2.gogoanime.se//load-list-episode'
     _episodeClass = GogoanimeEpisode
+    _search_api_url = 'https://api.watchanime.cc/site/loadAjaxSearch'
+
+    @classmethod
+    def search(cls, query):
+        resp = util.get_json(
+            cls._search_api_url,
+            params={
+                'keyword': query,
+                'id': -1,
+                'link_web': 'https://www1.gogoanime.sh/'
+            }
+        )
+
+        search_results = []
+
+        soup = BeautifulSoup(resp['content'], 'html.parser')
+        for element in soup('a', class_='ss-title'):
+            search_result = SearchResult(
+                title=element.text,
+                url=element.attrs['href'],
+                poster=''
+            )
+            logging.debug(search_result)
+            search_results.append(search_result)
+        return search_results
 
     def _scarpe_episodes(self, soup):
         anime_id = soup.select_one('input#movie_id').attrs['value']
