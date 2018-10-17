@@ -1,5 +1,4 @@
 import logging
-import re
 import requests
 from bs4 import BeautifulSoup
 
@@ -13,13 +12,20 @@ class GogoanimeEpisode(BaseEpisode):
 
     def _get_sources(self):
         soup = BeautifulSoup(requests.get(self.url).text, 'html.parser')
-        url = 'https:'+soup.select_one('li.anime a').get('data-video')
+        extractors_url = []
 
-        res = requests.get(url)
-        ep_re = re.compile(r"file:.*?'(.*?)'")
+        for element in soup.select('.anime_muti_link > ul > li'):
+            extractor_class = element.get('class')[0]
+            source_url = element.a.get('data-video')
 
-        stream_urls = ep_re.findall(res.text)
-        return [('no_extractor', url) for url in stream_urls]
+            # only use mp4upload and rapidvideo as sources
+            if extractor_class == 'mp4':
+                extractor_class = 'mp4upload'
+            elif extractor_class != 'rapidvideo':
+                continue
+            logging.debug('%s: %s' % (extractor_class, source_url))
+            extractors_url.append((extractor_class, source_url,))
+        return extractors_url
 
 
 class GogoAnime(BaseAnime):
