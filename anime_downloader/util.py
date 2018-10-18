@@ -100,6 +100,9 @@ def parse_episode_range(anime, episode_range):
 
 def parse_ep_str(anime, grammar):
     episodes = []
+    if grammar is None:
+        return split_anime(anime, parse_episode_range(anime, grammar))
+
     for episode_grammar in grammar.split(','):
         if ':' in episode_grammar:
             start, end = parse_episode_range(anime, episode_grammar).split(':')
