@@ -1,27 +1,26 @@
 import os
-import requests
 import time
 import logging
 import sys
 
 from anime_downloader import util
+from anime_downloader import session
 
 
 class BaseDownloader:
-    def __init__(self, source, path, force, range_size=None, ssl=True):
+    def __init__(self, source, path, force, range_size=None):
         logging.info(path)
 
         self.url = source.stream_url
         self.referer = source.referer
         self.path = path
         self.range_size = range_size
-        self.ssl = ssl
 
         util.make_dir(path.rsplit('/', 1)[0])
 
         self.chunksize = 16384
 
-        r = requests.get(self.url, stream=True, verify=ssl)
+        r = session.get_session().get(self.url, stream=True)
 
         self.total_size = int(r.headers['Content-length'])
         if os.path.exists(path):

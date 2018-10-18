@@ -1,9 +1,11 @@
 import logging
-import requests
 import re
 from bs4 import BeautifulSoup
 
 from anime_downloader.extractors.base_extractor import BaseExtractor
+from anime_downloader import session
+
+session = session.get_session()
 
 
 class RapidVideo(BaseExtractor):
@@ -13,9 +15,9 @@ class RapidVideo(BaseExtractor):
         headers = self.headers
         headers['referer'] = url
         try:
-            r = requests.get(url, headers=headers)
+            r = session.get(url, headers=headers)
         except:
-            r = requests.post(url, {
+            r = session.post(url, {
                 'cursor.x': 12,
                 'cursor.y': 12,
                 'block': 1,

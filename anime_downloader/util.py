@@ -4,13 +4,13 @@ import shutil
 import click
 import subprocess
 import platform
-import requests
 import re
 import os
 import errno
 import time
 import ast
 
+from anime_downloader import session
 from anime_downloader.sites import get_anime_class
 from anime_downloader.const import desktop_headers
 
@@ -133,7 +133,7 @@ def print_info(version):
 
 def get_json(url, params=None):
     logging.debug('API call URL: {} with params {!r}'.format(url, params))
-    res = requests.get(url, headers=desktop_headers, params=params)
+    res = session.get_session().get(url, headers=desktop_headers, params=params)
     logging.debug('URL: {}'.format(res.url))
     data = res.json()
     logging.debug('Returned data: {}'.format(data))

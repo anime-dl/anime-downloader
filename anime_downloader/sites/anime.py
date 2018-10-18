@@ -1,4 +1,3 @@
-import requests
 from bs4 import BeautifulSoup
 
 import time
@@ -7,6 +6,7 @@ import logging
 import sys
 import copy
 
+from anime_downloader import session
 from anime_downloader.sites.exceptions import AnimeDLError, NotFoundError
 from anime_downloader import util
 from anime_downloader.const import desktop_headers
@@ -49,7 +49,7 @@ class BaseAnime:
 
     def get_data(self):
         self._episode_urls = []
-        r = requests.get(self.url, headers=desktop_headers)
+        r = session.get_session().get(self.url, headers=desktop_headers)
         soup = BeautifulSoup(r.text, 'html.parser')
 
         try:
@@ -166,7 +166,7 @@ class BaseEpisode:
         raise NotImplementedError
 
     def download(self, force=False, path=None,
-                 format='{anime_title}_{ep_no}', range_size=None, ssl=True):
+                 format='{anime_title}_{ep_no}', range_size=None):
         logging.info('Downloading {}'.format(self.pretty_title))
         if format:
             file_name = util.format_filename(format, self)+'.mp4'
@@ -180,7 +180,7 @@ class BaseEpisode:
 
         Downloader = get_downloader('http')
         downloader = Downloader(self.source(),
-                                path, force, range_size=range_size, ssl=ssl)
+                                path, force, range_size=range_size)
 
         downloader.download()
 
