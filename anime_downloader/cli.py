@@ -31,10 +31,6 @@ def cli():
     '--episodes', '-e', 'episode_range', metavar='<int>:<int>',
     help="Range of anime you want to download in the form <start>:<end>")
 @click.option(
-    '--grammar', '-g', 'grammar', metavar='<string>',
-    help='''Collect only specific episodes for example "1,10:12" will get
-            episodes 1, 10, 11, 12''')
-@click.option(
     '--url', '-u', type=bool, is_flag=True,
     help="If flag is set, prints the stream url instead of downloading")
 @click.option(
@@ -67,7 +63,7 @@ def cli():
 @click.option(
     '--provider',
     help='The anime provider (website) for search.',
-    type=click.Choice(['9anime', 'kissanime', 'twist.moe', 'animepahe', 'kisscartoon', 'masterani'])
+    type=click.Choice(['9anime', 'kissanime', 'twist.moe', 'animepahe', 'kisscartoon', 'masterani', 'gogoanime'])
 )
 @click.option(
     '--external-downloader', '-xd',
@@ -84,7 +80,7 @@ def cli():
 @click.pass_context
 def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
        force_download, log_level, download_dir, file_format, provider,
-       external_downloader, chunk_size, fallback_qualities, grammar):
+       external_downloader, chunk_size, fallback_qualities):
     """ Download the anime using the url or search for it.
     """
 
@@ -109,11 +105,7 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
 
     logging.info('Found anime: {}'.format(anime.title))
 
-    if grammar:
-        anime = util.parse_grammar(anime, grammar)
-    else:
-        episode_range = util.parse_episode_range(anime, episode_range)
-        anime = util.split_anime(anime, episode_range)
+    anime = util.parse_ep_str(anime, episode_range)
 
     if url or player:
         skip_download = True

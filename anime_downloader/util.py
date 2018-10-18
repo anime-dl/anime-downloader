@@ -98,7 +98,7 @@ def parse_episode_range(anime, episode_range):
     return episode_range
 
 
-def parse_grammar(anime, grammar):
+def parse_ep_str(anime, grammar):
     episodes = []
     for episode_grammar in grammar.split(','):
         if ':' in episode_grammar:
