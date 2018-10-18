@@ -102,8 +102,8 @@ def parse_grammar(anime, grammar):
     episodes = []
     for episode_grammar in grammar.split(','):
         if ':' in episode_grammar:
-            start, end = [int(ep_no) for ep_no in episode_grammar.split(':')]
-            episode_grammar = '%d:%d' % (start, end + 1)
+            start, end = parse_episode_range(anime, episode_grammar).split(':')
+            episode_grammar = '%d:%d' % (int(start), int(end) + 1)
             for episode in split_anime(anime, episode_grammar):
                 episodes.append(episode)
         else:
