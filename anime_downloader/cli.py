@@ -4,6 +4,7 @@ import os
 
 import logging
 
+from anime_downloader import session
 from anime_downloader.sites import get_anime_class
 from anime_downloader.players.mpv import mpv
 from anime_downloader.__version__ import __version__
@@ -77,10 +78,15 @@ def cli():
          'experience throttling.',
     type=int
 )
+@click.option(
+    '--disable-ssl',
+    is_flag=True,
+    help='Disable verifying the SSL certificate, if flag is set'
+)
 @click.pass_context
 def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
        force_download, log_level, download_dir, file_format, provider,
-       external_downloader, chunk_size, fallback_qualities):
+       external_downloader, chunk_size, disable_ssl, fallback_qualities):
     """ Download the anime using the url or search for it.
     """
 
@@ -88,6 +94,9 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
     util.print_info(__version__)
 
     cls = get_anime_class(anime_url)
+
+    disable_ssl = cls and cls.__name__ == 'Masterani' or disable_ssl
+    session.get_session().verify = not disable_ssl
 
     if not cls:
         anime_url = util.search(anime_url, provider)
@@ -139,14 +148,7 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
             if chunk_size is not None:
                 chunk_size *= 1e6
                 chunk_size = int(chunk_size)
-            if cls.__name__ == 'Masterani':
-                episode.download(force=force_download,
-                             path=download_dir,
-                             format=file_format,
-                             range_size=chunk_size,
-                             ssl=False)
-            else:
-                episode.download(force=force_download,
+            episode.download(force=force_download,
                              path=download_dir,
                              format=file_format,
                              range_size=chunk_size)
