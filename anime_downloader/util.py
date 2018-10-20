@@ -88,6 +88,32 @@ def split_anime(anime, episode_range):
     return anime
 
 
+def parse_episode_range(anime, episode_range):
+    if episode_range is None:
+        episode_range = '1:'
+    if episode_range.endswith(':'):
+        episode_range += str(len(anime) + 1)
+    if episode_range.startswith(':'):
+        episode_range = '1' + episode_range
+    return episode_range
+
+
+def parse_ep_str(anime, grammar):
+    episodes = []
+    if grammar is None:
+        return split_anime(anime, parse_episode_range(anime, grammar))
+
+    for episode_grammar in grammar.split(','):
+        if ':' in episode_grammar:
+            start, end = parse_episode_range(anime, episode_grammar).split(':')
+            episode_grammar = '%d:%d' % (int(start), int(end) + 1)
+            for episode in split_anime(anime, episode_grammar):
+                episodes.append(episode)
+        else:
+            episodes.append(anime[int(episode_grammar) - 1])
+    return episodes
+
+
 def print_episodeurl(episode):
     print(episode.source().stream_url)
 

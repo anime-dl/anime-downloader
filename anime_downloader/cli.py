@@ -64,7 +64,7 @@ def cli():
 @click.option(
     '--provider',
     help='The anime provider (website) for search.',
-    type=click.Choice(['9anime', 'kissanime', 'twist.moe', 'animepahe', 'kisscartoon', 'masterani'])
+    type=click.Choice(['9anime', 'kissanime', 'twist.moe', 'animepahe', 'kisscartoon', 'masterani', 'gogoanime'])
 )
 @click.option(
     '--external-downloader', '-xd',
@@ -112,17 +112,9 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
             raise
         return
 
-    # TODO: Refractor this somewhere else. (util?)
-    if episode_range is None:
-        episode_range = '1:'
-    if episode_range.endswith(':'):
-        episode_range += str(len(anime)+1)
-    if episode_range.startswith(':'):
-        episode_range = '1' + episode_range
-
     logging.info('Found anime: {}'.format(anime.title))
 
-    anime = util.split_anime(anime, episode_range)
+    anime = util.parse_ep_str(anime, episode_range)
 
     if url or player:
         skip_download = True
