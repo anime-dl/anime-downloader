@@ -5,6 +5,7 @@ import logging
 import requests
 from bs4 import BeautifulSoup
 
+import anime_downloader.util
 from anime_downloader.sites.anime import BaseAnime, BaseEpisode, SearchResult
 from anime_downloader.const import desktop_headers
 
@@ -57,12 +58,10 @@ class Masterani(BaseAnime):
 
     @classmethod
     def search(cls, query):
-        r = requests.get('https://masterani.me/api/anime/filter?',
-                         params={'search': query, 'order': 'relevance_desc'})
+        r = util.get_json('https://masterani.me/api/anime/filter?',
+                          {'search': query, 'order': 'relevance_desc'})
 
-        logging.debug(r.url)
-
-        search_result = r.json()['data']
+        search_result = r['data']
 
         ret = []
 
