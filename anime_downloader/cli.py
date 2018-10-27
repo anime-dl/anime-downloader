@@ -116,6 +116,9 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
 
     anime = util.parse_ep_str(anime, episode_range)
 
+    if util.check_in_path('aria2'):
+        external_downloader = '{aria2}'
+
     if url or player:
         skip_download = True
 
