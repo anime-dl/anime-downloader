@@ -2,6 +2,7 @@ import click
 import os
 import errno
 import json
+from anime_downloader import util
 
 APP_NAME = 'anime downloader'
 APP_DIR = click.get_app_dir(APP_NAME)
