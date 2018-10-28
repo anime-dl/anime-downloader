@@ -7,9 +7,10 @@ from anime_downloader.sites.anime import BaseEpisode, SearchResult
 from anime_downloader.sites.baseanimecf import BaseAnimeCF
 from anime_downloader.sites.exceptions import NotFoundError
 from anime_downloader.const import get_random_header
+from anime_downloader.session import get_session
 
 
-scraper = cfscrape.create_scraper(delay=10)
+scraper = get_session(cfscrape.create_scraper(delay=10))
 
 
 class KissanimeEpisode(BaseEpisode):

@@ -7,8 +7,9 @@ from bs4 import BeautifulSoup
 
 from anime_downloader.sites.anime import BaseAnime, BaseEpisode, SearchResult
 from anime_downloader.const import desktop_headers
+from anime_downloader.session import get_session
 
-scraper = cfscrape.create_scraper()
+scraper = get_session(cfscrape.create_scraper())
 
 
 class MasteraniEpisode(BaseEpisode):

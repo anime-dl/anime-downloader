@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 import cfscrape
 import logging
 
-scraper = cfscrape.create_scraper()
+scraper = session.get_session(cfscrape.create_scraper())
 session = session.get_session()
 
 
