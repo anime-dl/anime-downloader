@@ -74,6 +74,8 @@ class _Config:
         return conf
 
     def _write_default_config(self):
+        if util.check_in_path('aria2c'):
+            DEFAULT_CONFIG['dl']['external_downloader'] = '{aria2}'
         self._write_config(DEFAULT_CONFIG)
 
 
