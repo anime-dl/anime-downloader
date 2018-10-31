@@ -264,7 +264,6 @@ def list_animes(watcher, quality, download_dir):
 
         meta = ''
         for k, v in anime.meta.items():
-            print(k, v)
             meta += '{}: {}\n'.format(k, click.style(str(v), bold=True))
         click.echo(meta)
 
