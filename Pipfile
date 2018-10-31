@@ -7,3 +7,4 @@ name = "pypi"
 anime-downloader = {editable = true, path = "."}
 
 [dev-packages]
+twine = "*"

@@ -15,7 +15,7 @@ session = session.get_session()
 
 class NineAnimeEpisode(BaseEpisode):
     QUALITIES = ['360p', '480p', '720p', '1080p']
-    _base_url = r'https://9anime.is/ajax/episode/info'
+    _base_url = r'https://9anime.to/ajax/episode/info'
     ts = 0
 
     def _get_sources(self):
@@ -61,7 +61,7 @@ class NineAnime(BaseAnime):
 
     @classmethod
     def search(cls, query):
-        r = session.get('https://www4.9anime.is/search?', params={'keyword': query}, headers=desktop_headers)
+        r = session.get('https://www4.9anime.to/search?', params={'keyword': query}, headers=desktop_headers)
 
         logging.debug(r.url)
 
@@ -100,7 +100,7 @@ class NineAnime(BaseAnime):
         # This was done as a fix to 9anime's switch to lazy loading of
         # episodes. I'm busy and lazy now, so I'm writing bad code.
         # Gomen'nasai
-        api_url = "https://www8.9anime.is/ajax/film/servers/{}"
+        api_url = "https://www8.9anime.to/ajax/film/servers/{}"
         api_url = api_url.format(self.url.rsplit('watch/', 1)[1].rsplit('.', 1)[1].split('/')[0])
         params = {}
         params['_'] = int(generate_(params))
