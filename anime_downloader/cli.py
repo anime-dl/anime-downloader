@@ -114,7 +114,7 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
 
     logging.info('Found anime: {}'.format(anime.title))
 
-    anime = util.parse_ep_str(anime, episode_range)
+    animes = util.parse_ep_str(anime, episode_range)
 
     if url or player:
         skip_download = True
@@ -122,7 +122,7 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
     if download_dir and not skip_download:
         logging.info('Downloading to {}'.format(os.path.abspath(download_dir)))
 
-    for episode in anime:
+    for episode in animes:
         if url:
             util.print_episodeurl(episode)
 
