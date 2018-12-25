@@ -5,8 +5,9 @@ from anime_downloader.sites.anime import BaseEpisode, SearchResult
 from anime_downloader.sites.baseanimecf import BaseAnimeCF
 from anime_downloader.sites.exceptions import NotFoundError
 from anime_downloader import util
+from anime_downloader.session import get_session
 
-scraper = cfscrape.create_scraper()
+scraper = get_session(cfscrape.create_scraper())
 
 
 class AnimePaheEpisode(BaseEpisode):
