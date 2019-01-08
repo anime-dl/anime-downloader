@@ -26,6 +26,8 @@ def cli():
     pass
 
 # NOTE: Don't put defaults here. Add them to the dict in config
+
+
 @cli.command()
 @click.argument('anime_url')
 @click.option(
@@ -64,7 +66,8 @@ def cli():
 @click.option(
     '--provider',
     help='The anime provider (website) for search.',
-    type=click.Choice(['9anime', 'kissanime', 'twist.moe', 'animepahe', 'kisscartoon', 'masterani', 'gogoanime'])
+    type=click.Choice(['9anime', 'kissanime', 'twist.moe',
+                       'animepahe', 'kisscartoon', 'masterani', 'gogoanime'])
 )
 @click.option(
     '--external-downloader', '-xd',
@@ -171,9 +174,9 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
 @click.option(
     '--provider',
     help='The anime provider (website) for search.',
-    type=click.Choice(['9anime', 'kissanime', 'twist.moe', 'kisscartoon', 'masterani'])
+    type=click.Choice(['9anime', 'kissanime', 'twist.moe',
+                       'kisscartoon', 'masterani'])
 )
-
 @click.option(
     '--log-level', '-ll', 'log_level',
     type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR']),
@@ -246,7 +249,7 @@ def list_animes(watcher, quality, download_dir):
     watcher.list()
     inp = click.prompt('Select an anime', default=1)
     try:
-        anime = watcher.get(int(inp)-1)
+        anime = watcher.get(int(inp) - 1)
     except IndexError:
         sys.exit(0)
 
@@ -290,9 +293,9 @@ def list_animes(watcher, quality, download_dir):
                 inp = inp.split('download ')[1]
             except IndexError:
                 inp = ':'
-            inp = str(anime.episodes_done+1) + \
+            inp = str(anime.episodes_done + 1) + \
                 inp if inp.startswith(':') else inp
-            inp = inp+str(len(anime)) if inp.endswith(':') else inp
+            inp = inp + str(len(anime)) if inp.endswith(':') else inp
 
             anime = util.split_anime(anime, inp)
 
@@ -351,7 +354,7 @@ def watch_anime(watcher, anime):
                 sys.exit(0)
             elif returncode == player.CONNECT_ERR:
                 logging.warning("Couldn't connect. Retrying. "
-                                "Attempt #{}".format(tries+1))
+                                "Attempt #{}".format(tries + 1))
                 continue
             elif returncode == player.PREV:
                 anime.episodes_done -= 2
