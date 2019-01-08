@@ -14,6 +14,13 @@ from anime_downloader import session
 from anime_downloader.sites import get_anime_class
 from anime_downloader.const import desktop_headers
 
+def check_in_path(app):
+    """
+    Checks to see if the given app exists on the path
+    :param app: app name to look for
+    :return: true if the app exists, false otherwise
+    """
+    return shutil.which(app) is not None
 
 def setup_logger(log_level):
     if log_level == 'DEBUG':
