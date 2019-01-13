@@ -20,7 +20,8 @@ class BaseDownloader:
 
         self.chunksize = 16384
 
-        r = session.get_session().get(self.url, stream=True)
+        #Added Referer Header as kwik needd it.
+        r = session.get_session().get(self.url, headers={'referer': self.referer}, stream=True)
 
         self.total_size = int(r.headers['Content-length'])
         if os.path.exists(path):

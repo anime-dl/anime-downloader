@@ -24,6 +24,12 @@ ALL_EXTRACTORS = [
         'modulename': 'mp4upload',
         'regex': 'mp4upload',
         'class': 'MP4Upload'
+    },
+    {
+        'sitename': 'kwik',
+        'modulename': 'kwik',
+        'regex': 'kwik',
+        'class': 'Kwik'
     }
 ]
 

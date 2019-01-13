@@ -103,6 +103,8 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
         cls = get_anime_class(anime_url)
 
     try:
+        # Remove any trailing slashes of url
+        anime_url = anime_url.rstrip('/')
         anime = cls(anime_url, quality=quality,
                     fallback_qualities=fallback_qualities)
     except Exception as e:

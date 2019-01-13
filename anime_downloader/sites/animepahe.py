@@ -1,5 +1,6 @@
 import cfscrape
 import logging
+import re
 
 from anime_downloader.sites.anime import BaseEpisode, SearchResult
 from anime_downloader.sites.baseanimecf import BaseAnimeCF
@@ -13,25 +14,41 @@ scraper = get_session(cfscrape.create_scraper())
 class AnimePaheEpisode(BaseEpisode):
     QUALITIES = ['360p', '480p', '720p', '1080p']
 
-    def _get_sources(self):
-        episode_id = self.url.rsplit('/', 1)[-1]
+    def _get_source(self, episode_id, server):
 
         # We will extract the episodes data through the animepahe api
         # which returns the available qualities and the episode sources.
-        # We rely on mp4upload for animepahe as it is the most used provider.
         params = {
             'id': episode_id,
             'm': 'embed',
-            'p': 'mp4upload'
+            'p': server
         }
 
         episode = util.get_json('https://animepahe.com/api', params=params)
         sources = episode['data'][episode_id]
 
         if self.quality in sources:
-            return [('mp4upload', sources[self.quality]['url'])]
-        raise NotFoundError
+            return (server, sources[self.quality]['url'])
+        return
 
+    def _get_sources(self):
+
+        supported_servers = ['kwik','mp4upload','rapidvideo']
+        episode_id = self.url.rsplit('/', 1)[-1]
+        
+        sourcetext = scraper.get(self.url).text
+        sources = []
+        serverlist = re.findall(r'data-provider="([^"]+)', sourcetext)
+        for server in serverlist:
+            if server not in supported_servers:
+                continue
+            source =  self._get_source(episode_id, server)
+            if source:
+                sources.append(source)
+
+        if sources:
+            return sources
+        raise NotFoundError
 
 class AnimePahe(BaseAnimeCF):
     sitename = 'animepahe'
