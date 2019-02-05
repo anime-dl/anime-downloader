@@ -30,7 +30,6 @@ class Kwik(BaseExtractor):
         stream_url_pattern, source_parts_list = source_parts_re.search(kwik_text).group(1,2)
         source_parts_list = source_parts_list.split('|')
         stream_url = ""
-        print('fkme')
         for i in stream_url_pattern:
             ii = ord(i)
             if ( 48 <= ii <= 57):
