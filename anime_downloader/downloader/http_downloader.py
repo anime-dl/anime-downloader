@@ -23,10 +23,10 @@ class HTTPDownloader(BaseDownloader):
         with open(self.path, 'w'):
             pass
 
-        r = session.get(self.url, stream=True)
+        r = session.get(self.url, headers={'referer': self.referer}, stream=True)
         while self.downloaded < self.total_size:
             r = session.get(self.url,
-                            headers=set_range(range_start, range_end),
+                            headers=set_range(range_start, range_end, self.referer),
                             stream=True)
             if r.status_code == 206:
                 with open(self.path, 'ab') as f:
@@ -43,7 +43,7 @@ class HTTPDownloader(BaseDownloader):
                 range_end = ''
 
     def _non_range_download(self):
-        r = session.get(self.url, stream=True)
+        r = session.get(self.url, headers={'referer': self.referer}, stream=True)
 
         if r.status_code == 200:
             with open(self.path, 'wb') as f:
@@ -53,10 +53,11 @@ class HTTPDownloader(BaseDownloader):
                         self.report_chunk_downloaded()
 
 
-def set_range(start=0, end=''):
+def set_range(start=0, end='', referer=None):
     headers = {
     'user-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101"
-                  "Firefox/56.0"
+                  "Firefox/56.0",
+    'referer'   : referer
     }
 
     headers['Range'] = 'bytes={}-{}'.format(start, end)

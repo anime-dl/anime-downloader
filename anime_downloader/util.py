@@ -122,6 +122,10 @@ def parse_ep_str(anime, grammar):
 
 
 def print_episodeurl(episode):
+    #if episode.source().referer != '':
+    #    print(episode.source().stream_url + "?referer=" +  episode.source().referer)
+    #else:
+    #Currently I don't know of a way to specify referer in url itself so leaving it here.
     print(episode.source().stream_url)
 
 
@@ -171,12 +175,13 @@ def format_command(cmd, episode, file_format, path):
     cmd_dict = {
         '{aria2}': 'aria2c {stream_url} -x 12 -s 12 -j 12 -k 10M -o '
                    '{file_format}.mp4 --continue=true --dir={download_dir}'
-                   ' --stream-piece-selector=inorder --min-split-size=5M'
+                   ' --stream-piece-selector=inorder --min-split-size=5M --referer={referer}'
     }
     rep_dict = {
         'stream_url': episode.source().stream_url,
         'file_format': file_format,
         'download_dir': os.path.abspath(path),
+        'referer':episode.source().referer,
     }
 
     if cmd in cmd_dict:
@@ -185,7 +190,6 @@ def format_command(cmd, episode, file_format, path):
     cmd = cmd.split(' ')
     cmd = [c.format(**rep_dict) for c in cmd]
     cmd = [format_filename(c, episode) for c in cmd]
-
     return cmd
 
 
