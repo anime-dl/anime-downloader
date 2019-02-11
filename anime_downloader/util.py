@@ -9,6 +9,7 @@ import os
 import errno
 import time
 import ast
+import math
 
 from anime_downloader import session
 from anime_downloader.sites import get_anime_class
@@ -161,9 +162,11 @@ def slugify(file_name):
 
 
 def format_filename(filename, episode):
+    zerosTofill = math.ceil(math.log10(episode._parent._len))
+
     rep_dict = {
         'anime_title': slugify(episode._parent.title),
-        'ep_no': episode.ep_no,
+        'ep_no': str(episode.ep_no).zfill(zerosTofill),
     }
 
     filename = filename.format(**rep_dict)
