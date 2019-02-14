@@ -1,7 +1,7 @@
 import logging
 import re
 from bs4 import BeautifulSoup
-
+import requests
 from anime_downloader.extractors.base_extractor import BaseExtractor
 from anime_downloader import session
 
@@ -20,39 +20,30 @@ class Kwik(BaseExtractor):
         #than me can work on that for now I will add the pattern I observed
 
         #alternatively you can pattern match on `src` for stream_url part 
-        source_parts_re = re.compile(r'\[{".":"([^"]+).*\'(.*)\'\.split\(\'\|\'\)',
-                                        re.DOTALL)
-        
+        source_parts_re = re.compile(r'action=\"([^"]+)\".*value=\"([^"]+)\".*Click Here to Download',
+                                       re.DOTALL)
+
         #Kwik servers don't have direct link access you need to be referred
         #from somewhere, I will just use the url itself.
-        kwik_text = session.get(self.url, headers={'referer': self.url}).text
         
-        stream_url_pattern, source_parts_list = source_parts_re.search(kwik_text).group(1,2)
-        source_parts_list = source_parts_list.split('|')
-        stream_url = ""
-        for i in stream_url_pattern:
-            ii = ord(i)
-            if ( 48 <= ii <= 57):
-                list_index = ii - 48 
-            elif (97 <= ii <= 122):
-                list_index = ii - 87
-            elif (65 <= ii <= 90):
-                list_index = ii - 29
-            else:
-                stream_url += i
-                continue
-            buf = source_parts_list[list_index]
-            stream_url += buf if buf else i
+        download_url = self.url.replace('kwik.cx/e/', 'kwik.cx/f/')   
+
+        kwik_text = session.get(download_url, headers={'referer': download_url }).text
+        post_url,token = source_parts_re.search(kwik_text).group(1,2)
+        
+        stream_url = session.post(post_url,
+                                headers = {'referer': download_url},
+                                data = {'_token': token},
+                                allow_redirects = False).headers['Location']
         
         title = stream_url.rsplit('/',1)[-1].rsplit('.',1)[0]
         
         logging.debug('Stream URL: %s' % stream_url)
-
         return {
             'stream_url': stream_url,
             'meta': {
                 'title': title,
                 'thumbnail': ''
             },
-            'referer': self.url
+            'referer': None
         }
