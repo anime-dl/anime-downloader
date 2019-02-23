@@ -1,12 +1,11 @@
 import json
-import re
 import cfscrape
 import logging
-import requests
 from bs4 import BeautifulSoup
 
 from anime_downloader import util
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
+from anime_downloader.sites import helpers
 from anime_downloader.const import desktop_headers
 from anime_downloader.session import get_session
 
@@ -17,11 +16,7 @@ class MasteraniEpisode(AnimeEpisode, sitename='masterani'):
     QUALITIES = ['360p', '480p', '720p', '1080p']
 
     def _get_sources(self):
-        logging.debug('[cfscrape] Calling {}'.format(self.url))
-        res = scraper.get(self.url, headers=desktop_headers)
-        soup = BeautifulSoup(res.text, 'html.parser')
-        # Masterani changed
-        # sources_re = re.compile(r'mirrors:.*?(\[.*?\])')
+        soup = helpers.soupify(helpers.get(self.url, headers=desktop_headers))
         quality = int(self.quality[:-1])
 
         sources = json.loads(soup.find('video-mirrors')[':mirrors'])
@@ -52,20 +47,16 @@ class MasteraniEpisode(AnimeEpisode, sitename='masterani'):
 
 
 class Masterani(Anime, sitename='masterani'):
+    sitename = 'masterani'
     QUALITIES = ['360p', '480p', '720p', '1080p']
     _api_url = 'https://www.masterani.me/api/anime/{}/detailed'
 
     @classmethod
     def search(cls, query):
-        r = util.get_json('https://masterani.me/api/anime/filter?',
-                          {'search': query, 'order': 'relevance_desc'})
-
-        search_result = r['data']
+        search_result = helpers.get('https://masterani.me/api/anime/filter?',
+                                    {'search': query, 'order': 'relevance_desc'}).json()['data']
 
         ret = []
-
-        logging.debug('Search results')
-
         for item in search_result:
             s = SearchResult(
                 title=item['title'],
@@ -79,11 +70,10 @@ class Masterani(Anime, sitename='masterani'):
 
         return ret
 
-
     def get_data(self):
         anime_id = self.url.split('info/')[-1].split('-')[0]
         url = self._api_url.format(anime_id)
-        res = scraper.get(url, headers=desktop_headers)
+        res = helpers.get(url)
         try:
             res = res.json()
         except Exception:

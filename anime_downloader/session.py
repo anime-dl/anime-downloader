@@ -2,8 +2,17 @@ import requests
 import urllib3
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
+import requests_cache
 
-_session = requests.Session()
+import logging
+
+logger = logging.getLogger(__name__)
+
+requests_cache.install_cache('anime_downloader', expires_after=300)
+
+_session = requests_cache.CachedSession()
+
+# _session = requests.Session()
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
@@ -26,5 +35,13 @@ def get_session(custom_session=None):
     adapter = HTTPAdapter(max_retries=retry)
     _session.mount('http://', adapter)
     _session.mount('https://', adapter)
+
+    def hook(response, *args, **kwargs):
+        if not getattr(response, 'from_cache', False):
+            logger.debug('uncached request')
+        else:
+            logger.debug('cached request')
+        return response
+    _session.hooks = {'response': hook}
 
     return _session

@@ -9,7 +9,7 @@ class GogoanimeEpisode(AnimeEpisode, sitename='gogoanime'):
     _base_url = 'https://www2.gogoanime.se'
 
     def _get_sources(self):
-        soup = helpers.soupfiy(helpers.get(self.url))
+        soup = helpers.soupify(helpers.get(self.url))
         extractors_url = []
 
         for element in soup.select('.anime_muti_link > ul > li'):
@@ -38,7 +38,7 @@ class GogoAnime(Anime, sitename='gogoanime'):
             'id': -1,
             'link_web': 'https://www1.gogoanime.sh/'
         }
-        soup = helpers.soupfiy(helpers.get(
+        soup = helpers.soupify(helpers.get(
             cls._search_api_url, params=params
         ).json()['content'])
 
@@ -55,7 +55,7 @@ class GogoAnime(Anime, sitename='gogoanime'):
         return search_results
 
     def _scrape_episodes(self):
-        soup = helpers.soupfiy(helpers.get(self.url))
+        soup = helpers.soupify(helpers.get(self.url))
         anime_id = soup.select_one('input#movie_id').attrs['value']
         params = {
             'default_ep': 0,
@@ -64,7 +64,7 @@ class GogoAnime(Anime, sitename='gogoanime'):
             'id': anime_id,
         }
 
-        soup = helpers.soupfiy(helpers.get(self._episode_list_url,
+        soup = helpers.soupify(helpers.get(self._episode_list_url,
                                            params=params))
 
         epurls = list(
@@ -75,7 +75,7 @@ class GogoAnime(Anime, sitename='gogoanime'):
         return epurls
 
     def _scrape_metadata(self):
-        soup = helpers.soupfiy(helpers.get(self.url))
+        soup = helpers.soupify(helpers.get(self.url))
         meta = soup.select_one('.anime_info_body_bg')
         self.title = meta.find('h1').text
         self.poster = meta.find('img').get('src')

@@ -25,13 +25,15 @@ setup(
         'requests>=2.18.4',
         'Click>=6.7',
         'fuzzywuzzy>=0.16.0',
-        'coloredlogs>=10.0'
+        'coloredlogs>=10.0',
+        'cfscrape>=1.9.5',
+        'requests-cache>=0.4.13'
     ],
     tests_require=[
         'pytest',
     ],
     extras_require={
-        'cloudflare': ['cfscrape>=1.9.5']
+        'cloudflare': []
     },
     long_description=long_description,
     long_description_content_type='text/markdown',

@@ -102,3 +102,4 @@ ENV/
 .vscode
 
 .pytest_cache
+*.sqlite

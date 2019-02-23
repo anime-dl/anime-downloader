@@ -42,9 +42,7 @@ class Anime:
     title = ''
     meta = dict()
     subclasses = {}
-
     QUALITIES = None
-    _episodeClass = object
 
     @classmethod
     def search(cls, query):
@@ -67,7 +65,7 @@ class Anime:
                  fallback_qualities=['720p', '480p', '360p'],
                  _skip_online_data=False):
         self.url = url
-        self._fallback_qualities = fallback_qualities
+        self._fallback_qualities = [q for q in fallback_qualities if q in self.QUALITIES]
 
         if quality in self.QUALITIES:
             self.quality = quality
@@ -139,7 +137,7 @@ class Anime:
         if isinstance(index, int):
             ep_id = self._episode_urls[index]
             return episode_class(ep_id[1], self.quality, parent=self,
-                                      ep_no=ep_id[0])
+                                 ep_no=ep_id[0])
         elif isinstance(index, slice):
             anime = copy.deepcopy(self)
             anime._episode_urls = anime._episode_urls[index]
@@ -210,11 +208,12 @@ class AnimeEpisode:
 
         logging.debug("Extracting stream info of id: {}".format(self.url))
 
-        # TODO: New flag: online_data=False
-        try:
+        def try_data():
             self.get_data()
             # Just to verify the source is acquired
             self.source().stream_url
+        try:
+            try_data()
         except NotFoundError:
             # Issue #28
             qualities = copy.copy(self._parent._fallback_qualities)
@@ -227,13 +226,9 @@ class AnimeEpisode:
                     self.quality, quality))
                 self.quality = quality
                 try:
-                    self.get_data()
-                    self.source().stream_url
-                    # parent.quality = self.quality
+                    try_data()
                     break
                 except NotFoundError:
-                    # Issue #28
-                    # qualities.remove(self.quality)
                     pass
 
     def __init_subclass__(cls, sitename: str, **kwargs):
@@ -254,8 +249,7 @@ class AnimeEpisode:
         except TypeError:
             return self._sources[index]
 
-        extractor = get_extractor(sitename)
-        ext = extractor(url, quality=self.quality)
+        ext = get_extractor(sitename)(url, quality=self.quality)
         self._sources[index] = ext
 
         return ext

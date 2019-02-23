@@ -90,7 +90,7 @@ class NineAnime(Anime, sitename='9anime'):
         return ret
 
     def _scrape_episodes(self):
-        soup = helpers.soupfiy(helpers.get(self.url))
+        soup = helpers.soupify(helpers.get(self.url))
         ts = soup.find('html')['data-ts']
         self._episodeClass.ts = ts
         logging.debug('data-ts: {}'.format(ts))
@@ -105,8 +105,8 @@ class NineAnime(Anime, sitename='9anime'):
         params = {}
         params['_'] = int(generate_(params))
         params['_'] = 648
-        soup = BeautifulSoup(session.get(api_url, params=params).json()['html'], 'html.parser')
-        episodes = soup.find('div', {'class': 'server', 'data-name': 35})
+        soup = helpers.soupify(helpers.get(api_url, params=params).json()['html'])
+        episodes = soup.find('div', {'class': 'server', 'data-name': 33})
         episodes = episodes.find_all('li')
 
         if episodes == []:
@@ -124,7 +124,7 @@ class NineAnime(Anime, sitename='9anime'):
         return episode_ids
 
     def _scrape_metadata(self):
-        soup = helpers.soupfiy(helpers.get(self.url))
+        soup = helpers.soupify(helpers.get(self.url))
         self.title = str(soup.find('div', {'class': 'widget info'}).find(
             'h2', {'class': 'title'}).text)
 

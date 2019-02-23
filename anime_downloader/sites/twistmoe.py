@@ -1,4 +1,3 @@
-from Crypto import Random
 from Crypto.Cipher import AES
 import base64
 from hashlib import md5
@@ -7,6 +6,7 @@ import warnings
 
 from anime_downloader import session
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
+from anime_downloader.sites import helpers
 
 
 # Don't warn if not using fuzzywuzzy[speedup]
@@ -32,8 +32,7 @@ class TwistMoe(Anime, sitename='twist.moe'):
 
     @classmethod
     def search(self, query):
-        r = session.get('https://twist.moe')
-        soup = BeautifulSoup(r.text, 'html.parser')
+        soup = helpers.soupify(helpers.get('https://twist.moe'))
         all_anime = soup.select_one('nav.series').select('li')
         animes = []
         for anime in all_anime:
@@ -48,7 +47,7 @@ class TwistMoe(Anime, sitename='twist.moe'):
     def get_data(self):
         anime_name = self.url.split('/a/')[-1].split('/')[0]
         url = self._api_url.format(anime_name)
-        episodes = session.get(
+        episodes = helpers.get(
             url,
             headers={
                 'x-access-token': '1rj2vRtegS8Y60B3w3qNZm5T2Q0TN2NR'
@@ -57,14 +56,15 @@ class TwistMoe(Anime, sitename='twist.moe'):
         episodes = episodes.json()
         self.title = anime_name
         episode_urls = ['https://eu1.twist.moe' +
-                        decrypt(episode['source'].encode('utf-8'), KEY).decode('utf-8')
+                        decrypt(episode['source'].encode(
+                            'utf-8'), KEY).decode('utf-8')
                         for episode in episodes]
 
-        self._episode_urls = [(i+1, episode_url) for i, episode_url in enumerate(episode_urls)]
+        self._episode_urls = [(i+1, episode_url)
+                              for i, episode_url in enumerate(episode_urls)]
         self._len = len(self._episode_urls)
 
         return self._episode_urls
-
 
 
 # From stackoverflow https://stackoverflow.com/questions/36762098/how-to-decrypt-password-from-javascript-cryptojs-aes-encryptpassword-passphras

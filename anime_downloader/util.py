@@ -57,11 +57,7 @@ def search(query, provider):
     # Since this function outputs to stdout this should ideally be in
     # cli. But it is used in watch too. :(
     cls = get_anime_class(provider)
-    try:
-        search_results = cls.search(query)
-    except Exception as e:
-        logger.error(click.style(str(e), fg='red'))
-        sys.exit(1)
+    search_results = cls.search(query)
     click.echo(format_search_results(search_results))
 
     if not search_results:
