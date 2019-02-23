@@ -1,19 +1,15 @@
 import logging
-from bs4 import BeautifulSoup
 
-from anime_downloader import session
-from anime_downloader.sites.anime import BaseAnime, BaseEpisode, SearchResult
-from anime_downloader import util
-
-session = session.get_session()
+from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
+from anime_downloader.sites import helpers
 
 
-class GogoanimeEpisode(BaseEpisode):
+class GogoanimeEpisode(AnimeEpisode, sitename='gogoanime'):
     QUALITIES = ['360p', '480p', '720p']
     _base_url = 'https://www2.gogoanime.se'
 
     def _get_sources(self):
-        soup = BeautifulSoup(session.get(self.url).text, 'html.parser')
+        soup = helpers.soupfiy(helpers.get(self.url))
         extractors_url = []
 
         for element in soup.select('.anime_muti_link > ul > li'):
@@ -30,27 +26,24 @@ class GogoanimeEpisode(BaseEpisode):
         return extractors_url
 
 
-class GogoAnime(BaseAnime):
-    sitename = 'gogoanime'
+class GogoAnime(Anime, sitename='gogoanime'):
     QUALITIES = ['360p', '480p', '720p']
     _episode_list_url = 'https://www2.gogoanime.se//load-list-episode'
-    _episodeClass = GogoanimeEpisode
     _search_api_url = 'https://api.watchanime.cc/site/loadAjaxSearch'
 
     @classmethod
     def search(cls, query):
-        resp = util.get_json(
-            cls._search_api_url,
-            params={
-                'keyword': query,
-                'id': -1,
-                'link_web': 'https://www1.gogoanime.sh/'
-            }
-        )
+        params = {
+            'keyword': query,
+            'id': -1,
+            'link_web': 'https://www1.gogoanime.sh/'
+        }
+        soup = helpers.soupfiy(helpers.get(
+            cls._search_api_url, params=params
+        ).json()['content'])
 
         search_results = []
 
-        soup = BeautifulSoup(resp['content'], 'html.parser')
         for element in soup('a', class_='ss-title'):
             search_result = SearchResult(
                 title=element.text,
@@ -61,7 +54,8 @@ class GogoAnime(BaseAnime):
             search_results.append(search_result)
         return search_results
 
-    def _scarpe_episodes(self, soup):
+    def _scrape_episodes(self):
+        soup = helpers.soupfiy(helpers.get(self.url))
         anime_id = soup.select_one('input#movie_id').attrs['value']
         params = {
             'default_ep': 0,
@@ -70,8 +64,8 @@ class GogoAnime(BaseAnime):
             'id': anime_id,
         }
 
-        res = session.get(self._episode_list_url, params=params)
-        soup = BeautifulSoup(res.text, 'html.parser')
+        soup = helpers.soupfiy(helpers.get(self._episode_list_url,
+                                           params=params))
 
         epurls = list(
             reversed(['https://www2.gogoanime.se'+a.get('href').strip()
@@ -80,7 +74,8 @@ class GogoAnime(BaseAnime):
 
         return epurls
 
-    def _scrape_metadata(self, soup):
+    def _scrape_metadata(self):
+        soup = helpers.soupfiy(helpers.get(self.url))
         meta = soup.select_one('.anime_info_body_bg')
         self.title = meta.find('h1').text
         self.poster = meta.find('img').get('src')

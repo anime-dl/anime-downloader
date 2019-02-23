@@ -2,8 +2,7 @@ import cfscrape
 import logging
 import re
 
-from anime_downloader.sites.anime import BaseEpisode, SearchResult
-from anime_downloader.sites.baseanimecf import BaseAnimeCF
+from anime_downloader.sites.anime import AnimeEpisode, SearchResult, Anime
 from anime_downloader.sites.exceptions import NotFoundError
 from anime_downloader import util
 from anime_downloader.session import get_session
@@ -11,7 +10,7 @@ from anime_downloader.session import get_session
 scraper = get_session(cfscrape.create_scraper())
 
 
-class AnimePaheEpisode(BaseEpisode):
+class AnimePaheEpisode(AnimeEpisode):
     QUALITIES = ['360p', '480p', '720p', '1080p']
 
     def _get_source(self, episode_id, server):
@@ -50,7 +49,7 @@ class AnimePaheEpisode(BaseEpisode):
             return sources
         raise NotFoundError
 
-class AnimePahe(BaseAnimeCF):
+class AnimePahe(Anime):
     sitename = 'animepahe'
     api_url = 'https://animepahe.com/api'
     base_anime_url = 'https://animepahe.com/anime/'

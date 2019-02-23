@@ -2,14 +2,14 @@ import cfscrape
 from bs4 import BeautifulSoup
 import logging
 
-from anime_downloader.sites.anime import BaseAnime
+from anime_downloader.sites.anime import Anime
 from anime_downloader.const import get_random_header
 from anime_downloader.session import get_session
 
 scraper = get_session(cfscrape.create_scraper())
 
 
-class BaseAnimeCF(BaseAnime):
+class BaseAnimeCF(Anime):
     def get_data(self):
         headers = get_random_header()
         if hasattr(self, '_referer'):
@@ -20,7 +20,7 @@ class BaseAnimeCF(BaseAnime):
 
         self._scrape_metadata(soup)
 
-        self._episode_urls = self._scarpe_episodes(soup)
+        self._episode_urls = self._scrape_episodes(soup)
         self._len = len(self._episode_urls)
 
         logging.debug('EPISODE IDS: length: {}, ids: {}'.format(

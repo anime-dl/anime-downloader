@@ -6,14 +6,14 @@ import requests
 from bs4 import BeautifulSoup
 
 from anime_downloader import util
-from anime_downloader.sites.anime import BaseAnime, BaseEpisode, SearchResult
+from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.const import desktop_headers
 from anime_downloader.session import get_session
 
 scraper = get_session(cfscrape.create_scraper())
 
 
-class MasteraniEpisode(BaseEpisode):
+class MasteraniEpisode(AnimeEpisode, sitename='masterani'):
     QUALITIES = ['360p', '480p', '720p', '1080p']
 
     def _get_sources(self):
@@ -51,11 +51,9 @@ class MasteraniEpisode(BaseEpisode):
         return ret
 
 
-class Masterani(BaseAnime):
-    sitename = 'masterani'
+class Masterani(Anime, sitename='masterani'):
     QUALITIES = ['360p', '480p', '720p', '1080p']
     _api_url = 'https://www.masterani.me/api/anime/{}/detailed'
-    _episodeClass = MasteraniEpisode
 
     @classmethod
     def search(cls, query):

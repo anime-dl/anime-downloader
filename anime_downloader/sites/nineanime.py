@@ -1,6 +1,7 @@
 from anime_downloader import session
-from anime_downloader.sites.anime import BaseAnime, BaseEpisode, SearchResult
+from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites.exceptions import NotFoundError, AnimeDLError
+from anime_downloader.sites import helpers
 from anime_downloader import util
 from anime_downloader.const import desktop_headers
 
@@ -13,7 +14,7 @@ __all__ = ['NineAnimeEpisode', 'NineAnime']
 session = session.get_session()
 
 
-class NineAnimeEpisode(BaseEpisode):
+class NineAnimeEpisode(AnimeEpisode, sitename='9anime'):
     QUALITIES = ['360p', '480p', '720p', '1080p']
     _base_url = r'https://9anime.to/ajax/episode/info'
     ts = 0
@@ -54,14 +55,12 @@ class NineAnimeEpisode(BaseEpisode):
         ]
 
 
-class NineAnime(BaseAnime):
-    sitename = '9anime'
+class NineAnime(Anime, sitename='9anime'):
     QUALITIES = ['360p', '480p', '720p', '1080p']
-    _episodeClass = NineAnimeEpisode
 
     @classmethod
     def search(cls, query):
-        r = session.get('https://www4.9anime.to/search?', params={'keyword': query}, headers=desktop_headers)
+        r = helpers.get('https://www4.9anime.to/search?', params={'keyword': query}, headers=desktop_headers)
 
         logging.debug(r.url)
 
@@ -90,7 +89,8 @@ class NineAnime(BaseAnime):
 
         return ret
 
-    def _scarpe_episodes(self, soup):
+    def _scrape_episodes(self):
+        soup = helpers.soupfiy(helpers.get(self.url))
         ts = soup.find('html')['data-ts']
         self._episodeClass.ts = ts
         logging.debug('data-ts: {}'.format(ts))
@@ -123,7 +123,8 @@ class NineAnime(BaseAnime):
 
         return episode_ids
 
-    def _scrape_metadata(self, soup):
+    def _scrape_metadata(self):
+        soup = helpers.soupfiy(helpers.get(self.url))
         self.title = str(soup.find('div', {'class': 'widget info'}).find(
             'h2', {'class': 'title'}).text)
 

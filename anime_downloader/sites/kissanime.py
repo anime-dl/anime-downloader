@@ -1,19 +1,13 @@
-import cfscrape
-from bs4 import BeautifulSoup
 import re
 import logging
 
-from anime_downloader.sites.anime import BaseEpisode, SearchResult
-from anime_downloader.sites.baseanimecf import BaseAnimeCF
+from anime_downloader.sites.anime import AnimeEpisode, SearchResult, Anime
+from anime_downloader.sites import helpers
 from anime_downloader.sites.exceptions import NotFoundError
 from anime_downloader.const import get_random_header
-from anime_downloader.session import get_session
 
 
-scraper = get_session(cfscrape.create_scraper(delay=10))
-
-
-class KissanimeEpisode(BaseEpisode):
+class KissanimeEpisode(AnimeEpisode, sitename='kissanime'):
     QUALITIES = ['360p', '480p', '720p', '1080p']
     _base_url = 'http://kissanime.ru'
     VERIFY_HUMAN = True
@@ -22,7 +16,7 @@ class KissanimeEpisode(BaseEpisode):
         episode_url = self.url+'&s=rapidvideo'
         logging.debug('Calling url: {}'.format(episode_url))
 
-        ret = scraper.get(episode_url)
+        ret = helpers.get(episode_url, cf=True)
         data = self._scrape_episode(ret)
 
         return data
@@ -34,26 +28,22 @@ class KissanimeEpisode(BaseEpisode):
         return [('rapidvideo', rapid_url)]
 
 
-class KissAnime(BaseAnimeCF):
-    sitename = 'kissanime'
+class KissAnime(Anime, sitename='kissanime'):
     _referer = 'http://kissanime.ru/'
     QUALITIES = ['360p', '480p', '720p', '1080p']
-    _episodeClass = KissanimeEpisode
 
     @classmethod
     def search(cls, query):
         headers = get_random_header()
         headers['referer'] = 'http://kissanime.ru/'
-        res = scraper.post(
+        soup = helpers.soupfiy(helpers.post(
             'http://kissanime.ru/Search/Anime',
             data={
                 'type': 'Anime',
                 'keyword': query,
             },
             headers=headers,
-        )
-
-        soup = BeautifulSoup(res.text, 'html.parser')
+        ))
 
         # If only one anime found, kissanime redirects to anime page.
         # We don't want that
@@ -79,7 +69,8 @@ class KissAnime(BaseAnimeCF):
 
         return ret
 
-    def _scarpe_episodes(self, soup):
+    def _scrape_episodes(self):
+        soup = helpers.soupfiy(helpers.get(self.url, cf=True))
         ret = soup.find('table', {'class': 'listing'}).find_all('a')
         ret = ['http://kissanime.ru'+str(a['href']) for a in ret]
         logging.debug('Unfiltered episodes : {}'.format(ret))
@@ -97,6 +88,7 @@ class KissAnime(BaseAnimeCF):
         ret = ret[::-1]
         return ret
 
-    def _scrape_metadata(self, soup):
+    def _scrape_metadata(self):
+        soup = helpers.soupfiy(helpers.get(self.url, cf=True))
         info_div = soup.find('div', {'class': 'barContent'})
         self.title = info_div.find('a', {'class': 'bigChar'}).text

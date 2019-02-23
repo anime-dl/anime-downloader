@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 import warnings
 
 from anime_downloader import session
-from anime_downloader.sites.anime import BaseAnime, BaseEpisode, SearchResult
+from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 
 
 # Don't warn if not using fuzzywuzzy[speedup]
@@ -19,17 +19,15 @@ KEY = b"k8B$B@0L8D$tDYHGmRg98sQ7!%GOEGOX27T"
 session = session.get_session()
 
 
-class TwistMoeEpisode(BaseEpisode):
+class TwistMoeEpisode(AnimeEpisode, sitename='twist.moe'):
     QUALITIES = ['360p', '480p', '720p', '1080p']
 
     def _get_sources(self):
         return [('no_extractor', self.url)]
 
 
-class TwistMoe(BaseAnime):
-    sitename = 'twist.moe'
+class TwistMoe(Anime, sitename='twist.moe'):
     QUALITIES = ['360p', '480p', '720p', '1080p']
-    _episodeClass = TwistMoeEpisode
     _api_url = "https://twist.moe/api/anime/{}/sources"
 
     @classmethod
