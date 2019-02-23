@@ -25,6 +25,7 @@ setup(
         'requests>=2.18.4',
         'Click>=6.7',
         'fuzzywuzzy>=0.16.0',
+        'coloredlogs>=10.0'
     ],
     tests_require=[
         'pytest',
@@ -36,6 +37,6 @@ setup(
     long_description_content_type='text/markdown',
     entry_points='''
         [console_scripts]
-        anime=anime_downloader.cli:cli
+        anime=anime_downloader.cli:main
     '''
 )

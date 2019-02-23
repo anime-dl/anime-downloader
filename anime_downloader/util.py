@@ -10,10 +10,14 @@ import errno
 import time
 import ast
 import math
+import coloredlogs
 
 from anime_downloader import session
 from anime_downloader.sites import get_anime_class
 from anime_downloader.const import desktop_headers
+
+logger = logging.getLogger(__name__)
+
 
 def check_in_path(app):
     """
@@ -23,19 +27,15 @@ def check_in_path(app):
     """
     return shutil.which(app) is not None
 
+
 def setup_logger(log_level):
     if log_level == 'DEBUG':
-        format = '%(levelname)s %(name)s: %(message)s'
+        format = '%(asctime)s %(hostname)s %(name)s[%(process)d] %(levelname)s %(message)s'
     else:
         format = click.style('anime', fg='green') + ': %(message)s'
 
-    logging.basicConfig(
-        level=logging.getLevelName(log_level),
-        format=format
-    )
-
-    logger = logging.getLogger('urllib3.connectionpool')
-    logger.setLevel(logging.WARNING)
+    logger = logging.getLogger("anime_downloader")
+    coloredlogs.install(level=log_level, fmt=format, logger=logger)
 
 
 def format_search_results(search_results):
@@ -60,12 +60,12 @@ def search(query, provider):
     try:
         search_results = cls.search(query)
     except Exception as e:
-        logging.error(click.style(str(e), fg='red'))
+        logger.error(click.style(str(e), fg='red'))
         sys.exit(1)
     click.echo(format_search_results(search_results))
 
     if not search_results:
-        logging.error('No such Anime found. Please ensure correct spelling.')
+        logger.error('No such Anime found. Please ensure correct spelling.')
         sys.exit(1)
 
     val = click.prompt('Enter the anime no: ', type=int, default=1)
@@ -74,12 +74,12 @@ def search(query, provider):
         url = search_results[val-1].url
         title = search_results[val-1].title
     except IndexError:
-        logging.error('Only maximum of {} search results are allowed.'
-                      ' Please input a number less than {}'.format(
+        logger.error('Only maximum of {} search results are allowed.'
+                     ' Please input a number less than {}'.format(
                           len(search_results), len(search_results)+1))
         sys.exit(1)
 
-    logging.info('Selected {}'.format(title))
+    logger.info('Selected {}'.format(title))
 
     return url
 
@@ -141,17 +141,17 @@ def play_episode(episode, *, player):
 
 
 def print_info(version):
-    logging.info('anime-downloader {}'.format(version))
-    logging.debug('Platform: {}'.format(platform.platform()))
-    logging.debug('Python {}'.format(platform.python_version()))
+    logger.info('anime-downloader {}'.format(version))
+    logger.debug('Platform: {}'.format(platform.platform()))
+    logger.debug('Python {}'.format(platform.python_version()))
 
 
 def get_json(url, params=None):
-    logging.debug('API call URL: {} with params {!r}'.format(url, params))
+    logger.debug('API call URL: {} with params {!r}'.format(url, params))
     res = session.get_session().get(url, headers=desktop_headers, params=params)
-    logging.debug('URL: {}'.format(res.url))
+    logger.debug('URL: {}'.format(res.url))
     data = res.json()
-    logging.debug('Returned data: {}'.format(data))
+    logger.debug('Returned data: {}'.format(data))
 
     return data
 
