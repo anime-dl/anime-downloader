@@ -13,7 +13,7 @@ logger = logging.Logger(__name__)
 echo = click.echo
 
 
-@cli.command()
+@click.command()
 @click.argument('anime_name', required=False)
 @click.option(
     '--new', '-n', type=bool, is_flag=True,
@@ -25,8 +25,7 @@ echo = click.echo
     '--remove', '-r', 'remove', type=bool, is_flag=True,
     help="Remove the specified anime")
 @click.option(
-    '--update-all', '-u', 'update_all', type=bool, is_flag=True,
-    help="Update the episodes of all anime in your list"
+    '--update-all', '-u', 'update_all', type=bool, is_flag=True, help="Update the episodes of all anime in your list"
 )
 @click.option(
     '--quality', '-q', type=click.Choice(['360p', '480p', '720p', '1080p']),

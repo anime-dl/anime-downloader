@@ -10,3 +10,4 @@ anime-downloader = {editable = true, path = ".", extras = ["cloudflare"]}
 twine = "*"
 sphinx = "*"
 sphinx-rtd-theme = "*"
+radon = "*"

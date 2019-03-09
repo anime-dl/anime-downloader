@@ -18,6 +18,20 @@ from anime_downloader.const import desktop_headers
 
 logger = logging.getLogger(__name__)
 
+__all__ = [
+    'check_in_path',
+    'setup_logger',
+    'format_search_results',
+    'search',
+    'split_anime',
+    'parse_episode_range',
+    'parse_ep_str',
+    'print_episodeurl',
+    'download_episode',
+    'play_episode',
+    'print_info',
+]
+
 
 def check_in_path(app):
     """
@@ -72,7 +86,7 @@ def search(query, provider):
     except IndexError:
         logger.error('Only maximum of {} search results are allowed.'
                      ' Please input a number less than {}'.format(
-                          len(search_results), len(search_results)+1))
+                         len(search_results), len(search_results)+1))
         sys.exit(1)
 
     logger.info('Selected {}'.format(title))

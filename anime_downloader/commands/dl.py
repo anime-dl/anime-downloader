@@ -91,6 +91,10 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
 
     animes = util.parse_ep_str(anime, episode_range)
 
+    # TODO:
+    # Two types of plugins:
+    #   - Aime plugin: Pass the whole anime
+    #   - Ep plugin: Pass each episode
     if url or player:
         skip_download = True
 
