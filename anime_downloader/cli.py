@@ -52,4 +52,4 @@ def main():
             raise
         click.echo(click.style('ERROR:', fg='black', bg='red') +
                    ' '+click.style(str(e), fg='red'))
-        os.exit(1)
+        sys.exit(1)
