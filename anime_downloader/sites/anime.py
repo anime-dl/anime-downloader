@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 import os
 import logging
 import copy
+import importlib
 
 from anime_downloader.sites.exceptions import AnimeDLError, NotFoundError
 from anime_downloader import util
@@ -91,6 +92,24 @@ class Anime:
     @classmethod
     def factory(cls, sitename: str):
         return cls.subclasses[sitename]
+
+    @classmethod
+    def new_anime(cls, sitename: str):
+        """
+        new_anime is a factory which returns the anime class corresposing to
+        `sitename`
+
+        Returns
+        -------
+        subclass of Anime
+        """
+        module = importlib.import_module(
+            'anime_downloader.sites.{}'.format(sitename)
+        )
+        for c in dir(module):
+            if issubclass(c, cls):
+                return c
+        raise ImportError("Cannot find subclass of {}".format(cls))
 
     def get_data(self):
         """
