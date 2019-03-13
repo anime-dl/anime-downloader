@@ -56,6 +56,7 @@ class NineAnimeEpisode(AnimeEpisode, sitename='9anime'):
 
 
 class NineAnime(Anime, sitename='9anime'):
+    sitename = '9anime'
     QUALITIES = ['360p', '480p', '720p', '1080p']
 
     @classmethod
@@ -92,7 +93,7 @@ class NineAnime(Anime, sitename='9anime'):
     def _scrape_episodes(self):
         soup = helpers.soupify(helpers.get(self.url))
         ts = soup.find('html')['data-ts']
-        self._episodeClass.ts = ts
+        NineAnimeEpisode.ts = ts
         logging.debug('data-ts: {}'.format(ts))
 
         # TODO: !HACK!
