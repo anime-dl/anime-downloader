@@ -32,7 +32,8 @@ class KissAnime(Anime, sitename='kissanime'):
         soup = helpers.soupify(helpers.post(
             'https://kissanime.ru/Search/Anime',
             data=dict(keyword=query),
-            referer=cls._referer
+            referer=cls._referer,
+            cf=True
         ))
 
         # If only one anime found, kissanime redirects to anime page.

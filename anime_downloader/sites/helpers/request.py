@@ -20,6 +20,34 @@ cf_session = cfscrape.create_scraper(sess=req_session)
 default_headers = get_random_header()
 
 
+def setup(func):
+    def setup_func(url: str,
+                   cf: bool = True,
+                   referer: str = None,
+                   headers=None,
+                   **kwargs):
+        sess = cf_session if cf else req_session
+        if headers:
+            default_headers.update(headers)
+        if referer:
+            default_headers['Referer'] = referer
+        logger.debug('-----')
+        logger.debug('{} {}'.format(func.__name__.upper(), url))
+        logger.debug(kwargs)
+        logger.debug(default_headers)
+        logger.debug('-----')
+        res = sess.request(func.__name__.upper(),
+                           url,
+                           headers=default_headers,
+                           **kwargs)
+        res = sess.get(url, headers=default_headers, **kwargs)
+        res.raise_for_status()
+        # logger.debug(res.text)
+        return res
+    return setup_func
+
+
+@setup
 def get(url: str,
         cf: bool = True,
         referer: str = None,
@@ -28,17 +56,6 @@ def get(url: str,
     '''
     get performs a get request
     '''
-    # TODO: Refactor
-    sess = cf_session if cf else req_session
-    if headers:
-        default_headers.update(headers)
-    if referer:
-        default_headers['Referer'] = referer
-    logger.debug(default_headers)
-    res = sess.get(url, headers=default_headers, **kwargs)
-    res.raise_for_status()
-    logger.debug(res.text)
-    return res
 
 
 def post(url: str,
@@ -49,15 +66,6 @@ def post(url: str,
     '''
     get performs a get request
     '''
-    # TODO: Add headers
-    sess = cf_session if cf else req_session
-    if headers:
-        default_headers.update(headers)
-    if referer:
-        default_headers['referer'] = referer
-    res = sess.post(url, headers=default_headers, **kwargs)
-    res.raise_for_status()
-    return res
 
 
 def soupify(res):
