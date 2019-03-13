@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "457dc98718285d0b6166dc6acec90e416c6578bc88d2ecc12337a38848c863f3"
+            "sha256": "b9e8edea14fa675cf93739cb8693974b6265707ca166796e71a56c0c724c9471"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -186,6 +186,13 @@
             ],
             "version": "==1.0.2"
         },
+        "httpretty": {
+            "hashes": [
+                "sha256:01b52d45077e702eda491f4fe75328d3468fd886aed5dcc530003e7b2b5939dc"
+            ],
+            "index": "pypi",
+            "version": "==0.9.6"
+        },
         "idna": {
             "hashes": [
                 "sha256:c357b3f628cf53ae2c4c05627ecc484553142ca23264e593d327bcde5e9c3407",
@@ -348,11 +355,11 @@
         },
         "sphinx": {
             "hashes": [
-                "sha256:b53904fa7cb4b06a39409a492b949193a1b68cc7241a1a8ce9974f86f0d24287",
-                "sha256:c1c00fc4f6e8b101a0d037065043460dffc2d507257f2f11acaed71fd2b0c83c"
+                "sha256:9f3e17c64b34afc653d7c5ec95766e03043cc6d80b0de224f59b6b6e19d37c3c",
+                "sha256:c7658aab75c920288a8cf6f09f244c6cfdae30d82d803ac1634d9f223a80ca08"
             ],
             "index": "pypi",
-            "version": "==1.8.4"
+            "version": "==1.8.5"
         },
         "sphinx-rtd-theme": {
             "hashes": [

@@ -116,7 +116,7 @@ def _log_response_body(res):
         data.append({
             'method': res.request.method,
             'url': res.url,
-            'file': file,
+            'file': '/' + file.split('/')[-1],
         })
     with open(data_file, 'w') as f:
         json.dump(data, f)
