@@ -58,7 +58,7 @@ class TwistMoe(BaseAnime):
         )
         episodes = episodes.json()
         self.title = anime_name
-        episode_urls = ['https://eu1.twist.moe' +
+        episode_urls = ['https://www.twist.moe' +
                         decrypt(episode['source'].encode('utf-8'), KEY).decode('utf-8')
                         for episode in episodes]
 
