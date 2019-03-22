@@ -34,6 +34,19 @@ def setup(func):
                    referer: str = None,
                    headers=None,
                    **kwargs):
+        '''
+        {0} performs a {0} request
+
+        Parameters
+        ----------
+        url : str
+            url is the url of the request to be performed
+        cf : bool
+            cf if True performs the request through cfscrape.
+            For cloudflare protected sites.
+        referer : str
+            a url sent as referer in request headers
+        '''
         sess = cf_session if cf else req_session
         if headers:
             default_headers.update(headers)
@@ -55,6 +68,7 @@ def setup(func):
         if logger.getEffectiveLevel() == logging.DEBUG:
             _log_response_body(res)
         return res
+    setup_func.__doc__ = setup_func.__doc__.format(func.__name__)
     return setup_func
 
 
@@ -66,6 +80,16 @@ def get(url: str,
         **kwargs):
     '''
     get performs a get request
+
+    Parameters
+    ----------
+    url : str
+        url is the url of the request to be performed
+    cf : bool
+        cf if True performs the request through cfscrape.
+        For cloudflare protected sites.
+    referer : str
+        a url sent as referer in request headers
     '''
 
 
@@ -76,7 +100,17 @@ def post(url: str,
          headers=None,
          **kwargs):
     '''
-    get performs a get request
+    post performs a post request
+
+    Parameters
+    ----------
+    url : str
+        url is the url of the request to be performed
+    cf : bool
+        cf if True performs the request through cfscrape.
+        For cloudflare protected sites.
+    referer : str
+        a url sent as referer in request headers
     '''
 
 
