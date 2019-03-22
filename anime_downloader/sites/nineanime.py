@@ -1,4 +1,3 @@
-from anime_downloader import session
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites.exceptions import NotFoundError, AnimeDLError
 from anime_downloader.sites import helpers
@@ -11,7 +10,7 @@ import logging
 
 __all__ = ['NineAnimeEpisode', 'NineAnime']
 
-session = session.get_session()
+logger = logging.getLogger(__name__)
 
 
 class NineAnimeEpisode(AnimeEpisode, sitename='9anime'):
@@ -63,7 +62,7 @@ class NineAnime(Anime, sitename='9anime'):
     def search(cls, query):
         r = helpers.get('https://www4.9anime.to/search?', params={'keyword': query}, headers=desktop_headers)
 
-        logging.debug(r.url)
+        logger.debug(r.url)
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
@@ -72,7 +71,7 @@ class NineAnime(Anime, sitename='9anime'):
 
         ret = []
 
-        logging.debug('Search results')
+        logger.debug('Search results')
 
         for item in search_results:
             s = SearchResult(
@@ -85,7 +84,7 @@ class NineAnime(Anime, sitename='9anime'):
             for item in m.find_all('div'):
                 meta[item.attrs['class'][0]] = item.text.strip()
             s.meta = meta
-            logging.debug(s)
+            logger.debug(s)
             ret.append(s)
 
         return ret
@@ -94,7 +93,7 @@ class NineAnime(Anime, sitename='9anime'):
         soup = helpers.soupify(helpers.get(self.url))
         ts = soup.find('html')['data-ts']
         NineAnimeEpisode.ts = ts
-        logging.debug('data-ts: {}'.format(ts))
+        logger.debug('data-ts: {}'.format(ts))
 
         # TODO: !HACK!
         # The below code should be refractored whenever I'm not lazy.

@@ -11,6 +11,7 @@ import time
 import ast
 import math
 import coloredlogs
+from tabulate import tabulate
 
 from anime_downloader import session
 from anime_downloader.sites import get_anime_class
@@ -53,18 +54,16 @@ def setup_logger(log_level):
 
 
 def format_search_results(search_results):
-    _, height = shutil.get_terminal_size()
-    height -= 4  # Accounting for prompt
-
-    ret = ''
-    for idx, result in enumerate(search_results[:height]):
-        try:
-            meta = ' | '.join(val for _, val in result.meta.items())
-        except AttributeError:
-            meta = ''
-        ret += '{:2}: {:40.40}\t{:20.20}\n'.format(idx+1, result.title, meta)
-
-    return ret
+    headers = [
+        'SlNo',
+        'Title',
+        'Meta',
+    ]
+    table = [(i+1, v.title, v.pretty_metadata)
+             for i, v in enumerate(search_results)]
+    table = tabulate(table, headers, tablefmt='psql')
+    table = '\n'.join(table.split('\n')[::-1])
+    return table
 
 
 def search(query, provider):
@@ -133,10 +132,10 @@ def parse_ep_str(anime, grammar):
 
 
 def print_episodeurl(episode):
-    #if episode.source().referer != '':
+    # if episode.source().referer != '':
     #    print(episode.source().stream_url + "?referer=" +  episode.source().referer)
-    #else:
-    #Currently I don't know of a way to specify referer in url itself so leaving it here.
+    # else:
+    # Currently I don't know of a way to specify referer in url itself so leaving it here.
     print(episode.source().stream_url)
 
 
@@ -194,7 +193,7 @@ def format_command(cmd, episode, file_format, path):
         'stream_url': episode.source().stream_url,
         'file_format': file_format,
         'download_dir': os.path.abspath(path),
-        'referer':episode.source().referer,
+        'referer': episode.source().referer,
     }
 
     if cmd in cmd_dict:
@@ -207,13 +206,13 @@ def format_command(cmd, episode, file_format, path):
 
 
 def external_download(cmd, episode, file_format, path=''):
-    logging.debug('cmd: ' + cmd)
-    logging.debug('episode: {!r}'.format(episode))
-    logging.debug('file format: ' + file_format)
+    logger.debug('cmd: ' + cmd)
+    logger.debug('episode: {!r}'.format(episode))
+    logger.debug('file format: ' + file_format)
 
     cmd = format_command(cmd, episode, file_format, path=path)
 
-    logging.debug('formatted cmd: ' + ' '.join(cmd))
+    logger.debug('formatted cmd: ' + ' '.join(cmd))
 
     p = subprocess.Popen(cmd)
     return_code = p.wait()

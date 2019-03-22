@@ -87,7 +87,7 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
     anime = cls(anime_url, quality=quality,
                 fallback_qualities=fallback_qualities)
 
-    logging.info('Found anime: {}'.format(anime.title))
+    logger.info('Found anime: {}'.format(anime.title))
 
     animes = util.parse_ep_str(anime, episode_range)
 
@@ -99,7 +99,7 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
         skip_download = True
 
     if download_dir and not skip_download:
-        logging.info('Downloading to {}'.format(os.path.abspath(download_dir)))
+        logger.info('Downloading to {}'.format(os.path.abspath(download_dir)))
 
     for episode in animes:
         if url:
@@ -110,7 +110,7 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
 
         if not skip_download:
             if external_downloader:
-                logging.info('Downloading episode {} of {}'.format(
+                logger.info('Downloading episode {} of {}'.format(
                     episode.ep_no, anime.title)
                 )
                 util.external_download(external_downloader, episode,

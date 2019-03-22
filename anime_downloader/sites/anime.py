@@ -1,9 +1,6 @@
 """
 anime.py contains the base classes required for other anime classes.
 """
-import requests
-from bs4 import BeautifulSoup
-
 import os
 import logging
 import copy
@@ -13,6 +10,8 @@ from anime_downloader.sites.exceptions import AnimeDLError, NotFoundError
 from anime_downloader import util
 from anime_downloader.extractors import get_extractor
 from anime_downloader.downloader import get_downloader
+
+logger = logging.getLogger(__name__)
 
 
 class Anime:
@@ -66,7 +65,8 @@ class Anime:
                  fallback_qualities=['720p', '480p', '360p'],
                  _skip_online_data=False):
         self.url = url
-        self._fallback_qualities = [q for q in fallback_qualities if q in self.QUALITIES]
+        self._fallback_qualities = [
+            q for q in fallback_qualities if q in self.QUALITIES]
 
         if quality in self.QUALITIES:
             self.quality = quality
@@ -75,7 +75,7 @@ class Anime:
                 'Quality {0} not found in {1}'.format(quality, self.QUALITIES))
 
         if not _skip_online_data:
-            logging.info('Extracting episode info from page')
+            logger.info('Extracting episode info from page')
             self._episode_urls = self.get_data()
             self._len = len(self._episode_urls)
 
@@ -138,12 +138,12 @@ class Anime:
         try:
             self._scrape_metadata()
         except Exception as e:
-            logging.debug('Metadata scraping error: {}'.format(e))
+            logger.debug('Metadata scraping error: {}'.format(e))
 
         self._episode_urls = self._scrape_episodes()
         self._len = len(self._episode_urls)
 
-        logging.debug('EPISODE IDS: length: {}, ids: {}'.format(
+        logger.debug('EPISODE IDS: length: {}, ids: {}'.format(
             self._len, self._episode_urls))
 
         self._episode_urls = [(no+1, id) for no, id in
@@ -225,7 +225,7 @@ class AnimeEpisode:
         self._sources = None
         self.pretty_title = '{}-{}'.format(self._parent.title, self.ep_no)
 
-        logging.debug("Extracting stream info of id: {}".format(self.url))
+        logger.debug("Extracting stream info of id: {}".format(self.url))
 
         def try_data():
             self.get_data()
@@ -241,7 +241,7 @@ class AnimeEpisode:
             except ValueError:
                 pass
             for quality in qualities:
-                logging.warning('Quality {} not found. Trying {}.'.format(
+                logger.warning('Quality {} not found. Trying {}.'.format(
                     self.quality, quality))
                 self.quality = quality
                 try:
@@ -275,7 +275,7 @@ class AnimeEpisode:
 
     def get_data(self):
         self._sources = self._get_sources()
-        logging.debug('Sources : '.format(self._sources))
+        logger.debug('Sources : '.format(self._sources))
 
     def _get_sources(self):
         raise NotImplementedError
@@ -283,7 +283,7 @@ class AnimeEpisode:
     def download(self, force=False, path=None,
                  format='{anime_title}_{ep_no}', range_size=None):
         # TODO: Remove this shit
-        logging.info('Downloading {}'.format(self.pretty_title))
+        logger.info('Downloading {}'.format(self.pretty_title))
         if format:
             file_name = util.format_filename(format, self)+'.mp4'
 
@@ -340,3 +340,12 @@ class SearchResult:
 
     def __str__(self):
         return self.title
+
+    @property
+    def pretty_metadata(self):
+        """
+        pretty_metadata is the prettified version of metadata
+        """
+        if self.meta:
+            return ' | '.join(val for _, val in self.meta.items())
+        return ''

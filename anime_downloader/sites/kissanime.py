@@ -5,6 +5,8 @@ from anime_downloader.sites.anime import AnimeEpisode, SearchResult, Anime
 from anime_downloader.sites import helpers
 from anime_downloader.sites.exceptions import NotFoundError
 
+logger = logging.getLogger(__name__)
+
 
 class KissanimeEpisode(AnimeEpisode, sitename='kissanime'):
     QUALITIES = ['360p', '480p', '720p', '1080p']
@@ -55,7 +57,7 @@ class KissAnime(Anime, sitename='kissanime'):
                 url='https://kissanime.ru'+res.find('a').get('href'),
                 poster='',
             )
-            logging.debug(res)
+            logger.debug(res)
             ret.append(res)
 
         return ret
@@ -64,12 +66,12 @@ class KissAnime(Anime, sitename='kissanime'):
         soup = helpers.soupify(helpers.get(self.url, cf=True))
         ret = ['http://kissanime.ru'+str(a['href'])
                for a in soup.select('table.listing a')]
-        logging.debug('Unfiltered episodes : {}'.format(ret))
+        logger.debug('Unfiltered episodes : {}'.format(ret))
         filter_list = ['opening', 'ending', 'special', 'recap']
         ret = list(filter(
             lambda x: not any(s in x.lower() for s in filter_list), ret
         ))
-        logging.debug('Filtered episodes : {}'.format(ret))
+        logger.debug('Filtered episodes : {}'.format(ret))
 
         if ret == []:
             err = 'No episodes found in url "{}"'.format(self.url)

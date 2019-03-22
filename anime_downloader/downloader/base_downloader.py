@@ -6,10 +6,12 @@ import sys
 from anime_downloader import util
 from anime_downloader import session
 
+logger = logging.getLogger(__name__)
+
 
 class BaseDownloader:
     def __init__(self, source, path, force, range_size=None):
-        logging.info(path)
+        logger.info(path)
 
         self.url = source.stream_url
         self.referer = source.referer
@@ -20,13 +22,14 @@ class BaseDownloader:
 
         self.chunksize = 16384
 
-        #Added Referer Header as kwik needd it.
-        r = session.get_session().get(self.url, headers={'referer': self.referer}, stream=True)
+        # Added Referer Header as kwik needd it.
+        r = session.get_session().get(
+            self.url, headers={'referer': self.referer}, stream=True)
 
         self.total_size = int(r.headers['Content-length'])
         if os.path.exists(path):
-            if abs(os.stat(path).st_size - self.total_size)<10 and not force:
-                logging.warning('File already downloaded. Skipping download.')
+            if abs(os.stat(path).st_size - self.total_size) < 10 and not force:
+                logger.warning('File already downloaded. Skipping download.')
                 return
             else:
                 os.remove(path)

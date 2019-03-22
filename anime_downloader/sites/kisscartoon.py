@@ -6,6 +6,9 @@ from anime_downloader.sites.exceptions import NotFoundError
 import logging
 
 
+logger = logging.getLogger(__name__)
+
+
 class KisscartoonEpisode(AnimeEpisode, sitename='kisscartoon'):
     _base_url = ''
     VERIFY_HUMAN = False
@@ -47,7 +50,7 @@ class KissCartoon(KissAnime, sitename='kisscartoon'):
                 url=res.get('href'),
                 poster='',
             )
-            logging.debug(res)
+            logger.debug(res)
             ret.append(res)
 
         return ret

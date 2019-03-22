@@ -4,6 +4,8 @@ import os
 import subprocess
 import logging
 
+logger = logging.getLogger(__name__)
+
 
 class BasePlayer(metaclass=ABCMeta):
     name = ''
@@ -43,7 +45,7 @@ class BasePlayer(metaclass=ABCMeta):
 
     def play(self):
         cmd = [self._get_executable()] + self.args
-        logging.debug('Command: {}'.format(cmd))
+        logger.debug('Command: {}'.format(cmd))
         self.process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
         returncode = self.process.wait()
 

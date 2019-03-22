@@ -3,6 +3,8 @@ import logging
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 
+logger = logging.getLogger(__name__)
+
 
 class GogoanimeEpisode(AnimeEpisode, sitename='gogoanime'):
     QUALITIES = ['360p', '480p', '720p']
@@ -21,12 +23,13 @@ class GogoanimeEpisode(AnimeEpisode, sitename='gogoanime'):
                 extractor_class = 'mp4upload'
             elif extractor_class != 'rapidvideo':
                 continue
-            logging.debug('%s: %s' % (extractor_class, source_url))
+            logger.debug('%s: %s' % (extractor_class, source_url))
             extractors_url.append((extractor_class, source_url,))
         return extractors_url
 
 
 class GogoAnime(Anime, sitename='gogoanime'):
+    sitename = 'gogoanime'
     QUALITIES = ['360p', '480p', '720p']
     _episode_list_url = 'https://www2.gogoanime.se//load-list-episode'
     _search_api_url = 'https://api.watchanime.cc/site/loadAjaxSearch'
@@ -50,7 +53,7 @@ class GogoAnime(Anime, sitename='gogoanime'):
                 url=element.attrs['href'],
                 poster=''
             )
-            logging.debug(search_result)
+            logger.debug(search_result)
             search_results.append(search_result)
         return search_results
 

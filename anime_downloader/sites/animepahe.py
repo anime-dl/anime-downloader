@@ -1,13 +1,12 @@
-import cfscrape
 import logging
 import re
 
 from anime_downloader.sites.anime import AnimeEpisode, SearchResult, Anime
 from anime_downloader.sites.exceptions import NotFoundError
+from anime_downloader.sites import helpers
 from anime_downloader import util
-from anime_downloader.session import get_session
 
-scraper = get_session(cfscrape.create_scraper())
+logger = logging.getLogger(__name__)
 
 
 class AnimePaheEpisode(AnimeEpisode):
@@ -34,8 +33,8 @@ class AnimePaheEpisode(AnimeEpisode):
 
         supported_servers = ['kwik','mp4upload','rapidvideo']
         episode_id = self.url.rsplit('/', 1)[-1]
-        
-        sourcetext = scraper.get(self.url).text
+
+        sourcetext = helpers.get(self.url, cf=True).text
         sources = []
         serverlist = re.findall(r'data-provider="([^"]+)', sourcetext)
         for server in serverlist:
@@ -78,7 +77,7 @@ class AnimePahe(Anime):
                 poster=search_result['image']
             )
 
-            logging.debug(search_result_info)
+            logger.debug(search_result_info)
             results.append(search_result_info)
 
         return results
@@ -87,7 +86,7 @@ class AnimePahe(Anime):
         # Extract anime id from page, using this shoddy approach as
         # I have neglected my regular expression skills to the point of
         # disappointment
-        resp = scraper.get(self.url).text
+        resp = helpers.get(self.url, cf=True).text
         first_search = '$.getJSON(\'/api?m=release&id='
         last_search = '&l=\' + limit + \'&sort=\' + sort + \'&page=\' + page'
 

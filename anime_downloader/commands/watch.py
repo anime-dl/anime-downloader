@@ -90,14 +90,14 @@ def command(anime_name, new, update_all, _list, quality, remove,
     if anime_name:
         anime = watcher.get(anime_name)
         if not anime:
-            logging.error(
+            logger.error(
                 "Couldn't find '{}'."
                 "Use a better search term.".format(anime_name))
             sys.exit(1)
 
         anime.quality = quality
 
-        logging.info('Found {}'.format(anime.title))
+        logger.info('Found {}'.format(anime.title))
         watch_anime(watcher, anime)
 
 
@@ -186,14 +186,14 @@ def list_animes(watcher, quality, download_dir):
 
 def watch_anime(watcher, anime):
     to_watch = anime[anime.episodes_done:]
-    logging.debug('Sliced epiosdes: {}'.format(to_watch._episode_urls))
+    logger.debug('Sliced epiosdes: {}'.format(to_watch._episode_urls))
 
     while anime.episodes_done < len(anime):
         episode = anime[anime.episodes_done]
         anime.episodes_done += 1
         watcher.update(anime)
         for tries in range(5):
-            logging.info(
+            logger.info(
                 'Playing episode {}'.format(episode.ep_no)
             )
             try:
@@ -201,7 +201,7 @@ def watch_anime(watcher, anime):
             except Exception as e:
                 anime.episodes_done -= 1
                 watcher.update(anime)
-                logging.error(str(e))
+                logger.error(str(e))
                 sys.exit(1)
 
             returncode = player.play()
@@ -209,7 +209,7 @@ def watch_anime(watcher, anime):
             if returncode == player.STOP:
                 sys.exit(0)
             elif returncode == player.CONNECT_ERR:
-                logging.warning("Couldn't connect. Retrying. "
+                logger.warning("Couldn't connect. Retrying. "
                                 "Attempt #{}".format(tries+1))
                 continue
             elif returncode == player.PREV:

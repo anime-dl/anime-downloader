@@ -50,7 +50,6 @@ def setup(func):
                            url,
                            headers=default_headers,
                            **kwargs)
-        res = sess.get(url, headers=default_headers, **kwargs)
         res.raise_for_status()
         # logger.debug(res.text)
         if logger.getEffectiveLevel() == logging.DEBUG:
@@ -70,6 +69,7 @@ def get(url: str,
     '''
 
 
+@setup
 def post(url: str,
          cf: bool = True,
          referer: str = None,
@@ -102,7 +102,7 @@ def soupify(res):
 def _log_response_body(res):
     import json
     file = tempfile.mktemp(dir=temp_dir)
-    logging.debug(file)
+    logger.debug(file)
     with open(file, 'w') as f:
         f.write(res.text)
 

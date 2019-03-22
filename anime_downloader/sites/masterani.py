@@ -1,15 +1,11 @@
 import json
-import cfscrape
 import logging
-from bs4 import BeautifulSoup
 
-from anime_downloader import util
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 from anime_downloader.const import desktop_headers
-from anime_downloader.session import get_session
 
-scraper = get_session(cfscrape.create_scraper())
+logger = logging.getLogger(__name__)
 
 
 class MasteraniEpisode(AnimeEpisode, sitename='masterani'):
@@ -41,7 +37,7 @@ class MasteraniEpisode(AnimeEpisode, sitename='masterani'):
         sources = ['stream.moe', 'rapidvideo', 'mp4upload']
         ret = [(name, url) for name, url in ret if name in sources]
 
-        logging.debug(ret)
+        logger.debug(ret)
 
         return ret
 
@@ -65,7 +61,7 @@ class Masterani(Anime, sitename='masterani'):
                     item['poster']['path'], item['poster']['file']
                 )
             )
-            logging.debug(s)
+            logger.debug(s)
             ret.append(s)
 
         return ret
@@ -77,7 +73,7 @@ class Masterani(Anime, sitename='masterani'):
         try:
             res = res.json()
         except Exception:
-            logging.debug('Error with html {}'.format(res.text))
+            logger.debug('Error with html {}'.format(res.text))
             raise
         base_url = 'https://www.masterani.me/anime/watch/{}'.format(
             res['info']['slug']) + '/'
