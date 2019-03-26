@@ -14,14 +14,17 @@ class RapidVideo(BaseExtractor):
         logger.debug('Calling Rapid url: {}'.format(url))
         headers = self.headers
         headers['referer'] = url
+
         try:
             r = helpers.get(url, headers=headers)
+            soup = helpers.soupify(r)
+            stream_url = get_source(soup)
         except Exception as e:
             logger.debug('Exception happened when getting normally')
             logger.debug(e)
-            r = helpers.post(url, {
-                'cursor.x': 12,
-                'cursor.y': 12,
+            r = helpers.post(url, data={
+                'confirm.x': 12,
+                'confirm.y': 12,
                 'block': 1,
             }, headers=headers)
         soup = helpers.soupify(r)
