@@ -46,6 +46,12 @@ def check_in_path(app):
 def setup_logger(log_level):
     if log_level == 'DEBUG':
         format = '%(asctime)s %(hostname)s %(name)s[%(process)d] %(levelname)s %(message)s'
+        from http.client import HTTPConnection
+        HTTPConnection.debuglevel = 1
+        requests_log = logging.getLogger("requests.packages.urllib3")
+        requests_log.setLevel(logging.DEBUG)
+        requests_log.propagate = True
+
     else:
         format = click.style('anime', fg='green') + ': %(message)s'
 
