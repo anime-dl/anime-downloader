@@ -43,9 +43,9 @@ class KissAnime(BaseAnimeCF):
     @classmethod
     def search(cls, query):
         headers = get_random_header()
-        headers['referer'] = 'http://kissanime.ru/'
+        headers['referer'] = 'https://kissanime.ru/'
         res = scraper.post(
-            'http://kissanime.ru/Search/Anime',
+            'https://kissanime.ru/Search/Anime',
             data={
                 'type': 'Anime',
                 'keyword': query,
