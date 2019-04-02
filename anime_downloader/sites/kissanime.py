@@ -5,7 +5,7 @@ import logging
 
 from anime_downloader.sites.anime import BaseEpisode, SearchResult
 from anime_downloader.sites.baseanimecf import BaseAnimeCF
-from anime_downloader.sites.exceptions import NotFoundError
+from anime_downloader.sites.exceptions import NotFoundError,RegexChangedError
 from anime_downloader.const import get_random_header
 from anime_downloader.session import get_session
 
@@ -38,10 +38,21 @@ class KissanimeEpisode(BaseEpisode):
         return data
 
     def _scrape_episode(self, response):
-        rapid_re = re.compile(r'iframe.*src="https://(.*?)"')
-        rapid_url = rapid_re.findall(response.text)[0]
-
-        return [('rapidvideo', rapid_url)]
+        try:
+            rapid_re = re.compile(r'iframe.*src="https://(.*?)"')
+            rapid_url = rapid_re.findall(response.text)[0]
+            return [('rapidvideo', rapid_url)]
+        except IndexError: 
+            '''
+            Since __getitem__ is used for iterator implementation 
+            when an indexerror is raised it is perceived by forloop
+            iteration in cli.py as end singnal, and thus no exception 
+            is raised
+            Python Docs :- `Note for loops expect that an IndexError 
+            will be raised for illegal indexes to allow proper 
+            detection of the end of the sequence`
+            '''
+            raise RegexChangedError
 
 
 class KissAnime(BaseAnimeCF):

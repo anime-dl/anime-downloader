@@ -8,3 +8,7 @@ class URLError(AnimeDLError):
 
 class NotFoundError(AnimeDLError):
     pass
+
+
+class RegexChangedError(AnimeDLError):
+    pass
