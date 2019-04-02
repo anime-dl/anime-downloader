@@ -15,14 +15,24 @@ scraper = get_session(cfscrape.create_scraper(delay=10))
 
 class KissanimeEpisode(BaseEpisode):
     QUALITIES = ['360p', '480p', '720p', '1080p']
-    _base_url = 'http://kissanime.ru'
+    _base_url = 'https://kissanime.ru'
     VERIFY_HUMAN = True
 
     def _get_sources(self):
         episode_url = self.url+'&s=rapidvideo'
         logging.debug('Calling url: {}'.format(episode_url))
-
+        
+        '''
+        A better change would be to reuse session but I am waiting 
+        on the rewrite to make sure if it's still needed.
+        Basically the problem is that kissanime requires some kissanime
+        page to be loaded before you can load the rapidvideo download 
+        page. Currenly since we use get_random_header at all places
+        KissAnime treats the session as different user.
+        '''
         ret = scraper.get(episode_url)
+        if(ret.text == 'Not found'):
+            ret = scraper.get(episode_url)
         data = self._scrape_episode(ret)
 
         return data
@@ -81,7 +91,7 @@ class KissAnime(BaseAnimeCF):
 
     def _scarpe_episodes(self, soup):
         ret = soup.find('table', {'class': 'listing'}).find_all('a')
-        ret = ['http://kissanime.ru'+str(a['href']) for a in ret]
+        ret = ['https://kissanime.ru'+str(a['href']) for a in ret]
         logging.debug('Unfiltered episodes : {}'.format(ret))
         filter_list = ['opening', 'ending', 'special', 'recap']
         ret = list(filter(
