@@ -21,7 +21,7 @@ class NineAnimeEpisode(BaseEpisode):
     def _get_sources(self):
         params = {
             'id': self.url,
-            'server': '33',
+            'server': '35',
             'ts': self.ts
         }
 
@@ -50,7 +50,7 @@ class NineAnimeEpisode(BaseEpisode):
                 ) from e
 
         return [
-            ('rapidvideo', url),
+            ('mp4upload', url),
         ]
 
 
@@ -106,7 +106,7 @@ class NineAnime(BaseAnime):
         params['_'] = int(generate_(params))
         params['_'] = 648
         soup = BeautifulSoup(session.get(api_url, params=params).json()['html'], 'html.parser')
-        episodes = soup.find('div', {'class': 'server', 'data-name': 33})
+        episodes = soup.find('div', {'class': 'server', 'data-name': 35})
         episodes = episodes.find_all('li')
 
         if episodes == []:
