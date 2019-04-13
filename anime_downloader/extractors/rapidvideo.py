@@ -16,27 +16,29 @@ class RapidVideo(BaseExtractor):
         headers['referer'] = url
         try:
             r = session.get(url, headers=headers)
+            # This is a fix for new rapidvideo logic
+            # It will return OK for a get request
+            # even if there is a click button
+            # This will make sure a source link is present
+            soup = BeautifulSoup(r.text, 'html.parser')
+            get_source(soup)
         except:
             r = session.post(url, {
-                'cursor.x': 12,
-                'cursor.y': 12,
+                'confirm.x': 12,
+                'confirm.y': 12,
                 'block': 1,
             }, headers=headers)
         soup = BeautifulSoup(r.text, 'html.parser')
 
         # TODO: Make these a different function. Can be reused in other classes
         #       too
-        src_re = re.compile(r'src: "(.*)"')
         title_re = re.compile(r'"og:title" content="(.*)"')
         image_re = re.compile(r'"og:image" content="(.*)"')
 
         try:
-            stream_url = soup.find_all('source')[0].get('src')
+            stream_url = get_source(soup)
         except IndexError:
-            try:
-                stream_url = str(src_re.findall(r.text)[0])
-            except IndexError:
-                stream_url = None
+            stream_url = None
 
         try:
             title = str(title_re.findall(r.text)[0])
@@ -54,3 +56,11 @@ class RapidVideo(BaseExtractor):
                 'thumbnail': thumbnail,
             },
         }
+
+
+def get_source(soup):
+    src_re = re.compile(r'src: "(.*)"')
+    try:
+        return soup.find_all('source')[0].get('src')
+    except IndexError:
+        return str(src_re.findall(str(soup))[0])
