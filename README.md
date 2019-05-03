@@ -42,20 +42,20 @@ NOTE: To download from sites marked `[cloudflare]`, anime-downloader has to be i
 
 You can install the stable release from PyPI.
 ```bash
-$ pip install anime-downloader
+$ pip3 install anime-downloader
 ```
 
 To install with cloudflare support, (Read note below)
 ```bash
-$ pip install anime-downloader[cloudflare]
+$ pip3 install anime-downloader[cloudflare]
 ```
 
 To install the dev version
 ```bash
-$ pip install -U git+https://github.com/vn-ki/anime-downloader.git
+$ pip3 install -U git+https://github.com/vn-ki/anime-downloader.git
 
 # To install with cloudflare support
-$ pip install -U git+https://github.com/vn-ki/anime-downloader.git#egg=anime-downloader[cloudflare]
+$ pip3 install -U git+https://github.com/vn-ki/anime-downloader.git#egg=anime-downloader[cloudflare]
 ```
 
 If you have trouble installing, see extended installation instructions [here](https://github.com/vn-ki/anime-downloader/wiki/Installation).
