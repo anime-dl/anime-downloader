@@ -10,35 +10,40 @@ logger = logging.getLogger(__name__)
 
 
 class BaseDownloader:
-    def __init__(self, source, path, force, options=None):
-        logger.info(path)
-
-        self.url = source.stream_url
-        self.referer = source.referer
-        self.path = path
-
+    def __init__(self, options=None):
         if options is None:
             options = {}
         self.options = options
 
-        util.make_dir(path.rsplit('/', 1)[0])
-
         self.chunksize = 16384
 
+    def check_if_exists(self):
         # Added Referer Header as kwik needd it.
         r = session.get_session().get(
             self.url, headers={'referer': self.referer}, stream=True)
 
         self.total_size = int(r.headers['Content-length'])
-        if os.path.exists(path):
-            if abs(os.stat(path).st_size - self.total_size) < 10 and not force:
+        if os.path.exists(self.path):
+            if abs(os.stat(self.path).st_size - self.total_size) < 10 \
+               and not self.option['force']:
                 logger.warning('File already downloaded. Skipping download.')
                 return
             else:
-                os.remove(path)
+                os.remove(self.path)
 
-    def download(self):
+    def download(self, url, path, options=None):
         self.pre_process()
+        self.url = url
+        logger.info(path)
+
+        # TODO: Use pathlib. Break into functions
+        self.path = path
+        util.make_dir(path.rsplit('/', 1)[0])
+
+        if options is not None:
+            self.options = {**options, **self.options}
+
+        self.check_if_exists()
 
         self.start_time = time.time()
         self.downloaded = 0

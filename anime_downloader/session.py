@@ -7,12 +7,11 @@ from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 import tempfile
 
-from anime_downloader import downloader
 
 logger = logging.getLogger(__name__)
 
 file = tempfile.mktemp()
-requests_cache.install_cache('anime_downloader', expires_after=300, location=file)
+requests_cache.install_cache('anime_downloader', expires_after=300)
 
 _session = requests_cache.CachedSession()
 
@@ -51,7 +50,7 @@ def get_session(custom_session=None):
     return _session
 
 
-class DownloaderSession:
+class _DownloaderSession:
     external_downloaders = {
         "aria2": {
             "executable": "aria2c",
@@ -65,8 +64,9 @@ class DownloaderSession:
             "_disable_ssl_additional": ["--check-certificate", "false"],
         },
     }
+    _cache = {}
 
-    def __init__(self, disable_ssl=False):
+    def __init__(self):
         # TODO: Figure out a way to do disable_ssl elgantly
         # Disablining ssl check should be in session and not in
         # donwloader because it's a session wise option
@@ -75,6 +75,23 @@ class DownloaderSession:
         pass
 
     def __getitem__(self, key):
-        if key == 'http':
-            return downloader.get_downloader('http')()
-        return self.down
+        # HACK: Because of circular dependency
+        from anime_downloader import downloader
+        # HACK: This has to obtained like this because this variable is
+        # set inside dl. There should be a persistant data store throughout
+        # the app instead.
+        disable_ssl = get_session().verify
+        if key not in self._cache:
+            if key == 'http':
+                self._cache[key] = downloader.get_downloader('http')()
+            if disable_ssl:
+                if '_disable_ssl_additional' in self.external_downloaders[key]:
+                    self.external_downloaders[key]['cmd_opts'] = {
+                        **self.external_downloaders[key]['cmd_opts'],
+                        **self.external_downloaders[key]['_disable_ssl_additional']
+                    }
+            self._cache[key] = downloader.get_downloader('ext')(
+                options=self.external_downloaders[key])
+        return self._cache[key]
+
+DownloaderSession = _DownloaderSession()

@@ -10,7 +10,6 @@ logger = logging.getLogger(__name__)
 
 class KissanimeEpisode(AnimeEpisode, sitename='kissanime'):
     """KissanimeEpisode"""
-    QUALITIES = ['360p', '480p', '720p', '1080p']
     _base_url = 'http://kissanime.ru'
     VERIFY_HUMAN = True
 

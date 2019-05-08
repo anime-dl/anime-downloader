@@ -19,8 +19,6 @@ session = session.get_session()
 
 
 class TwistMoeEpisode(AnimeEpisode, sitename='twist.moe'):
-    QUALITIES = ['360p', '480p', '720p', '1080p']
-
     def _get_sources(self):
         return [('no_extractor', self.url)]
 

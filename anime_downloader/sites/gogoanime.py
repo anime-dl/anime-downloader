@@ -7,7 +7,6 @@ logger = logging.getLogger(__name__)
 
 
 class GogoanimeEpisode(AnimeEpisode, sitename='gogoanime'):
-    QUALITIES = ['360p', '480p', '720p']
     _base_url = 'https://www2.gogoanime.se'
 
     def _get_sources(self):

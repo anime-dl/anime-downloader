@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 
 class NineAnimeEpisode(AnimeEpisode, sitename='9anime'):
-    QUALITIES = ['360p', '480p', '720p', '1080p']
     _base_url = r'https://9anime.to/ajax/episode/info'
     ts = 0
 
