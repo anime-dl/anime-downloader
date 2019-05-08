@@ -42,7 +42,7 @@ class Anime:
     title = ''
     meta = dict()
     subclasses = {}
-    QUALITIES = None
+    QUALITIES = []
 
     @classmethod
     def search(cls, query):
@@ -62,9 +62,13 @@ class Anime:
         return
 
     def __init__(self, url=None, quality='720p',
-                 fallback_qualities=['720p', '480p', '360p'],
+                 fallback_qualities=None,
                  _skip_online_data=False):
         self.url = url
+
+        if fallback_qualities is None:
+            fallback_qualities = ['720p', '480p', '360p']
+
         self._fallback_qualities = [
             q for q in fallback_qualities if q in self.QUALITIES]
 
@@ -80,8 +84,8 @@ class Anime:
             self._len = len(self._episode_urls)
 
     @classmethod
-    def verify_url(self, url):
-        if self.sitename in url:
+    def verify_url(cls, url):
+        if cls.sitename in url:
             return True
         return False
 
@@ -91,6 +95,19 @@ class Anime:
 
     @classmethod
     def factory(cls, sitename: str):
+        """
+        factory returns the appropriate subclass for the given site name.
+
+        Parameters
+        ----------
+        sitename: str
+            sitename is the name of the site
+
+        Returns
+        -------
+        subclass of :py:class:`Anime`
+            Sub class of :py:class:`Anime`
+        """
         return cls.subclasses[sitename]
 
     @classmethod
@@ -155,12 +172,13 @@ class Anime:
         episode_class = AnimeEpisode.subclasses[self.sitename]
         if isinstance(index, int):
             ep_id = self._episode_urls[index]
-            return episode_class(ep_id[1], self.quality, parent=self,
+            return episode_class(ep_id[1], parent=self,
                                  ep_no=ep_id[0])
         elif isinstance(index, slice):
             anime = copy.deepcopy(self)
             anime._episode_urls = anime._episode_urls[index]
             return anime
+        return None
 
     def __repr__(self):
         return '''
@@ -175,7 +193,7 @@ Episode count: {length}
     def __str__(self):
         return self.title
 
-    def _scarpe_episodes(self, soup):
+    def _scarpe_episodes(self):
         """
         _scarpe_episodes is function which has to be overridden by the base
         classes to scrape the episode urls from the web page.
@@ -193,7 +211,7 @@ Episode count: {length}
         """
         return
 
-    def _scrape_metadata(self, soup):
+    def _scrape_metadata(self):
         """
         _scrape_metadata is function which has to be overridden by the base
         classes to scrape the metadata of anime from the web page.
@@ -208,19 +226,40 @@ Episode count: {length}
 
 
 class AnimeEpisode:
-    QUALITIES = None
+    """
+    Base class for all Episode classes.
+
+    Parameters
+    ----------
+    url: string
+        URL of the episode.
+    quality: One of ['360p', '480p', '720p', '1080p']
+        Quality of episode
+    fallback_qualities: list
+        The order of fallback.
+
+    Attributes
+    ----------
+    sitename: str
+        name of the site
+    title: str
+        Title of the anime
+    meta: dict
+        metadata about the anime. [Can be empty]
+    QUALITIES: list
+        Possible qualities for the site
+    """
+    QUALITIES = []
     title = ''
     stream_url = ''
     subclasses = {}
 
-    def __init__(self, url, quality='720p', parent=None,
-                 ep_no=None):
-        if quality not in self.QUALITIES:
-            raise AnimeDLError('Incorrect quality: "{}"'.format(quality))
+    def __init__(self, url, parent: Anime = None, ep_no=None):
 
         self.ep_no = ep_no
         self.url = url
-        self.quality = quality
+        self.quality = parent.quality
+        self.QUALITIES = parent.QUALITIES
         self._parent = parent
         self._sources = None
         self.pretty_title = '{}-{}'.format(self._parent.title, self.ep_no)

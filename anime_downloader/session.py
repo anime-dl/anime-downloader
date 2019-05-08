@@ -1,14 +1,18 @@
+import logging
+
 import requests
+import requests_cache
 import urllib3
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
-import requests_cache
+import tempfile
 
-import logging
+from anime_downloader import downloader
 
 logger = logging.getLogger(__name__)
 
-requests_cache.install_cache('anime_downloader', expires_after=300)
+file = tempfile.mktemp()
+requests_cache.install_cache('anime_downloader', expires_after=300, location=file)
 
 _session = requests_cache.CachedSession()
 
@@ -45,3 +49,32 @@ def get_session(custom_session=None):
     _session.hooks = {'response': hook}
 
     return _session
+
+
+class DownloaderSession:
+    external_downloaders = {
+        "aria2": {
+            "executable": "aria2c",
+            "cmd_opts": [
+                "{stream_url}", "-x", "12", "-s", "12",
+                "-j", "12", "-k", "10M", "-o", "{file_format}",
+                "--continue", "true", "--dir", "{download_dir}",
+                "--stream-piece-selector", "inorder", "--min-split-size",
+                "5M", "--referer", "{referer}"
+            ],
+            "_disable_ssl_additional": ["--check-certificate", "false"],
+        },
+    }
+
+    def __init__(self, disable_ssl=False):
+        # TODO: Figure out a way to do disable_ssl elgantly
+        # Disablining ssl check should be in session and not in
+        # donwloader because it's a session wise option
+
+        # TODO: Add ability to add downloaders using config
+        pass
+
+    def __getitem__(self, key):
+        if key == 'http':
+            return downloader.get_downloader('http')()
+        return self.down

@@ -10,13 +10,16 @@ logger = logging.getLogger(__name__)
 
 
 class BaseDownloader:
-    def __init__(self, source, path, force, range_size=None):
+    def __init__(self, source, path, force, options=None):
         logger.info(path)
 
         self.url = source.stream_url
         self.referer = source.referer
         self.path = path
-        self.range_size = range_size
+
+        if options is None:
+            options = {}
+        self.options = options
 
         util.make_dir(path.rsplit('/', 1)[0])
 

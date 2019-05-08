@@ -8,13 +8,13 @@ session = session.get_session()
 
 class HTTPDownloader(BaseDownloader):
     def _download(self):
-        if self.range_size is None:
+        if self.options['range_size'] is None:
             self._non_range_download()
         else:
             self._ranged_download()
 
     def _ranged_download(self):
-        http_chunksize = self.range_size
+        http_chunksize = self.options['range_size']
 
         range_start = 0
         range_end = http_chunksize

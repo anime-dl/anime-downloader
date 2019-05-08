@@ -1,7 +1,6 @@
 from Crypto.Cipher import AES
 import base64
 from hashlib import md5
-from bs4 import BeautifulSoup
 import warnings
 
 from anime_downloader import session
@@ -27,6 +26,7 @@ class TwistMoeEpisode(AnimeEpisode, sitename='twist.moe'):
 
 
 class TwistMoe(Anime, sitename='twist.moe'):
+    sitename = 'twist.moe'
     QUALITIES = ['360p', '480p', '720p', '1080p']
     _api_url = "https://twist.moe/api/anime/{}/sources"
 
