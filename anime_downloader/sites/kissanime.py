@@ -1,4 +1,4 @@
-import cfscrape
+import cloudscraper
 from bs4 import BeautifulSoup
 import re
 import logging
@@ -10,7 +10,7 @@ from anime_downloader.const import get_random_header
 from anime_downloader.session import get_session
 
 
-scraper = get_session(cfscrape.create_scraper(delay=10))
+scraper = get_session(cloudscraper.create_scraper(delay=10))
 
 
 class KissanimeEpisode(BaseEpisode):

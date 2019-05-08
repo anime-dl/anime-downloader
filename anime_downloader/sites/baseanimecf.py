@@ -1,4 +1,4 @@
-import cfscrape
+import cloudscraper
 from bs4 import BeautifulSoup
 import logging
 
@@ -6,7 +6,7 @@ from anime_downloader.sites.anime import BaseAnime
 from anime_downloader.const import get_random_header
 from anime_downloader.session import get_session
 
-scraper = get_session(cfscrape.create_scraper())
+scraper = get_session(cloudscraper.create_scraper())
 
 
 class BaseAnimeCF(BaseAnime):

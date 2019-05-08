@@ -5,10 +5,10 @@ from anime_downloader.sites.exceptions import NotFoundError
 from anime_downloader.const import desktop_headers, get_random_header
 
 from bs4 import BeautifulSoup
-import cfscrape
+import cloudscraper
 import logging
 
-scraper = session.get_session(cfscrape.create_scraper())
+scraper = session.get_session(cloudscraper.create_scraper())
 session = session.get_session()
 
 
