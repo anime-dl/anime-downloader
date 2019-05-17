@@ -3,6 +3,7 @@ from anime_downloader.sites.exceptions import NotFoundError, AnimeDLError
 from anime_downloader.sites import helpers
 from anime_downloader import util
 from anime_downloader.const import desktop_headers
+from anime_downloader.config import Config
 
 from bs4 import BeautifulSoup
 
@@ -18,15 +19,21 @@ class NineAnimeEpisode(AnimeEpisode, sitename='9anime'):
     ts = 0
 
     def _get_sources(self):
+        servers = {
+            'rapidvideo': '33',
+            'streamango': '12',
+            'mp4upload': '35',
+        }
+        server = Config.nineanime['server']
         params = {
             'id': self.url,
-            'server': '35',
+            'server': servers[server],
             'ts': self.ts
         }
 
         def get_stream_url(base_url, params, DD=None):
             params['_'] = int(generate_(params, DD=DD))
-            data = util.get_json(base_url, params=params)
+            data = helpers.get(base_url, params=params).json()
 
             return data['target']
 
@@ -38,8 +45,8 @@ class NineAnimeEpisode(AnimeEpisode, sitename='9anime'):
                 del params['ts']
                 # I don't know if this is reliable or not.
                 # For now it works.
-                data = util.get_json(
-                    'http://9anime.cloud/ajax/episode/info', params=params)
+                data = helpers.get(
+                    'http://9anime.cloud/ajax/episode/info', params=params).json()
                 url = data['target']
             except Exception as e:
                 raise AnimeDLError(
@@ -49,7 +56,7 @@ class NineAnimeEpisode(AnimeEpisode, sitename='9anime'):
                 ) from e
 
         return [
-            ('mp4upload', url),
+            (server, url),
         ]
 
 

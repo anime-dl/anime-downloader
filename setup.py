@@ -26,7 +26,7 @@ setup(
         'Click>=6.7',
         'fuzzywuzzy>=0.16.0',
         'coloredlogs>=10.0',
-        'cfscrape>=1.9.7',
+        'cfscrape>=2.0.5',
         'requests-cache>=0.4.13',
         'tabulate>=0.8.3',
     ],

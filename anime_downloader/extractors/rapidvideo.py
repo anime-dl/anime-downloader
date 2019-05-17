@@ -1,6 +1,5 @@
 import logging
 import re
-from bs4 import BeautifulSoup
 
 from anime_downloader.extractors.base_extractor import BaseExtractor
 from anime_downloader.sites import helpers
