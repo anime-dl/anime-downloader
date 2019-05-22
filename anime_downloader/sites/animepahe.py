@@ -1,4 +1,4 @@
-import cloudscraper
+import cfscrape
 import logging
 import re
 
@@ -8,7 +8,7 @@ from anime_downloader.sites.exceptions import NotFoundError
 from anime_downloader import util
 from anime_downloader.session import get_session
 
-scraper = get_session(cloudscraper.create_scraper())
+scraper = get_session(cfscrape.create_scraper())
 
 
 class AnimePaheEpisode(BaseEpisode):

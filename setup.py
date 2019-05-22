@@ -30,7 +30,7 @@ setup(
         'pytest',
     ],
     extras_require={
-        'cloudflare': ['cloudscraper']
+        'cloudflare': ['cfscrape>=1.9.5']
     },
     long_description=long_description,
     long_description_content_type='text/markdown',
