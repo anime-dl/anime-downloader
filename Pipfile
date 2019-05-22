@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-anime-downloader = {editable = true, path = "."}
+anime-downloader = {editable = true,path = "."}
 
 [dev-packages]
 twine = "*"
@@ -14,3 +14,4 @@ radon = "*"
 "flake8" = "*"
 httpretty = "*"
 pylint = "*"
+python-lanugage-server = {extras = ["all"],version = "*"}

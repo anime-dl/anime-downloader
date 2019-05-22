@@ -1,11 +1,11 @@
-import click
 import logging
 import os
 
-from anime_downloader import util
-from anime_downloader import session
-from anime_downloader.sites import get_anime_class
+import click
+
+from anime_downloader import session, util
 from anime_downloader.__version__ import __version__
+from anime_downloader.sites import get_anime_class
 
 logger = logging.Logger(__name__)
 
@@ -47,7 +47,8 @@ echo = click.echo
 @click.option(
     '--provider',
     help='The anime provider (website) for search.',
-    type=click.Choice(['9anime', 'kissanime', 'twist.moe', 'animepahe', 'kisscartoon', 'masterani', 'gogoanime'])
+    type=click.Choice(['9anime', 'kissanime', 'twist.moe',
+                       'animepahe', 'kisscartoon', 'masterani', 'gogoanime'])
 )
 @click.option(
     '--external-downloader', '-xd',
@@ -86,7 +87,6 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
 
     anime = cls(anime_url, quality=quality,
                 fallback_qualities=fallback_qualities)
-
     logger.info('Found anime: {}'.format(anime.title))
 
     animes = util.parse_ep_str(anime, episode_range)
@@ -109,18 +109,21 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             util.play_episode(episode, player=player)
 
         if not skip_download:
+            downloader_session = session.DownloaderSession()
+            downloader = 'http'
             if external_downloader:
                 logger.info('Downloading episode {} of {}'.format(
                     episode.ep_no, anime.title)
                 )
-                util.external_download(external_downloader, episode,
-                                       file_format, path=download_dir)
-                continue
+                downloader = external_downloader
             if chunk_size is not None:
                 chunk_size *= 1e6
                 chunk_size = int(chunk_size)
-            episode.download(force=force_download,
-                             path=download_dir,
-                             format=file_format,
-                             range_size=chunk_size)
+
+            downloader_session.get(downloader)
+            downloader.download(episode.source(),
+                                force=force_download,
+                                path=download_dir,
+                                format=file_format,
+                                range_size=chunk_size)
             print()

@@ -14,24 +14,29 @@ class BaseDownloader:
         if options is None:
             options = {}
         self.options = options
+        # TODO: replace
+        self.referer = self.options.get('referer', '')
 
         self.chunksize = 16384
+        self._total_size = None
+        self.url = None
 
     def check_if_exists(self):
         # Added Referer Header as kwik needd it.
         r = session.get_session().get(
             self.url, headers={'referer': self.referer}, stream=True)
 
-        self.total_size = int(r.headers['Content-length'])
+        self._total_size = int(r.headers['Content-length'])
         if os.path.exists(self.path):
-            if abs(os.stat(self.path).st_size - self.total_size) < 10 \
-               and not self.option['force']:
+            if abs(os.stat(self.path).st_size - self._total_size) < 10 \
+               and not self.options['force']:
                 logger.warning('File already downloaded. Skipping download.')
                 return
             else:
                 os.remove(self.path)
 
     def download(self, url, path, options=None):
+        # TODO: Clean this up
         self.pre_process()
         self.url = url
         logger.info(path)
@@ -62,7 +67,7 @@ class BaseDownloader:
 
     def report_chunk_downloaded(self):
         self.downloaded += self.chunksize
-        write_status(self.downloaded, self.total_size, self.start_time)
+        write_status(self.downloaded, self._total_size, self.start_time)
 
 
 def write_status(downloaded, total_size, start_time):

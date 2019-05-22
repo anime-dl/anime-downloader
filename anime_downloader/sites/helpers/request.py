@@ -64,6 +64,7 @@ def setup(func):
                            headers=default_headers,
                            **kwargs)
         res.raise_for_status()
+        logger.debug(res.url)
         # logger.debug(res.text)
         if logger.getEffectiveLevel() == logging.DEBUG:
             _log_response_body(res)
