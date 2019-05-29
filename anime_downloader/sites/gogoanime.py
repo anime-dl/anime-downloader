@@ -10,7 +10,7 @@ session = session.get_session()
 
 class GogoanimeEpisode(BaseEpisode):
     QUALITIES = ['360p', '480p', '720p']
-    _base_url = 'https://www2.gogoanime.se'
+    _base_url = 'https://www4.gogoanime.io'
 
     def _get_sources(self):
         soup = BeautifulSoup(session.get(self.url).text, 'html.parser')
@@ -33,9 +33,9 @@ class GogoanimeEpisode(BaseEpisode):
 class GogoAnime(BaseAnime):
     sitename = 'gogoanime'
     QUALITIES = ['360p', '480p', '720p']
-    _episode_list_url = 'https://www2.gogoanime.se//load-list-episode'
+    _episode_list_url = 'https://www4.gogoanime.io//load-list-episode'
     _episodeClass = GogoanimeEpisode
-    _search_api_url = 'https://api.watchanime.cc/site/loadAjaxSearch'
+    _search_api_url = 'https://ajax.apimovie.xyz/site/loadAjaxSearch'
 
     @classmethod
     def search(cls, query):
@@ -44,7 +44,7 @@ class GogoAnime(BaseAnime):
             params={
                 'keyword': query,
                 'id': -1,
-                'link_web': 'https://www1.gogoanime.sh/'
+                'link_web': 'https://www4.gogoanime.io/'
             }
         )
 
@@ -74,7 +74,7 @@ class GogoAnime(BaseAnime):
         soup = BeautifulSoup(res.text, 'html.parser')
 
         epurls = list(
-            reversed(['https://www2.gogoanime.se'+a.get('href').strip()
+            reversed(['https://www4.gogoanime.io'+a.get('href').strip()
                       for a in soup.select('li a')])
         )
 
