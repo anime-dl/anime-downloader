@@ -10,10 +10,12 @@ session = session.get_session()
 class HTTPDownloader(BaseDownloader):
     def _download(self):
         if os.path.exists(self.path):
+            # Handle both cases where user will still want file downloaded
+            # even if it exists
             if abs(os.stat(self.path).st_size - self.total_size) < 10 and not self.force:
                 logging.warning('File already downloaded. Skipping download.')
                 return
-            else:
+            elif self.force:
                 os.remove(self.path)
 
         if self.range_size is None:
