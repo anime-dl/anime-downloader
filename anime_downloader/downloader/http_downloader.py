@@ -1,4 +1,5 @@
 import os
+import logging
 
 from anime_downloader.downloader.base_downloader import BaseDownloader
 from anime_downloader import session
@@ -8,6 +9,13 @@ session = session.get_session()
 
 class HTTPDownloader(BaseDownloader):
     def _download(self):
+        if os.path.exists(self.path):
+            if abs(os.stat(self.path).st_size - self.total_size) < 10 and not self.force:
+                logging.warning('File already downloaded. Skipping download.')
+                return
+            else:
+                os.remove(self.path)
+
         if self.range_size is None:
             self._non_range_download()
         else:

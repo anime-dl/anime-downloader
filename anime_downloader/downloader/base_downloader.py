@@ -15,6 +15,7 @@ class BaseDownloader:
         self.referer = source.referer
         self.path = path
         self.range_size = range_size
+        self.force = force
 
         util.make_dir(path.rsplit('/', 1)[0])
 
@@ -24,12 +25,6 @@ class BaseDownloader:
         r = session.get_session().get(self.url, headers={'referer': self.referer}, stream=True)
 
         self.total_size = int(r.headers['Content-length'])
-        if os.path.exists(path):
-            if abs(os.stat(path).st_size - self.total_size)<10 and not force:
-                logging.warning('File already downloaded. Skipping download.')
-                return
-            else:
-                os.remove(path)
 
     def download(self):
         self.pre_process()
