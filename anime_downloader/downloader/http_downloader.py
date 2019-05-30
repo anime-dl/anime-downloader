@@ -23,17 +23,29 @@ class HTTPDownloader(BaseDownloader):
         else:
             self._ranged_download()
 
+    def pre_process(self):
+        self.downloaded = 0
+        # Preprocess ranges and amount downloaded for ranged download
+        if self.range_size:
+            if not os.path.exists(self.path):
+                self._range_start = 0
+                self.downloaded = 0
+                self._range_end = self.range_size
+
+                # Make a new file, maybe not the best way
+                with open(self.path, 'w'):
+                    pass
+            else:
+                self._range_start = os.stat(self.path).st_size
+                self._range_end = self._range_start + self.range_size
+                self.downloaded = self._range_start
+
     def _ranged_download(self):
         http_chunksize = self.range_size
 
-        range_start = 0
-        range_end = http_chunksize
+        range_start = self._range_start
+        range_end = self._range_end
 
-        # Make a new file, maybe not the best way
-        with open(self.path, 'w'):
-            pass
-
-        r = session.get(self.url, headers={'referer': self.referer}, stream=True)
         while self.downloaded < self.total_size:
             r = session.get(self.url,
                             headers=set_range(range_start, range_end, self.referer),
@@ -48,7 +60,7 @@ class HTTPDownloader(BaseDownloader):
             if range_end == '':
                 break
             range_start = os.stat(self.path).st_size
-            range_end += http_chunksize
+            range_end = range_start + http_chunksize
             if range_end > self.total_size:
                 range_end = ''
 

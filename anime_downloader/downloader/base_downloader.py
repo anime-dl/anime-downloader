@@ -30,7 +30,6 @@ class BaseDownloader:
         self.pre_process()
 
         self.start_time = time.time()
-        self.downloaded = 0
         self._download()
 
         self.post_process()
