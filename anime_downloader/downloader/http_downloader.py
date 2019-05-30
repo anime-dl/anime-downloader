@@ -46,23 +46,23 @@ class HTTPDownloader(BaseDownloader):
         range_start = self._range_start
         range_end = self._range_end
 
-        while self.downloaded < self.total_size:
-            r = session.get(self.url,
-                            headers=set_range(range_start, range_end, self.referer),
-                            stream=True)
-            if r.status_code == 206:
-                with open(self.path, 'ab') as f:
-                    for chunk in r.iter_content(chunk_size=self.chunksize):
-                        if chunk:
-                            f.write(chunk)
-                            self.report_chunk_downloaded()
+        with open(self.path, 'ab') as f:
+            while self.downloaded < self.total_size:
+                r = session.get(self.url,
+                                headers=set_range(range_start, range_end, self.referer),
+                                stream=True)
+                if r.status_code == 206:
+                        for chunk in r.iter_content(chunk_size=self.chunksize):
+                            if chunk:
+                                f.write(chunk)
+                                self.report_chunk_downloaded()
 
-            if range_end == '':
-                break
-            range_start = os.stat(self.path).st_size
-            range_end = range_start + http_chunksize
-            if range_end > self.total_size:
-                range_end = ''
+                if range_end == '':
+                    break
+                range_start = os.stat(self.path).st_size
+                range_end = range_start + http_chunksize
+                if range_end > self.total_size:
+                    range_end = ''
 
     def _non_range_download(self):
         r = session.get(self.url, headers={'referer': self.referer}, stream=True)
