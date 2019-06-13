@@ -10,10 +10,10 @@ import tempfile
 
 logger = logging.getLogger(__name__)
 
-file = tempfile.mktemp()
-requests_cache.install_cache('anime_downloader', expires_after=300)
+cachefile = tempfile.mktemp()
+requests_cache.install_cache(cachefile, backend='sqlite', expires_after=300)
 
-_session = requests_cache.CachedSession()
+_session = requests_cache.CachedSession(cachefile)
 
 # _session = requests.Session()
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
