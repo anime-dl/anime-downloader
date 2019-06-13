@@ -109,21 +109,18 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             util.play_episode(episode, player=player)
 
         if not skip_download:
-            downloader_session = session.DownloaderSession()
-            downloader = 'http'
             if external_downloader:
-                logger.info('Downloading episode {} of {}'.format(
+                logging.info('Downloading episode {} of {}'.format(
                     episode.ep_no, anime.title)
                 )
-                downloader = external_downloader
+                util.external_download(external_downloader, episode,
+                                       file_format, path=download_dir)
+                continue
             if chunk_size is not None:
                 chunk_size *= 1e6
                 chunk_size = int(chunk_size)
-
-            downloader_session.get(downloader)
-            downloader.download(episode.source(),
-                                force=force_download,
-                                path=download_dir,
-                                format=file_format,
-                                range_size=chunk_size)
+            episode.download(force=force_download,
+                             path=download_dir,
+                             format=file_format,
+                             range_size=chunk_size)
             print()
