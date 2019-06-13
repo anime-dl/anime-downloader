@@ -10,7 +10,7 @@ from anime_downloader.sites import get_anime_class, ALL_ANIME_SITES
 logger = logging.Logger(__name__)
 
 echo = click.echo
-sitenames = [v[0] for v in ALL_ANIME_SITES]
+sitenames = [v[1] for v in ALL_ANIME_SITES]
 
 
 # NOTE: Don't put defaults here. Add them to the dict in config

@@ -9,7 +9,7 @@ from anime_downloader import util
 logger = logging.getLogger(__name__)
 
 
-class AnimePaheEpisode(AnimeEpisode):
+class AnimePaheEpisode(AnimeEpisode, sitename='animepahe'):
     QUALITIES = ['360p', '480p', '720p', '1080p']
 
     def _get_source(self, episode_id, server):
@@ -48,7 +48,7 @@ class AnimePaheEpisode(AnimeEpisode):
             return sources
         raise NotFoundError
 
-class AnimePahe(Anime):
+class AnimePahe(Anime, sitename='animepahe'):
     sitename = 'animepahe'
     api_url = 'https://animepahe.com/api'
     base_anime_url = 'https://animepahe.com/anime/'
