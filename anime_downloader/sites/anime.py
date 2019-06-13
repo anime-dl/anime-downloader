@@ -8,6 +8,7 @@ import importlib
 
 from anime_downloader.sites.exceptions import AnimeDLError, NotFoundError
 from anime_downloader import util
+from anime_downloader.config import Config
 from anime_downloader.extractors import get_extractor
 from anime_downloader.downloader import get_downloader
 
@@ -88,6 +89,10 @@ class Anime:
         if cls.sitename in url:
             return True
         return False
+
+    @property
+    def config(self):
+        return Config[self.sitename]
 
     def __init_subclass__(cls, sitename, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -368,7 +373,7 @@ class SearchResult:
         Additional metadata regarding the anime.
     """
 
-    def __init__(self, title, url, poster, meta=''):
+    def __init__(self, title, url, poster='', meta=''):
         self.title = title
         self.url = url
         self.poster = poster

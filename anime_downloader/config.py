@@ -26,6 +26,9 @@ DEFAULT_CONFIG = {
     },
     "nineanime": {
         "server": "mp4upload",
+    },
+    'anistream.xyz': {
+        "version": "subbed",
     }
 }
 

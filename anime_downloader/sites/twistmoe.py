@@ -3,7 +3,6 @@ import base64
 from hashlib import md5
 import warnings
 
-from anime_downloader import session
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 
@@ -15,7 +14,6 @@ with warnings.catch_warnings():
 
 BLOCK_SIZE = 16
 KEY = b"k8B$B@0L8D$tDYHGmRg98sQ7!%GOEGOX27T"
-session = session.get_session()
 
 
 class TwistMoeEpisode(AnimeEpisode, sitename='twist.moe'):
@@ -37,7 +35,6 @@ class TwistMoe(Anime, sitename='twist.moe'):
             animes.append(SearchResult(
                 title=anime.find('span').contents[0].strip(),
                 url='https://twist.moe' + anime.find('a')['href'],
-                poster='',
             ))
         animes = [ani[0] for ani in process.extract(query, animes)]
         return animes

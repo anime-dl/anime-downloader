@@ -5,11 +5,12 @@ import click
 
 from anime_downloader import session, util
 from anime_downloader.__version__ import __version__
-from anime_downloader.sites import get_anime_class
+from anime_downloader.sites import get_anime_class, ALL_ANIME_SITES
 
 logger = logging.Logger(__name__)
 
 echo = click.echo
+sitenames = [v[0] for v in ALL_ANIME_SITES]
 
 
 # NOTE: Don't put defaults here. Add them to the dict in config
@@ -47,8 +48,7 @@ echo = click.echo
 @click.option(
     '--provider',
     help='The anime provider (website) for search.',
-    type=click.Choice(['9anime', 'kissanime', 'twist.moe',
-                       'animepahe', 'kisscartoon', 'masterani', 'gogoanime'])
+    type=click.Choice(sitenames)
 )
 @click.option(
     '--external-downloader', '-xd',
