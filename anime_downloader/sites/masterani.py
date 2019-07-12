@@ -4,6 +4,7 @@ import logging
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 from anime_downloader.const import desktop_headers
+from anime_downloader.sites.helpers.util import not_working
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +43,7 @@ class MasteraniEpisode(AnimeEpisode, sitename='masterani'):
         return ret
 
 
+@not_working("Masterani has been decommisoned")
 class Masterani(Anime, sitename='masterani'):
     sitename = 'masterani'
     QUALITIES = ['360p', '480p', '720p', '1080p']
