@@ -7,6 +7,8 @@ import json
 
 class Animeflv(Anime, sitename='animeflv'):
     """
+    Nice things
+
     Siteconfig
     ----------
 

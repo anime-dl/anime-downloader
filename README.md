@@ -5,21 +5,25 @@
 <br>
 <br>
 <a href="https://travis-ci.com/vn-ki/anime-downloader">
-<img src="https://img.shields.io/travis/com/vn-ki/anime-downloader.svg?style=popout-square&logo=Travis%20CI">
+<img src="https://img.shields.io/travis/com/vn-ki/anime-downloader.svg?style=for-the-badge&logo=Travis%20CI">
 </a>
 <a href="https://codecov.io/gh/vn-ki/anime-downloader">
-<img src="https://img.shields.io/codecov/c/github/vn-ki/anime-downloader.svg?logo=codecov&style=popout-square">
+<img src="https://img.shields.io/codecov/c/github/vn-ki/anime-downloader.svg?logo=codecov&style=for-the-badge">
 </a>
 <a href="https://pypi.org/project/anime-downloader/">
-<img src="https://img.shields.io/badge/Python-3.3%2B-lightblue.svg?style=popout-square&logo=python">
+<img src="https://img.shields.io/badge/Python-3.3%2B-lightblue.svg?style=for-the-badge&logo=python">
 </a>
 <a href="https://pypi.org/project/anime-downloader/">
-<img src="https://img.shields.io/pypi/v/anime-downloader.svg?color=lightblue&logo=python&style=popout-square">
+<img src="https://img.shields.io/pypi/v/anime-downloader.svg?color=lightblue&logo=python&style=for-the-badge">
 </a>
 <a href="https://discord.gg/Qn2nWGm">
-<img src="https://img.shields.io/discord/483008720167632929.svg?color=%237289DA&label=Discord&logo=Discord&style=popout-square">
+<img src="https://img.shields.io/discord/483008720167632929.svg?color=%237289DA&label=Discord&logo=Discord&style=for-the-badge">
+</a>
+<a href="https://anime-downlader.rtfd.io">
+<img src="https://img.shields.io/readthedocs/anime-downlader.svg?logo=read%20the%20docs&style=for-the-badge">
 </a>
 </div>
+
   
 ---
   
@@ -47,11 +51,13 @@ Yeah. Me too! That's why this tool exists.
 
 - 9anime
 - twist.moe
-- KissAnime [cloudflare]
-- Masterani.me [cloudlfare]
-- KissCartoon [cloudflare]
+- KissAnime
+- KissCartoon
 - Gogoanime
-- AnimePahe [cloudflare]
+- AnimePahe
+- Anistream
+- Animeflv (Latin)
+- Masterani.me [cloudlfare] (site shut down)
 
 **Note:** To download from sites marked [cloudflare], anime-downloader has to be installed with cloudflare support (see below).
 
@@ -62,17 +68,9 @@ You can install the stable release from PyPI:
 $ pip install anime-downloader
 ```
 
-To install with cloudflare support (read note below): 
-```bash
-$ pip install anime-downloader[cloudflare]
-```
-
 To install the dev version:
 ```bash
 $ pip install -U git+https://github.com/vn-ki/anime-downloader.git
-
-# To install with cloudflare support
-$ pip install -U git+https://github.com/vn-ki/anime-downloader.git#egg=anime-downloader[cloudflare]
 ```
 
 If you have trouble installing, see extended installation instructions [here](https://github.com/vn-ki/anime-downloader/wiki/Installation) or join the [discord server](https://discord.gg/Qn2nWGm) for help.
@@ -80,7 +78,6 @@ If you have trouble installing, see extended installation instructions [here](ht
 **Note**:
 - For cloudflare scraping [cfscrape](https://github.com/Anorov/cloudflare-scrape) is used. It depends on [`node-js`](https://nodejs.org/en/). So if you want to use cloudflare, make sure you have [node-js](https://nodejs.org/en/) installed.
 - You might have to use pip3 depending on your system
-- If you are using zsh, don't forget to escape `[` and `]` using `\`.
 
 ## Usage 
 

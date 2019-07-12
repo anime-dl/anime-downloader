@@ -5,6 +5,14 @@ import json
 
 
 class Anistream(Anime, sitename='anistream.xyz'):
+    """
+    Site: http://anistream.xyz
+
+    Config
+    ------
+    version: One of ['subbed', 'dubbed]
+        Selects the version of audio of anime.
+    """
     sitename = 'anistream.xyz'
     QUALITIES = ['360p', '480p', '720p', '1080p']
 

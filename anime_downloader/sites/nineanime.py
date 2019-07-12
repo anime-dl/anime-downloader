@@ -61,6 +61,14 @@ class NineAnimeEpisode(AnimeEpisode, sitename='9anime'):
 
 @helpers.not_working("9anime introduced captcha.")
 class NineAnime(Anime, sitename='9anime'):
+    """
+    Site: 9anime
+
+    Config
+    ------
+    server: One of ['rapidvideo', 'streamango']
+        Selects the server.
+    """
     sitename = '9anime'
     QUALITIES = ['360p', '480p', '720p', '1080p']
 
