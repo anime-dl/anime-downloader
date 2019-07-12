@@ -24,11 +24,13 @@ DEFAULT_CONFIG = {
         'log_level': 'INFO',
         'provider': '9anime',
     },
-    "nineanime": {
-        "server": "mp4upload",
-    },
-    'anistream.xyz': {
-        "version": "subbed",
+    "siteconfig": {
+        "nineanime": {
+            "server": "mp4upload",
+        },
+        'anistream.xyz': {
+            "version": "subbed",
+        }
     }
 }
 

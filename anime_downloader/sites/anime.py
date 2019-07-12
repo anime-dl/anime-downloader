@@ -92,7 +92,7 @@ class Anime:
 
     @property
     def config(self):
-        return Config[self.sitename]
+        return Config['siteconfig'][self.sitename]
 
     def __init_subclass__(cls, sitename, **kwargs):
         super().__init_subclass__(**kwargs)

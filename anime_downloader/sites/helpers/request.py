@@ -51,7 +51,7 @@ def setup(func):
         if headers:
             default_headers.update(headers)
         if referer:
-            default_headers['Referer'] = referer
+            default_headers['referer'] = referer
 
         logger.debug('-----')
         logger.debug('{} {}'.format(func.__name__.upper(), url))

@@ -3,7 +3,6 @@ from anime_downloader.sites.exceptions import NotFoundError, AnimeDLError
 from anime_downloader.sites import helpers
 from anime_downloader import util
 from anime_downloader.const import desktop_headers
-from anime_downloader.config import Config
 
 from bs4 import BeautifulSoup
 
@@ -24,7 +23,7 @@ class NineAnimeEpisode(AnimeEpisode, sitename='9anime'):
             'streamango': '12',
             'mp4upload': '35',
         }
-        server = Config.nineanime['server']
+        server = self.config.get('server', 'mp4upload')
         params = {
             'id': self.url,
             'server': servers[server],
