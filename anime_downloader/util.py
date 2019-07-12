@@ -179,13 +179,20 @@ def format_command(cmd, episode, file_format, path):
         '{aria2}': 'aria2c {stream_url} -x 12 -s 12 -j 12 -k 10M -o '
                    '{file_format}.mp4 --continue=true --dir={download_dir}'
                    ' --stream-piece-selector=inorder --min-split-size=5M --referer={referer}'
+        ,
+        '{idm}'  : 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4'
     }
+
+
     rep_dict = {
         'stream_url': episode.source().stream_url,
         'file_format': file_format,
         'download_dir': os.path.abspath(path),
         'referer':episode.source().referer,
     }
+
+    if cmd == "{idm}":
+        rep_dict['file_format'] = rep_dict['file_format'].replace('/','\\')
 
     if cmd in cmd_dict:
         cmd = cmd_dict[cmd]
