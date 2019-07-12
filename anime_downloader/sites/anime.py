@@ -168,8 +168,9 @@ class Anime:
         logger.debug('EPISODE IDS: length: {}, ids: {}'.format(
             self._len, self._episode_urls))
 
-        self._episode_urls = [(no+1, id) for no, id in
-                              enumerate(self._episode_urls)]
+        if not isinstance(self._episode_urls[0], tuple):
+            self._episode_urls = [(no+1, id) for no, id in
+                                enumerate(self._episode_urls)]
 
         return self._episode_urls
 
@@ -303,10 +304,13 @@ class AnimeEpisode:
     def factory(cls, sitename: str):
         return cls.subclasses[sitename]
 
+    @property
+    def config(self):
+        return Config['siteconfig'][self.sitename]
+
     def source(self, index=0):
         if not self._sources:
             self.get_data()
-
         try:
             sitename, url = self._sources[index]
         except TypeError:

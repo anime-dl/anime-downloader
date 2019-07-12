@@ -30,6 +30,10 @@ DEFAULT_CONFIG = {
         },
         'anistream.xyz': {
             "version": "subbed",
+        },
+        'animeflv': {
+            "version": "subbed",
+            "server": "streamango",
         }
     }
 }
@@ -51,15 +55,17 @@ class _Config:
         else:
             self._CONFIG = self._read_config()
 
-            def update(gkey):
-                if gkey not in self._CONFIG:
-                    self._CONFIG[gkey] = {}
-                for key, val in DEFAULT_CONFIG[gkey].items():
-                    if key not in self._CONFIG[gkey].keys():
-                        self._CONFIG[gkey][key] = val
+            def update(gkey, to_be, from_dict):
+                if gkey not in to_be:
+                    to_be[gkey] = {}
+                for key, val in from_dict[gkey].items():
+                    if key not in to_be[gkey].keys():
+                        to_be[gkey][key] = val
+                    elif isinstance(from_dict[gkey][key], dict):
+                        update(key, to_be[gkey], from_dict[gkey])
 
             for key in DEFAULT_CONFIG.keys():
-                update(key)
+                update(key, self._CONFIG, DEFAULT_CONFIG)
             self.write()
 
     @property

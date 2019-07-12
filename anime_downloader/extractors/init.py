@@ -20,6 +20,12 @@ ALL_EXTRACTORS = [
         'class': 'StreamMoe',
     },
     {
+        'sitename': 'streamango',
+        'modulename': 'streamango',
+        'regex': 'streamango',
+        'class': 'Streamango',
+    },
+    {
         'sitename': 'mp4upload',
         'modulename': 'mp4upload',
         'regex': 'mp4upload',
