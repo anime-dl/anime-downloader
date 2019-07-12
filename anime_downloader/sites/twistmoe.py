@@ -2,9 +2,12 @@ from Crypto.Cipher import AES
 import base64
 from hashlib import md5
 import warnings
+import requests_cache
+import requests
 
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
+from anime_downloader.util import eval_in_node
 
 
 # Don't warn if not using fuzzywuzzy[speedup]
@@ -28,7 +31,18 @@ class TwistMoe(Anime, sitename='twist.moe'):
 
     @classmethod
     def search(self, query):
-        soup = helpers.soupify(helpers.get('https://twist.moe'))
+        headers = {
+        'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.46 Safari/537.36'
+        }
+        first_time = helpers.soupify(helpers.get('https://twist.moe', allow_redirects=True, headers=headers))
+        js = first_time.select_one('script').text
+        js = "location = {'reload': ()=>true};document = {}; \n" + js + f"console.log(document.cookie)"
+        cookie = eval_in_node(js).strip()
+        with requests_cache.disabled():
+            headers['cookie'] = cookie
+            r = requests.get('https://twist.moe/', headers=headers)
+            soup = helpers.soupify(r)
+            print(soup.text)
         all_anime = soup.select_one('nav.series').select('li')
         animes = []
         for anime in all_anime:

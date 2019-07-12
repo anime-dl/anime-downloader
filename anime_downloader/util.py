@@ -211,6 +211,13 @@ def format_command(cmd, episode, file_format, path):
     return cmd
 
 
+def eval_in_node(js: str):
+    # TODO: This should be in util
+    output = subprocess.check_output(['node', '-e', js])
+    return output.decode('utf-8')
+
+
+
 def external_download(cmd, episode, file_format, path=''):
     logger.debug('cmd: ' + cmd)
     logger.debug('episode: {!r}'.format(episode))

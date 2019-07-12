@@ -4,15 +4,10 @@ import subprocess
 
 from anime_downloader.extractors.base_extractor import BaseExtractor
 from anime_downloader.sites import helpers
+from anime_downloader.util import eval_in_node
 
 
 logger = logging.getLogger(__name__)
-
-
-def eval_in_node(js: str):
-    # TODO: This should be in util
-    output = subprocess.check_output(['node', '-e', js])
-    return output.decode('utf-8')
 
 
 class Streamango(BaseExtractor):
