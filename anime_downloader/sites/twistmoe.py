@@ -4,19 +4,21 @@ from hashlib import md5
 import warnings
 import requests_cache
 import requests
+import logging
 
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 from anime_downloader.util import eval_in_node
 
 
+logger = logging.getLogger(__name__)
 # Don't warn if not using fuzzywuzzy[speedup]
 with warnings.catch_warnings():
     warnings.simplefilter('ignore')
     from fuzzywuzzy import process
 
 BLOCK_SIZE = 16
-KEY = b"k8B$B@0L8D$tDYHGmRg98sQ7!%GOEGOX27T"
+KEY = b"LXgIVP&PorO68Rq7dTx8N^lP!Fa5sGJ^*XK"
 
 
 class TwistMoeEpisode(AnimeEpisode, sitename='twist.moe'):
@@ -42,7 +44,6 @@ class TwistMoe(Anime, sitename='twist.moe'):
             headers['cookie'] = cookie
             r = requests.get('https://twist.moe/', headers=headers)
             soup = helpers.soupify(r)
-            print(soup.text)
         all_anime = soup.select_one('nav.series').select('li')
         animes = []
         for anime in all_anime:
@@ -63,10 +64,10 @@ class TwistMoe(Anime, sitename='twist.moe'):
             }
         )
         episodes = episodes.json()
+        logging.debug(episodes)
         self.title = anime_name
         episode_urls = ['https://eu1.twist.moe' +
-                        decrypt(episode['source'].encode(
-                            'utf-8'), KEY).decode('utf-8')
+                        decrypt(episode['source'].encode('utf-8'), KEY).decode('utf-8')
                         for episode in episodes]
 
         self._episode_urls = [(i+1, episode_url)
