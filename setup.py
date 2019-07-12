@@ -29,6 +29,7 @@ setup(
         'cfscrape>=2.0.5',
         'requests-cache>=0.4.13',
         'tabulate>=0.8.3',
+        'pycryptodome>=3.8.2',
     ],
     tests_require=[
         'pytest',
