@@ -11,10 +11,7 @@
 <img src="https://img.shields.io/codecov/c/github/vn-ki/anime-downloader.svg?logo=codecov&style=for-the-badge">
 </a>
 <a href="https://pypi.org/project/anime-downloader/">
-<img src="https://img.shields.io/badge/Python-3.3%2B-lightblue.svg?style=for-the-badge&logo=python">
-</a>
-<a href="https://pypi.org/project/anime-downloader/">
-<img src="https://img.shields.io/pypi/v/anime-downloader.svg?color=lightblue&logo=python&style=for-the-badge">
+<img src="https://img.shields.io/pypi/v/anime-downloader.svg?logo=python&style=for-the-badge">
 </a>
 <a href="https://discord.gg/Qn2nWGm">
 <img src="https://img.shields.io/discord/483008720167632929.svg?color=%237289DA&label=Discord&logo=Discord&style=for-the-badge">
