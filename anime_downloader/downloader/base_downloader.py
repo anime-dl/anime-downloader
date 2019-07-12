@@ -6,33 +6,49 @@ import sys
 from anime_downloader import util
 from anime_downloader import session
 
+logger = logging.getLogger(__name__)
+
 
 class BaseDownloader:
-    def __init__(self, source, path, force, range_size=None):
-        logging.info(path)
-
-        self.url = source.stream_url
-        self.referer = source.referer
-        self.path = path
-        self.range_size = range_size
-
-        util.make_dir(path.rsplit('/', 1)[0])
+    def __init__(self, options=None):
+        if options is None:
+            options = {}
+        self.options = options
+        # TODO: replace
+        self.referer = self.options.get('referer', '')
 
         self.chunksize = 16384
+        self._total_size = None
+        self.url = None
 
-        #Added Referer Header as kwik needd it.
-        r = session.get_session().get(self.url, headers={'referer': self.referer}, stream=True)
+    def check_if_exists(self):
+        # Added Referer Header as kwik needd it.
+        r = session.get_session().get(
+            self.url, headers={'referer': self.referer}, stream=True)
 
-        self.total_size = int(r.headers['Content-length'])
-        if os.path.exists(path):
-            if abs(os.stat(path).st_size - self.total_size)<10 and not force:
-                logging.warning('File already downloaded. Skipping download.')
+        self._total_size = int(r.headers['Content-length'])
+        if os.path.exists(self.path):
+            if abs(os.stat(self.path).st_size - self._total_size) < 10 \
+               and not self.options['force']:
+                logger.warning('File already downloaded. Skipping download.')
                 return
             else:
-                os.remove(path)
+                os.remove(self.path)
 
-    def download(self):
+    def download(self, url, path, options=None):
+        # TODO: Clean this up
         self.pre_process()
+        self.url = url
+        logger.info(path)
+
+        # TODO: Use pathlib. Break into functions
+        self.path = path
+        util.make_dir(path.rsplit('/', 1)[0])
+
+        if options is not None:
+            self.options = {**options, **self.options}
+
+        self.check_if_exists()
 
         self.start_time = time.time()
         self.downloaded = 0
@@ -51,7 +67,7 @@ class BaseDownloader:
 
     def report_chunk_downloaded(self):
         self.downloaded += self.chunksize
-        write_status(self.downloaded, self.total_size, self.start_time)
+        write_status(self.downloaded, self._total_size, self.start_time)
 
 
 def write_status(downloaded, total_size, start_time):

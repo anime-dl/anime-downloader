@@ -9,6 +9,8 @@ import click
 import warnings
 from time import time
 
+logger = logging.getLogger(__name__)
+
 # Don't warn if not using fuzzywuzzy[speedup]
 with warnings.catch_warnings():
     warnings.simplefilter('ignore')
@@ -27,7 +29,7 @@ class Watcher:
 
         self._append_to_watch_file(anime)
 
-        logging.info('Added {:.50} to watch list.'.format(anime.title))
+        logger.info('Added {:.50} to watch list.'.format(anime.title))
         return anime
 
     def list(self):
@@ -57,7 +59,7 @@ class Watcher:
         match = process.extractOne(anime_name, animes, score_cutoff=40)
         if match:
             anime = match[0]
-            logging.debug('Anime: {!r}, episodes_done: {}'.format(
+            logger.debug('Anime: {!r}, episodes_done: {}'.format(
                 anime, anime.episodes_done))
 
             if (time() - anime._timestamp) > 4*24*60*60:
@@ -67,7 +69,7 @@ class Watcher:
     def update_anime(self, anime):
         if not hasattr(anime, 'meta') or not anime.meta.get('Status') or \
                 anime.meta['Status'].lower() == 'airing':
-            logging.info('Updating anime {}'.format(anime.title))
+            logger.info('Updating anime {}'.format(anime.title))
             AnimeInfo = self._get_anime_info_class(anime.url)
             newanime = AnimeInfo(anime.url, episodes_done=anime.episodes_done,
                                  timestamp=time())
@@ -110,7 +112,7 @@ class Watcher:
 
     def _read_from_watch_file(self):
         if not os.path.exists(self.WATCH_FILE):
-            logging.error('Add something to watch list first.')
+            logger.error('Add something to watch list first.')
             sys.exit(1)
 
         with open(self.WATCH_FILE, 'r') as watch_file:
@@ -133,7 +135,7 @@ class Watcher:
         cls = get_anime_class(url)
 
         # TODO: Maybe this is better off as a mixin
-        class AnimeInfo(cls):
+        class AnimeInfo(cls, sitename=cls.sitename):
             def __init__(self, *args, **kwargs):
                 self.episodes_done = kwargs.pop('episodes_done', 0)
                 self._timestamp = kwargs.pop('timestamp', 0)

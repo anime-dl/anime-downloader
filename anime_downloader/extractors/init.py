@@ -30,7 +30,13 @@ ALL_EXTRACTORS = [
         'modulename': 'kwik',
         'regex': 'kwik',
         'class': 'Kwik'
-    }
+    },
+    {
+        'sitename': 'trollvid',
+        'modulename': 'trollvid',
+        'regex': 'trollvid',
+        'class': 'Trollvid'
+    },
 ]
 
 

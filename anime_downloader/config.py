@@ -15,7 +15,6 @@ DEFAULT_CONFIG = {
         'quality': '720p',
         'fallback_qualities': ['720p', '480p', '360p'],
         'force_download': False,
-        'log_level': 'INFO',
         'file_format': '{anime_title}/{anime_title}_{ep_no}',
         'provider': '9anime',
         'external_downloader': '',
@@ -24,6 +23,14 @@ DEFAULT_CONFIG = {
         'quality': '720p',
         'log_level': 'INFO',
         'provider': '9anime',
+    },
+    "siteconfig": {
+        "nineanime": {
+            "server": "mp4upload",
+        },
+        'anistream.xyz': {
+            "version": "subbed",
+        }
     }
 }
 
@@ -45,11 +52,13 @@ class _Config:
             self._CONFIG = self._read_config()
 
             def update(gkey):
+                if gkey not in self._CONFIG:
+                    self._CONFIG[gkey] = {}
                 for key, val in DEFAULT_CONFIG[gkey].items():
                     if key not in self._CONFIG[gkey].keys():
                         self._CONFIG[gkey][key] = val
 
-            for key in ['dl', 'watch']:
+            for key in DEFAULT_CONFIG.keys():
                 update(key)
             self.write()
 

@@ -25,17 +25,18 @@ setup(
         'requests>=2.18.4',
         'Click>=6.7',
         'fuzzywuzzy>=0.16.0',
+        'coloredlogs>=10.0',
+        'cfscrape>=2.0.5',
+        'requests-cache>=0.4.13',
+        'tabulate>=0.8.3',
     ],
     tests_require=[
         'pytest',
     ],
-    extras_require={
-        'cloudflare': ['cfscrape>=1.9.5']
-    },
     long_description=long_description,
     long_description_content_type='text/markdown',
     entry_points='''
         [console_scripts]
-        anime=anime_downloader.cli:cli
+        anime=anime_downloader.cli:main
     '''
 )

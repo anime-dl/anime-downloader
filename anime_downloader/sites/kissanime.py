@@ -1,59 +1,43 @@
-import cfscrape
-from bs4 import BeautifulSoup
 import re
 import logging
 
-from anime_downloader.sites.anime import BaseEpisode, SearchResult
-from anime_downloader.sites.baseanimecf import BaseAnimeCF
+from anime_downloader.sites.anime import AnimeEpisode, SearchResult, Anime
+from anime_downloader.sites import helpers
 from anime_downloader.sites.exceptions import NotFoundError
-from anime_downloader.const import get_random_header
-from anime_downloader.session import get_session
+
+logger = logging.getLogger(__name__)
 
 
-scraper = get_session(cfscrape.create_scraper(delay=10))
-
-
-class KissanimeEpisode(BaseEpisode):
-    QUALITIES = ['360p', '480p', '720p', '1080p']
+class KissanimeEpisode(AnimeEpisode, sitename='kissanime'):
+    """KissanimeEpisode"""
     _base_url = 'http://kissanime.ru'
     VERIFY_HUMAN = True
 
     def _get_sources(self):
-        episode_url = self.url+'&s=rapidvideo'
-        logging.debug('Calling url: {}'.format(episode_url))
-
-        ret = scraper.get(episode_url)
+        ret = helpers.get(self.url+'&s=rapidvideo', cf=True)
         data = self._scrape_episode(ret)
-
         return data
 
     def _scrape_episode(self, response):
         rapid_re = re.compile(r'iframe.*src="https://(.*?)"')
         rapid_url = rapid_re.findall(response.text)[0]
-
         return [('rapidvideo', rapid_url)]
 
 
-class KissAnime(BaseAnimeCF):
+class KissAnime(Anime, sitename='kissanime'):
+    """KissAnime"""
     sitename = 'kissanime'
-    _referer = 'http://kissanime.ru/'
+    _referer = 'http://kissanime.ru'
     QUALITIES = ['360p', '480p', '720p', '1080p']
-    _episodeClass = KissanimeEpisode
 
     @classmethod
     def search(cls, query):
-        headers = get_random_header()
-        headers['referer'] = 'http://kissanime.ru/'
-        res = scraper.post(
-            'http://kissanime.ru/Search/Anime',
-            data={
-                'type': 'Anime',
-                'keyword': query,
-            },
-            headers=headers,
-        )
-
-        soup = BeautifulSoup(res.text, 'html.parser')
+        soup = helpers.soupify(helpers.post(
+            'https://kissanime.ru/Search/Anime',
+            data=dict(keyword=query),
+            referer=cls._referer,
+            cf=True
+        ))
 
         # If only one anime found, kissanime redirects to anime page.
         # We don't want that
@@ -74,20 +58,21 @@ class KissAnime(BaseAnimeCF):
                 url='https://kissanime.ru'+res.find('a').get('href'),
                 poster='',
             )
-            logging.debug(res)
+            logger.debug(res)
             ret.append(res)
 
         return ret
 
-    def _scarpe_episodes(self, soup):
-        ret = soup.find('table', {'class': 'listing'}).find_all('a')
-        ret = ['http://kissanime.ru'+str(a['href']) for a in ret]
-        logging.debug('Unfiltered episodes : {}'.format(ret))
+    def _scrape_episodes(self):
+        soup = helpers.soupify(helpers.get(self.url, cf=True))
+        ret = ['http://kissanime.ru'+str(a['href'])
+               for a in soup.select('table.listing a')]
+        logger.debug('Unfiltered episodes : {}'.format(ret))
         filter_list = ['opening', 'ending', 'special', 'recap']
         ret = list(filter(
             lambda x: not any(s in x.lower() for s in filter_list), ret
         ))
-        logging.debug('Filtered episodes : {}'.format(ret))
+        logger.debug('Filtered episodes : {}'.format(ret))
 
         if ret == []:
             err = 'No episodes found in url "{}"'.format(self.url)
@@ -97,6 +82,7 @@ class KissAnime(BaseAnimeCF):
         ret = ret[::-1]
         return ret
 
-    def _scrape_metadata(self, soup):
-        info_div = soup.find('div', {'class': 'barContent'})
-        self.title = info_div.find('a', {'class': 'bigChar'}).text
+    def _scrape_metadata(self):
+        soup = helpers.soupify(helpers.get(self.url, cf=True))
+        info_div = soup.select_one('.barContent')
+        self.title = info_div.select_one('a.bigChar').text

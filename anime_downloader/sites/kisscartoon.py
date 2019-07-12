@@ -1,21 +1,18 @@
-from anime_downloader import session
 from anime_downloader.sites.kissanime import KissAnime
-from anime_downloader.sites.anime import BaseEpisode, SearchResult
+from anime_downloader.sites.anime import AnimeEpisode, SearchResult
+from anime_downloader.sites import helpers
 from anime_downloader.sites.exceptions import NotFoundError
-from anime_downloader.const import desktop_headers, get_random_header
 
-from bs4 import BeautifulSoup
-import cfscrape
 import logging
 
-scraper = session.get_session(cfscrape.create_scraper())
-session = session.get_session()
+
+logger = logging.getLogger(__name__)
 
 
-class KisscartoonEpisode(BaseEpisode):
+class KisscartoonEpisode(AnimeEpisode, sitename='kisscartoon'):
     _base_url = ''
     VERIFY_HUMAN = False
-    _episode_list_url = 'https://kisscartoon.ac/ajax/anime/load_episodes'
+    _episode_list_url = 'https://kisscartoon.is/ajax/anime/load_episodes'
     QUALITIES = ['720p']
 
     def _get_sources(self):
@@ -23,14 +20,11 @@ class KisscartoonEpisode(BaseEpisode):
             'v': '1.1',
             'episode_id': self.url.split('id=')[-1],
         }
-        headers = desktop_headers
-        headers['referer'] = self.url
-        res = session.get(self._episode_list_url, params=params, headers=headers)
-        url = res.json()['value']
+        url = helpers.get(self._episode_list_url,
+                          params=params,
+                          referer=self.url).json()['value']
 
-        headers = desktop_headers
-        headers['referer'] = self.url
-        res = session.get('https:' + url, headers=headers)
+        res = helpers.get('https:' + url, referer=self.url)
 
         return [(
             'no_extractor',
@@ -38,39 +32,33 @@ class KisscartoonEpisode(BaseEpisode):
         )]
 
 
-class KissCartoon(KissAnime):
-    sitename = 'kisscartoon'
-    _episodeClass = KisscartoonEpisode
+class KissCartoon(KissAnime, sitename='kisscartoon'):
+    sitename='kisscartoon'
 
     @classmethod
     def search(cls, query):
-        headers = get_random_header()
-        headers['referer'] = 'http://kisscartoon.ac/'
-        res = scraper.get(
-            'http://kisscartoon.ac/Search/',
-            params={
-                's': query,
-            },
-            headers=headers,
-        )
-        logging.debug('Result url: {}'.format(res.url))
+        soup = helpers.soupify(helpers.get(
+            'https://kisscartoon.is/Search/',
+            params=dict(s=query),
+            referer='https://kisscartoon.is/',
+        ))
 
-        soup = BeautifulSoup(res.text, 'html.parser')
         ret = []
-        for res in soup.select_one('.listing').find_all('a'):
+        for res in soup.select('.listing a'):
             res = SearchResult(
                 title=res.text.strip('Watch '),
                 url=res.get('href'),
                 poster='',
             )
-            logging.debug(res)
+            logger.debug(res)
             ret.append(res)
 
         return ret
 
-    def _scarpe_episodes(self, soup):
-        ret = soup.find('div', {'class': 'listing'}).find_all('a')
-        ret = [str(a['href']) for a in ret]
+    def _scrape_episodes(self):
+        soup = helpers.soupify(helpers.get(self.url))
+        ret = [str(a['href'])
+               for a in soup.select('.listing a')]
 
         if ret == []:
             err = 'No episodes found in url "{}"'.format(self.url)
