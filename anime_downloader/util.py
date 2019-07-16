@@ -10,10 +10,29 @@ import errno
 import time
 import ast
 import math
+import coloredlogs
+from tabulate import tabulate
 
 from anime_downloader import session
 from anime_downloader.sites import get_anime_class
 from anime_downloader.const import desktop_headers
+
+logger = logging.getLogger(__name__)
+
+__all__ = [
+    'check_in_path',
+    'setup_logger',
+    'format_search_results',
+    'search',
+    'split_anime',
+    'parse_episode_range',
+    'parse_ep_str',
+    'print_episodeurl',
+    'download_episode',
+    'play_episode',
+    'print_info',
+]
+
 
 def check_in_path(app):
     """
@@ -23,49 +42,45 @@ def check_in_path(app):
     """
     return shutil.which(app) is not None
 
+
 def setup_logger(log_level):
     if log_level == 'DEBUG':
-        format = '%(levelname)s %(name)s: %(message)s'
+        format = '%(asctime)s %(hostname)s %(name)s[%(process)d] %(levelname)s %(message)s'
+        from http.client import HTTPConnection
+        HTTPConnection.debuglevel = 1
+        requests_log = logging.getLogger("requests.packages.urllib3")
+        requests_log.setLevel(logging.DEBUG)
+        requests_log.propagate = True
+
     else:
         format = click.style('anime', fg='green') + ': %(message)s'
 
-    logging.basicConfig(
-        level=logging.getLevelName(log_level),
-        format=format
-    )
-
-    logger = logging.getLogger('urllib3.connectionpool')
-    logger.setLevel(logging.WARNING)
+    logger = logging.getLogger("anime_downloader")
+    coloredlogs.install(level=log_level, fmt=format, logger=logger)
 
 
 def format_search_results(search_results):
-    _, height = shutil.get_terminal_size()
-    height -= 4  # Accounting for prompt
-
-    ret = ''
-    for idx, result in enumerate(search_results[:height]):
-        try:
-            meta = ' | '.join(val for _, val in result.meta.items())
-        except AttributeError:
-            meta = ''
-        ret += '{:2}: {:40.40}\t{:20.20}\n'.format(idx+1, result.title, meta)
-
-    return ret
+    headers = [
+        'SlNo',
+        'Title',
+        'Meta',
+    ]
+    table = [(i+1, v.title, v.pretty_metadata)
+             for i, v in enumerate(search_results)]
+    table = tabulate(table, headers, tablefmt='psql')
+    table = '\n'.join(table.split('\n')[::-1])
+    return table
 
 
 def search(query, provider):
     # Since this function outputs to stdout this should ideally be in
     # cli. But it is used in watch too. :(
     cls = get_anime_class(provider)
-    try:
-        search_results = cls.search(query)
-    except Exception as e:
-        logging.error(click.style(str(e), fg='red'))
-        sys.exit(1)
+    search_results = cls.search(query)
     click.echo(format_search_results(search_results))
 
     if not search_results:
-        logging.error('No such Anime found. Please ensure correct spelling.')
+        logger.error('No such Anime found. Please ensure correct spelling.')
         sys.exit(1)
 
     val = click.prompt('Enter the anime no: ', type=int, default=1)
@@ -74,12 +89,12 @@ def search(query, provider):
         url = search_results[val-1].url
         title = search_results[val-1].title
     except IndexError:
-        logging.error('Only maximum of {} search results are allowed.'
-                      ' Please input a number less than {}'.format(
-                          len(search_results), len(search_results)+1))
+        logger.error('Only maximum of {} search results are allowed.'
+                     ' Please input a number less than {}'.format(
+                         len(search_results), len(search_results)+1))
         sys.exit(1)
 
-    logging.info('Selected {}'.format(title))
+    logger.info('Selected {}'.format(title))
 
     return url
 
@@ -123,10 +138,10 @@ def parse_ep_str(anime, grammar):
 
 
 def print_episodeurl(episode):
-    #if episode.source().referer != '':
+    # if episode.source().referer != '':
     #    print(episode.source().stream_url + "?referer=" +  episode.source().referer)
-    #else:
-    #Currently I don't know of a way to specify referer in url itself so leaving it here.
+    # else:
+    # Currently I don't know of a way to specify referer in url itself so leaving it here.
     print(episode.source().stream_url)
 
 
@@ -141,17 +156,17 @@ def play_episode(episode, *, player):
 
 
 def print_info(version):
-    logging.info('anime-downloader {}'.format(version))
-    logging.debug('Platform: {}'.format(platform.platform()))
-    logging.debug('Python {}'.format(platform.python_version()))
+    logger.info('anime-downloader {}'.format(version))
+    logger.debug('Platform: {}'.format(platform.platform()))
+    logger.debug('Python {}'.format(platform.python_version()))
 
 
 def get_json(url, params=None):
-    logging.debug('API call URL: {} with params {!r}'.format(url, params))
+    logger.debug('API call URL: {} with params {!r}'.format(url, params))
     res = session.get_session().get(url, headers=desktop_headers, params=params)
-    logging.debug('URL: {}'.format(res.url))
+    logger.debug('URL: {}'.format(res.url))
     data = res.json()
-    logging.debug('Returned data: {}'.format(data))
+    logger.debug('Returned data: {}'.format(data))
 
     return data
 
@@ -178,14 +193,20 @@ def format_command(cmd, episode, file_format, path):
     cmd_dict = {
         '{aria2}': 'aria2c {stream_url} -x 12 -s 12 -j 12 -k 10M -o '
                    '{file_format}.mp4 --continue=true --dir={download_dir}'
-                   ' --stream-piece-selector=inorder --min-split-size=5M --referer={referer}'
+                   ' --stream-piece-selector=inorder --min-split-size=5M --referer={referer} --check-certificate=false',
+        '{idm}'  : 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4'
     }
+
+
     rep_dict = {
         'stream_url': episode.source().stream_url,
         'file_format': file_format,
         'download_dir': os.path.abspath(path),
-        'referer':episode.source().referer,
+        'referer': episode.source().referer,
     }
+
+    if cmd == "{idm}":
+        rep_dict['file_format'] = rep_dict['file_format'].replace('/','\\')
 
     if cmd in cmd_dict:
         cmd = cmd_dict[cmd]
@@ -196,14 +217,21 @@ def format_command(cmd, episode, file_format, path):
     return cmd
 
 
+def eval_in_node(js: str):
+    # TODO: This should be in util
+    output = subprocess.check_output(['node', '-e', js])
+    return output.decode('utf-8')
+
+
+
 def external_download(cmd, episode, file_format, path=''):
-    logging.debug('cmd: ' + cmd)
-    logging.debug('episode: {!r}'.format(episode))
-    logging.debug('file format: ' + file_format)
+    logger.debug('cmd: ' + cmd)
+    logger.debug('episode: {!r}'.format(episode))
+    logger.debug('file format: ' + file_format)
 
     cmd = format_command(cmd, episode, file_format, path=path)
 
-    logging.debug('formatted cmd: ' + ' '.join(cmd))
+    logger.debug('formatted cmd: ' + ' '.join(cmd))
 
     p = subprocess.Popen(cmd)
     return_code = p.wait()

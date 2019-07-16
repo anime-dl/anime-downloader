@@ -1,34 +1,32 @@
 import logging
 import re
-from bs4 import BeautifulSoup
 
 from anime_downloader.extractors.base_extractor import BaseExtractor
-from anime_downloader import session
+from anime_downloader.sites import helpers
 
-session = session.get_session()
+logger = logging.getLogger(__name__)
 
 
 class RapidVideo(BaseExtractor):
     def _get_data(self):
         url = self.url + '&q=' + self.quality
-        logging.debug('Calling Rapid url: {}'.format(url))
+        logger.debug('Calling Rapid url: {}'.format(url))
         headers = self.headers
         headers['referer'] = url
+
         try:
-            r = session.get(url, headers=headers)
-            # This is a fix for new rapidvideo logic
-            # It will return OK for a get request
-            # even if there is a click button
-            # This will make sure a source link is present
-            soup = BeautifulSoup(r.text, 'html.parser')
-            get_source(soup)
-        except:
-            r = session.post(url, {
+            r = helpers.get(url, headers=headers)
+            soup = helpers.soupify(r)
+            stream_url = get_source(soup)
+        except Exception as e:
+            logger.debug('Exception happened when getting normally')
+            logger.debug(e)
+            r = helpers.post(url, data={
                 'confirm.x': 12,
                 'confirm.y': 12,
                 'block': 1,
             }, headers=headers)
-        soup = BeautifulSoup(r.text, 'html.parser')
+        soup = helpers.soupify(r)
 
         # TODO: Make these a different function. Can be reused in other classes
         #       too
@@ -46,7 +44,7 @@ class RapidVideo(BaseExtractor):
         except Exception as e:
             title = ''
             thumbnail = ''
-            logging.debug(e)
+            logger.debug(e)
             pass
 
         return {

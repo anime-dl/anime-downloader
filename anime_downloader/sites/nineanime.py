@@ -1,6 +1,6 @@
-from anime_downloader import session
-from anime_downloader.sites.anime import BaseAnime, BaseEpisode, SearchResult
+from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites.exceptions import NotFoundError, AnimeDLError
+from anime_downloader.sites import helpers
 from anime_downloader import util
 from anime_downloader.const import desktop_headers
 
@@ -10,24 +10,29 @@ import logging
 
 __all__ = ['NineAnimeEpisode', 'NineAnime']
 
-session = session.get_session()
+logger = logging.getLogger(__name__)
 
 
-class NineAnimeEpisode(BaseEpisode):
-    QUALITIES = ['360p', '480p', '720p', '1080p']
+class NineAnimeEpisode(AnimeEpisode, sitename='9anime'):
     _base_url = r'https://9anime.to/ajax/episode/info'
     ts = 0
 
     def _get_sources(self):
+        servers = {
+            'rapidvideo': '33',
+            'streamango': '12',
+            'mp4upload': '35',
+        }
+        server = self.config.get('server', 'mp4upload')
         params = {
             'id': self.url,
-            'server': '35',
+            'server': servers[server],
             'ts': self.ts
         }
 
         def get_stream_url(base_url, params, DD=None):
             params['_'] = int(generate_(params, DD=DD))
-            data = util.get_json(base_url, params=params)
+            data = helpers.get(base_url, params=params).json()
 
             return data['target']
 
@@ -39,8 +44,8 @@ class NineAnimeEpisode(BaseEpisode):
                 del params['ts']
                 # I don't know if this is reliable or not.
                 # For now it works.
-                data = util.get_json(
-                    'http://9anime.cloud/ajax/episode/info', params=params)
+                data = helpers.get(
+                    'http://9anime.cloud/ajax/episode/info', params=params).json()
                 url = data['target']
             except Exception as e:
                 raise AnimeDLError(
@@ -50,20 +55,28 @@ class NineAnimeEpisode(BaseEpisode):
                 ) from e
 
         return [
-            ('mp4upload', url),
+            (server, url),
         ]
 
 
-class NineAnime(BaseAnime):
+@helpers.not_working("9anime introduced captcha.")
+class NineAnime(Anime, sitename='9anime'):
+    """
+    Site: 9anime
+
+    Config
+    ------
+    server: One of ['rapidvideo', 'streamango']
+        Selects the server.
+    """
     sitename = '9anime'
     QUALITIES = ['360p', '480p', '720p', '1080p']
-    _episodeClass = NineAnimeEpisode
 
     @classmethod
     def search(cls, query):
-        r = session.get('https://www4.9anime.to/search?', params={'keyword': query}, headers=desktop_headers)
+        r = helpers.get('https://www4.9anime.to/search?', params={'keyword': query}, headers=desktop_headers)
 
-        logging.debug(r.url)
+        logger.debug(r.url)
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
@@ -72,7 +85,7 @@ class NineAnime(BaseAnime):
 
         ret = []
 
-        logging.debug('Search results')
+        logger.debug('Search results')
 
         for item in search_results:
             s = SearchResult(
@@ -85,15 +98,16 @@ class NineAnime(BaseAnime):
             for item in m.find_all('div'):
                 meta[item.attrs['class'][0]] = item.text.strip()
             s.meta = meta
-            logging.debug(s)
+            logger.debug(s)
             ret.append(s)
 
         return ret
 
-    def _scarpe_episodes(self, soup):
+    def _scrape_episodes(self):
+        soup = helpers.soupify(helpers.get(self.url))
         ts = soup.find('html')['data-ts']
-        self._episodeClass.ts = ts
-        logging.debug('data-ts: {}'.format(ts))
+        NineAnimeEpisode.ts = ts
+        logger.debug('data-ts: {}'.format(ts))
 
         # TODO: !HACK!
         # The below code should be refractored whenever I'm not lazy.
@@ -105,8 +119,8 @@ class NineAnime(BaseAnime):
         params = {}
         params['_'] = int(generate_(params))
         params['_'] = 648
-        soup = BeautifulSoup(session.get(api_url, params=params).json()['html'], 'html.parser')
-        episodes = soup.find('div', {'class': 'server', 'data-name': 35})
+        soup = helpers.soupify(helpers.get(api_url, params=params).json()['html'])
+        episodes = soup.find('div', {'class': 'server', 'data-name': 33})
         episodes = episodes.find_all('li')
 
         if episodes == []:
@@ -123,7 +137,8 @@ class NineAnime(BaseAnime):
 
         return episode_ids
 
-    def _scrape_metadata(self, soup):
+    def _scrape_metadata(self):
+        soup = helpers.soupify(helpers.get(self.url))
         self.title = str(soup.find('div', {'class': 'widget info'}).find(
             'h2', {'class': 'title'}).text)
 
