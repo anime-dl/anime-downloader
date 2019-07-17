@@ -33,6 +33,7 @@ setup(
     ],
     tests_require=[
         'pytest',
+        'httpretty',
     ],
     long_description=long_description,
     long_description_content_type='text/markdown',
