@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="/css/video-js.css" rel="stylesheet">
+
+    <!-- If you'd like to support IE8 -->
+    <script src="/js/videojs-ie8.min.js"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-108121762-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-108121762-1');
+    </script>
+    <title>Star Wars: The Clone Wars (2008 - 2015) Full Episodes | ItSaturday.com</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/bootcomplete.css">
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+    <script src="/js/Lettering.js-master/jquery.lettering.js"></script>
+    <script src="/js/jquery_lazyload.js" type="text/javascript"></script>
+    <script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+
+    <script src="/js/EasyAutocomplete-1.3.5/jquery.easy-autocomplete.js"></script>
+    <link rel="stylesheet" href="/js/EasyAutocomplete-1.3.5/easy-autocomplete.min.css">
+    <meta name="keywords" content=""/>
+    <meta property="og:title" content="Star Wars: The Clone Wars (2008 - 2015) Full Episodes"/>
+    <meta property="og:description" content=""/>
+    <meta property="og:type" content=""/>
+    <meta property="og:url" content="http://www.itsaturday.com/Star-Wars-The-Clone-Wars-S6-Ep13---Sacrifice.html"/>
+    <meta property="og:image" content="http://www.itsaturday.com/images/seriesImages/2023/Star-Wars-The-Clone-Wars-2008--2015-Full-Episodes.jpg"/>
+    <meta property="og:site_name" content="http://www.itsaturday.com"/>
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@">
+    <meta name="twitter:url" content="http://www.itsaturday.com/Star-Wars-The-Clone-Wars-S6-Ep13---Sacrifice.html">
+    <meta name="twitter:title" content="Star Wars: The Clone Wars (2008 - 2015) Full Episodes">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:image" content="http://www.itsaturday.com/images/seriesImages/2023/Star-Wars-The-Clone-Wars-2008--2015-Full-Episodes.jpg">
+    <meta property="fb:app_id" content="?"/>
+    <meta name="verify-v1" content="?"/>
+    <meta itemprop="url" content="http://www.itsaturday.com/Star-Wars-The-Clone-Wars-S6-Ep13---Sacrifice.html"/>
+
+    <link rel="image_src" href="http://www.itsaturday.com/images/seriesImages/2023/Star-Wars-The-Clone-Wars-2008--2015-Full-Episodes.jpg"/>
+    <link rel="videothumbnail" href="http://www.itsaturday.com/images/seriesImages/2023/Star-Wars-The-Clone-Wars-2008--2015-Full-Episodes.jpg" type="image/jpeg"/>
+
+    <script>
+        $("document").ready(function () {
+            lazyload();
+        });
+    </script>
+</head>
+<body>
+<div class="header container">
+    <div class="row hundred">
+    <div class="float-left" style="width: 240px; margin-left: 20px;">
+        <h1 class="h1" id="toggle" id="logo">
+<h1 id="logo">
+    <a href="/" class="link-unstyled">
+    <span class="char1">I</span><span class="char2">t</span><span class="char3 spacer-char">S</span><span
+            class="char4">a</span><span class="char5">t</span><span class="char6">u</span><span
+            class="char7">r</span><span class="char8">d</span><span class="char9">a</span><span
+            class="char3">y</span><span class="char2">!</span>
+
+        </a>
+
+</h1>
+
+        </h1>
+    </div>
+    <form action="/search/" method="get"><div class="float-left row" style="margin-top: 15px;" >
+        <div class="searchboxwrapper col-12" >
+        <input id="search-input" type="text"  class="searchbox rounded" style="" placeholder="Series, Episode, Year..." autocomplete="off" name="q"/>
+        <input class="searchsubmit rounded" type="submit" id="searchsubmit" value="">
+        </div>
+    </form>
+    </div>
+   </div>
+</div>
+<script>
+</script>
+<script>
+
+    $(document).ready(function () {
+        var options = {
+
+            url: function(phrase) {
+                return "_search.php?q=" + phrase + "&format=json";
+            },
+
+            getValue: "text",
+            template: {
+                type: "links",
+                fields: {
+                    link: "website-link"
+                }
+            },
+
+            ajaxSettings: {
+                dataType: "json",
+                method: "POST",
+                data: {
+                    dataType: "json"
+                }
+            },
+
+            preparePostData: function (data) {
+                data.phrase = $("#search-input").val();
+                return data;
+            },
+
+            requestDelay: 400
+        };
+
+        $("#search-input").easyAutocomplete(options);
+
+        $('input.typeahead').typeahead(options);
+
+        $("#demo1 h1").lettering();
+        $("#demo2 h1").lettering('words');
+        $("#demo3 p").lettering('lines');
+        $("#demo4 h1").lettering('words').children("span").lettering();
+        $("#demo5 h1").lettering().children("span").css({
+            'display': 'inline-block',
+            '-webkit-transform': 'rotate(-25deg)'
+        });
+    });
+</script>
+<script>
+    $('#toggle').click(function () {
+        $("#toggle").effect("shake");
+        $('#toggle').wiggle({
+            waggle: 5, // amount of wiggle
+            duration: 2, // how long to wiggle (in seconds)
+            interval: 200, // how often to waggle (in milliseconds)
+            wiggleCallback: function (elem) {
+                // callback whenever the element is wiggled
+            }
+        });
+
+    });
+
+</script>
+
+<div class="sidebar col-3 rounded-bottom">
+<h1 class="h3">Star Wars: The Clone Wars </h1>
+<div class="list-group"><div class="bg-success rounded highlight"><span class="link-unstyled"><i class="fa fa-play-circle fa-fw"></i>S1 Ep1 &#8211; Ambush</span></div><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S1-Ep2---Rising-Malevolence.html">S1 Ep2 &#8211; Rising Malevolence</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S1-Ep3---Shadow-of-Malevolence.html">S1 Ep3 &#8211; Shadow of Malevolence</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S1-Ep4---Destroy-Malevolence.html">S1 Ep4 &#8211; Destroy Malevolence</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S1-Ep5---Rookies.html">S1 Ep5 &#8211; Rookies</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S1-Ep6---Downfall-of-a-Droid.html">S1 Ep6 &#8211; Downfall of a Droid</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S1-Ep7---Duel-of-the-Droids.html">S1 Ep7 &#8211; Duel of the Droids</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S1-Ep8---Bombad-Jedi.html">S1 Ep8 &#8211; Bombad Jedi</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S1-Ep9---Cloak-of-Darkness.html">S1 Ep9 &#8211; Cloak of Darkness</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S1-Ep10---The-Lair-of-General-Grievous.html">S1 Ep10 &#8211; The Lair of General Grievous</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S1-Ep11---Dooku-Captured.html">S1 Ep11 &#8211; Dooku Captured</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S1-Ep12---The-Gungan-General.html">S1 Ep12 &#8211; The Gungan General</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S1-Ep13---Jedi-Crash.html">S1 Ep13 &#8211; Jedi Crash</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S1-Ep14---Defenders-of-Peace.html">S1 Ep14 &#8211; Defenders of Peace</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S1-Ep15---Trespass.html">S1 Ep15 &#8211; Trespass</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S1-Ep16---The-Hidden-Enemy.html">S1 Ep16 &#8211; The Hidden Enemy</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S1-Ep17---Blue-Shadow-Virus.html">S1 Ep17 &#8211; Blue Shadow Virus</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S1-Ep18---Mystery-of-a-Thousand-Moons.html">S1 Ep18 &#8211; Mystery of a Thousand Moons</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S1-Ep19---Storm-Over-Ryloth.html">S1 Ep19 &#8211; Storm Over Ryloth</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S1-Ep20---Innocents-of-Ryloth.html">S1 Ep20 &#8211; Innocents of Ryloth</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S1-Ep21---Liberty-on-Ryloth.html">S1 Ep21 &#8211; Liberty on Ryloth</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S1-Ep22---Hostage-Crisis.html">S1 Ep22 &#8211; Hostage Crisis</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S2-Ep1-2---Holocron-Heist--Cargo-of-Doom.html">S2 Ep1-2 &#8211; Holocron Heist ~ Cargo of Doom</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S2-Ep3---Children-of-the-Force.html">S2 Ep3 &#8211; Children of the Force</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S2-Ep4---Senate-Spy.html">S2 Ep4 &#8211; Senate Spy</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S2-Ep5---Landing-at-Point-Rain.html">S2 Ep5 &#8211; Landing at Point Rain</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S2-Ep6---Weapons-Factory.html">S2 Ep6 &#8211; Weapons Factory</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S2-Ep7---Legacy-of-Terror.html">S2 Ep7 &#8211; Legacy of Terror</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S2-Ep8---Brain-Invaders.html">S2 Ep8 &#8211; Brain Invaders</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S2-Ep9-10---Grievous-Intrigue--The-Deserter.html">S2 Ep9-10 &#8211; Grievous Intrigue ~ The Deserter</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S2-Ep11---Lightsaber-Lost.html">S2 Ep11 &#8211; Lightsaber Lost</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S2-Ep12---The-Mandalore-Plot.html">S2 Ep12 &#8211; The Mandalore Plot</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S2-Ep13---Voyage-of-Temptation.html">S2 Ep13 &#8211; Voyage of Temptation</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S2-Ep14---Duchess-of-Mandalore.html">S2 Ep14 &#8211; Duchess of Mandalore</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S2-Ep15---Senate-Murders.html">S2 Ep15 &#8211; Senate Murders</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S2-Ep16---Cat-and-Mouse.html">S2 Ep16 &#8211; Cat and Mouse</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S2-Ep17---Bounty-Hunters.html">S2 Ep17 &#8211; Bounty Hunters</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S2-Ep18---The-Zillo-Beast.html">S2 Ep18 &#8211; The Zillo Beast</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S2-Ep19---The-Zillo-Beast-Strikes-Back.html">S2 Ep19 &#8211; The Zillo Beast Strikes Back</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S2-Ep20---Death-Trap.html">S2 Ep20 &#8211; Death Trap</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S2-Ep21-22---R2-Come-Home--Lethal-Trackdown.html">S2 Ep21-22 &#8211; R2 Come Home ~ Lethal Trackdown</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S3-Ep1-2---Clone-Cadets---ARC-Troopers.html">S3 Ep1-2 &#8211; Clone Cadets  ~ ARC Troopers</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S3-Ep3---Supply-Lines.html">S3 Ep3 &#8211; Supply Lines</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S3-Ep4---Sphere-of-Influence.html">S3 Ep4 &#8211; Sphere of Influence</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S3-Ep5---Corruption.html">S3 Ep5 &#8211; Corruption</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S3-Ep6---The-Academy.html">S3 Ep6 &#8211; The Academy</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S3-Ep7---Assassin.html">S3 Ep7 &#8211; Assassin</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S3-Ep8---Evil-Plans.html">S3 Ep8 &#8211; Evil Plans</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S3-Ep9---Hunt-for-Ziro.html">S3 Ep9 &#8211; Hunt for Ziro</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S3-Ep10---Heroes-on-Both-Sides.html">S3 Ep10 &#8211; Heroes on Both Sides</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S3-Ep11---Pursuit-of-Peace.html">S3 Ep11 &#8211; Pursuit of Peace</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S3-Ep12---Nightsisters.html">S3 Ep12 &#8211; Nightsisters</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S3-Ep13---Monster.html">S3 Ep13 &#8211; Monster</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S3-Ep14---Witches-of-the-Mist.html">S3 Ep14 &#8211; Witches of the Mist</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S3-Ep15---Overlords.html">S3 Ep15 &#8211; Overlords</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S3-Ep16---Altar-of-Mortis.html">S3 Ep16 &#8211; Altar of Mortis</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S3-Ep17---Ghosts-of-Mortis.html">S3 Ep17 &#8211; Ghosts of Mortis</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S3-Ep18---The-Citadel.html">S3 Ep18 &#8211; The Citadel</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S3-Ep19---Counter-Attack.html">S3 Ep19 &#8211; Counter Attack</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S3-Ep20---Citadel-Rescue.html">S3 Ep20 &#8211; Citadel Rescue</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S3-Ep21---Padawan-Lost.html">S3 Ep21 &#8211; Padawan Lost</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S3-Ep22---Wookiee-Hunt.html">S3 Ep22 &#8211; Wookiee Hunt</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S4-Ep1-2---Water-War--Gungan-Attack.html">S4 Ep1-2 &#8211; Water War ~ Gungan Attack</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S4-Ep3---Prisoners.html">S4 Ep3 &#8211; Prisoners</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S4-Ep4---Shadow-Warrior.html">S4 Ep4 &#8211; Shadow Warrior</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S4-Ep5---Mercy-Mission.html">S4 Ep5 &#8211; Mercy Mission</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S4-Ep6---Nomad-Droids.html">S4 Ep6 &#8211; Nomad Droids</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S4-Ep7---Darkness-on-Umbara.html">S4 Ep7 &#8211; Darkness on Umbara</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S4-Ep8---The-General.html">S4 Ep8 &#8211; The General</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S4-Ep9---Plan-of-Dissent.html">S4 Ep9 &#8211; Plan of Dissent</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S4-Ep10---Carnage-of-Krell.html">S4 Ep10 &#8211; Carnage of Krell</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S4-Ep11---Kidnapped.html">S4 Ep11 &#8211; Kidnapped</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S4-Ep12---Slaves-of-the-Republic.html">S4 Ep12 &#8211; Slaves of the Republic</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S4-Ep13---Escape-from-Kadavo.html">S4 Ep13 &#8211; Escape from Kadavo</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S4-Ep14---A-Friend-in-Need.html">S4 Ep14 &#8211; A Friend in Need</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S4-Ep15---Deception.html">S4 Ep15 &#8211; Deception</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S4-Ep16---Friends-and-Enemies.html">S4 Ep16 &#8211; Friends and Enemies</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S4-Ep17---The-Box.html">S4 Ep17 &#8211; The Box</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S4-Ep18---Crisis-on-Naboo.html">S4 Ep18 &#8211; Crisis on Naboo</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S4-Ep19---Massacre.html">S4 Ep19 &#8211; Massacre</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S4-Ep20---Bounty.html">S4 Ep20 &#8211; Bounty</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S4-Ep21---Brothers.html">S4 Ep21 &#8211; Brothers</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S4-Ep22---Revenge.html">S4 Ep22 &#8211; Revenge</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S5-Ep1---Revival.html">S5 Ep1 &#8211; Revival</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S5-Ep2---A-War-on-Two-Fronts.html">S5 Ep2 &#8211; A War on Two Fronts</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S5-Ep3---Front-Runners.html">S5 Ep3 &#8211; Front Runners</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S5-Ep4---The-Soft-War.html">S5 Ep4 &#8211; The Soft War</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S5-Ep5---Tipping-Points.html">S5 Ep5 &#8211; Tipping Points</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S5-Ep6---The-Gathering.html">S5 Ep6 &#8211; The Gathering</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S5-Ep7---A-Test-of-Strength.html">S5 Ep7 &#8211; A Test of Strength</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S5-Ep8---Bound-for-Rescue.html">S5 Ep8 &#8211; Bound for Rescue</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S5-Ep9---A-Necessary-Bond.html">S5 Ep9 &#8211; A Necessary Bond</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S5-Ep10---Secret-Weapons.html">S5 Ep10 &#8211; Secret Weapons</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S5-Ep11---A-Sunny-Day-in-the-Void.html">S5 Ep11 &#8211; A Sunny Day in the Void</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S5-Ep12---Missing-in-Action.html">S5 Ep12 &#8211; Missing in Action</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S5-Ep13---Point-of-No-Return.html">S5 Ep13 &#8211; Point of No Return</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S5-Ep14---Eminence.html">S5 Ep14 &#8211; Eminence</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S5-Ep15---Shades-of-Reason.html">S5 Ep15 &#8211; Shades of Reason</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S5-Ep16---The-Lawless.html">S5 Ep16 &#8211; The Lawless</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S5-Ep17---Sabotage.html">S5 Ep17 &#8211; Sabotage</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S5-Ep18---The-Jedi-Who-Knew-Too-Much.html">S5 Ep18 &#8211; The Jedi Who Knew Too Much</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S5-Ep19---To-Catch-a-Jedi.html">S5 Ep19 &#8211; To Catch a Jedi</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S5-Ep20---The-Wrong-Jedi.html">S5 Ep20 &#8211; The Wrong Jedi</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S6-Ep1---The-Unknown.html">S6 Ep1 &#8211; The Unknown</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S6-Ep2---Conspiracy.html">S6 Ep2 &#8211; Conspiracy</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S6-Ep3---Fugitive.html">S6 Ep3 &#8211; Fugitive</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S6-Ep4---Orders.html">S6 Ep4 &#8211; Orders</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S6-Ep5---An-Old-Friend.html">S6 Ep5 &#8211; An Old Friend</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S6-Ep6---The-Rise-of-Clovis.html">S6 Ep6 &#8211; The Rise of Clovis</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S6-Ep7---Crisis-at-the-Heart.html">S6 Ep7 &#8211; Crisis at the Heart</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S6-Ep8---The-Disappeared-Part-1.html">S6 Ep8 &#8211; The Disappeared: Part 1</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S6-Ep9---The-Disappeared-Part-2.html">S6 Ep9 &#8211; The Disappeared: Part 2</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S6-Ep10---The-Lost-One.html">S6 Ep10 &#8211; The Lost One</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S6-Ep11---Voices.html">S6 Ep11 &#8211; Voices</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S6-Ep12---Destiny.html">S6 Ep12 &#8211; Destiny</a><div class="half-rule"></div><a class="link-group-item list-group-item-padding text-white" href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S6-Ep13---Sacrifice.html">S6 Ep13 &#8211; Sacrifice</a><div class="half-rule"></div><a target='_blank' href=https://www.fastemoji.com/>😂 😍 ❤ 😀 😎 🎉 😊 👍 💩 👩 👩‍🔬 😕 🌸 🐝 🐶 🤦🏽‍♀️ 😻 😸 😺 😹 ☕ 🍕 🍷 ❤️💜 💦 🤷🏽 💻 📆 🔥</a>
+</div>
+</div>
+
+    <header><div><div class="float-right"> &nbsp;<span class="enter-fullscreen black-bg text-white highlight rounded-bottom h6" role="button">fullscreen <i class="fa fa-expand"></i></span> &nbsp;<a href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes/Star-Wars-The-Clone-Wars-S1-Ep2---Rising-Malevolence.html" class="black-bg text-white highlight rounded-bottom h6">next episode <i class="fa fa-chevron-circle-right"></i></a></div>
+    </div><div style="margin-left: 10px;"><h1 class="h3 bold">&nbsp; Star Wars: The Clone Wars S1 Ep1 &#8211; Ambush</h1></div><div style="padding-left: 10px;"> &nbsp; &nbsp;<a href="https://www.cool90s.com/advanced_search_result.php?keywords=Star+Wars%3A+The+Clone+Wars+&search_in_description=1&x=0&y=0" target="_blank"><img src="/images/dvd-icon.png" height="16"> Get on high quality DVD for yourself or as a gift</a></div><div style="padding-left: 10px;"> &nbsp; &nbsp;🌸 <a href="https://www.fastemoji.com" target="_blank">Get the latest emojis in 1-Click copy-paste</a></div>    </header>
+<div class="row">
+    <div class="col-9 float-right">    
+  <video id="my-video" class="video-js" controls autoplay preload="auto" style="width: 100%"
+  poster="http://www.itsaturday.com/images/seriesImages/2023/Star-Wars-The-Clone-Wars-2008--2015-Full-Episodes.jpg.jpg" data-setup="{}">
+    <source src="/watch.php?url=https://2.bp.blogspot.com/hjnLR8T4GAG_QcNcpn71AUsBENDpqwAoH5vAJLU3_-AHUu16V_PArdw1sWS1obYg_y0MExXc1UCOqn01_-jPUaYzTWkGIjYHmu_5qat8uORB1nUnsgJI_r5bTTrvN5K1DhOTvNjb=m18&extra=.mp4" type='video/mp4'>
+    <p class="vjs-no-js">
+      To view this video please enable JavaScript, and consider upgrading to a web browser that
+      <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+    </p>
+  </video>
+<script type="text/javascript">
+
+    $('.enter-fullscreen').click(function(e) {
+        e.preventDefault();
+        $('.vjs-play-control').click();
+        $('.vjs-fullscreen-control').click();
+    });
+
+</script>
+  <script src="/js/video.js"></script>
+  
+<blockquote class="blockquote bg-faded">
+<img class="img-fluid img-thumbnail rounded-circle float-right col-6 col-md-4 col-lg-3" src="/images/seriesImages/2023/Star-Wars-The-Clone-Wars-2008--2015-Full-Episodes.jpg">
+<strong>Star Wars: The Clone Wars</strong> (2008 &#8211; 2015) full episodes watch cartoons online.<br />
+Synopsis: The first weekly TV series from Lucasfilm Animation chronicles the adventures of Anakin Skywalker, Yoda, Obi-Wan Kenobi and other popular characters from the &#8220;Star Wars&#8221; universe during the violent Clone Wars, as dwindling numbers of Jedi knights struggle to restore peace.<br />
+Creator: George Lucas<br />
+Stars: Tom Kane, Dee Bradley Baker, Matt Lanter<br />
+More information: <a href="http://www.imdb.com/title/tt0458290/?ref_=ttep_ep_tt" target="_blank">IMDB</a>, <a href="https://en.wikipedia.org/wiki/Star_Wars:_The_Clone_Wars_(2008_TV_series)" target="_blank">Wikipedia</a></p>
+</blockquote>
+
+<!-- Composite Start -->
+<div id="M285456ScriptRootC169701">
+        <div id="M285456PreloadC169701">
+    </div>
+        <script>
+                (function(){
+            var D=new Date(),d=document,b='body',ce='createElement',ac='appendChild',st='style',ds='display',n='none',gi='getElementById';
+            var i=d[ce]('iframe');i[st][ds]=n;d[gi]("M285456ScriptRootC169701")[ac](i);try{var iw=i.contentWindow.document;iw.open();iw.writeln("<ht"+"ml><bo"+"dy></bo"+"dy></ht"+"ml>");iw.close();var c=iw[b];}
+            catch(e){var iw=d;var c=d[gi]("M285456ScriptRootC169701");}var dv=iw[ce]('div');dv.id="MG_ID";dv[st][ds]=n;dv.innerHTML=169701;c[ac](dv);
+            var s=iw[ce]('script');s.async='async';s.defer='defer';s.charset='utf-8';s.src="//jsc.mgid.com/i/t/itsaturday.com.169701.js?t="+D.getYear()+D.getMonth()+D.getDate()+D.getHours();c[ac](s);})();
+    </script>
+</div>
+<!-- Composite End -->
+</div>
+<div class="col-3 float-right">   
+<!-- Composite Start -->
+<div id="M285456ScriptRootC168411">
+        <div id="M285456PreloadC168411">
+    </div>
+        <script>
+                (function(){
+            var D=new Date(),d=document,b='body',ce='createElement',ac='appendChild',st='style',ds='display',n='none',gi='getElementById';
+            var i=d[ce]('iframe');i[st][ds]=n;d[gi]("M285456ScriptRootC168411")[ac](i);try{var iw=i.contentWindow.document;iw.open();iw.writeln("<ht"+"ml><bo"+"dy></bo"+"dy></ht"+"ml>");iw.close();var c=iw[b];}
+            catch(e){var iw=d;var c=d[gi]("M285456ScriptRootC168411");}var dv=iw[ce]('div');dv.id="MG_ID";dv[st][ds]=n;dv.innerHTML=168411;c[ac](dv);
+            var s=iw[ce]('script');s.async='async';s.defer='defer';s.charset='utf-8';s.src="//jsc.mgid.com/i/t/itsaturday.com.168411.js?t="+D.getYear()+D.getMonth()+D.getDate()+D.getHours();c[ac](s);})();
+    </script>
+</div>
+<!-- Composite End -->
+</div>
+</div>
+
+</div>
+<span style='color:white'>2023</span>
