@@ -41,6 +41,8 @@ def cli(log_level):
 
     Download or watch your favourite anime
     """
+    if not util.check_in_path('aria2c'):
+        raise RuntimeError("Aria2 is not in path. Please follow installation instructions: https://github.com/vn-ki/anime-downloader/wiki/Installation")
     util.setup_logger(log_level)
 
 
