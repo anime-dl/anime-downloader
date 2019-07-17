@@ -1,42 +1,42 @@
-pip-run: &pip-install
-  name: Install Python dependencies
-  command: |
-    python3 -m venv venv
-    . venv/bin/activate
-    pip install pytest
-    pip install -e .[cloudflare]
+# pip-run: &pip-install
+#   name: Install Python dependencies
+#   command: |
+#     python3 -m venv venv
+#     . venv/bin/activate
+#     pip install pytest
+#     pip install -e .[cloudflare]
 
 
-version: 2
-jobs:
-  nineanime:
-    docker:
-      - image: circleci/python:3.6
-    steps:
-      - checkout
-      - run: *pip-install
-      - run: venv/bin/python -m pytest tests/test_anime.py --anime-site nineanime
-  kissanime:
-    docker:
-      - image: circleci/python:3.6
-    steps:
-      - checkout
-      - run: *pip-install
-      - run: venv/bin/python -m pytest tests/test_anime.py --anime-site kissanime
-  gogoanime:
-    docker:
-      - image: circleci/python:3.6
-    steps:
-      - checkout
-      - run: *pip-install
-      - run: venv/bin/python -m pytest tests/test_anime.py --anime-site gogoanime
+# version: 2
+# jobs:
+#   nineanime:
+#     docker:
+#       - image: circleci/python:3.6
+#     steps:
+#       - checkout
+#       - run: *pip-install
+#       - run: venv/bin/python -m pytest tests/test_anime.py --anime-site nineanime
+#   kissanime:
+#     docker:
+#       - image: circleci/python:3.6
+#     steps:
+#       - checkout
+#       - run: *pip-install
+#       - run: venv/bin/python -m pytest tests/test_anime.py --anime-site kissanime
+#   gogoanime:
+#     docker:
+#       - image: circleci/python:3.6
+#     steps:
+#       - checkout
+#       - run: *pip-install
+#       - run: venv/bin/python -m pytest tests/test_anime.py --anime-site gogoanime
 
-workflows:
-  version: 2
-  commit:
-    jobs:
-      - nineanime
-      - gogoanime
+# workflows:
+#   version: 2
+#   commit:
+#     jobs:
+#       - nineanime
+#       - gogoanime
       # Kissanime will always fail on remote servers due to cloudflare
       # - kissanime
 
