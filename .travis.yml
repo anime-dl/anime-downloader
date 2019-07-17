@@ -7,7 +7,7 @@ matrix:
 before_install:
   - pip install pytest-cov
 install:
-  - pip install -e ".[cloudflare]"
+  - pip install -e ".[dev]"
 script:
   - python -m pytest tests --cov=.
 after_success:

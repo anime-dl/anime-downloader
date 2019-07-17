@@ -31,10 +31,12 @@ setup(
         'tabulate>=0.8.3',
         'pycryptodome>=3.8.2',
     ],
-    tests_require=[
-        'pytest',
-        'httpretty',
-    ],
+    extras_require={
+        'dev': [
+            'pytest',
+            'httpretty',
+        ],
+    },
     long_description=long_description,
     long_description_content_type='text/markdown',
     entry_points='''
