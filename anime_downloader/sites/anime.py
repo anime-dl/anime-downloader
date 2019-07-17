@@ -43,7 +43,7 @@ class Anime:
     title = ''
     meta = dict()
     subclasses = {}
-    QUALITIES = []
+    QUALITIES = ['360p', '480p', '720p', '1080p']
 
     @classmethod
     def search(cls, query):
