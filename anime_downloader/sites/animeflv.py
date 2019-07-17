@@ -50,6 +50,10 @@ class Animeflv(Anime, sitename='animeflv'):
         ]
         return links[::-1]
 
+    def _scrape_metadata(self):
+        soup = helpers.soupify(helpers.get(self.url).text)
+        self.title = soup.select_one('h2.Title').text
+
 
 class AnimeflvEpisode(AnimeEpisode, sitename='animeflv'):
     SERVERS = [

@@ -16,22 +16,41 @@ The default config file is given below.
 
 .. code:: json
 
-   {
-       "dl": {
-           "download_dir": ".",
-           "force_download": false,
-           "file_format": "{anime_title}/{anime_title}_{ep_no}",
-           "log_level": "INFO",
-           "player": null,
-           "quality": "720p",
-           "skip_download": false,
-           "url": false
-       },
-       "watch": {
-           "log_level": "INFO",
-           "quality": "720p"
-       }
-   }
+    {
+        "dl": {
+            "download_dir": ".",
+            "external_downloader": "{aria2}",
+            "fallback_qualities": [
+                "720p",
+                "480p",
+                "360p"
+            ],
+            "file_format": "{anime_title}/{anime_title}_{ep_no}",
+            "force_download": false,
+            "player": null,
+            "provider": "9anime",
+            "quality": "720p",
+            "skip_download": false,
+            "url": false
+        },
+        "siteconfig": {
+            "animeflv": {
+                "server": "natsuki",
+                "version": "subbed"
+            },
+            "anistream.xyz": {
+                "version": "subbed"
+            },
+            "nineanime": {
+                "server": "mp4upload"
+            }
+        },
+        "watch": {
+            "log_level": "INFO",
+            "provider": "9anime",
+            "quality": "720p"
+        }
+    }
 
 .. note::
     - For the key ``file_format``, you can set ``anime_title``\ (which refers to the title of the anime) and ``ep_no`` which is the number of the epiosde.

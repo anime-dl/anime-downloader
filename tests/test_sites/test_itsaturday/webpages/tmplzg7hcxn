@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="/css/video-js.css" rel="stylesheet">
+
+    <!-- If you'd like to support IE8 -->
+    <script src="/js/videojs-ie8.min.js"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-108121762-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-108121762-1');
+    </script>
+    <title>Watch Cartoons it's Saturday Morning | ItSaturday.com</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/bootcomplete.css">
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+    <script src="/js/Lettering.js-master/jquery.lettering.js"></script>
+    <script src="/js/jquery_lazyload.js" type="text/javascript"></script>
+    <script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+
+    <script src="/js/EasyAutocomplete-1.3.5/jquery.easy-autocomplete.js"></script>
+    <link rel="stylesheet" href="/js/EasyAutocomplete-1.3.5/easy-autocomplete.min.css">
+    <meta name="keywords" content=""/>
+    <meta property="og:title" content="Watch Cartoons it's Saturday Morning"/>
+    <meta property="og:description" content=""/>
+    <meta property="og:type" content=""/>
+    <meta property="og:url" content="http://www.itsaturday.com/"/>
+    <meta property="og:image" content=""/>
+    <meta property="og:site_name" content="http://www.itsaturday.com"/>
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@">
+    <meta name="twitter:url" content="http://www.itsaturday.com/">
+    <meta name="twitter:title" content="Watch Cartoons it's Saturday Morning">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:image" content="">
+    <meta property="fb:app_id" content="?"/>
+    <meta name="verify-v1" content="?"/>
+    <meta itemprop="url" content="http://www.itsaturday.com/"/>
+
+    <link rel="image_src" href=""/>
+    <link rel="videothumbnail" href="" type="image/jpeg"/>
+
+    <script>
+        $("document").ready(function () {
+            lazyload();
+        });
+    </script>
+</head>
+<body>
+<div class="header container">
+    <div class="row hundred">
+    <div class="float-left" style="width: 240px; margin-left: 20px;">
+        <h1 class="h1" id="toggle" id="logo">
+<h1 id="logo">
+    <a href="/" class="link-unstyled">
+    <span class="char1">I</span><span class="char2">t</span><span class="char3 spacer-char">S</span><span
+            class="char4">a</span><span class="char5">t</span><span class="char6">u</span><span
+            class="char7">r</span><span class="char8">d</span><span class="char9">a</span><span
+            class="char3">y</span><span class="char2">!</span>
+
+        </a>
+
+</h1>
+
+        </h1>
+    </div>
+    <form action="/search/" method="get"><div class="float-left row" style="margin-top: 15px;" >
+        <div class="searchboxwrapper col-12" >
+        <input id="search-input" type="text"  class="searchbox rounded" style="" placeholder="Series, Episode, Year..." autocomplete="off" name="q"/>
+        <input class="searchsubmit rounded" type="submit" id="searchsubmit" value="">
+        </div>
+    </form>
+    </div>
+   </div>
+</div>
+<script>
+</script>
+<script>
+
+    $(document).ready(function () {
+        var options = {
+
+            url: function(phrase) {
+                return "_search.php?q=" + phrase + "&format=json";
+            },
+
+            getValue: "text",
+            template: {
+                type: "links",
+                fields: {
+                    link: "website-link"
+                }
+            },
+
+            ajaxSettings: {
+                dataType: "json",
+                method: "POST",
+                data: {
+                    dataType: "json"
+                }
+            },
+
+            preparePostData: function (data) {
+                data.phrase = $("#search-input").val();
+                return data;
+            },
+
+            requestDelay: 400
+        };
+
+        $("#search-input").easyAutocomplete(options);
+
+        $('input.typeahead').typeahead(options);
+
+        $("#demo1 h1").lettering();
+        $("#demo2 h1").lettering('words');
+        $("#demo3 p").lettering('lines');
+        $("#demo4 h1").lettering('words').children("span").lettering();
+        $("#demo5 h1").lettering().children("span").css({
+            'display': 'inline-block',
+            '-webkit-transform': 'rotate(-25deg)'
+        });
+    });
+</script>
+<script>
+    $('#toggle').click(function () {
+        $("#toggle").effect("shake");
+        $('#toggle').wiggle({
+            waggle: 5, // amount of wiggle
+            duration: 2, // how long to wiggle (in seconds)
+            interval: 200, // how often to waggle (in milliseconds)
+            wiggleCallback: function (elem) {
+                // callback whenever the element is wiggled
+            }
+        });
+
+    });
+
+</script>
+<div>
+      <div class="container"><h1>Search for "star wars"</h1><div class="col-sm-3.5"><div class="preview"><a href="/Star-Wars-The-Clone-Wars-2008---2015-Full-Episodes"><img class="lazyload img-thumbnail rounded-circle" data-src="/images/seriesImages//2023/Star-Wars-The-Clone-Wars-2008--2015-Full-Episodes.jpg"  title="Star Wars: The Clone Wars (2008 - 2015)" style="width: 150px; height: 150px;"><br/>Star Wars: The Clone Wars (2008 - 2015)</a></div></div><div class="col-sm-3.5"><div class="preview"><a href="/Star-Wars-Rebels-2014--"><img class="lazyload img-thumbnail rounded-circle" data-src="/images/seriesImages//2215/Star-Wars-Rebels-2014-.jpg"  title="Star Wars Rebels (2014- )" style="width: 150px; height: 150px;"><br/>Star Wars Rebels (2014- )</a></div></div><div class="col-sm-3.5"><div class="preview"><a href="/Star-Wars-Rebels-Season-03"><img class="lazyload img-thumbnail rounded-circle" data-src="/images/seriesImages//1255/Star-Wars-Rebels-Season-03.jpg"  title="Star Wars Rebels Season 03" style="width: 150px; height: 150px;"><br/>Star Wars Rebels Season 03</a></div></div><div class="col-sm-3.5"><div class="preview"><a href="/Star-Wars-Forces-of-Destiny-2017--"><img class="lazyload img-thumbnail rounded-circle" data-src="/images/seriesImages//252/Star-Wars-Forces-of-Destiny-2017-.jpg"  title="Star Wars: Forces of Destiny (2017- )" style="width: 150px; height: 150px;"><br/>Star Wars: Forces of Destiny (2017- )</a></div></div><div class="col-sm-3.5"><div class="preview"><a href="/Lego-Star-Wars-Droid-Tales-2015--"><img class="lazyload img-thumbnail rounded-circle" data-src="/images/seriesImages//573/Lego-Star-Wars-Droid-Tales-2015-.jpg"  title="Lego Star Wars Droid Tales (2015– )" style="width: 150px; height: 150px;"><br/>Lego Star Wars Droid Tales (2015– )</a></div></div><div class="col-sm-3.5"><div class="preview"><a href="/Lego-Star-Wars-The-Resistance-Rises-2016--"><img class="lazyload img-thumbnail rounded-circle" data-src="/images/seriesImages//572/Lego-Star-Wars-The-Resistance-Rises-2016-.jpg"  title="Lego Star Wars The Resistance Rises (2016– )" style="width: 150px; height: 150px;"><br/>Lego Star Wars The Resistance Rises (2016– )</a></div></div><div class="col-sm-3.5"><div class="preview"><a href="/Lego-Star-Wars-The-Freemaker-Adventures-2016--"><img class="lazyload img-thumbnail rounded-circle" data-src="/images/seriesImages//1448/Lego-Star-Wars-The-Freemaker-Adventures-2016-.jpg"  title="Lego Star Wars: Themaker Adventures (2016– )" style="width: 150px; height: 150px;"><br/>Lego Star Wars: Themaker Adventures (2016– )</a></div></div><div class="col-sm-3.5"><div class="preview"><a href="/Beast-Wars-Transformers-1996-1999"><img class="lazyload img-thumbnail rounded-circle" data-src="/images/seriesImages//1190/Beast-Wars-Transformers-19961999.jpg"  title="Beast Wars: Transformers (1996–1999)" style="width: 150px; height: 150px;"><br/>Beast Wars: Transformers (1996–1999)</a></div></div><div class="col-sm-3.5"><div class="preview"><a href="/Instant-Star-2004-2008"><img class="lazyload img-thumbnail rounded-circle" data-src="/images/seriesImages//1802/Instant-Star-20042008.jpg"  title="Instant Star (2004–2008)" style="width: 150px; height: 150px;"><br/>Instant Star (2004–2008)</a></div></div><div class="col-sm-3.5"><div class="preview"><a href="/Captain-Star-1997-1998"><img class="lazyload img-thumbnail rounded-circle" data-src="/images/seriesImages//271/Captain-Star-19971998.jpg"  title="Captain Star (1997–1998)" style="width: 150px; height: 150px;"><br/>Captain Star (1997–1998)</a></div></div><div class="col-sm-3.5"><div class="preview"><a href="/King-Star-King-2013--"><img class="lazyload img-thumbnail rounded-circle" data-src="/images/seriesImages//113/King-Star-King-2013-.jpg"  title="King Star King (2013– )" style="width: 150px; height: 150px;"><br/>King Star King (2013– )</a></div></div><div class="col-sm-3.5"><div class="preview"><a href="/Star-vs-the-Forces-of-Evil-2015--"><img class="lazyload img-thumbnail rounded-circle" data-src="/images/seriesImages//2010/Star-vs-the-Forces-of-Evil-2015-.jpg"  title="Star vs. the Forces of Evil (2015– )" style="width: 150px; height: 150px;"><br/>Star vs. the Forces of Evil (2015– )</a></div></div><div class="col-sm-3.5"><div class="preview"><a href="/My-Dad-the-Rock-Star-2003--"><img class="lazyload img-thumbnail rounded-circle" data-src="/images/seriesImages//502/My-Dad-the-Rock-Star-2003-.jpg"  title="My Dad the Rock Star (2003– )" style="width: 150px; height: 150px;"><br/>My Dad the Rock Star (2003– )</a></div></div><div class="col-sm-3.5"><div class="preview"><a href="/Scooby039s-All-Star-Laff-A-Lympics-1977-1979"><img class="lazyload img-thumbnail rounded-circle" data-src="/images/seriesImages//452/Scooby039s-All-Star-LaffALympics-19771979.jpg"  title="Scooby&#039;s All Star Laff-A-Lympics (1977–1979)" style="width: 150px; height: 150px;"><br/>Scooby&#039;s All Star Laff-A-Lympics (1977–1979)</a></div></div><div class="col-sm-3.5"><div class="preview"><a href="/Bucky-O039Hare-and-the-Toad-Wars!-1991-1992"><img class="lazyload img-thumbnail rounded-circle" data-src="/images/seriesImages//1224/Bucky-O039Hare-and-the-Toad-Wars!-19911992.jpg"  title="Bucky O&#039;Hare and the Toad Wars! (1991–1992)" style="width: 150px; height: 150px;"><br/>Bucky O&#039;Hare and the Toad Wars! (1991–1992)</a></div></div><div class="col-sm-3.5"><div class="preview"><a href="/Saber-Rider-and-the-Star-Sheriffs-1987-1988"><img class="lazyload img-thumbnail rounded-circle" data-src="/images/seriesImages//465/Saber-Rider-and-the-Star-Sheriffs-19871988.jpg"  title="Saber Rider and the Star Sheriffs (1987–1988)" style="width: 150px; height: 150px;"><br/>Saber Rider and the Star Sheriffs (1987–1988)</a></div></div></div>

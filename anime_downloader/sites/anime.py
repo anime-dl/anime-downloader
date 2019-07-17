@@ -252,8 +252,10 @@ class AnimeEpisode:
         Title of the anime
     meta: dict
         metadata about the anime. [Can be empty]
-    QUALITIES: list
-        Possible qualities for the site
+    ep_no: string
+        Episode number/title of the episode
+    pretty_title: string
+        Pretty title of episode in format <animename>-<ep_no>
     """
     QUALITIES = []
     title = ''
@@ -309,6 +311,14 @@ class AnimeEpisode:
         return Config['siteconfig'][self.sitename]
 
     def source(self, index=0):
+        """
+        Get the source for episode
+
+        Returns
+        -------
+        `anime_downloader.extractors.base_extractor.BaseExtractor`
+            Extractor depending on the source.
+        """
         if not self._sources:
             self.get_data()
         try:
@@ -330,6 +340,18 @@ class AnimeEpisode:
 
     def download(self, force=False, path=None,
                  format='{anime_title}_{ep_no}', range_size=None):
+        """
+        Downloads episode. This might be removed in a future release.
+
+        Parameters
+        ----------
+        force: bool
+            Whether to force download or not.
+        path: string
+            Path to the directory/file where the file should be downloaded to.
+        format: string
+            The format of the filename if not provided.
+        """
         # TODO: Remove this shit
         logger.info('Downloading {}'.format(self.pretty_title))
         if format:

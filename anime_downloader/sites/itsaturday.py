@@ -3,7 +3,7 @@ from anime_downloader.sites import helpers
 
 class Itsaturday(Anime, sitename='itsaturday'):
     sitename = 'itsaturday'
-    DOMAIN = 'http://itsaturday.com'
+    DOMAIN = 'http://www.itsaturday.com'
 
     @classmethod
     def search(cls, query):
@@ -21,6 +21,10 @@ class Itsaturday(Anime, sitename='itsaturday'):
             for t in soup.select('a.link-group-item')
         ]
         return ret
+
+    def _scrape_metadata(self):
+        soup = helpers.soupify(helpers.get(self.url))
+        self.title = soup.select_one('h1.h3').text
 
 
 class ItsaturdayEpisode(AnimeEpisode, sitename='itsaturday'):
