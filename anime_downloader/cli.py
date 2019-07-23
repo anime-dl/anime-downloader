@@ -17,6 +17,8 @@ class CLIClass(click.MultiCommand):
         commands_dir = os.path.join(os.path.dirname(__file__), 'commands')
         rv = []
         for filename in os.listdir(commands_dir):
+            if filename == '__init__.py':
+                continue
             if filename.endswith('.py'):
                 rv.append(filename[:-3])
         rv.sort()
