@@ -177,12 +177,18 @@ class Anime:
     def __getitem__(self, index):
         episode_class = AnimeEpisode.subclasses[self.sitename]
         if isinstance(index, int):
-            ep_id = self._episode_urls[index]
+            try:
+                ep_id = self._episode_urls[index]
+            except IndexError as e:
+                raise RuntimeError("No episode found with index") from e
             return episode_class(ep_id[1], parent=self,
                                  ep_no=ep_id[0])
         elif isinstance(index, slice):
             anime = copy.deepcopy(self)
-            anime._episode_urls = anime._episode_urls[index]
+            try:
+                anime._episode_urls = anime._episode_urls[index]
+            except IndexError as e:
+                raise RuntimeError("No episode found with index") from e
             return anime
         return None
 
