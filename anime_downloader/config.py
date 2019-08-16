@@ -67,6 +67,10 @@ class _Config:
             for key in DEFAULT_CONFIG.keys():
                 update(key, self._CONFIG, DEFAULT_CONFIG)
             self.write()
+            # Expand environment variables in download_dir (#222)
+            download_dir = self._CONFIG['dl']['download_dir']
+            download_dir = os.path.expandvars(download_dir)
+            self._CONFIG['dl']['download_dir'] = download_dir
 
     @property
     def CONTEXT_SETTINGS(self):
