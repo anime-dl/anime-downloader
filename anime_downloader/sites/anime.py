@@ -192,6 +192,11 @@ class Anime:
             return anime
         return None
 
+    def __iter__(self):
+        episode_class = AnimeEpisode.subclasses[self.sitename]
+        for ep_id in self._episode_urls:
+            yield episode_class(ep_id[1], parent=self, ep_no=ep_id[0])
+
     def __repr__(self):
         return '''
 Site: {name}
