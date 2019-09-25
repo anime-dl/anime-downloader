@@ -42,6 +42,7 @@ NOTE: To download from sites marked `[cloudflare]`, anime-downloader has to be i
    usage/watch
    usage/config
    usage/sites
+   usage/api
    advanced/custom_site
    api/base_classes.rst
    api/helper_functions.rst

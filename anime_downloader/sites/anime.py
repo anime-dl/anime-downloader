@@ -43,7 +43,7 @@ class Anime:
     title = ''
     meta = dict()
     subclasses = {}
-    QUALITIES = []
+    QUALITIES = ['360p', '480p', '720p', '1080p']
 
     @classmethod
     def search(cls, query):
@@ -177,14 +177,25 @@ class Anime:
     def __getitem__(self, index):
         episode_class = AnimeEpisode.subclasses[self.sitename]
         if isinstance(index, int):
-            ep_id = self._episode_urls[index]
+            try:
+                ep_id = self._episode_urls[index]
+            except IndexError as e:
+                raise RuntimeError("No episode found with index") from e
             return episode_class(ep_id[1], parent=self,
                                  ep_no=ep_id[0])
         elif isinstance(index, slice):
             anime = copy.deepcopy(self)
-            anime._episode_urls = anime._episode_urls[index]
+            try:
+                anime._episode_urls = anime._episode_urls[index]
+            except IndexError as e:
+                raise RuntimeError("No episode found with index") from e
             return anime
         return None
+
+    def __iter__(self):
+        episode_class = AnimeEpisode.subclasses[self.sitename]
+        for ep_id in self._episode_urls:
+            yield episode_class(ep_id[1], parent=self, ep_no=ep_id[0])
 
     def __repr__(self):
         return '''
@@ -252,8 +263,10 @@ class AnimeEpisode:
         Title of the anime
     meta: dict
         metadata about the anime. [Can be empty]
-    QUALITIES: list
-        Possible qualities for the site
+    ep_no: string
+        Episode number/title of the episode
+    pretty_title: string
+        Pretty title of episode in format <animename>-<ep_no>
     """
     QUALITIES = []
     title = ''
@@ -309,6 +322,14 @@ class AnimeEpisode:
         return Config['siteconfig'][self.sitename]
 
     def source(self, index=0):
+        """
+        Get the source for episode
+
+        Returns
+        -------
+        `anime_downloader.extractors.base_extractor.BaseExtractor`
+            Extractor depending on the source.
+        """
         if not self._sources:
             self.get_data()
         try:
@@ -330,6 +351,18 @@ class AnimeEpisode:
 
     def download(self, force=False, path=None,
                  format='{anime_title}_{ep_no}', range_size=None):
+        """
+        Downloads episode. This might be removed in a future release.
+
+        Parameters
+        ----------
+        force: bool
+            Whether to force download or not.
+        path: string
+            Path to the directory/file where the file should be downloaded to.
+        format: string
+            The format of the filename if not provided.
+        """
         # TODO: Remove this shit
         logger.info('Downloading {}'.format(self.pretty_title))
         if format:

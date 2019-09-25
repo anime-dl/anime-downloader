@@ -37,6 +37,10 @@ class Anistream(Anime, sitename='anistream.xyz'):
         links = [v.attrs['href'] for v in version.select('a')][::-1]
         return links
 
+    def _scrape_metadata(self):
+        soup = helpers.soupify(helpers.get(self.url))
+        self.title = soup.select_one('.card-header > h1').text
+
 
 class AnistreamEpisode(AnimeEpisode, sitename='anistream.xyz'):
     def _get_sources(self):

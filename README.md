@@ -54,21 +54,12 @@ Yeah. Me too! That's why this tool exists.
 - AnimePahe
 - Anistream
 - Animeflv (Latin)
-- Masterani.me [cloudlfare] (site shut down)
-
-**Note:** To download from sites marked [cloudflare], anime-downloader has to be installed with cloudflare support (see below).
+- itsaturday.com
+- Masterani.me [cloudlfare] (site shut down**
 
 ## Installation
 
-You can install the stable release from PyPI:
-```bash
-$ pip install anime-downloader
-```
-
-To install the dev version:
-```bash
-$ pip install -U git+https://github.com/vn-ki/anime-downloader.git
-```
+[**Installation instructions***](https://github.com/vn-ki/anime-downloader/wiki/Installation)
 
 If you have trouble installing, see extended installation instructions [here](https://github.com/vn-ki/anime-downloader/wiki/Installation) or join the [discord server](https://discord.gg/Qn2nWGm) for help.
 

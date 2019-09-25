@@ -22,6 +22,7 @@ req_session = session.get_session()
 cf_session = cfscrape.create_scraper(sess=req_session)
 default_headers = get_random_header()
 temp_dir = tempfile.mkdtemp(prefix='animedl')
+logger.debug(f"HTML file temp_dir: {temp_dir}")
 
 
 def setup(func):
@@ -136,6 +137,7 @@ def soupify(res):
 
 def _log_response_body(res):
     import json
+    import pathlib
     file = tempfile.mktemp(dir=temp_dir)
     logger.debug(file)
     with open(file, 'w') as f:
@@ -151,7 +153,7 @@ def _log_response_body(res):
         data.append({
             'method': res.request.method,
             'url': res.url,
-            'file': '/' + file.split('/')[-1],
+            'file': pathlib.Path(file).name,
         })
     with open(data_file, 'w') as f:
         json.dump(data, f)

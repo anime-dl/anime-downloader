@@ -10,10 +10,25 @@ ALL_ANIME_SITES = [
     ('animepahe', 'animepahe', 'AnimePahe'),
     ('anistream', 'anistream', 'Anistream'),
     ('animeflv', 'animeflv', 'Animeflv'),
+    ('itsaturday', 'itsaturday', 'Itsaturday'),
 ]
 
 
 def get_anime_class(url):
+    """
+    Get anime class corresposing to url or name.
+    See :py:data:`anime_downloader.sites.ALL_ANIME_SITES` to get the possible anime sites.
+
+    Parameters
+    ----------
+    url: string
+        URL of the anime.
+
+    Returns
+    -------
+    :py:class:`anime_downloader.sites.anime.Anime`
+        Concrete implementation of :py:class:`anime_downloader.sites.anime.Anime`
+    """
     for site in ALL_ANIME_SITES:
         if site[1] in url:
             try:

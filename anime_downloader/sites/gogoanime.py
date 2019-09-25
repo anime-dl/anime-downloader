@@ -31,7 +31,7 @@ class GogoAnime(Anime, sitename='gogoanime'):
     sitename = 'gogoanime'
     QUALITIES = ['360p', '480p', '720p']
     _episode_list_url = 'https://www2.gogoanime.se//load-list-episode'
-    _search_api_url = 'https://api.watchanime.cc/site/loadAjaxSearch'
+    _search_api_url = 'https://ajax.apimovie.xyz/site/loadAjaxSearch'
 
     @classmethod
     def search(cls, query):

@@ -22,6 +22,9 @@ class BaseExtractor:
 
     @property
     def stream_url(self):
+        """
+        URL of the video stream.
+        """
         if not self._stream_url:
             self.get_data()
 

@@ -17,6 +17,8 @@ class CLIClass(click.MultiCommand):
         commands_dir = os.path.join(os.path.dirname(__file__), 'commands')
         rv = []
         for filename in os.listdir(commands_dir):
+            if filename == '__init__.py':
+                continue
             if filename.endswith('.py'):
                 rv.append(filename[:-3])
         rv.sort()
@@ -41,6 +43,8 @@ def cli(log_level):
 
     Download or watch your favourite anime
     """
+    if not util.check_in_path('aria2c'):
+        raise RuntimeError("Aria2 is not in path. Please follow installation instructions: https://github.com/vn-ki/anime-downloader/wiki/Installation")
     util.setup_logger(log_level)
 
 
