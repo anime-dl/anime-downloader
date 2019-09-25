@@ -51,6 +51,7 @@ class BaseDownloader:
         self.check_if_exists()
 
         self.start_time = time.time()
+        self.downloaded = 0
         self._download()
 
         self.post_process()

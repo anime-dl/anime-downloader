@@ -70,7 +70,7 @@ class GogoAnime(Anime, sitename='gogoanime'):
                                            params=params))
 
         epurls = list(
-            reversed(['https://www4.gogoanime.io'+a.get('href').strip()
+            reversed(['https://www2.gogoanime.se'+a.get('href').strip()
                       for a in soup.select('li a')])
         )
 
