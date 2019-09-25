@@ -26,6 +26,8 @@ class AnimeFreak(Anime, sitename='animefreak'):
 
         def _scrape_episodes(self):
             soup = helpers.soupify(helpers.get(self.url))
+            # Negative index for episode links in cases where full episode
+            # list is available or if not default to usual episode list
             episode_links = soup.select('ul.check-list')[-1].select('li a')
             return [a.get('href') for a in episode_links][::-1]
 
