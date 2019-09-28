@@ -55,6 +55,7 @@ Yeah. Me too! That's why this tool exists.
 - Anistream
 - Animeflv (Latin)
 - itsaturday.com
+- Animefreak
 - Masterani.me [cloudlfare] (site shut down**
 
 ## Installation
