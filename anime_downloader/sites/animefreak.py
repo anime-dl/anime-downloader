@@ -7,7 +7,7 @@ from anime_downloader.sites import helpers
 
 class AnimeFreak(Anime, sitename='animefreak'):
         sitename = 'animefreak'
-        search_url = f'https://{sitename}.tv/search/topSearch'
+        search_url = f'https://www.{sitename}.tv/search/topSearch'
         anime_url = 'https://www.animefreak.tv/watch'
         QUALITIES = ['360p', '480p', '720p', '1080p']
 
