@@ -39,14 +39,14 @@ class TwistMoe(Anime, sitename='twist.moe'):
         headers = {
         'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.46 Safari/537.36'
         }
-        first_time = helpers.soupify(helpers.get('https://twist.moe', allow_redirects=True, headers=headers))
-        js = first_time.select_one('script').text
-        js = "location = {'reload': ()=>true};document = {}; \n" + js + f"console.log(document.cookie)"
-        cookie = eval_in_node(js).strip()
-        with requests_cache.disabled():
-            headers['cookie'] = cookie
-            r = requests.get('https://twist.moe/', headers=headers)
-            soup = helpers.soupify(r)
+        soup = helpers.soupify(helpers.get('https://twist.moe/', allow_redirects=True, headers=headers))
+        if 'being redirected' in soup.text:
+            cookie = get_cookie(soup)
+            with requests_cache.disabled():
+                headers['cookie'] = cookie
+                # XXX: Can't use helpers.get here becuse that one is cached. Investigate
+                r = requests.get('https://twist.moe/', headers=headers)
+                soup = helpers.soupify(r)
         all_anime = soup.select_one('nav.series').select('li')
         animes = []
         for anime in all_anime:
@@ -111,3 +111,10 @@ def decrypt(encrypted, passphrase):
     iv = key_iv[32:]
     aes = AES.new(key, AES.MODE_CBC, iv)
     return unpad(aes.decrypt(encrypted[16:]))
+
+
+def get_cookie(soup):
+    js = soup.select_one('script').text
+    js = "location = {'reload': ()=>true};document = {}; \n" + js + f"console.log(document.cookie)"
+    cookie = eval_in_node(js).strip()
+    return cookie
