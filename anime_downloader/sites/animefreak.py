@@ -31,6 +31,10 @@ class AnimeFreak(Anime, sitename='animefreak'):
             episode_links = soup.select('ul.check-list')[-1].select('li a')
             return [a.get('href') for a in episode_links][::-1]
 
+        def _scrape_metadata(self):
+            soup = helpers.soupify(helpers.get(self.url))
+            self.title = soup.select_one('.anime-title').text
+
 
 class AnimeFreakEpisode(AnimeEpisode, sitename='animefreak'):
         def _get_sources(self):
