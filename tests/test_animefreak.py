@@ -17,7 +17,7 @@ def test_search():
 
 
 def test_title(anime):
-    assert anime.title == ''
+    assert anime.title == 'Shingeki no Kyojin'
 
 
 def test_length(anime):
