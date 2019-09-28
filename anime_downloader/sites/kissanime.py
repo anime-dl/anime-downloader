@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class KissanimeEpisode(AnimeEpisode, sitename='kissanime'):
     """KissanimeEpisode"""
-    _base_url = 'http://kissanime.ru'
+    _base_url = 'https://kissanime.ru'
     VERIFY_HUMAN = True
 
     def _get_sources(self):
@@ -27,13 +27,14 @@ class KissanimeEpisode(AnimeEpisode, sitename='kissanime'):
 class KissAnime(Anime, sitename='kissanime'):
     """KissAnime"""
     sitename = 'kissanime'
-    _referer = 'http://kissanime.ru'
+    domain = 'https://kissanime.ru'
+    _referer = 'https://kissanime.ru'
     QUALITIES = ['360p', '480p', '720p', '1080p']
 
     @classmethod
     def search(cls, query):
         soup = helpers.soupify(helpers.post(
-            'https://kissanime.ru/Search/Anime',
+            cls.domain + '/Search/Anime',
             data=dict(keyword=query),
             referer=cls._referer,
             cf=True
@@ -44,7 +45,7 @@ class KissAnime(Anime, sitename='kissanime'):
         if soup.title.text.strip().lower() != "find anime":
             return [SearchResult(
                 title=soup.find('a', 'bigChar').text,
-                url='https://kissanime.ru' +
+                url=cls.domain +
                     soup.find('a', 'bigChar').get('href'),
                 poster='',
             )]
@@ -55,7 +56,7 @@ class KissAnime(Anime, sitename='kissanime'):
         for res in searched:
             res = SearchResult(
                 title=res.text.strip(),
-                url='https://kissanime.ru'+res.find('a').get('href'),
+                url=cls.domain + res.find('a').get('href'),
                 poster='',
             )
             logger.debug(res)
@@ -65,7 +66,7 @@ class KissAnime(Anime, sitename='kissanime'):
 
     def _scrape_episodes(self):
         soup = helpers.soupify(helpers.get(self.url, cf=True))
-        ret = ['http://kissanime.ru'+str(a['href'])
+        ret = [self.domain + str(a['href'])
                for a in soup.select('table.listing a')]
         logger.debug('Unfiltered episodes : {}'.format(ret))
         filter_list = ['opening', 'ending', 'special', 'recap']
