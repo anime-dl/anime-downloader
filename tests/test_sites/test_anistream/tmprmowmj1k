@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="robots" content="index, follow" />
+
+    <title>Shingeki no Kyojin</title>
+
+    <!-- Bootstrap CSS & Fontawesome -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script defer src="https://use.fontawesome.com/releases/v5.0.0/js/all.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css?v=0.002">
+
+    <!-- Website Favicon -->
+    <link rel="icon" type="image/png" href="https://anistream.xyz/images/favicon.png">
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+    <script type="text/javascript">
+        var onPage = 'anime';
+    </script>
+</head>
+<body class="bg-dark">
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144177025-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144177025-1');
+</script>
+<script>
+(function(f, a, t, h, o, m){
+	a[h]=a[h]||function(){
+		(a[h].q=a[h].q||[]).push(arguments)
+	};
+	o=f.createElement('script'),
+	m=f.getElementsByTagName('script')[0];
+	o.async=1; o.src=t; o.id='fathom-script';
+	m.parentNode.insertBefore(o,m)
+})(document, window, '//depi.xyz/tracker.js', 'fathom');
+fathom('set', 'siteId', 'APBAV');
+fathom('trackPageview');
+</script><nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top mb-4">
+    <div class="container"><a href="/">
+    <a href="/" class="navbar-brand"><img src="https://anistream.xyz/images/anistream-cr.png" width="199" height="39"> </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/anime-list">Anime</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/anime-movies">Movies</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/ongoing-anime">Ongoing</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="https://ww5.anistream.xyz/animes/2500-piace-watashi-no-italian">Random</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="https://anistream.xyz/app.html">Mobile App</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="https://discord.gg/z9HSVvD">Discord</a>
+                </li>
+                            </ul>
+            <form id="search_form" class="form-inline my-2 my-lg-0" action="/search" method="get">
+                <input class="form-control mr-sm-2" name="term" type="search" id="search_value" placeholder="Search" aria-label="Search">
+                <button class="btn btn-success btn-sm my-2 my-sm-0 px-1 rounded-0" id="asbtn" type="submit"><i class="fas fa-search"></i> Anime</button>
+            </form>
+
+        </div>
+    </div>
+</nav>
+
+<div id="wrapper" class="container">
+    <div class="row">
+
+
+<meta property="og:image" content="https://cdn.animeapi.com/images/anime/1146.jpg">
+<meta name="description" content="Centuries ago, mankind was slaughtered to near extinction by monstrous humanoid creatures called titans, forcing humans to hide in fear behind enormous concentric walls. What makes these giants truly terrifying is that their taste for human flesh is not born out of hunger but what appears to be out of pleasure. To ensure their survival, the remnants of humanity began living within defensive barriers, resulting in one hundred years without a single titan encounter. However, that fragile calm is soon shattered when a colossal titan manages to breach the supposedly impregnable outer wall, reigniting the fight for survival against the man-eating abominations. After witnessing a horrific personal loss at the hands of the invading creatures, Eren Yeager dedicates his life to their eradication by enlisting into the Survey Corps, an elite military unit that combats the merciless humanoids outside the protection of the walls. Based on Hajime Isayama's award-winning manga, Shingeki no Kyojin follows Eren, along with his adopted sister Mikasa Ackerman and his childhood friend Armin Arlert, as they join the brutal war against the titans and race to discover a way of defeating them before the last walls are breached. [Written by MAL Rewrite]">
+<link rel="canonical" href="https://ww5.anistream.xyz/animes/1146-shingeki-no-kyojin" />
+<div class="col-sm-9">
+
+    <div class="card">
+        <div class="card-header">
+            <h1>Shingeki no Kyojin</h1>
+        </div>
+        <div class="card-body">
+            <img src="https://cdn.animeapi.com/images/anime/1146.jpg" align="left" class="mr-2">
+            <p><b>Title:</b> Shingeki no Kyojin</p><p><b>English:</b> Attack on Titan</p><p><b>Synonyms:</b> AoT</p><p><b>Japanese:</b> 進撃の巨人</p><p><b>Type:</b> Tv</p><p><b>Total:</b> 25</p><p><b>Status:</b> Completed</p><p><b>Aired:</b> Apr 7, 2013 to Sep 29, 2013</p><p><b>Premiered:</b> Spring 2013</p><p><b>Genres:</b> Action, Drama, Fantasy, Shounen, Super Power</p><p><b>Duration:</b> 24 min. per ep.</p><p><b>Rating:</b> R - 17+ (violence & profanity)</p>            <p><b>Summary:</b> Centuries ago, mankind was slaughtered to near extinction by monstrous humanoid creatures called titans, forcing humans to hide in fear behind enormous concentric walls. What makes these giants truly terrifying is that their taste for human flesh is not born out of hunger but what appears to be out of pleasure. To ensure their survival, the remnants of humanity began living within defensive barriers, resulting in one hundred years without a single titan encounter. However, that fragile calm is soon shattered when a colossal titan manages to breach the supposedly impregnable outer wall, reigniting the fight for survival against the man-eating abominations. After witnessing a horrific personal loss at the hands of the invading creatures, Eren Yeager dedicates his life to their eradication by enlisting into the Survey Corps, an elite military unit that combats the merciless humanoids outside the protection of the walls. Based on Hajime Isayama's award-winning manga, Shingeki no Kyojin follows Eren, along with his adopted sister Mikasa Ackerman and his childhood friend Armin Arlert, as they join the brutal war against the titans and race to discover a way of defeating them before the last walls are breached. [Written by MAL Rewrite]</p>
+
+                        <h3>Videos</h3>
+            <div class="row">
+                <div class="col-sm-6">
+                    <h5>Subbed</h5>
+                    <ul class="list-unstyled ">
+                        <li><a href='https://ww5.anistream.xyz/watch/132381-shingeki-no-kyojin-episode-25-english-sub'>Shingeki no Kyojin Episode 25 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/132096-shingeki-no-kyojin-episode-24-english-sub'>Shingeki no Kyojin Episode 24 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/131821-shingeki-no-kyojin-episode-23-english-sub'>Shingeki no Kyojin Episode 23 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/131468-shingeki-no-kyojin-episode-22-english-sub'>Shingeki no Kyojin Episode 22 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/131181-shingeki-no-kyojin-episode-21-english-sub'>Shingeki no Kyojin Episode 21 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/130904-shingeki-no-kyojin-episode-20-english-sub'>Shingeki no Kyojin Episode 20 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/130455-shingeki-no-kyojin-episode-19-english-sub'>Shingeki no Kyojin Episode 19 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/130103-shingeki-no-kyojin-episode-18-english-sub'>Shingeki no Kyojin Episode 18 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/129649-shingeki-no-kyojin-episode-17-english-sub'>Shingeki no Kyojin Episode 17 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/129209-shingeki-no-kyojin-episode-16-english-sub'>Shingeki no Kyojin Episode 16 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/128885-shingeki-no-kyojin-episode-15-english-sub'>Shingeki no Kyojin Episode 15 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/128558-shingeki-no-kyojin-episode-14-english-sub'>Shingeki no Kyojin Episode 14 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/127827-shingeki-no-kyojin-episode-13-english-sub'>Shingeki no Kyojin Episode 13 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/127378-shingeki-no-kyojin-episode-12-english-sub'>Shingeki no Kyojin Episode 12 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/127160-shingeki-no-kyojin-episode-11-english-sub'>Shingeki no Kyojin Episode 11 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/126897-shingeki-no-kyojin-episode-10-english-sub'>Shingeki no Kyojin Episode 10 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/126625-shingeki-no-kyojin-episode-9-english-sub'>Shingeki no Kyojin Episode 9 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/126303-shingeki-no-kyojin-episode-8-english-sub'>Shingeki no Kyojin Episode 8 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/126046-shingeki-no-kyojin-episode-7-english-sub'>Shingeki no Kyojin Episode 7 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/125859-shingeki-no-kyojin-episode-6-english-sub'>Shingeki no Kyojin Episode 6 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/125319-shingeki-no-kyojin-episode-5-english-sub'>Shingeki no Kyojin Episode 5 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/125094-shingeki-no-kyojin-episode-4-english-sub'>Shingeki no Kyojin Episode 4 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/123344-shingeki-no-kyojin-episode-3-english-sub'>Shingeki no Kyojin Episode 3 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/122990-shingeki-no-kyojin-episode-2-english-sub'>Shingeki no Kyojin Episode 2 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/120383-shingeki-no-kyojin-episode-1-english-sub'>Shingeki no Kyojin Episode 1 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/147520-shingeki-no-kyojin-ova-4-english-sub'>Shingeki No Kyojin OVA 4 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/153081-shingeki-no-kyojin-ova-5-english-sub'>Shingeki No Kyojin OVA 5 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/147519-shingeki-no-kyojin-ova-3-english-sub'>Shingeki No Kyojin OVA 3 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/142501-shingeki-no-kyojin-ova-2-english-sub'>Shingeki No Kyojin OVA 2 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/142229-shingeki-no-kyojin-special-6-english-sub'>Shingeki No Kyojin Special 6 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/140297-shingeki-no-kyojin-special-5-english-sub'>Shingeki No Kyojin Special 5 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/139947-shingeki-no-kyojin-special-4-english-sub'>Shingeki No Kyojin Special 4 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/136471-shingeki-no-kyojin-special-3-english-sub'>Shingeki No Kyojin Special 3 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/135574-shingeki-no-kyojin-ova-1-english-sub'>Shingeki No Kyojin OVA 1 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/131562-shingeki-no-kyojin-special-2-english-sub'>Shingeki No Kyojin Special 2 English Sub</a></li><li><a href='https://ww5.anistream.xyz/watch/130391-shingeki-no-kyojin-special-1-english-sub'>Shingeki No Kyojin Special 1 English Sub</a></li>                    </ul>
+                </div>
+                <div class="col-sm-6">
+                    <h5>Dubbed</h5>
+                    <ul class="list-unstyled">
+                        <li><a href='https://ww5.anistream.xyz/watch/132381-shingeki-no-kyojin-episode-25-english-dub'>Shingeki no Kyojin Episode 25 English Dub</a></li><li><a href='https://ww5.anistream.xyz/watch/132096-shingeki-no-kyojin-episode-24-english-dub'>Shingeki no Kyojin Episode 24 English Dub</a></li><li><a href='https://ww5.anistream.xyz/watch/131821-shingeki-no-kyojin-episode-23-english-dub'>Shingeki no Kyojin Episode 23 English Dub</a></li><li><a href='https://ww5.anistream.xyz/watch/131468-shingeki-no-kyojin-episode-22-english-dub'>Shingeki no Kyojin Episode 22 English Dub</a></li><li><a href='https://ww5.anistream.xyz/watch/131181-shingeki-no-kyojin-episode-21-english-dub'>Shingeki no Kyojin Episode 21 English Dub</a></li><li><a href='https://ww5.anistream.xyz/watch/130904-shingeki-no-kyojin-episode-20-english-dub'>Shingeki no Kyojin Episode 20 English Dub</a></li><li><a href='https://ww5.anistream.xyz/watch/130455-shingeki-no-kyojin-episode-19-english-dub'>Shingeki no Kyojin Episode 19 English Dub</a></li><li><a href='https://ww5.anistream.xyz/watch/130103-shingeki-no-kyojin-episode-18-english-dub'>Shingeki no Kyojin Episode 18 English Dub</a></li><li><a href='https://ww5.anistream.xyz/watch/129649-shingeki-no-kyojin-episode-17-english-dub'>Shingeki no Kyojin Episode 17 English Dub</a></li><li><a href='https://ww5.anistream.xyz/watch/129209-shingeki-no-kyojin-episode-16-english-dub'>Shingeki no Kyojin Episode 16 English Dub</a></li><li><a href='https://ww5.anistream.xyz/watch/128885-shingeki-no-kyojin-episode-15-english-dub'>Shingeki no Kyojin Episode 15 English Dub</a></li><li><a href='https://ww5.anistream.xyz/watch/128558-shingeki-no-kyojin-episode-14-english-dub'>Shingeki no Kyojin Episode 14 English Dub</a></li><li><a href='https://ww5.anistream.xyz/watch/127827-shingeki-no-kyojin-episode-13-english-dub'>Shingeki no Kyojin Episode 13 English Dub</a></li><li><a href='https://ww5.anistream.xyz/watch/127378-shingeki-no-kyojin-episode-12-english-dub'>Shingeki no Kyojin Episode 12 English Dub</a></li><li><a href='https://ww5.anistream.xyz/watch/127160-shingeki-no-kyojin-episode-11-english-dub'>Shingeki no Kyojin Episode 11 English Dub</a></li><li><a href='https://ww5.anistream.xyz/watch/126897-shingeki-no-kyojin-episode-10-english-dub'>Shingeki no Kyojin Episode 10 English Dub</a></li><li><a href='https://ww5.anistream.xyz/watch/126625-shingeki-no-kyojin-episode-9-english-dub'>Shingeki no Kyojin Episode 9 English Dub</a></li><li><a href='https://ww5.anistream.xyz/watch/126303-shingeki-no-kyojin-episode-8-english-dub'>Shingeki no Kyojin Episode 8 English Dub</a></li><li><a href='https://ww5.anistream.xyz/watch/126046-shingeki-no-kyojin-episode-7-english-dub'>Shingeki no Kyojin Episode 7 English Dub</a></li><li><a href='https://ww5.anistream.xyz/watch/125859-shingeki-no-kyojin-episode-6-english-dub'>Shingeki no Kyojin Episode 6 English Dub</a></li><li><a href='https://ww5.anistream.xyz/watch/125319-shingeki-no-kyojin-episode-5-english-dub'>Shingeki no Kyojin Episode 5 English Dub</a></li><li><a href='https://ww5.anistream.xyz/watch/125094-shingeki-no-kyojin-episode-4-english-dub'>Shingeki no Kyojin Episode 4 English Dub</a></li><li><a href='https://ww5.anistream.xyz/watch/123344-shingeki-no-kyojin-episode-3-english-dub'>Shingeki no Kyojin Episode 3 English Dub</a></li><li><a href='https://ww5.anistream.xyz/watch/122990-shingeki-no-kyojin-episode-2-english-dub'>Shingeki no Kyojin Episode 2 English Dub</a></li><li><a href='https://ww5.anistream.xyz/watch/120383-shingeki-no-kyojin-episode-1-english-dub'>Shingeki no Kyojin Episode 1 English Dub</a></li>                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="col-sm-3">
+
+    <div class="card">
+        <div class="card-header">Ongoing</div>
+        <div class="card-body">
+            <ul class="list-unstyled">
+                <li><small><a href='https://ww5.anistream.xyz/animes/3721-toaru-majutsu-no-index-iii'>Toaru Majutsu no Index III</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/3678-shingeki-no-kyojin-season-3'>Shingeki no Kyojin Season 3</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/3264-beyblade-burst-god'>Beyblade Burst God</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/3186-black-clover-tv'>Black Clover (TV)</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/3822-boogiepop-wa-warawanai-2019'>Boogiepop wa Warawanai (2019)</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/2568-boruto-naruto-next-generations'>Boruto: Naruto Next Generations</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/3586-cardfight-vanguard-2018'>Cardfight!! Vanguard (2018)</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/2013-dragon-ball-super'>Dragon Ball Super</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/3854-endro'>Endro~!</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/4006-fairy-gone'>Fairy Gone</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/3742-fairy-tail-final-series'>Fairy Tail: Final Series</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/3685-future-card-shin-buddyfight'>Future Card Shin Buddyfight</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/3662-happy-sugar-life'>Happy Sugar Life</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/3729-hinomaruzumou'>Hinomaruzumou</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/186-hunter-x-hunter-2011'>Hunter x Hunter (2011)</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/2229-jojo-no-kimyou-na-bouken-diamond-wa-kudakenai'>JoJo no Kimyou na Bouken: Diamond wa Kudakenai</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/3209-houseki-no-kuni-tv'>Houseki no Kuni (TV)</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/3853-mahou-shoujo-tokushusen-asuka'>Mahou Shoujo Tokushusen Asuka</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/3517-megalo-box'>Megalo Box</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/3838-meiji-tokyo-renka'>Meiji Tokyo Renka</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/3835-doukyonin-wa-hiza-tokidoki-atama-no-ue'>Doukyonin wa Hiza, Tokidoki, Atama no Ue.</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/47-naruto-shippuuden'>Naruto: Shippuuden</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/48-one-piece'>One Piece</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/2471-pokemon-sun-moon'>Pokemon Sun & Moon</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/3736-radiant'>Radiant</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/2273-re-zero-kara-hajimeru-isekai-seikatsu'>Re:Zero kara Hajimeru Isekai Seikatsu</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/3665-shoujo-kageki-revue-starlight'>Shoujo☆Kageki Revue Starlight</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/3839-rinshi-ekoda-chan'>Rinshi!! Ekoda-chan</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/3720-sword-art-online-alicization'>Sword Art Online: Alicization</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/3714-tensei-shitara-slime-datta-ken'>Tensei shitara Slime Datta Ken</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/3824-fukigen-na-mononokean-tsuzuki'>Fukigen na Mononokean Tsuzuki</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/3848-yakusoku-no-neverland'>Yakusoku no Neverland</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/3844-5-toubun-no-hanayome'>5-toubun no Hanayome</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/3808-tate-no-yuusha-no-nariagari'>Tate no Yuusha no Nariagari</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/3756-tsurune-kazemai-koukou-kyuudoubu'>Tsurune: Kazemai Koukou Kyuudoubu</a></small></li><li><small><a href='https://ww5.anistream.xyz/animes/2601-yu-gi-oh-vrains'>Yu☆Gi☆Oh! VRAINS</a></small></li>            </ul>
+        </div>
+    </div>
+
+</div>    </div>
+</div>
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+
+<script type='text/javascript' src="/js/controls.js?v=.0005"></script>
+<script type='text/javascript' src="/assets/js/pagination.min.js"></script>
+<footer class="footer">
+    <div class="container bg-light text-right">
+<center>
+        <span class="text-muted">©2019 <a href="https://cobaltmedia.xyz">COBALT MEDIA</a> All Rights Reserved.</span>
+	<a href="https://www.patreon.com/bePatron?u=19207269">Become A Supporter!</a>
+<script id="cid0020000219144324499" data-cfasync="false" async src="//st.chatango.com/js/gz/emb.js" style="width: 282px;height: 356px;">{"handle":"anistreamxyz","arch":"js","styles":{"a":"0084ef","b":100,"c":"FFFFFF","d":"FFFFFF","k":"0084ef","l":"0084ef","m":"0084ef","n":"FFFFFF","p":"10","q":"0084ef","r":100,"t":0,"pos":"br","cv":1,"cvbg":"0084ef","cvw":75,"cvh":30,"surl":0,"allowpm":0}}</script>
+</center>   
+ </div>
+</footer>
+</body>
+</html>

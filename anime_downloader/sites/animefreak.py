@@ -7,7 +7,7 @@ from anime_downloader.sites import helpers
 
 class AnimeFreak(Anime, sitename='animefreak'):
         sitename = 'animefreak'
-        search_url = f'https://{sitename}.tv/search/topSearch'
+        search_url = f'https://www.{sitename}.tv/search/topSearch'
         anime_url = 'https://www.animefreak.tv/watch'
         QUALITIES = ['360p', '480p', '720p', '1080p']
 
@@ -30,6 +30,10 @@ class AnimeFreak(Anime, sitename='animefreak'):
             # list is available or if not default to usual episode list
             episode_links = soup.select('ul.check-list')[-1].select('li a')
             return [a.get('href') for a in episode_links][::-1]
+
+        def _scrape_metadata(self):
+            soup = helpers.soupify(helpers.get(self.url))
+            self.title = soup.select_one('.anime-title').text
 
 
 class AnimeFreakEpisode(AnimeEpisode, sitename='animefreak'):

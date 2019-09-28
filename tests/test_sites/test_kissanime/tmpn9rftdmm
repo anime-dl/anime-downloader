@@ -1,0 +1,770 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="ctl00_Head1"><title>
+	
+    Attack on Titan (Dub)
+    anime | Watch
+    Attack on Titan (Dub)
+    anime online in high quality
+
+</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge" /><meta property="fb:admins" content="100006233868825" /><meta property="fb:app_id" content="130397647116314" />
+<script type="text/javascript" src="/Scripts/jquery17.min.js"></script>
+<!-- CSS -->
+<link href="/Content/css/tpl_style.css?v=7" rel="stylesheet" type="text/css" />
+<link href="/Content/css/upload-progress.css" rel="stylesheet" type="text/css">
+<link rel="shortcut icon" href="/Content/images/favicon.ico" type="image/x-icon" />
+<script type="text/javascript" src="/Scripts/google.js"></script>
+<!--[if IE 6]><link href="/Content/css/tpl_ie_6.css"  rel="stylesheet" type="text/css" media="screen" /><![endif]-->
+<!--[if IE 7]><link rel="stylesheet" type="text/css" href="/Content/css/tpl_ie_7.css" /><![endif]-->
+<!--[if IE 8]><link rel="stylesheet" type="text/css" href="/Content/css/tpl_ie_7.css" /><![endif]-->
+
+    <meta name="description" content="Watch online and download Attack on Titan (Dub) anime in high quality. Various formats from 240p to 720p HD (or even 1080p). HTML5 available for mobile devices" />
+    <meta name="keywords" content="Attack on Titan (Dub), Attack on Titan (Dub) anime, watch Attack on Titan (Dub) anime, Attack on Titan (Dub) watch online, watch Attack on Titan (Dub), Attack on Titan (Dub) anime watch, Attack on Titan (Dub) anime online, watch Attack on Titan (Dub) online, Attack on Titan (Dub) watch, Attack on Titan (Dub) html5, Attack on Titan (Dub) english sub, download Attack on Titan (Dub) anime, watch Attack on Titan (Dub) high quality, Attack on Titan (Dub) streaming, Attack on Titan (Dub) mobile episode" />
+    <link rel="image_src" href="https://kissanime.ru/Uploads/Etc/5-21-2019/4285435453556.jpg" />
+
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-1712467-41"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'UA-1712467-41');
+</script>
+
+</head>
+<body>
+
+    <div id="containerRoot">
+        <div id="head">
+            <h3>
+                
+<div style="position: relative; text-align: right; margin: -40px 46px 20px 0px; font: bold 13px Arial;">
+    
+    <div id="topHolderBox" style="width: 230px; height: 30px;">
+        <img src="https://kissanime.ru/Content/images/user-small.png" style="vertical-align: middle; margin-bottom: 5px">
+        Please <a href="https://kissanime.ru/Login">login</a>
+        or <a href="https://kissanime.ru/Register">register</a>
+    </div>
+    
+</div>
+
+                <div id="search" style="position: relative">
+                    <form id="formSearch" method="post">
+                    <p>
+                        <input style="width: 250px" id="keyword" name="keyword"
+                            value="" class="text" autocomplete="off" />
+                        <input id="imgSearch" type="image" src="/Content/images/search.png"
+                            class="button" onclick="return false;" />
+                    </p>
+                    <div id="result_box" style="display: none; left: 57px; margin-top: -3px; max-height: 300px; overflow-y: auto; overflow-x: hidden;">
+                    </div>
+                    <div style="float: left; width: 210px; text-align: left; margin-left: 58px;">
+                        
+                    </div>
+                    <div style="margin: 10px 48px 10px 0">
+                        <a href="/AdvanceSearch">
+                            <img src="/Content/images/read.png"
+                                width="16px" border="0" style="vertical-align: middle" />&nbsp;&nbsp;Advanced
+                            Search</a>
+                    </div>
+                    </form>
+                </div>
+                <script type="text/javascript">
+                    $('#imgSearch').click(function () {
+                        Submit();
+                    });
+
+                    var delay = (function () {
+                        var timer = 0;
+                        return function (callback, ms) {
+                            clearTimeout(timer);
+                            timer = setTimeout(callback, ms);
+                        };
+                    })();
+
+                    $('#keyword').keyup(function () {
+                        delay(function () {
+                            Suggest();
+                        }, 500);
+                    });
+
+                    $('#selectSearch').change(function () {
+                        Suggest();
+                    });
+
+                    $("#selectSearch option").each(function () {
+                        var url = location.href;
+                        if (url.indexOf($(this).attr('value')) != -1)
+                            $(this).attr("selected", "selected");
+                    });
+
+                    function Submit() {
+                        if ($.trim($('#keyword').val()).length < 2) {
+                            $('#keyword').blur();
+                            alert('Keyword must be more than one character!');
+                        }
+                        else {
+                            $("#formSearch").attr('action', "/Search/Anime");
+                            $("#formSearch").submit();
+                        }
+                    }
+
+                    function Suggest() {
+                        //return;
+
+                        var keyword = $.trim($('#keyword').val());
+                        if (keyword != "" && $.trim($('#keyword').val()).length > 2) {
+                            $('#result_box').html("<span id='loader'></span>");
+                            $('#result_box').css('display', 'block');
+                            $.ajax(
+                            {
+                                type: "POST",
+                                url: "/Search/SearchSuggestx",
+                                data: "type=Anime" + '&keyword=' + keyword,
+                                success: function (message) {
+                                    if (message != "") {
+                                        message += '<a href="#" onclick="return false;">---------------</a>';
+                                        message += '<a href="#" onclick="return false;">PRESS ENTER TO VIEW MORE...</a>';
+
+                                        $('#result_box').html(message);
+                                    }
+                                    else {
+                                        $('#result_box').html('<a href="#" onclick="return false;">PRESS ENTER TO SEARCH...</a>');
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                            $('#result_box').html('');
+                            $('#result_box').css('display', 'none');
+                        }
+                    }
+                </script>
+            </h3>
+            <h1 style="background: transparent url(/Content/images/logo.png?id=18) no-repeat;">
+                <a href="/" title="KissAnime.ru - High quality anime online"
+                    class="logo">KissAnime.ru</a></h1>
+        </div>        
+        <!-- end div head -->
+        <div class="clear">
+        </div>
+        <div id="headnav">
+            
+<div id="navbar">
+    <div id="navcontainer">
+        <ul>
+            <li id="liHome"><a href="https://kissanime.ru">Home</a></li>
+            <li id="liDS"><a href="https://kissanime.ru/AnimeList">Anime
+                list</a></li>
+            <li id="liReportError"><a href="/Message/ReportError">Report/Request</a></li>            
+            <li id="liChatRoom"><a target="_blank" href="https://discord.gg/eCzUxNB">
+                Forum</a></li>
+            <li id="liReadManga"><a target="_blank" href="http://kissmanga.com">Read Manga</a></li>
+            <li id="liGame"><a target="_blank" href="http://novelplanet.com">Read Novel</a></li>
+            <li id="liWatchDrama"><a target="_blank" href="http://kissasian.sh">Watch Drama</a></li>
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+    var path = 'Anime';
+    if (path == 'Home')
+        $('#liHome a').attr('id', 'currentTab');
+    else if (path == 'Anime' || path == 'Genre' || path == 'Group')
+        $('#liDS a').attr('id', 'currentTab');
+    else if (document.URL.indexOf('GoPremium') >= 0)
+        $('#liGoPremium a').attr('id', 'currentTab');
+    else if (document.URL.indexOf('FreeDownload') >= 0)
+        $('#liDS a').attr('id', 'currentTab');
+    else if (document.URL.indexOf('FAQ') >= 0)
+        $('#liFAQ a').attr('id', 'currentTab');
+    else if (path == 'Error')
+        $('#liReport a').attr('id', 'currentTab');
+    else if (document.URL.indexOf('ChatRoom') >= 0)
+        $('#liChatRoom a').attr('id', 'currentTab');
+    else
+        $('#navcontainer a[href*="' + path + '"]').attr('id', 'currentTab');
+</script>
+
+    <div id="navsubbar">
+        <p>
+            <a href="/AnimeList">Sort by alphabet</a>| <a href="/AnimeList/MostPopular">Sort by
+                popularity</a> | <a href="/AnimeList/LatestUpdate">Latest update</a> | <a href="/AnimeList/Newest">
+                    New anime</a>
+        </p>
+    </div>
+
+        </div>        
+        <!-- end div headnav -->
+        
+    
+    <div id="container">
+        <div id="leftside">
+            <div class="bigBarContainer">
+                <div class="barTitle">
+                    Attack on Titan (Dub)
+                    information
+                </div>
+                <div class="barContent">
+                    <div class="arrow-general">
+                        &nbsp;</div>
+                    <div>
+                        <a Class="bigChar" href="/Anime/Shingeki-no-Kyojin-Dub">Attack on Titan (Dub)</a>
+                        
+                        <p>
+                            <span class="info">Other name:</span>&nbsp;<a href="/Anime/Shingeki-no-Kyojin-Dub" title="Shingeki no Kyojin anime online">Shingeki no Kyojin</a>; <a href="/Anime/Shingeki-no-Kyojin-Dub" title="Shingeki no Kyoujin anime online">Shingeki no Kyoujin</a>; <a href="/Anime/Shingeki-no-Kyojin-Dub" title="進撃の巨人 anime online">進撃の巨人</a>
+                        </p>
+                        
+                        <p>
+                            <span class="info">Genres:</span>&nbsp;<a href="/Genre/Action" class="dotUnder" title="Plays out mainly through a clash of physical forces. Frequently these  stories have fast cuts, tough characters making quick decisions and  usually a beautiful girl nearby. Anything quick and most likely a thin  storyline.">Action</a><span class="info">,</span> <a href="/Genre/Drama" class="dotUnder" title="Anime that often show life or characters through conflict and emotions.  In general, the different parts of the story tend to form a whole that  is greater than the sum of the parts. In other words, the story has a  message that is bigger than just the story line itself.">Drama</a><span class="info">,</span> <a href="/Genre/Dub" class="dotUnder" title="English voices, no subtitle.">Dub</a><span class="info">,</span> <a href="/Genre/Fantasy" class="dotUnder" title="Anime that are set in a mythical world quite different from modern-day  Earth. Frequently this world has magic and/or mythical creatures such as  dragons and unicorns. These stories are sometimes based on real world  legends and myths. Frequently fantasies describe tales featuring magic,  brave knights, damsels in distress, and/or quests.">Fantasy</a><span class="info">,</span> <a href="/Genre/Shounen" class="dotUnder" title="In the context of manga and associated media, the word shounen refers to a male audience roughly between the ages of 10 and 18. In Japanese, the word means simply &#39;young male&#39;, and has no anime/manga-related connotations at all. It does not comprise a style or a genre per se, but rather indicates the publisher`s intended target demographic. Still, while not mandatory, some easily identifiable traits are generally common to shounen works, such as: high-action, often humorous plots featuring male protagonists; camaraderie between male friends; sports teams and fighting squads (usually coupled with the aforementioned camaraderie); unrealistically attractive female characters (see fanservice). Additionally, the art style of shounen tends to be less flowery than that of shoujo and the plots tend to be less complex than seinen, but neither of those is a requirement.
+Anime that are targeted towards the &#39;young boy&#39; market. The usual topics for this involve fighting, friendship and sometimes super powers.">Shounen</a><span class="info">,</span> <a href="/Genre/Super-Power" class="dotUnder" title="Anime whose main character(s) have powers beyond normal humans. Often it  looks like magic, but can&#39;t really be considered magic; usually  ki-attacks, flying or superhuman strength.">Super Power</a><span class="info">,</span> <a href="/Genre/Thriller" class="dotUnder" title="Thriller">Thriller</a>
+                        </p>
+                        
+                        <p>
+                            <span class="info">Date aired:</span>&nbsp;Apr 7, 2013 to Sep 28, 2013
+                        </p>
+                        
+                        <p>
+                            <span class="info">Status:</span>&nbsp;Completed
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="info">Views:</span>&nbsp;19,418,972&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            
+<span id="spanBookmark">
+    <img src="/Content/images/plus.png" style="vertical-align: middle; margin-bottom: 5px">
+    <a id="btnRegOrLogin" onclick="return false;" href="#">Bookmark</a> </span>
+<script type="text/javascript">
+    $('#btnRegOrLogin').click(function () {
+        $('#spanBookmark').html('<img src="/Content/images/user-small.png" style="vertical-align: middle; margin-bottom: 5px"> Please <a href="/Login">Login</a> or <a href="/Register">Register</a>');
+    });
+</script>
+
+                        </p>
+                        <p>
+                            <span class="info">Summary:</span>
+                            <p>Several hundred years ago, humans were nearly exterminated by giants. Giants are typically several stories tall, seem to have no intelligence, devour human beings and, worst of all, seem to do it for the pleasure rather than as a food source. A small percentage of humanity survived by walling themselves in a city protected by extremely high walls, even taller than the biggest of giants.<br /><br />Flash forward to the present and the city has not seen a giant in over 100 years. Teenage boy Eren and his foster sister Mikasa witness something horrific as the city walls are destroyed by a super giant that appears out of thin air. As the smaller giants flood the city, the two kids watch in horror as their mother is eaten alive. Eren vows that he will murder every single giant and take revenge for all of mankind.</p>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+
+<center>
+
+<div id="divAds" style="text-align: center; overflow: hidden; width: 730px">
+
+<iframe sandbox="allow-same-origin allow-scripts allow-popups allow-forms" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" src="/ads/madads.aspx" width="728px" height="90px">
+</iframe>
+
+</div>
+
+<script type="text/javascript">
+    var myTimeout;
+    $('#divAds').mouseenter(function () {
+        myTimeout = setTimeout(function () {
+            $("#divAds").css("overflow", "visible");
+        }, 500);
+    }).mouseleave(function () {
+        $("#divAds").css("overflow", "hidden");
+        clearTimeout(myTimeout);
+    });
+</script>
+
+</center>
+<br>
+
+
+
+            <div class="bigBarContainer">
+                <div class="barTitle">
+                    Episodes
+                </div>
+                <div class="barContent episodeList">
+                    <div class="arrow-general">
+                        &nbsp;</div>
+                    <div>
+                        
+<div style="float: left; padding-right: 10px">
+    <a target="_blank" href="https://kissanime.ru/RSS/Anime/Shingeki-no-Kyojin-Dub">
+        <img border="0" title="RSS latest episodes of anime" src="../../Content/images/icon_rss.png" /></a>
+</div>
+&nbsp;
+<div style="float: left;">
+    <div style="display:inline-table">
+        <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-4fb6029949d99e27"
+            async="async"></script>
+        <div class="addthis_native_toolbox">
+        </div>
+    </div>
+</div>
+
+                        <div class="clear">
+                            &nbsp;</div>
+                        
+<div style="text-align: center; padding: 10px 0px 10px 0px;" id="adsIfrme1">
+    <iframe sandbox="allow-same-origin allow-scripts allow-popups allow-forms" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" src="/ads/madads300.aspx" width="300px" height="250px">
+</iframe>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<iframe sandbox="allow-same-origin allow-scripts allow-popups allow-forms" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" src="/ads/madads300-2.aspx" width="300px" height="250px">
+</iframe>
+</div>
+
+
+
+                        <div class="clear">
+                            &nbsp;</div>
+                        
+                        <div class="clear">
+                            &nbsp;</div>
+                        <table class="listing">
+                            <tr>
+                                <th width="85%">
+                                    Episode name
+                                </th>
+                                <th width="15%">
+                                    Day Added
+                                </th>
+                            </tr>
+                            <tr style="height: 10px">
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <a  href="/Anime/Shingeki-no-Kyojin-Dub/Episode-025?id=80337"
+                                        title="Watch anime Attack on Titan (Dub) Episode 025 online in high quality">
+                                        Attack on Titan (Dub) Episode 025</a>
+                                </td>
+                                <td>
+                                    9/14/2014
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <a  href="/Anime/Shingeki-no-Kyojin-Dub/Episode-024?id=80336"
+                                        title="Watch anime Attack on Titan (Dub) Episode 024 online in high quality">
+                                        Attack on Titan (Dub) Episode 024</a>
+                                </td>
+                                <td>
+                                    9/14/2014
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <a  href="/Anime/Shingeki-no-Kyojin-Dub/Episode-023?id=80335"
+                                        title="Watch anime Attack on Titan (Dub) Episode 023 online in high quality">
+                                        Attack on Titan (Dub) Episode 023</a>
+                                </td>
+                                <td>
+                                    9/14/2014
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <a  href="/Anime/Shingeki-no-Kyojin-Dub/Episode-022?id=80334"
+                                        title="Watch anime Attack on Titan (Dub) Episode 022 online in high quality">
+                                        Attack on Titan (Dub) Episode 022</a>
+                                </td>
+                                <td>
+                                    9/14/2014
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <a  href="/Anime/Shingeki-no-Kyojin-Dub/Episode-021?id=80333"
+                                        title="Watch anime Attack on Titan (Dub) Episode 021 online in high quality">
+                                        Attack on Titan (Dub) Episode 021</a>
+                                </td>
+                                <td>
+                                    9/14/2014
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <a  href="/Anime/Shingeki-no-Kyojin-Dub/Episode-020?id=80332"
+                                        title="Watch anime Attack on Titan (Dub) Episode 020 online in high quality">
+                                        Attack on Titan (Dub) Episode 020</a>
+                                </td>
+                                <td>
+                                    9/14/2014
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <a  href="/Anime/Shingeki-no-Kyojin-Dub/Episode-019?id=80331"
+                                        title="Watch anime Attack on Titan (Dub) Episode 019 online in high quality">
+                                        Attack on Titan (Dub) Episode 019</a>
+                                </td>
+                                <td>
+                                    9/14/2014
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <a  href="/Anime/Shingeki-no-Kyojin-Dub/Episode-018?id=80330"
+                                        title="Watch anime Attack on Titan (Dub) Episode 018 online in high quality">
+                                        Attack on Titan (Dub) Episode 018</a>
+                                </td>
+                                <td>
+                                    9/14/2014
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <a  href="/Anime/Shingeki-no-Kyojin-Dub/Episode-017?id=80042"
+                                        title="Watch anime Attack on Titan (Dub) Episode 017 online in high quality">
+                                        Attack on Titan (Dub) Episode 017</a>
+                                </td>
+                                <td>
+                                    9/7/2014
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <a  href="/Anime/Shingeki-no-Kyojin-Dub/Episode-016?id=79735"
+                                        title="Watch anime Attack on Titan (Dub) Episode 016 online in high quality">
+                                        Attack on Titan (Dub) Episode 016</a>
+                                </td>
+                                <td>
+                                    8/25/2014
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <a  href="/Anime/Shingeki-no-Kyojin-Dub/Episode-015?id=79517"
+                                        title="Watch anime Attack on Titan (Dub) Episode 015 online in high quality">
+                                        Attack on Titan (Dub) Episode 015</a>
+                                </td>
+                                <td>
+                                    8/18/2014
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <a  href="/Anime/Shingeki-no-Kyojin-Dub/Episode-014?id=79335"
+                                        title="Watch anime Attack on Titan (Dub) Episode 014 online in high quality">
+                                        Attack on Titan (Dub) Episode 014</a>
+                                </td>
+                                <td>
+                                    8/11/2014
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <a  href="/Anime/Shingeki-no-Kyojin-Dub/Episode-013?id=68261"
+                                        title="Watch anime Attack on Titan (Dub) Episode 013 online in high quality">
+                                        Attack on Titan (Dub) Episode 013</a>
+                                </td>
+                                <td>
+                                    5/26/2014
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <a  href="/Anime/Shingeki-no-Kyojin-Dub/Episode-012?id=68260"
+                                        title="Watch anime Attack on Titan (Dub) Episode 012 online in high quality">
+                                        Attack on Titan (Dub) Episode 012</a>
+                                </td>
+                                <td>
+                                    5/26/2014
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <a  href="/Anime/Shingeki-no-Kyojin-Dub/Episode-011?id=68259"
+                                        title="Watch anime Attack on Titan (Dub) Episode 011 online in high quality">
+                                        Attack on Titan (Dub) Episode 011</a>
+                                </td>
+                                <td>
+                                    5/26/2014
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <a  href="/Anime/Shingeki-no-Kyojin-Dub/Episode-010?id=68258"
+                                        title="Watch anime Attack on Titan (Dub) Episode 010 online in high quality">
+                                        Attack on Titan (Dub) Episode 010</a>
+                                </td>
+                                <td>
+                                    5/26/2014
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <a  href="/Anime/Shingeki-no-Kyojin-Dub/Episode-009?id=68257"
+                                        title="Watch anime Attack on Titan (Dub) Episode 009 online in high quality">
+                                        Attack on Titan (Dub) Episode 009</a>
+                                </td>
+                                <td>
+                                    5/26/2014
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <a  href="/Anime/Shingeki-no-Kyojin-Dub/Episode-008?id=68256"
+                                        title="Watch anime Attack on Titan (Dub) Episode 008 online in high quality">
+                                        Attack on Titan (Dub) Episode 008</a>
+                                </td>
+                                <td>
+                                    5/26/2014
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <a  href="/Anime/Shingeki-no-Kyojin-Dub/Episode-007?id=68255"
+                                        title="Watch anime Attack on Titan (Dub) Episode 007 online in high quality">
+                                        Attack on Titan (Dub) Episode 007</a>
+                                </td>
+                                <td>
+                                    5/26/2014
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <a  href="/Anime/Shingeki-no-Kyojin-Dub/Episode-006?id=68254"
+                                        title="Watch anime Attack on Titan (Dub) Episode 006 online in high quality">
+                                        Attack on Titan (Dub) Episode 006</a>
+                                </td>
+                                <td>
+                                    5/26/2014
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <a  href="/Anime/Shingeki-no-Kyojin-Dub/Episode-005?id=68253"
+                                        title="Watch anime Attack on Titan (Dub) Episode 005 online in high quality">
+                                        Attack on Titan (Dub) Episode 005</a>
+                                </td>
+                                <td>
+                                    5/26/2014
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <a  href="/Anime/Shingeki-no-Kyojin-Dub/Episode-004?id=68252"
+                                        title="Watch anime Attack on Titan (Dub) Episode 004 online in high quality">
+                                        Attack on Titan (Dub) Episode 004</a>
+                                </td>
+                                <td>
+                                    5/26/2014
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <a  href="/Anime/Shingeki-no-Kyojin-Dub/Episode-003?id=67800"
+                                        title="Watch anime Attack on Titan (Dub) Episode 003 online in high quality">
+                                        Attack on Titan (Dub) Episode 003</a>
+                                </td>
+                                <td>
+                                    5/18/2014
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <a  href="/Anime/Shingeki-no-Kyojin-Dub/Episode-002?id=67546"
+                                        title="Watch anime Attack on Titan (Dub) Episode 002 online in high quality">
+                                        Attack on Titan (Dub) Episode 002</a>
+                                </td>
+                                <td>
+                                    5/11/2014
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <a  href="/Anime/Shingeki-no-Kyojin-Dub/Episode-001?id=67457"
+                                        title="Watch anime Attack on Titan (Dub) Episode 001 online in high quality">
+                                        Attack on Titan (Dub) Episode 001</a>
+                                </td>
+                                <td>
+                                    5/4/2014
+                                </td>
+                            </tr>
+                            
+                        </table>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="clear2">
+                &nbsp;</div>
+            <div class="clear2">
+                &nbsp;</div>
+            <div class="bigBarContainer">
+                <div class="barTitle">
+                    Comments
+                </div>
+                <div class="barContent episodeList">
+                    <div class="arrow-general">
+                        &nbsp;</div>
+                    <div>
+                        <div style="color: #d5f406">
+                            - Don't link to other manga/anime sites/any kind of ads.<br />
+                            - Don't spoil content of next episodes.
+                        </div>
+                        <div id="disqus_thread">
+                        </div>
+                        
+                        <script type="text/javascript">
+                            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+                            var disqus_shortname = 'kissanime'; // required: replace example with your forum shortname
+                            var disqus_url = 'https://kissanime.to/Anime/Shingeki-no-Kyojin-Dub';
+
+                            /* * * DON'T EDIT BELOW THIS LINE * * */
+                            (function () {
+                                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                            })();
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="rightside">
+            <div class="rightBox">
+                <div class="barTitle">
+                    Cover</div>
+                <div class="barContent">
+                    <div class="arrow-general">
+                        &nbsp;</div>
+                    <div style="text-align: center">
+                        <img width="190px" height="250px" src="https://kissanime.ru/Uploads/Etc/5-21-2019/4285435453556.jpg" />
+                    </div>
+                </div>
+            </div>
+            <div class="clear2">
+            </div>
+            <div class="rightBox">
+                <div class="barTitle">
+                    Related Links</div>
+                <div class="barContent">
+                    <div class="arrow-general">
+                        &nbsp;</div>
+                    
+                    <div>
+                        <img src="../../Content/images/subdub.png" />&nbsp;<a href="/Anime/Shingeki-no-Kyojin"><b>Attack on Titan (Sub)</b></a><div class="clear" style="height:5px"></div><img src="../../Content/images/bullet.png" />&nbsp;<a href="/Anime/Shingeki-no-Kyojin-1080p">Attack on Titan (Sub) (1080p)</a><div class="clear" style="height:5px"></div><img src="../../Content/images/bullet.png" />&nbsp;<a href="/Anime/Shingeki-no-Kyojin-2nd-Season-Dub">Attack on Titan 2 (Dub)</a><div class="clear" style="height:5px"></div><img src="../../Content/images/bullet.png" />&nbsp;<a href="/Anime/Shingeki-no-Kyojin-2nd-Season">Attack on Titan 2 (Sub)</a><div class="clear" style="height:5px"></div><img src="../../Content/images/bullet.png" />&nbsp;<a href="/Anime/Attack-on-Titan-3-Dub">Attack on Titan 3 (Dub)</a><div class="clear" style="height:5px"></div><img src="../../Content/images/bullet.png" />&nbsp;<a href="/Anime/Shingeki-no-Kyojin-Season-3">Attack on Titan 3 (Sub)</a><div class="clear" style="height:5px"></div><img src="../../Content/images/bullet.png" />&nbsp;<a href="/Anime/Attack-on-Titan-3-Part-2-Dub">Attack on Titan 3 Part 2 (Dub)</a><div class="clear" style="height:5px"></div><img src="../../Content/images/bullet.png" />&nbsp;<a href="/Anime/Shingeki-no-Kyojin-Season-3-Part-2">Attack on Titan 3 Part 2 (Sub)</a><div class="clear" style="height:5px"></div><img src="../../Content/images/bullet.png" />&nbsp;<a href="/Anime/Shingeki-no-Kyojin-Movie-1-Guren-no-Yumiya">Attack on Titan Movie 1: Crimson Bow and Arrow</a><div class="clear" style="height:5px"></div><img src="../../Content/images/bullet.png" />&nbsp;<a href="/Anime/Shingeki-no-Kyojin-Movie-2-Jiyuu-no-Tsubasa">Attack on Titan Movie 2: Wings of Freedom</a><div class="clear" style="height:5px"></div><img src="../../Content/images/bullet.png" />&nbsp;<a href="/Anime/Shingeki-no-Kyojin-Movie-3-Kakusei-no-Houkou">Attack on Titan Movie 3: The Roar of Awakening</a><div class="clear" style="height:5px"></div><img src="../../Content/images/bullet.png" />&nbsp;<a href="/Anime/Shingeki-no-Kyojin-Ilse-no-Techou">Attack on Titan OVA</a><div class="clear" style="height:5px"></div><img src="../../Content/images/bullet.png" />&nbsp;<a href="/Anime/Shingeki-no-Kyojin-Picture-Drama">Attack on Titan Picture Drama</a><div class="clear" style="height:5px"></div><img src="../../Content/images/bullet.png" />&nbsp;<a href="/Anime/Shingeki-Kyojin-Chuugakkou-Dub">Attack on Titan: Junior High (Dub)</a><div class="clear" style="height:5px"></div><img src="../../Content/images/bullet.png" />&nbsp;<a href="/Anime/Shingeki-Kyojin-Chuugakkou">Attack on Titan: Junior High (Sub)</a><div class="clear" style="height:5px"></div><img src="../../Content/images/bullet.png" />&nbsp;<a href="/Anime/Shingeki-no-Kyojin-Lost-Girls">Attack on Titan: Lost Girls</a><div class="clear" style="height:5px"></div><img src="../../Content/images/bullet.png" />&nbsp;<a href="/Anime/Shingeki-no-Kyojin-Kuinaki-Sentaku">Attack on Titan: No Regrets</a><div class="clear" style="height:5px"></div><div class='line'></div><div class="clear" style="height:5px"></div><img src="../../Content/images/bullet.png" />&nbsp;<a href="/Anime/Shingeki-no-Kyojin-Dub/Episode-026" title="Watch Attack on Titan (Dub) Episode 026 online">Attack on Titan (Dub)  026</a><div class="clear" style="height:5px"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="clear2">
+            </div>
+            <div>
+                
+<div style="text-align: center">
+    <iframe sandbox="allow-same-origin allow-scripts allow-popups allow-forms" id="adsIfrme3" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"
+        src="/ads/madads160.aspx" width="160px" height="600px">
+    </iframe>
+</div>
+
+<script type="text/javascript">
+
+        function AddCloseButton(id) {
+            var elem = $('#' + id);
+            if (elem.position() != null) {
+                var top = elem.position().top + elem.height();
+                var left = elem.position().left + elem.width() - 24;
+                elem.after('<div class="divCloseBut" style="z-index:1000; width:20px; text-align:left;position:absolute; left:' + left + 'px; top: ' + top + 'px"><a href="#" onclick="$(\'#' + id + '\').remove();$(this).remove(); InitCloseButton(); return false;">Hide</a></div>');
+            }
+        }
+
+        function InitCloseButton() {
+            $('.divCloseBut').remove();
+            AddCloseButton('adsIfrme1');
+			AddCloseButton('adsIfrme3');
+        }
+        setTimeout('InitCloseButton()', 5000);
+
+</script>
+
+            </div>
+            <div class="clear2">
+            </div>
+        </div>
+    </div>
+    <div style="height: 30px" class="clear">
+        &nbsp;</div>
+
+        <!-- end div container -->
+        <div class="clear">
+            &nbsp;</div>
+        <div class="clear">
+            &nbsp;</div>
+        <div class="clear">
+            &nbsp;</div>
+        
+<script type="text/javascript" src="//ads.2mdnsys.com/qcad.php?did=42&unit=59df4a6465382&tm=1507805796&sid=20&zid=1034&k=59df4a64653d2"></script>
+
+<script type="text/javascript">
+
+
+function AddHideButtonToDynamic()
+{
+		var elemDyna = $('div[style*="width:100%;height:768px;"]')[0];
+		if (elemDyna == null)
+		{
+			elemDyna = $('div[style*="width: 100%; height: 768px;"]')[0];
+		}
+		var elemDyna2 = $('div[style*="width:100%;height:768px;"]')[1];
+		if (elemDyna2 == null)
+		{
+			elemDyna2 = $('div[style*="width: 100%; height: 768px;"]')[1];
+		}
+    	if ($(elemDyna).offset() != null) {
+            var topDyna = 220;
+            var leftDyna = ($(window).width() - 1000) / 2 - 45;
+            $(elemDyna).after('<div class="divCloseBut" style="z-index:1000;visibility:visible;position:absolute; right:' + leftDyna + 'px; top: ' + topDyna + 'px"><a href="#" onclick="$(\'#' + $(elemDyna).attr('id') + '\').remove();$(\'#' + $(elemDyna2).attr('id') + '\').remove();$(this).remove(); InitCloseButton(); return false;"><b>[Hide]</b></a></div>');
+        }
+}
+window.setTimeout(AddHideButtonToDynamic, 5000);
+</script>
+
+
+        
+    </div>
+    
+
+
+<script type="text/javascript" src="//koindut.com/apu.php?zoneid=1616188"></script>
+
+
+
+    <div id="footer">
+        <div id="footcontainer" style="position: relative">
+            <p>
+                <a href="/">KissAnime.ru</a>. Copyrights and trademarks for the anime, and other promotional materials are held by their respective owners and their use is allowed under the fair use clause of the Copyright Law. 
+
+<a href="/Message/PrivacyPolicy">Privacy Policy</a>&nbsp;|&nbsp;<a href="/Message/DMCA">DMCA</a>&nbsp;|&nbsp;<a href="/Message/ReportError">Contact us</a>&nbsp;&nbsp;</p>               
+        </div>
+    </div>
+    <script type="text/javascript">
+        $('#footer').css('top', $(document).height() - $('#containerRoot').height());
+    </script>
+</body>
+</html>
