@@ -3,7 +3,6 @@ import re
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites.exceptions import NotFoundError
 from anime_downloader.sites import helpers
-from anime_downloader import util
 
 
 class AnimeFreak(Anime, sitename='animefreak'):
@@ -14,7 +13,8 @@ class AnimeFreak(Anime, sitename='animefreak'):
 
         @classmethod
         def search(cls, query):
-            search_results = util.get_json(cls.search_url, {'q': query})
+            search_results = helpers.get(cls.search_url,
+                                         params={'q': query}).json()
             search_results = [
                 SearchResult(
                     title=result['name'],
