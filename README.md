@@ -28,7 +28,7 @@
 
 Ever dreamt about watching anime for free effortlessly without all those unbearable ads? Ever dreamt of downloading your favourite anime for that long trip?
 
-![kawaii](https://thumbs.gfycat.com/IgnorantYoungDowitcher-size_restricted.gif)
+![kawaii](https://thumbs.gfycat.com/PaltryVibrantCassowary-size_restricted.gif)
 
 Yeah. Me too! That's why this tool exists.
 
@@ -60,9 +60,9 @@ Yeah. Me too! That's why this tool exists.
 
 ## Installation
 
-[**Installation instructions***](https://github.com/vn-ki/anime-downloader/wiki/Installation)
+[**Installation instructions**](https://github.com/vn-ki/anime-downloader/wiki/Installation)
 
-If you have trouble installing, see extended installation instructions [here](https://github.com/vn-ki/anime-downloader/wiki/Installation) or join the [discord server](https://discord.gg/Qn2nWGm) for help.
+If you have trouble installing, join the [discord server](https://discord.gg/Qn2nWGm) for help.
 
 **Note**:
 - For cloudflare scraping [cfscrape](https://github.com/Anorov/cloudflare-scrape) is used. It depends on [`node-js`](https://nodejs.org/en/). So if you want to use cloudflare, make sure you have [node-js](https://nodejs.org/en/) installed.
