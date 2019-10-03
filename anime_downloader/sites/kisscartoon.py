@@ -28,7 +28,7 @@ class KisscartoonEpisode(AnimeEpisode, sitename='kisscartoon'):
 
         return [(
             'no_extractor',
-            res.json()['playlist'][0]['file']
+            res.json()['fb']
         )]
 
 
