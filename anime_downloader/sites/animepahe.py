@@ -22,7 +22,7 @@ class AnimePaheEpisode(AnimeEpisode, sitename='animepahe'):
             'p': server
         }
 
-        episode = util.get_json('https://animepahe.com/api', params=params)
+        episode = helpers.get('https://animepahe.com/api', params=params).json()
         sources = episode['data'][episode_id]
 
         if self.quality in sources:
@@ -63,10 +63,10 @@ class AnimePahe(Anime, sitename='animepahe'):
             'q': query
         }
 
-        search_results = util.get_json(
+        search_results = helpers.get(
                             cls.api_url,
                             params=params,
-                         )
+                         ).json()
 
         results = []
 
@@ -100,7 +100,7 @@ class AnimePahe(Anime, sitename='animepahe'):
             'page': 1
         }
 
-        resp = util.get_json(self.api_url, params=self.params)
+        resp = helpers.get(self.api_url, params=self.params).json()
 
         self._scrape_metadata(resp['data'])
 
@@ -140,7 +140,7 @@ class AnimePahe(Anime, sitename='animepahe'):
 
             for i in range(start_page, end_page):
                 self.params['page'] = i
-                resp = util.get_json(self.api_url, params=self.params)
+                resp = helpers.get(self.api_url, params=self.params).json()
 
                 episodes = self._collect_episodes(resp['data'], episodes)
 
