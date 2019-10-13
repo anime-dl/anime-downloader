@@ -18,6 +18,7 @@ DEFAULT_CONFIG = {
         'file_format': '{anime_title}/{anime_title}_{ep_no}',
         'provider': 'twist.moe',
         'external_downloader': '',
+        'download_number': -1,
     },
     'watch': {
         'quality': '720p',
