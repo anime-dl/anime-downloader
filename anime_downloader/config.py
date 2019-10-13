@@ -34,7 +34,7 @@ DEFAULT_CONFIG = {
         },
         'animeflv': {
             "version": "subbed",
-            "server": "streamango",
+            "server": "natsuki",
         }
     }
 }
