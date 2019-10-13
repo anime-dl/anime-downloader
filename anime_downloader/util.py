@@ -252,11 +252,6 @@ def make_dir(path):
         if e.errno != errno.EEXIST:
             raise
 
-def only_download(flag):
-    logger.debug("logger works from another file")
-    if(flag):
-        logger.debug("and the flag is true too!!")
-
 
 class ClickListOption(click.Option):
 
