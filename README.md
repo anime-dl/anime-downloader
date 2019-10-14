@@ -85,7 +85,7 @@ See [development instructions](https://github.com/vn-ki/anime-downloader/wiki/De
 
 ## Related Projects
 
-- [adl](https://github.com/RaitaroH/adl) - a command-line tool for watching anime that makes use of anime-downloader
+- [adl](https://github.com/RaitaroH/adl) - a command-line tool for watching anime that makes use of anime-downloader.
 
 ---
 
