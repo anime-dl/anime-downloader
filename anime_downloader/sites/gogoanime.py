@@ -29,7 +29,7 @@ class GogoanimeEpisode(AnimeEpisode, sitename='gogoanime'):
 
 class GogoAnime(Anime, sitename='gogoanime'):
     sitename = 'gogoanime'
-    QUALITIES = ['360p', '480p', '720p']
+    QUALITIES = ['360p', '480p', '720p', '1080p']
     _episode_list_url = 'https://www2.gogoanime.se//load-list-episode'
     _search_api_url = 'https://ajax.apimovie.xyz/site/loadAjaxSearch'
 
