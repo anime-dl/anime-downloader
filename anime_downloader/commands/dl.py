@@ -7,7 +7,7 @@ from anime_downloader import session, util
 from anime_downloader.__version__ import __version__
 from anime_downloader.sites import get_anime_class, ALL_ANIME_SITES
 
-logger = logging.Logger(__name__)
+logger = logging.getLogger(__name__)
 
 echo = click.echo
 sitenames = [v[1] for v in ALL_ANIME_SITES]
@@ -67,14 +67,18 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     is_flag=True,
     help='Disable verifying the SSL certificate, if flag is set'
 )
+@click.option(
+    '--choice', '-c',type=int,
+    help='Choice to start downloading given anime number '
+)
 @click.pass_context
 def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             force_download, download_dir, file_format, provider,
-            external_downloader, chunk_size, disable_ssl, fallback_qualities):
+            external_downloader, chunk_size, disable_ssl, fallback_qualities, choice):
     """ Download the anime using the url or search for it.
     """
+    
     util.print_info(__version__)
-
     # TODO: Replace by factory
     cls = get_anime_class(anime_url)
 
@@ -82,7 +86,7 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
     session.get_session().verify = not disable_ssl
 
     if not cls:
-        anime_url = util.search(anime_url, provider)
+        anime_url = util.search(anime_url, provider, choice)
         cls = get_anime_class(anime_url)
 
     anime = cls(anime_url, quality=quality,
