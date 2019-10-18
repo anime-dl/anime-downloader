@@ -56,6 +56,7 @@ Yeah. Me too! That's why this tool exists.
 - Animeflv (Latin)
 - itsaturday.com
 - Animefreak
+- Animeflix
 - Masterani.me [cloudlfare] (site shut down**
 
 ## Installation
