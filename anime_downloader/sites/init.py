@@ -12,6 +12,7 @@ ALL_ANIME_SITES = [
     ('animeflv', 'animeflv', 'Animeflv'),
     ('itsaturday', 'itsaturday', 'Itsaturday'),
     ('animefreak', 'animefreak', 'AnimeFreak'),
+    ('animeflix', 'animeflix', 'AnimeFlix'),
 ]
 
 
