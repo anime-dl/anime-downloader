@@ -22,15 +22,15 @@ class GogoanimeEpisode(AnimeEpisode, sitename='gogoanime'):
             dl_page_url = source_url
 
         # Scrape download page for default hoster (cdnfile) file link 
-        soup_new = helpers.soupify(helpers.get(dl_page_url))
-        stream_url = []
+        soup_cdnfile = helpers.soupify(helpers.get(dl_page_url))
+        cdnfile_url = []
 
-        for element in soup_new.find_all('a', href=re.compile('https://.*\.cdnfile\.info')):
+        for element in soup_cdnfile.find_all('a', href=re.compile('https://.*\.cdnfile\.info')):
             extractor_class = 'no_extractor'
             source_url = element.get('href')
             logger.debug('%s: %s' % (extractor_class, source_url))
-            stream_url.append((extractor_class, source_url,))
-        return stream_url   
+            cdnfile_url.append((extractor_class, source_url,))
+        return cdnfile_url   
 
     '''
         soup = helpers.soupify(helpers.get(self.url))
