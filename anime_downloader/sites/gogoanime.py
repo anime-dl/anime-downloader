@@ -12,7 +12,7 @@ class GogoanimeEpisode(AnimeEpisode, sitename='gogoanime'):
 
     def _get_sources(self):
 
-        # Scrape episode page for default host download link
+        # Scrape episode page to get link for download page
         dl_soup = helpers.soupify(helpers.get(self.url))
         dl_page_url = []
 
@@ -21,7 +21,7 @@ class GogoanimeEpisode(AnimeEpisode, sitename='gogoanime'):
             logger.debug('%s' % (source_url))
             dl_page_url = source_url
 
-        # Scrape default hoster download link 
+        # Scrape download page for default hoster (cdnfile) file link 
         soup_new = helpers.soupify(helpers.get(dl_page_url))
         stream_url = []
 
