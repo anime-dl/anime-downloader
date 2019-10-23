@@ -77,16 +77,16 @@ def search(query, provider, choice=None):
     # cli. But it is used in watch too. :(
     cls = get_anime_class(provider)
     search_results = cls.search(query)
-    click.echo(format_search_results(search_results))
+    click.echo(format_search_results(search_results), err=True)
 
     if not search_results:
         logger.error('No such Anime found. Please ensure correct spelling.')
         sys.exit(1)
-    
+
     if choice:
         val = choice
     else:
-        val = click.prompt('Enter the anime no: ', type=int, default=1)
+        val = click.prompt('Enter the anime no: ', type=int, default=1, err=True)
 
     try:
         url = search_results[val-1].url
