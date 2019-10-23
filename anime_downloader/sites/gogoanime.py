@@ -13,49 +13,61 @@ class GogoanimeEpisode(AnimeEpisode, sitename='gogoanime'):
     def _get_sources(self):
 
         # Scrape episode page to get link for download page
-        dl_soup = helpers.soupify(helpers.get(self.url))
+        soup = helpers.soupify(helpers.get(self.url))
         dl_page_url = []
 
-        for element in dl_soup.find_all('a', href=re.compile('https://vidstreaming\.io')):
-            source_url = element.get('href')
-            logger.debug('%s' % (source_url))
-            dl_page_url = source_url
 
-        # Scrape download page for default hoster (cdnfile) file link 
-        soup_cdnfile = helpers.soupify(helpers.get(dl_page_url))
-        cdnfile_url = []
+        server = self.config.get('server', 'cdn')
 
-        for element in soup_cdnfile.find_all('a', href=re.compile('https://.*\.cdnfile\.info')):
-            extractor_class = 'no_extractor'
-            source_url = element.get('href')
-            logger.debug('%s: %s' % (extractor_class, source_url))
-            cdnfile_url.append((extractor_class, source_url,))
-        return cdnfile_url   
+        if server == 'cdn':
+            # TODO: This should be a extractor class
+            for element in soup.find_all('a', href=re.compile('https://vidstreaming\.io')):
+                source_url = element.get('href')
+                logger.debug('%s' % (source_url))
+                dl_page_url = source_url
+            # Scrape download page for default hoster (cdnfile) file link
+            soup_cdnfile = helpers.soupify(helpers.get(dl_page_url))
+            cdnfile_url = []
 
-    '''
-        soup = helpers.soupify(helpers.get(self.url))
-        extractors_url = []
+            for element in soup_cdnfile.find_all('a', href=re.compile('https://.*\.cdnfile\.info')):
+                extractor_class = 'no_extractor'
+                source_url = element.get('href')
+                logger.debug('%s: %s' % (extractor_class, source_url))
+                cdnfile_url.append((extractor_class, source_url,))
+            return cdnfile_url
 
-        for element in soup.select('.anime_muti_link > ul > li'):
-            extractor_class = element.get('class')[0]
-            source_url = element.a.get('data-video')
-            logger.debug('%s: %s' % (extractor_class, source_url))
-            # prefer streamango, else use mp4upload and rapidvideo as sources
+        else:
+            soup = helpers.soupify(helpers.get(self.url))
+            extractors_url = []
 
-            if extractor_class == 'streamango':
-                extractor_class = 'streamango'
-            elif extractor_class == 'mp4':
-                extractor_class = 'mp4upload'
-            elif extractor_class != 'rapidvideo':
-                continue
-            logger.debug('%s: %s' % (extractor_class, source_url))
-            extractors_url.append((extractor_class, source_url,))
-        return extractors_url
+            for element in soup.select('.anime_muti_link > ul > li'):
+                extractor_class = element.get('class')[0]
+                source_url = element.a.get('data-video')
+                logger.debug('%s: %s' % (extractor_class, source_url))
+                # prefer streamango, else use mp4upload and rapidvideo as sources
 
-    '''
+                if extractor_class == 'streamango':
+                    extractor_class = 'streamango'
+                elif extractor_class == 'mp4':
+                    extractor_class = 'mp4upload'
+                elif extractor_class != 'rapidvideo':
+                    continue
+                logger.debug('%s: %s' % (extractor_class, source_url))
+                extractors_url.append((extractor_class, source_url,))
+            return extractors_url
 
 
 class GogoAnime(Anime, sitename='gogoanime'):
+    """
+    Nice things
+
+    Siteconfig
+    ----------
+
+    server: one of below
+        cdn, others: cdn uses gogoanime cdn, others will use streamango, mp4upload or rapidvideo in that order.
+
+    """
     sitename = 'gogoanime'
     QUALITIES = ['360p', '480p', '720p', '1080p']
     _episode_list_url = 'https://www2.gogoanime.se//load-list-episode'

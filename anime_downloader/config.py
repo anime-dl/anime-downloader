@@ -34,6 +34,9 @@ DEFAULT_CONFIG = {
         'animeflv': {
             "version": "subbed",
             "server": "natsuki",
+        },
+        'gogoanime': {
+            "server": "cdn",
         }
     }
 }
