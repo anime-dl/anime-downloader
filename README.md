@@ -44,8 +44,6 @@ Yeah. Me too! That's why this tool exists.
   
 ## Supported Sites
 
-<!-- [![CircleCI](https://circleci.com/gh/vn-ki/anime-downloader/tree/master.svg?style=svg)](https://circleci.com/gh/vn-ki/anime-downloader/tree/master) -->
-
 - 9anime
 - twist.moe
 - KissAnime
@@ -57,7 +55,6 @@ Yeah. Me too! That's why this tool exists.
 - itsaturday.com
 - Animefreak
 - Animeflix
-- Masterani.me [cloudlfare] (site shut down**
 
 ## Installation
 
@@ -86,6 +83,10 @@ See [documentation](https://github.com/vn-ki/anime-downloader/wiki/Package-docum
 **Development Instructions:**
 
 See [development instructions](https://github.com/vn-ki/anime-downloader/wiki/Development-Instructions).
+
+## Related Projects
+
+- [adl](https://github.com/RaitaroH/adl) - a command-line tool for watching anime that makes use of anime-downloader.
 
 ---
 
