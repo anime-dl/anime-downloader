@@ -3,6 +3,9 @@ from anime_downloader.sites import helpers
 
 import re
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Animeflv(Anime, sitename='animeflv'):
@@ -56,13 +59,33 @@ class Animeflv(Anime, sitename='animeflv'):
 
 
 class AnimeflvEpisode(AnimeEpisode, sitename='animeflv'):
+    """
+    Natsuki no longer appears to be used, but leaving the option here for now.  
+    However, it's no longer coded to download from Natsuki, so the option does nothing.
+    """
     SERVERS = [
         'streamango',
-        'natsuki',
-        'rapidvideo'
+        'natsuki'
     ]
 
     def _get_sources(self):
+
+        soup = helpers.soupify(helpers.get(self.url))
+        extractors_url = []
+
+        for element in soup.find_all('a', href=re.compile('http://ouo.io/.*streamango.com')):
+            extractor_class = 'streamango'
+            source_url = element.get('href')
+            mux = source_url.split('%2F')
+            mux = mux[4]
+            source_url = 'https://streamango.com/embed/' + mux
+            logger.debug('%s: %s', extractor_class, source_url)
+            extractors_url.append((extractor_class, source_url,))
+        return extractors_url
+
+        '''
+        Previous code below:
+
         videos = json.loads(
             re.findall('videos = (.*);', helpers.get(self.url).text)[0]
         )
@@ -72,8 +95,10 @@ class AnimeflvEpisode(AnimeEpisode, sitename='animeflv'):
         server = self.config['server']
         for video in videos:
             if video['server'] == server:
-                if server in ['streamango', 'rapidvideo']:
+                logger.debug('video_server: %s', server)
+                if server in ['mango']:
                     return [(server, video['code'])]
                 if server == 'natsuki':
                     url = helpers.get(video['code'].replace('embed', 'check')).json()['file']
-                    return [('no_extractor', url)]
+                    return [('no_extractor', url)] 
+        '''
