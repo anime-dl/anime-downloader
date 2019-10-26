@@ -19,7 +19,7 @@ class MP4Upload(BaseExtractor):
         # code I saw from github user py7hon in his/her mp4upload-direct
         # program as inspiration for this. Only with regex.
         source_parts_re = re.compile(
-                                r'.*?100\|(.*?)\|.*?\|video\|(.*?)\|(\d+)\|.*?',
+                                r'.*?false\|(.*?)\|.*?\|video\|(.*?)\|(\d+)\|.*?',
                                 re.DOTALL)
 
         mp4u_embed = helpers.get(self.url).text
