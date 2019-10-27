@@ -66,6 +66,7 @@ class AnimeflvEpisode(AnimeEpisode, sitename='animeflv'):
     
     """
     # TODO: Implement support for amus and perhaps Zippyshare?
+    # Hint:  https://github.com/Cartmanishere/zippyshare-scraper
 
     SERVERS = [
         'streamango',
