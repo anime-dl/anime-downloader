@@ -85,7 +85,6 @@ class AnimeflvEpisode(AnimeEpisode, sitename='animeflv'):
         # Trying preferred server from config first
         for video in videos:
             if video['server'] == server:
-                logger.debug('Extracting preferred video_server: %s', server)
                 if server == 'streamango':
                     return [(server, video['code'])]
                 if server == 'natsuki':
@@ -94,7 +93,7 @@ class AnimeflvEpisode(AnimeEpisode, sitename='animeflv'):
 
         logger.debug('Preferred server %s not found.  Trying all supported servers.', server)
         
-        # Trying streamango and natsuki
+        # Trying streamango and natsuki.  The second for loop is not ideal.
         for video in videos:
             if video['server'] == 'streamango':
                 return [('streamango', video['code'])]
