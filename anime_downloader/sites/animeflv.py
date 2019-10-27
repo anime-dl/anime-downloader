@@ -4,6 +4,7 @@ from anime_downloader.sites import helpers
 import re
 import json
 import logging
+import sys
 
 logger = logging.getLogger(__name__)
 
@@ -17,9 +18,9 @@ class Animeflv(Anime, sitename='animeflv'):
 
     version: subbed or latin
         subbed for subbed
-        latin for latin
+        latin for Spanish
     server: one of below
-        natsuki, streamango, rapidvideo
+        natsuki, streamango
 
     """
     sitename = 'animeflv'
@@ -60,32 +61,18 @@ class Animeflv(Anime, sitename='animeflv'):
 
 class AnimeflvEpisode(AnimeEpisode, sitename='animeflv'):
     """
-    Natsuki no longer appears to be used, but leaving the option here for now.  
-    However, it's no longer coded to download from Natsuki, so the option does nothing.
+
+    Natsuki and amus are the site's default servers, however amus is not yet implemented here.  
+    
     """
+    # TODO: Implement support for amus and perhaps Zippyshare?
+
     SERVERS = [
         'streamango',
         'natsuki'
     ]
 
     def _get_sources(self):
-
-        soup = helpers.soupify(helpers.get(self.url))
-        extractors_url = []
-
-        for element in soup.find_all('a', href=re.compile('http://ouo.io/.*streamango.com')):
-            extractor_class = 'streamango'
-            source_url = element.get('href')
-            mux = source_url.split('%2F')
-            mux = mux[4]
-            source_url = 'https://streamango.com/embed/' + mux
-            logger.debug('%s: %s', extractor_class, source_url)
-            extractors_url.append((extractor_class, source_url,))
-        return extractors_url
-
-        '''
-        Previous code below:
-
         videos = json.loads(
             re.findall('videos = (.*);', helpers.get(self.url).text)[0]
         )
@@ -93,12 +80,28 @@ class AnimeflvEpisode(AnimeEpisode, sitename='animeflv'):
         videos = videos[lang[self.config.get('version', 'subbed')]]
 
         server = self.config['server']
+
+        # Trying preferred server from config first
         for video in videos:
             if video['server'] == server:
-                logger.debug('video_server: %s', server)
-                if server in ['mango']:
+                logger.debug('Extracting preferred video_server: %s', server)
+                if server == 'streamango':
                     return [(server, video['code'])]
                 if server == 'natsuki':
                     url = helpers.get(video['code'].replace('embed', 'check')).json()['file']
                     return [('no_extractor', url)] 
-        '''
+
+        logger.debug('Preferred server %s not found.  Trying all supported servers.', server)
+        
+        # Trying streamango and natsuki
+        for video in videos:
+            if video['server'] == 'streamango':
+                return [('streamango', video['code'])]
+            if video['server'] == 'natsuki':
+                url = helpers.get(video['code'].replace('embed', 'check')).json()['file']
+                return [('no_extractor', url)]
+
+        # No supported server found, exit.
+        logger.error('No supported host server found.  Try another site.')
+        sys.exit(1)
+
