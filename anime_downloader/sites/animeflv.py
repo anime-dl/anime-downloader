@@ -1,5 +1,6 @@
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
+from anime_downloader.sites.exceptions import NotFoundError
 
 import re
 import json
@@ -92,7 +93,7 @@ class AnimeflvEpisode(AnimeEpisode, sitename='animeflv'):
                     return [('no_extractor', url)] 
 
         logger.debug('Preferred server %s not found.  Trying all supported servers.', server)
-        
+
         # Trying streamango and natsuki.  The second for loop is not ideal.
         for video in videos:
             if video['server'] == 'streamango':
@@ -102,6 +103,8 @@ class AnimeflvEpisode(AnimeEpisode, sitename='animeflv'):
                 return [('no_extractor', url)]
 
         # No supported server found, exit.
-        logger.error('No supported host server found.  Try another site.')
-        sys.exit(1)
+        err = 'No supported host server found.  Try another site.'
+        args = [self.url]
+        raise NotFoundError(err, *args)
+
 
