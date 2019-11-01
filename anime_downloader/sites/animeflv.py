@@ -20,8 +20,7 @@ class Animeflv(Anime, sitename='animeflv'):
     version: subbed or latin
         subbed for subbed
         latin for Spanish
-    server: one of below
-        natsuki, streamango
+    server: natsuki
 
     """
     sitename = 'animeflv'
@@ -70,7 +69,6 @@ class AnimeflvEpisode(AnimeEpisode, sitename='animeflv'):
     # Hint:  https://github.com/Cartmanishere/zippyshare-scraper
 
     SERVERS = [
-        'streamango',
         'natsuki'
     ]
 
@@ -83,6 +81,8 @@ class AnimeflvEpisode(AnimeEpisode, sitename='animeflv'):
 
         server = self.config['server']
 
+        '''
+        Ignore preferred server for now. 
         # Trying preferred server from config first
         for video in videos:
             if video['server'] == server:
@@ -94,10 +94,8 @@ class AnimeflvEpisode(AnimeEpisode, sitename='animeflv'):
 
         logger.debug('Preferred server %s not found.  Trying all supported servers.', server)
 
-        # Trying streamango and natsuki.  The second for loop is not ideal.
+        '''
         for video in videos:
-            if video['server'] == 'streamango':
-                return [('streamango', video['code'])]
             if video['server'] == 'natsuki':
                 url = helpers.get(video['code'].replace('embed', 'check')).json()['file']
                 return [('no_extractor', url)]

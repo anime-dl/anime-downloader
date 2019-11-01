@@ -19,8 +19,8 @@ class NineAnimeEpisode(AnimeEpisode, sitename='9anime'):
 
     def _get_sources(self):
         servers = {
-            'rapidvideo': '33',
-            'streamango': '12',
+            #'rapidvideo': '33',
+            #'streamango': '12',
             'mp4upload': '35',
         }
         server = self.config.get('server', 'mp4upload')

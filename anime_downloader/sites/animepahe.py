@@ -31,7 +31,7 @@ class AnimePaheEpisode(AnimeEpisode, sitename='animepahe'):
 
     def _get_sources(self):
 
-        supported_servers = ['kwik','mp4upload','rapidvideo']
+        supported_servers = ['kwik','mp4upload']
         episode_id = self.url.rsplit('/', 1)[-1]
 
         sourcetext = helpers.get(self.url, cf=True).text
