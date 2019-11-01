@@ -3,6 +3,7 @@ import re
 
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
+from anime_downloader.sites.exceptions import AnimeDLError, NotFoundError
 
 logger = logging.getLogger(__name__)
 
@@ -44,14 +45,15 @@ class GogoanimeEpisode(AnimeEpisode, sitename='gogoanime'):
                 extractor_class = element.get('class')[0]
                 source_url = element.a.get('data-video')
                 logger.debug('%s: %s' % (extractor_class, source_url))
-                # prefer streamango, else use mp4upload and rapidvideo as sources
+                # use mp4upload as source
 
-                if extractor_class == 'streamango':
-                    extractor_class = 'streamango'
-                elif extractor_class == 'mp4':
+                if extractor_class == 'mp4':
                     extractor_class = 'mp4upload'
-                elif extractor_class != 'rapidvideo':
-                    continue
+                else:
+                    raise AnimeDLError(
+                        'No supported download servers found.  Try a different provider. '
+                        'Check the issues here https://github.com/vn-ki/anime-downloader/issues. '
+                    )
                 logger.debug('%s: %s' % (extractor_class, source_url))
                 extractors_url.append((extractor_class, source_url,))
             return extractors_url
