@@ -3,7 +3,7 @@ import logging
 
 from anime_downloader.sites.anime import AnimeEpisode, SearchResult, Anime
 from anime_downloader.sites import helpers
-from anime_downloader.sites.exceptions import NotFoundError
+from anime_downloader.sites.exceptions import AnimeDLError, NotFoundError
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +19,11 @@ class KissanimeEpisode(AnimeEpisode, sitename='kissanime'):
         return data
 
     def _scrape_episode(self, response):
+        raise AnimeDLError(
+            'Kissanime is not currently working properly. Check the issues'
+            'here https://github.com/vn-ki/anime-downloader/issues. '
+        )
+
         rapid_re = re.compile(r'iframe.*src="https://(.*?)"')
         rapid_url = rapid_re.findall(response.text)[0]
         return [('rapidvideo', rapid_url)]
