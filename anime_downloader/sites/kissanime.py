@@ -20,8 +20,8 @@ class KissanimeEpisode(AnimeEpisode, sitename='kissanime'):
 
     def _scrape_episode(self, response):
         raise AnimeDLError(
-            'Kissanime is not currently working properly. Check the issues'
-            'here https://github.com/vn-ki/anime-downloader/issues. '
+            'Kissanime is not currently working properly.  Try a different provider. '
+            'Check the issues here https://github.com/vn-ki/anime-downloader/issues. '
         )
 
         rapid_re = re.compile(r'iframe.*src="https://(.*?)"')
