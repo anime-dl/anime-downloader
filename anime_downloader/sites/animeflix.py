@@ -52,6 +52,8 @@ class AnimeFlixEpisode(AnimeEpisode, sitename='animeflix'):
             episode = helpers.get(self.episodeId_url,
                                   params={'episode_num': self.ep_no, 'slug': self.url.strip('/').split('/')[-2]}).json()
             id = episode['data']['current']['id']
-            download_link = helpers.get(
-                f'{self.stream_url}={id}').json()[0]['file']
+            all_download_link = helpers.get(
+                f'{self.stream_url}={id}').json()
+            idx = next((i for (i,d) in enumerate(all_download_link) if d["type"] == "mp4" and d["lang"] == "sub" and d["provider"] == "AUEngine"), None)
+            download_link=all_download_link[int(idx)]['file']
             return [('no_extractor',download_link)]
