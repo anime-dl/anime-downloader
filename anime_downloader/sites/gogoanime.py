@@ -17,7 +17,6 @@ class GogoanimeEpisode(AnimeEpisode, sitename='gogoanime'):
         soup = helpers.soupify(helpers.get(self.url))
         dl_page_url = []
 
-
         server = self.config.get('server', 'cdn')
 
         if server == 'cdn':
@@ -30,7 +29,7 @@ class GogoanimeEpisode(AnimeEpisode, sitename='gogoanime'):
             soup_cdnfile = helpers.soupify(helpers.get(dl_page_url))
             cdnfile_url = []
 
-            for element in soup_cdnfile.find_all('a', href=re.compile('https://.*\.cdnfile\.info')):
+            for element in soup_cdnfile.find_all('a', href=re.compile('https://.*\.cdnfile\.info.*' + self.quality)):
                 extractor_class = 'no_extractor'
                 source_url = element.get('href')
                 logger.debug('%s: %s' % (extractor_class, source_url))
