@@ -29,12 +29,27 @@ class GogoanimeEpisode(AnimeEpisode, sitename='gogoanime'):
             soup_cdnfile = helpers.soupify(helpers.get(dl_page_url))
             cdnfile_url = []
 
-            for element in soup_cdnfile.find_all('a', href=re.compile('https://.*\.cdnfile\.info.*' + self.quality)):
-                extractor_class = 'no_extractor'
-                source_url = element.get('href')
-                logger.debug('%s: %s' % (extractor_class, source_url))
-                cdnfile_url.append((extractor_class, source_url,))
-            return cdnfile_url
+            if soup_cdnfile.find_all('a', href=re.compile('https://.*\.cdnfile\.info.*' + self.quality)):
+                for element in soup_cdnfile.find_all('a', href=re.compile('https://.*\.cdnfile\.info.*' + self.quality)):
+                    extractor_class = 'no_extractor'
+                    source_url = element.get('href')
+                    logger.debug('%s: %s' % (extractor_class, source_url))
+                    cdnfile_url.append((extractor_class, source_url,))
+                return cdnfile_url
+
+            elif soup_cdnfile.find_all('a', href=re.compile('https://.*\.cdnfile\.info.*' + 'orginalP.*')):
+                for element in soup_cdnfile.find_all('a', href=re.compile('https://.*\.cdnfile\.info.*' + 'orginalP.*')):
+                    extractor_class = 'no_extractor'
+                    source_url = element.get('href')
+                    logger.debug('%s: %s' % (extractor_class, source_url))
+                    cdnfile_url.append((extractor_class, source_url,))
+                return cdnfile_url
+
+            else:
+                raise AnimeDLError(
+                    'No supported download servers found.  Try a different provider. '
+                    'Check the issues here https://github.com/vn-ki/anime-downloader/issues. '
+                )
 
         else:
             soup = helpers.soupify(helpers.get(self.url))
