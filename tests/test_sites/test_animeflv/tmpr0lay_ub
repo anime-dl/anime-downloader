@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Buscador Avanzado — AnimeFLV</title>
+<meta name='robots' content='noindex, follow' />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700,400italic' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" type="text/css" href="/assets/animeflv/css/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="/assets/animeflv/css/css.css?v=1.2.6" />
+<link rel="stylesheet" type="text/css" href="/assets/animeflv/css/bootstrap.css" />
+<script type="text/javascript" src="/assets/animeflv/js/modernizr.js"></script>
+<script src="https://apis.google.com/js/platform.js"></script>
+<meta content='es' http-equiv='content-language' />
+<meta content='es' name='language' />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="fb:app_id" content="156149244424100" />
+<link rel="manifest" href="/manifest.json" />
+</head>
+<body>
+<script src="/js/ads.js"></script>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = 'https://connect.facebook.net/es_LA/sdk.js#xfbml=1&version=v3.1&appId=1730508916998105&autoLogAppEvents=1';
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+<div class="Wrapper">
+
+<header class="Header">
+<div class="Mid">
+<div class="Container">
+<div class="AX Row AFluid">
+<div class="Logo">
+<a href="/"><img src="/assets/animeflv/img/logo.png?v=2.3" alt="AnimeFLV" /></a>
+</div>
+<div class="AFixed">
+<input type="checkbox" hidden="hidden" id="BtnMenu">
+<label for="BtnMenu" class="BtnMenu fa-bars"><span>MENU</span></label>
+<nav class="CX Row">
+<input type="checkbox" hidden="hidden" id="Hd-Search">
+<div class="Search"> 
+<form action="/browse" method="get">
+<input name="q" type="text" id="search-anime" autocomplete="off" placeholder="Buscar...">
+<button><i class="fa-search"></i></button>
+</form>
+<div class="DpdwCnt TtCn">
+<ul class="ListResult"></ul>
+</div>
+</div>
+<div class="Login">
+<input type="checkbox" hidden="hidden" id="DpdwLnk-Login">
+<label for="DpdwLnk-Login" class="Button"><span class="fa-user">Login</span></label>
+<div class="DpdwCnt TtCn">
+<div class="Title">INICIAR SESION</div>
+<form action="/auth/sign_in" class="form-horizontal" method="POST"> <label class="Form-Icon Right">
+<input name="email" type="text" placeholder="E-Mail">
+<i class="fa-user"></i>
+</label>
+<label class="Form-Icon Right">
+<input name="password" type="password" placeholder="Contraseña">
+<input type="hidden" name="remember_me" value="1">
+<i class="fa-lock"></i>
+ </label>
+<button type="submit">INICIAR SESIÓN</button>
+<a href="/auth/facebook/sign_in" rel="nofollow" class="Button fb_login"><span class="fa-facebook">INICIAR SESION CON FB</span></a>
+<div class="Links">
+<a href="/auth/sign_up" rel="nofollow">Registrate</a>
+<a href="/auth/password/new" rel="nofollow">¿Olvidaste tu contraseña?</a>
+</div>
+</form> </div>
+</div>
+<ul class="Menu">
+<li><a href="/">Inicio</a></li>
+<li class="Current"><a href="/browse">Directorio Anime</a></li>
+<li class="kudasai"><a target="_blank" href="https://discord.gg/vfkPrdT" target="_blank" rel="nofollow"><img src="https://animeflv.net/assets/animeflv/img/chat.png?v=1.2" /></a></li>
+<li><a target="_blank" href="https://youtu.be/lMnWeZ9Oz-4" rel="nofollow"><img src="https://animeflv.net/img/estrenos_otono.png?v=1.0" /></a></li>
+</ul>
+<ul class="ListSocial BFixed">
+<li><a href="https://www.facebook.com/AnimeFLV/" rel="nofollow" target="_blank" class="fa-facebook"></a></li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+</div>
+</header>
+
+
+<div class="Body">
+<div class="Container">
+<div class="Title Page fa-star B12">
+<h1>Buscador avanzado</h1>
+</div>
+<main class="Main">
+
+<form action="/browse" method="get">
+<div class="filters" style="margin-bottom: 10px;">
+<select name="genre[]" id="genre_select" multiple="multiple">
+<option value="accion">Acci&oacute;n</option><option value="artes-marciales">Artes Marciales</option><option value="aventura">Aventuras</option><option value="carreras">Carreras</option><option value="ciencia-ficcion">Ciencia Ficci&oacute;n</option><option value="comedia">Comedia</option><option value="demencia">Demencia</option><option value="demonios">Demonios</option><option value="deportes">Deportes</option><option value="drama">Drama</option><option value="ecchi">Ecchi</option><option value="escolares">Escolares</option><option value="espacial">Espacial</option><option value="fantasia">Fantas&iacute;a</option><option value="harem">Harem</option><option value="historico">Historico</option><option value="infantil">Infantil</option><option value="josei">Josei</option><option value="juegos">Juegos</option><option value="magia">Magia</option><option value="mecha">Mecha</option><option value="militar">Militar</option><option value="misterio">Misterio</option><option value="musica">M&uacute;sica</option><option value="parodia">Parodia</option><option value="policia">Polic&iacute;a</option><option value="psicologico">Psicol&oacute;gico</option><option value="recuentos-de-la-vida">Recuentos de la vida</option><option value="romance">Romance</option><option value="samurai">Samurai</option><option value="seinen">Seinen</option><option value="shoujo">Shoujo</option><option value="shounen">Shounen</option><option value="sobrenatural">Sobrenatural</option><option value="superpoderes">Superpoderes</option><option value="suspenso">Suspenso</option><option value="terror">Terror</option><option value="vampiros">Vampiros</option><option value="yaoi">Yaoi</option><option value="yuri">Yuri</option> </select>
+ <select name="year[]" id="year_select" multiple="multiple">
+<option value="2019">2019</option><option value="2018">2018</option><option value="2017">2017</option><option value="2016">2016</option><option value="2015">2015</option><option value="2014">2014</option><option value="2013">2013</option><option value="2012">2012</option><option value="2011">2011</option><option value="2010">2010</option><option value="2009">2009</option><option value="2008">2008</option><option value="2007">2007</option><option value="2006">2006</option><option value="2005">2005</option><option value="2004">2004</option><option value="2003">2003</option><option value="2002">2002</option><option value="2001">2001</option><option value="2000">2000</option><option value="1999">1999</option><option value="1998">1998</option><option value="1997">1997</option><option value="1996">1996</option><option value="1995">1995</option><option value="1994">1994</option><option value="1993">1993</option><option value="1992">1992</option><option value="1991">1991</option><option value="1990">1990</option> </select>
+<select name="type[]" id="type_select" multiple="multiple">
+<option value="tv">TV</option>
+<option value="movie">Película</option>
+<option value="special">Especial</option>
+<option value="ova">OVA</option>
+</select>
+<select name="status[]" id="status_select" multiple="multiple">
+<option value="1">En emisión</option>
+<option value="2">Finalizado</option>
+<option value="3">Próximamente</option>
+</select>
+<select name="order" id="order_select">
+<option value="default">Por Defecto</option>
+<option value="updated">Recientemente Actualizados</option>
+<option value="added">Recientemente Agregados</option>
+<option value="title">Nombre A-Z</option>
+<option value="rating">Calificación</option>
+</select>
+<button type="submit" class="btn btn-sm btn-primary">
+<span class="fa fa-filter" aria-hidden="true"></span> Filtrar
+</button>
+</div>
+</form>
+
+
+<ul class="ListAnimes AX Rows A03 C02 D02">
+<li>
+<article class="Anime alt B">
+<a href="/anime/5438/shingeki-no-kyojin-kuinaki-sentaku">
+<div class="Image fa-play-circle-o">
+<figure><img src="https://animeflv.net/uploads/animes/covers/1754.jpg" alt="Shingeki no Kyojin: Kuinaki Sentaku"></figure>
+<span class="Type ova">OVA</span>
+</div>
+<h3 class="Title">Shingeki no Kyojin: Kuinaki Sentaku</h3>
+</a>
+<div class="Description">
+<div class="Title"><strong>Shingeki no Kyojin: Kuinaki Sentaku</strong></div>
+<p><span class="Type ova">OVA</span> <span class="Vts fa-star">4.6</span></p>
+<p>Este spin-off nos muestra el pasado de Levi Rivaille de c&oacute;mo lleg&oacute; a pertenecer a las tropas de reconocimiento y sus primeras exploraciones fuera en de la muralla. En la imagen que confirma el spin-off, donde se puede leer &ldquo;C&oacute;mo un mat&oacute;n de la capital real puede convertirse en el hombre m&aacute;s poderoso de la hu...</p>
+<span class="Flwrs fa-user"><span>4248</span> Seguidores</span>
+<a class="Button Vrnmlk" href="/anime/5438/shingeki-no-kyojin-kuinaki-sentaku">VER ANIME</a>
+</div>
+</article>
+</li>
+<li>
+<article class="Anime alt B">
+ <a href="/anime/5443/shingeki-no-kyojin-season-2">
+<div class="Image fa-play-circle-o">
+<figure><img src="https://animeflv.net/uploads/animes/covers/2690.jpg" alt="Shingeki no Kyojin Season 2"></figure>
+<span class="Type tv">Anime</span>
+</div>
+<h3 class="Title">Shingeki no Kyojin Season 2</h3>
+</a>
+<div class="Description">
+<div class="Title"><strong>Shingeki no Kyojin Season 2</strong></div>
+<p><span class="Type tv">Anime</span> <span class="Vts fa-star">4.7</span></p>
+<p>Despues de 4 malditos años esperando, <strong>Shingeki no Kyojin</strong> vuelve y nos demostrará como se tiene que hacer un anime en el 2017!
+Mi waifu Mikasa vuelve y para las fujoshis Levi vuelve para los que tiene dudas aqui las resuelvo:
+<br /><br />
+Primero! En cuanto los capítulos sinceramente creo que serán 26, algunas páginas y youtub...</p>
+<span class="Flwrs fa-user"><span>31977</span> Seguidores</span>
+<a class="Button Vrnmlk" href="/anime/5443/shingeki-no-kyojin-season-2">VER ANIME</a>
+</div>
+</article>
+</li>
+<li>
+<article class="Anime alt B">
+<a href="/anime/5436/shingeki-no-kyojin-ova">
+<div class="Image fa-play-circle-o">
+<figure><img src="https://animeflv.net/uploads/animes/covers/1187.jpg" alt="Shingeki no Kyojin OVA"></figure>
+<span class="Type ova">OVA</span>
+</div>
+<h3 class="Title">Shingeki no Kyojin OVA</h3>
+</a>
+<div class="Description">
+<div class="Title"><strong>Shingeki no Kyojin OVA</strong></div>
+<p><span class="Type ova">OVA</span> <span class="Vts fa-star">4.5</span></p>
+<p>incluidos con el 12vo y 13vo tomo de manga de edici&oacute;n limitada.
+Episodio 1: Un viejo diario es encontrado por Levi e Irvin cuando est&aacute;n en una operaci&oacute;n de las tropas de reconocimiento por fuera de los muros. Los contenidos del &quot;Diario de Ilse&quot; terminan generando acciones inesperadas de parte de Hange.
+Episodio ...</p>
+<span class="Flwrs fa-user"><span>3417</span> Seguidores</span>
+<a class="Button Vrnmlk" href="/anime/5436/shingeki-no-kyojin-ova">VER ANIME</a>
+</div>
+</article>
+</li>
+<li>
+<article class="Anime alt B">
+<a href="/anime/5446/shingeki-no-kyojin-season-3">
+<div class="Image fa-play-circle-o">
+<figure><img src="https://animeflv.net/uploads/animes/covers/3002.jpg" alt="Shingeki no Kyojin Season 3"></figure>
+<span class="Type tv">Anime</span>
+</div>
+<h3 class="Title">Shingeki no Kyojin Season 3</h3>
+</a>
+<div class="Description">
+<div class="Title"><strong>Shingeki no Kyojin Season 3</strong></div>
+<p><span class="Type tv">Anime</span> <span class="Vts fa-star">4.6</span></p>
+<p>Tercera temporada de Shingeki no Kyojin</p>
+<span class="Flwrs fa-user"><span>34896</span> Seguidores</span>
+<a class="Button Vrnmlk" href="/anime/5446/shingeki-no-kyojin-season-3">VER ANIME</a>
+ </div>
+</article>
+</li>
+<li>
+<article class="Anime alt B">
+<a href="/anime/5440/shingeki-no-kyojin-live-action">
+<div class="Image fa-play-circle-o">
+<figure><img src="https://animeflv.net/uploads/animes/covers/2174.jpg" alt="Shingeki no Kyojin Live Action"></figure>
+<span class="Type movie">Película</span>
+</div>
+<h3 class="Title">Shingeki no Kyojin Live Action</h3>
+</a>
+<div class="Description">
+<div class="Title"><strong>Shingeki no Kyojin Live Action</strong></div>
+<p><span class="Type movie">Película</span> <span class="Vts fa-star">2.2</span></p>
+<p></p>
+<span class="Flwrs fa-user"><span>827</span> Seguidores</span>
+<a class="Button Vrnmlk" href="/anime/5440/shingeki-no-kyojin-live-action">VER ANIME</a>
+</div>
+</article>
+</li>
+<li>
+<article class="Anime alt B">
+<a href="/anime/5439/shingeki-no-kyojin-movie-1-guren-no-yumiya">
+<div class="Image fa-play-circle-o">
+<figure><img src="https://animeflv.net/uploads/animes/covers/1938.jpg" alt="Shingeki no Kyojin Movie 1: Guren no Yumiya"></figure>
+<span class="Type movie">Película</span>
+</div>
+<h3 class="Title">Shingeki no Kyojin Movie 1: Guren no Yumiya</h3>
+</a>
+<div class="Description">
+<div class="Title"><strong>Shingeki no Kyojin Movie 1: Guren no Yumiya</strong></div>
+<p><span class="Type movie">Película</span> <span class="Vts fa-star">4.3</span></p>
+<p>Resumen 1-13</p>
+<span class="Flwrs fa-user"><span>2136</span> Seguidores</span>
+<a class="Button Vrnmlk" href="/anime/5439/shingeki-no-kyojin-movie-1-guren-no-yumiya">VER ANIME</a>
+</div>
+</article>
+</li>
+<li>
+<article class="Anime alt B">
+<a href="/anime/5442/shingeki-no-kyojin-movie-2-jiyuu-no-tsubasa">
+<div class="Image fa-play-circle-o">
+<figure><img src="https://animeflv.net/uploads/animes/covers/2410.jpg" alt="Shingeki no Kyojin Movie 2: Jiyuu no Tsubasa"></figure>
+<span class="Type movie">Película</span>
+</div>
+<h3 class="Title">Shingeki no Kyojin Movie 2: Jiyuu no Tsubasa</h3>
+</a>
+<div class="Description">
+<div class="Title"><strong>Shingeki no Kyojin Movie 2: Jiyuu no Tsubasa</strong></div>
+<p><span class="Type movie">Película</span> <span class="Vts fa-star">4.4</span></p>
+<p></p>
+<span class="Flwrs fa-user"><span>1784</span> Seguidores</span>
+<a class="Button Vrnmlk" href="/anime/5442/shingeki-no-kyojin-movie-2-jiyuu-no-tsubasa">VER ANIME</a>
+</div>
+</article>
+</li>
+<li>
+<article class="Anime alt B">
+<a href="/anime/5434/shingeki-no-kyojin">
+<div class="Image fa-play-circle-o">
+<figure><img src="https://animeflv.net/uploads/animes/covers/999.jpg" alt="Shingeki no Kyojin"></figure>
+<span class="Type tv">Anime</span>
+</div>
+<h3 class="Title">Shingeki no Kyojin</h3>
+</a>
+<div class="Description">
+<div class="Title"><strong>Shingeki no Kyojin</strong></div>
+<p><span class="Type tv">Anime</span> <span class="Vts fa-star">4.6</span></p>
+<p>La historia nos traslada a un mundo en el que la humanidad estuvo a punto de ser exterminada cientos de a&ntilde;os atr&aacute;s por los gigantes. Los gigantes son enormes, parecen no ser inteligentes y devoran seres humanos. Lo peor es que parece que lo hacen por placer y no por alimentarse. Una peque&ntilde;a parte de la humanidad ha conseguido s...</p>
+<span class="Flwrs fa-user"><span>25785</span> Seguidores</span>
+<a class="Button Vrnmlk" href="/anime/5434/shingeki-no-kyojin">VER ANIME</a>
+</div>
+</article>
+</li>
+<li>
+<article class="Anime alt B">
+<a href="/anime/5435/shingeki-no-kyojin-chimi-kyara-gekijou-tondeke">
+<div class="Image fa-play-circle-o">
+<figure><img src="https://animeflv.net/uploads/animes/covers/1096.jpg" alt="Shingeki no Kyojin: Chimi Kyara Gekijou - Tondeke! Kunren Heidan"></figure>
+<span class="Type ova">OVA</span>
+</div>
+<h3 class="Title">Shingeki no Kyojin: Chimi Kyara Gekijou - Tondeke! Kunren Heidan</h3>
+</a>
+<div class="Description">
+<div class="Title"><strong>Shingeki no Kyojin: Chimi Kyara Gekijou - Tondeke! Kunren Heidan</strong></div>
+<p><span class="Type ova">OVA</span> <span class="Vts fa-star">4.3</span></p>
+<p>Especiales incluidos en los DVD/BD</p>
+<span class="Flwrs fa-user"><span>1889</span> Seguidores</span>
+<a class="Button Vrnmlk" href="/anime/5435/shingeki-no-kyojin-chimi-kyara-gekijou-tondeke">VER ANIME</a>
+</div>
+</article>
+</li>
+<li>
+<article class="Anime alt B">
+<a href="/anime/5579/shingeki-no-kyojin-season-3-part-2">
+<div class="Image fa-play-circle-o">
+<figure><img src="https://animeflv.net/uploads/animes/covers/3140.jpg" alt="Shingeki no Kyojin Season 3 Part 2"></figure>
+<span class="Type tv">Anime</span>
+</div>
+<h3 class="Title">Shingeki no Kyojin Season 3 Part 2</h3>
+</a>
+<div class="Description">
+<div class="Title"><strong>Shingeki no Kyojin Season 3 Part 2</strong></div>
+<p><span class="Type tv">Anime</span> <span class="Vts fa-star">4.7</span></p>
+<p>Segunda parte de la tercera temporada de Shingeki no Kyojin</p>
+<span class="Flwrs fa-user"><span>29861</span> Seguidores</span>
+<a class="Button Vrnmlk" href="/anime/5579/shingeki-no-kyojin-season-3-part-2">VER ANIME</a>
+</div>
+</article>
+</li>
+<li>
+<article class="Anime alt B">
+<a href="/anime/5445/shingeki-no-kyojin-lost-girls">
+<div class="Image fa-play-circle-o">
+ <figure><img src="https://animeflv.net/uploads/animes/covers/2881.jpg" alt="Shingeki no Kyojin: Lost Girls"></figure>
+<span class="Type ova">OVA</span>
+</div>
+<h3 class="Title">Shingeki no Kyojin: Lost Girls</h3>
+</a>
+<div class="Description">
+<div class="Title"><strong>Shingeki no Kyojin: Lost Girls</strong></div>
+<p><span class="Type ova">OVA</span> <span class="Vts fa-star">4.4</span></p>
+<p>Incluidas en los volúmenes 24, 25 y 26 del manga Shingeki no Kyojin.</p>
+<span class="Flwrs fa-user"><span>5821</span> Seguidores</span>
+<a class="Button Vrnmlk" href="/anime/5445/shingeki-no-kyojin-lost-girls">VER ANIME</a>
+</div>
+</article>
+</li>
+</ul>
+
+<div class="NvCnAnm"><ul class="pagination"><li class="active"><a href="/browse?q=shingeki+no+kyojin&page=1">1</a></li></ul></div> </main>
+</div>
+</div>
+
+
+<footer class="Footer">
+<div class="Container">
+<div class="BX Row BFluid Sp20 NMb">
+<div><p><span>Anime Online - <a href="https://animeflv.net/">AnimeFLV</a></span> - Ningún vídeo se encuentra alojado en nuestros servidores.</p>
+<nav class="mnftxt">
+<a href="/condiciones-de-uso.html">Términos y Condiciones</a>
+<a href="/politica-de-privacidad.html">Política de Privacidad</a>
+<a href="/sobre-animeflv.html">Sobre AnimeFLV</a>
+</nav>
+</div>
+<ul class="ListSocial BFixed">
+<li><a href="https://www.facebook.com/AnimeFLV/" target="_blank" class="fa-facebook"></a></li>
+<li><a href="https://www.youtube.com/c/kudasai" target="_blank" class="fa-youtube"></a></li>
+</ul>
+</div>
+</div>
+</footer>
+
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+<script type="text/javascript" src="/assets/animeflv/js/jquery.typewatch.min.js"></script>
+<script type="text/javascript" src="/assets/animeflv/js/scrlbr.js"></script>
+<script type="text/javascript" src="/assets/animeflv/js/jquery.bxslider.min.js"></script>
+<script type="text/javascript" src="/assets/animeflv/js/percircle.min.js"></script>
+<script type="text/javascript" src="/assets/animeflv/js/functions.js?v=1.1.19"></script>
+<script type="text/javascript" src="/assets/animeflv/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/assets/animeflv/js/alertify.js"></script>
+
+<!--[if lt IE 9]><script type="text/javascript" src="/assets/animeflv/js/ie/css3mq.js"></script>
+<![endif]-->
+<!--[if lte IE 9]><script type="text/javascript" src="/assets/animeflv/js/ie/ie.js"></script>
+<![endif]-->
+
+<script>
+var is_user = false;
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+    m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+ym(52899859, "init", {
+    clickmap:true,
+    trackLinks:true,
+    accurateTrackBounce:true
+});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/52899859" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<link rel="stylesheet" type="text/css" href="/assets/animeflv/css/bootstrap-multiselect.css" />
+<script type="text/javascript" src="/assets/animeflv/js/bootstrap-multiselect.js"></script>
+<script type="text/javascript" src="/assets/animeflv/js/abrowser.js"></script>
+
+<script type="text/javascript">
+var _qevents = _qevents || [];
+
+(function() {
+var elem = document.createElement('script');
+elem.src = (document.location.protocol == "https:" ? "https://secure" : "http://edge") + ".quantserve.com/quant.js";
+elem.async = true;
+elem.type = "text/javascript";
+var scpt = document.getElementsByTagName('script')[0];
+scpt.parentNode.insertBefore(elem, scpt);
+})();
+
+_qevents.push({
+qacct:"p--mN3UcHCw6ueQ"
+});
+</script>
+<noscript>
+<div style="display:none;">
+<img src="//pixel.quantserve.com/pixel/p--mN3UcHCw6ueQ.gif" border="0" height="1" width="1" alt="Quantcast"/>
+</div>
+</noscript>
+
+<script src="/js/detector.js?v=1.0.1"></script>
+</body>
+</html>

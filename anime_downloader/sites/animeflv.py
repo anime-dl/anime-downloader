@@ -1,8 +1,13 @@
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
+from anime_downloader.sites.exceptions import NotFoundError
 
 import re
 import json
+import logging
+import sys
+
+logger = logging.getLogger(__name__)
 
 
 class Animeflv(Anime, sitename='animeflv'):
@@ -14,9 +19,9 @@ class Animeflv(Anime, sitename='animeflv'):
 
     version: subbed or latin
         subbed for subbed
-        latin for latin
+        latin for Spanish
     server: one of below
-        natsuki, streamango, rapidvideo
+        natsuki, streamango
 
     """
     sitename = 'animeflv'
@@ -56,10 +61,17 @@ class Animeflv(Anime, sitename='animeflv'):
 
 
 class AnimeflvEpisode(AnimeEpisode, sitename='animeflv'):
+    """
+
+    Natsuki and amus are the site's default servers, however amus is not yet implemented here.  
+    
+    """
+    # TODO: Implement support for amus and perhaps Zippyshare?
+    # Hint:  https://github.com/Cartmanishere/zippyshare-scraper
+
     SERVERS = [
         'streamango',
-        'natsuki',
-        'rapidvideo'
+        'natsuki'
     ]
 
     def _get_sources(self):
@@ -70,10 +82,29 @@ class AnimeflvEpisode(AnimeEpisode, sitename='animeflv'):
         videos = videos[lang[self.config.get('version', 'subbed')]]
 
         server = self.config['server']
+
+        # Trying preferred server from config first
         for video in videos:
             if video['server'] == server:
-                if server in ['streamango', 'rapidvideo']:
+                if server == 'streamango':
                     return [(server, video['code'])]
                 if server == 'natsuki':
                     url = helpers.get(video['code'].replace('embed', 'check')).json()['file']
-                    return [('no_extractor', url)]
+                    return [('no_extractor', url)] 
+
+        logger.debug('Preferred server %s not found.  Trying all supported servers.', server)
+
+        # Trying streamango and natsuki.  The second for loop is not ideal.
+        for video in videos:
+            if video['server'] == 'streamango':
+                return [('streamango', video['code'])]
+            if video['server'] == 'natsuki':
+                url = helpers.get(video['code'].replace('embed', 'check')).json()['file']
+                return [('no_extractor', url)]
+
+        # No supported server found, exit.
+        err = 'No supported host server found.  Try another site.'
+        args = [self.url]
+        raise NotFoundError(err, *args)
+
+

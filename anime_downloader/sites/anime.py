@@ -304,9 +304,10 @@ class AnimeEpisode:
                 self.quality = quality
                 try:
                     try_data()
-                    break
+                    return
                 except NotFoundError:
                     pass
+            logger.warning(f'Skipping episode: {self.ep_no}')
 
     def __init_subclass__(cls, sitename: str, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -336,6 +337,8 @@ class AnimeEpisode:
             sitename, url = self._sources[index]
         except TypeError:
             return self._sources[index]
+        except IndexError:
+            raise NotFoundError("No episode sources found.")
 
         ext = get_extractor(sitename)(url, quality=self.quality)
         self._sources[index] = ext

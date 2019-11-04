@@ -30,12 +30,23 @@ class Anistream(Anime, sitename='anistream.xyz'):
         version = self.config.get('version', 'subbed')
         soup = helpers.soupify(helpers.get(self.url))
         versions = soup.select_one('.card-body').select('ul')
+        def get_links(version):
+            links = [v.attrs['href'] for v in version.select('a')][::-1]
+            return links
+        dubbed = get_links(versions[1])
+        subbed = get_links(versions[0])
+        # TODO: This should be handled more gracefully
+        # revist once config API is finalized
         if version.lower() == 'dubbed':
-            version = versions[1]
+            choice = dubbed
+            other = subbed
         else:
-            version = versions[0]
-        links = [v.attrs['href'] for v in version.select('a')][::-1]
-        return links
+            choice = subbed
+            other = dubbed
+        if choice:
+            return choice
+        # TODO: warn about choice not available
+        return other
 
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url))
