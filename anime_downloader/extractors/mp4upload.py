@@ -25,7 +25,7 @@ class MP4Upload(BaseExtractor):
         mp4u_embed = helpers.get(self.url).text
         source_parts = source_parts_re.match(mp4u_embed)
         if not source_parts:
-            raise Exception("Failed to find source parts to build URL")
+            raise Exception(f"Failed to find source parts to build URL {self.url}")
 
         domain, video_id, protocol = source_parts.groups()
 
