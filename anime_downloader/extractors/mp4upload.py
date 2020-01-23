@@ -18,22 +18,25 @@ class MP4Upload(BaseExtractor):
         # Extract the important bits from the embed page, with thanks to the
         # code I saw from github user py7hon in his/her mp4upload-direct
         # program as inspiration for this. Only with regex.
-        source_parts_re = re.compile(
-                                r'.*?false\|(.*?)\|.*?\|video\|(.*?)\|(\d+)\|.*?',
-                                re.DOTALL)
+        source_parts_re = re.compile(r'.*?false\|(.*?)\|.*?\|video\|(.*?)\|(\d+)\|.*?', re.DOTALL)
+        not_download_page_re = re.compile(r'type="submit" name="method_free"', re.DOTALL)
+        title_re = re.compile(r'h2>Download File (.*?)\.mp4<\/h2>', re.DOTALL)
 
         mp4u_embed = helpers.get(self.url).text
-        domain, video_id, protocol = source_parts_re.match(mp4u_embed).groups()
+        source_parts = source_parts_re.match(mp4u_embed)
+        if not source_parts:
+            raise Exception("Failed to find source parts to build URL")
 
-        logger.debug('Domain: %s, Video ID: %s, Protocol: %s' %
-                      (domain, video_id, protocol))
+        domain, video_id, protocol = source_parts.groups()
+
+        logger.debug('Domain: %s, Video ID: %s, Protocol: %s' % (domain, video_id, protocol))
 
         url = self.url.replace('embed-', '')
         # Return to non-embed page to collect title
-        mp4u_page = helpers.soupify(helpers.get(url).text)
-
-        title = mp4u_page.find('span', {'class': 'dfilename'}).text
-        title = title[:title.rfind('_')][:title.rfind('.')].replace(' ', '_')
+        mp4u_page = helpers.get(url, referer=self.url).text
+        title = title_re.search(mp4u_page)
+        # The N/A here will probably come to haunt me some day
+        title = title.groups()[0] if title else 'N/A'
 
         logger.debug('Title is %s' % title)
 
