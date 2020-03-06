@@ -8,7 +8,6 @@ ALL_ANIME_SITES = [
     ('kisscartoon', 'kisscartoon', 'KissCartoon'),
     ('twistmoe', 'twist.moe', 'TwistMoe'),
     ('animepahe', 'animepahe', 'AnimePahe'),
-    ('anistream', 'anistream', 'Anistream'),
     ('animeflv', 'animeflv', 'Animeflv'),
     ('itsaturday', 'itsaturday', 'Itsaturday'),
     ('animefreak', 'animefreak', 'AnimeFreak'),
