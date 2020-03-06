@@ -28,8 +28,8 @@ The default config file is given below.
             "file_format": "{anime_title}/{anime_title}_{ep_no}",
             "force_download": false,
             "player": null,
-            "provider": "9anime",
-            "quality": "720p",
+            "provider": "animepahe",
+            "quality": "1080p",
             "skip_download": false,
             "url": false
         },
@@ -47,8 +47,8 @@ The default config file is given below.
         },
         "watch": {
             "log_level": "INFO",
-            "provider": "9anime",
-            "quality": "720p"
+            "provider": "animepahe",
+            "quality": "1080p"
         }
     }
 

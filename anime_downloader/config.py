@@ -12,17 +12,18 @@ DEFAULT_CONFIG = {
         'player': None,
         'skip_download': False,
         'download_dir': '.',
-        'quality': '720p',
+        'quality': '1080p',
         'fallback_qualities': ['720p', '480p', '360p'],
         'force_download': False,
         'file_format': '{anime_title}/{anime_title}_{ep_no}',
-        'provider': 'twist.moe',
+        'provider': 'animepahe',
         'external_downloader': '',
     },
     'watch': {
-        'quality': '720p',
+        'quality': '1080p',
+        'fallback_qualities': ['720p', '480p', '360p'],
         'log_level': 'INFO',
-        'provider': '9anime',
+        'provider': 'animepahe',
     },
     "siteconfig": {
         "nineanime": {

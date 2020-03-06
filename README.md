@@ -44,17 +44,15 @@ Yeah. Me too! That's why this tool exists.
   
 ## Supported Sites
 
-- 9anime
-- twist.moe
-- KissAnime
-- KissCartoon
-- Gogoanime
-- AnimePahe
+- Animepahe
 - Anistream
-- Animeflv (Latin)
-- itsaturday.com
-- Animefreak
 - Animeflix
+- Animefreak
+- Gogoanime
+- itsaturday
+- Animeflv
+- Kissanime - requires Node.js
+- Kisscartoon - requires Node.js
 
 ## Installation
 
