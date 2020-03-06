@@ -5,13 +5,13 @@ ALL_ANIME_SITES = [
     ('nineanime', '9anime', 'NineAnime'),
     ('gogoanime', 'gogoanime', 'GogoAnime'),
     ('kissanime', 'kissanime', 'KissAnime'),
-    ('kisscartoon', 'kisscartoon', 'KissCartoon'), 
-    ('twistmoe', 'twist.moe', 'TwistMoe'), 
+    ('kisscartoon', 'kisscartoon', 'KissCartoon'),
+    ('twistmoe', 'twist.moe', 'TwistMoe'),
     ('animepahe', 'animepahe', 'AnimePahe'),
-    ('animeflv', 'animeflv', 'Animeflv'), 
+    ('animeflv', 'animeflv', 'Animeflv'),
     ('itsaturday', 'itsaturday', 'Itsaturday'),
     ('animefreak', 'animefreak', 'AnimeFreak'),
-    ('animeflix', 'animeflix', 'AnimeFlix'), 
+    ('animeflix', 'animeflix', 'AnimeFlix'),
 ]
 
 
