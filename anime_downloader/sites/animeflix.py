@@ -5,12 +5,11 @@ from anime_downloader.sites import helpers
 class AnimeFlix(Anime, sitename='animeflix'):
         """
         Site :https://animeflix.io/
-
         """
         sitename = 'animeflix'
-        search_url = 'https://www.animeflix.io/api/search'
-        anime_url = 'https://www.animeflix.io/shows'
-        episodeList_url = 'https://www.animeflix.io/api/anime-schema'
+        search_url = 'https://animeflix.io/api/search'
+        anime_url = 'https://animeflix.io/shows'
+        episodeList_url = 'https://animeflix.io/api/anime-schema'
         meta_url = 'https://animeflix.io/api/anime/detail'
         QUALITIES = ['360p', '480p', '720p', '1080p']
 
