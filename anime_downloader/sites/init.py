@@ -6,7 +6,7 @@ ALL_ANIME_SITES = [
     ('gogoanime', 'gogoanime', 'GogoAnime'),
     ('kissanime', 'kissanime', 'KissAnime'), #Cloudflare confirmation
     ('kisscartoon', 'kisscartoon', 'KissCartoon'), #Cloudflare confirmation
-    ('twistmoe', 'twist.moe', 'TwistMoe'), #Need rework to bypass the javascript
+    ('twistmoe', 'twist.moe', 'TwistMoe'), #Needs rework to bypass the javascript
     ('animepahe', 'animepahe', 'AnimePahe'),
     ('animeflv', 'animeflv', 'Animeflv'), #Cloudflare confirmation
     ('itsaturday', 'itsaturday', 'Itsaturday'),
