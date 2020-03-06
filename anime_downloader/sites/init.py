@@ -4,15 +4,14 @@ ALL_ANIME_SITES = [
     # ('filename', 'sitename', 'classname')
     ('nineanime', '9anime', 'NineAnime'),
     ('gogoanime', 'gogoanime', 'GogoAnime'),
-    ('kissanime', 'kissanime', 'KissAnime'),
-    ('kisscartoon', 'kisscartoon', 'KissCartoon'),
-    ('twistmoe', 'twist.moe', 'TwistMoe'),
+    ('kissanime', 'kissanime', 'KissAnime'), #Cloudflare confirmation
+    ('kisscartoon', 'kisscartoon', 'KissCartoon'), #Cloudflare confirmation
+    ('twistmoe', 'twist.moe', 'TwistMoe'), #Need rework to bypass the javascript
     ('animepahe', 'animepahe', 'AnimePahe'),
-    ('anistream', 'anistream', 'Anistream'),
-    ('animeflv', 'animeflv', 'Animeflv'),
+    ('animeflv', 'animeflv', 'Animeflv'), #Cloudflare confirmation
     ('itsaturday', 'itsaturday', 'Itsaturday'),
     ('animefreak', 'animefreak', 'AnimeFreak'),
-    ('animeflix', 'animeflix', 'AnimeFlix'),
+    ('animeflix', 'animeflix', 'AnimeFlix'), 
 ]
 
 
