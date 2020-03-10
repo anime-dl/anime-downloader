@@ -30,6 +30,7 @@ setup(
         'requests-cache>=0.4.13',
         'tabulate>=0.8.3',
         'pycryptodome>=3.8.2',
+        'jsbeautifier>=1.10.3',
     ],
     extras_require={
         'dev': [
