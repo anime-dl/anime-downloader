@@ -26,10 +26,10 @@ class Kwik(BaseExtractor):
         regex_all = (r"var _[\W\w]{5}=\"[\W\w]*?\"")
         regex_var = (r"\"[\W\w]*?\"")
 
-        deobfuscated_var = re.search(regex_all,deobfuscated_text).group() 
+        deobfuscated_var = re.search(regex_all,deobfuscated_text).group()
         token = (re.search(regex_var,deobfuscated_var).group()[1:-1])[::-1]
 
-        stream_url = helpers.post(download_url.replace('kwik.cx/f/','kwik.cx/d/'), 
+        stream_url = helpers.post(download_url.replace('kwik.cx/f/','kwik.cx/d/'),
                                       referer=download_url,
                                       data={'_token': token},
                                       allow_redirects=False).headers['Location']
