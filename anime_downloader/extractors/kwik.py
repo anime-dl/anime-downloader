@@ -1,8 +1,9 @@
 import logging
+import jsbeautifier
 import re
 from anime_downloader.extractors.base_extractor import BaseExtractor
 from anime_downloader.sites import helpers
-
+import sys
 logger = logging.getLogger(__name__)
 
 
@@ -15,26 +16,23 @@ class Kwik(BaseExtractor):
 
     def _get_data(self):
 
-        # Need a javascript deobsufication api/python, so someone smarter
-        # than me can work on that for now I will add the pattern I observed
-
-        # alternatively you can pattern match on `src` for stream_url part
-        source_parts_re = re.compile(r'action=\"([^"]+)\".*value=\"([^"]+)\".*Click Here to Download',
-                                     re.DOTALL)
-
         # Kwik servers don't have direct link access you need to be referred
-        # from somewhere, I will just use the url itself.
+        # from somewhere, I will just use the url itself
 
         download_url = self.url.replace('kwik.cx/e/', 'kwik.cx/f/')
-
         kwik_text = helpers.get(download_url, referer=download_url).text
-        post_url, token = source_parts_re.search(kwik_text).group(1, 2)
+        deobfuscated_text = (jsbeautifier.beautify(kwik_text))
 
-        stream_url = helpers.post(post_url,
-                                  referer=download_url,
-                                  data={'_token': token},
-                                  allow_redirects=False).headers['Location']
+        regex_all = (r"var _[\W\w]{5}=\"[\W\w]*?\"")
+        regex_var = (r"\"[\W\w]*?\"")
 
+        deobfuscated_var = re.search(regex_all,deobfuscated_text).group() 
+        token = (re.search(regex_var,deobfuscated_var).group()[1:-1])[::-1]
+
+        stream_url = helpers.post(download_url.replace('kwik.cx/f/','kwik.cx/d/'), 
+                                      referer=download_url,
+                                      data={'_token': token},
+                                      allow_redirects=False).headers['Location']
         title = stream_url.rsplit('/', 1)[-1].rsplit('.', 1)[0]
 
         logger.debug('Stream URL: %s' % stream_url)
