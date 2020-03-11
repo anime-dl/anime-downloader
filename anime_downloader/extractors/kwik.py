@@ -23,7 +23,7 @@ class Kwik(BaseExtractor):
         deobfuscated_text = (jsbeautifier.beautify(kwik_text))
 
         regex = r"var _[\W\w]{5}=\"[\W\w]*?\""
-        token = re.search(regex,deobfuscated_var).group(1)[::-1]
+        token = re.search(regex,deobfuscated_text).group(1)[::-1]
 
         stream_url = helpers.post(download_url.replace('kwik.cx/f/','kwik.cx/d/'),
                                       referer=download_url,
