@@ -1,6 +1,8 @@
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
+import logging
 
+logger = logging.getLogger(__name__)
 
 class AnimeFlix(Anime, sitename='animeflix'):
         """
@@ -30,15 +32,16 @@ class AnimeFlix(Anime, sitename='animeflix'):
         def _scrape_episodes(self):
             # TODO: find a better way to do splits
             # find a way to pass some values within the class
-            self.slug = self.url.strip('/').split('/')[-1]
             episodes = helpers.get(self.episodeList_url,
                                    params={'slug': self.slug}).json()
             return [ self.anime_url + episode['url'] for episode in episodes['episodes'] ]
         
         def _scrape_metadata(self):
+            self.slug = self.url.strip('/').split('/')[-1]
             meta = helpers.get(self.meta_url, 
                                params={'slug': self.slug}).json()
             self.title = meta['data']['title']
+            logger.debug(self.title)
 
 
 
@@ -52,5 +55,8 @@ class AnimeFlixEpisode(AnimeEpisode, sitename='animeflix'):
                                   params={'episode_num': self.ep_no, 'slug': self.url.strip('/').split('/')[-2]}).json()
             id = episode['data']['current']['id']
             download_link = helpers.get(
-                f'{self.stream_url}={id}').json()[0]['file']
-            return [('no_extractor',download_link)]
+                f'{self.stream_url}={id}').json()
+            i = 0
+            while download_link[i]['provider'] != 'AUEngine' :
+                i = i + 1
+            return [('no_extractor',download_link[i]['file'])]
