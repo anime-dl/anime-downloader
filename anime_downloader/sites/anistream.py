@@ -63,5 +63,5 @@ class AnistreamEpisode(AnimeEpisode, sitename='anistream.xyz'):
             if v['host'] == 'trollvid':
                 sources.append(('trollvid', 'https://trollvid.net/embed/' + v['id']))
             if v['host'] == 'mp4upload':
-                sources.append(('mp4upload', 'https://www.mp4upload.com/embed/{v[id]}.html'))
-        return sources
+                sources.append(('mp4upload', f'https://www.mp4upload.com/embed-{v["id"]}.html'))
+        return sorted(sources)
