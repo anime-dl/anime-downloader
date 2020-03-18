@@ -221,6 +221,10 @@ def format_command(cmd, episode, file_format, path):
     return cmd
 
 
+def deobfuscate_packed_js(packedjs):
+    return eval_in_node('eval=console.log; ' + packedjs)
+
+
 def eval_in_node(js: str):
     # TODO: This should be in util
     output = subprocess.check_output(['node', '-e', js])
