@@ -16,14 +16,14 @@ DEFAULT_CONFIG = {
         'fallback_qualities': ['720p', '480p', '360p'],
         'force_download': False,
         'file_format': '{anime_title}/{anime_title}_{ep_no}',
-        'provider': 'animepahe',
+        'provider': 'twist.moe',
         'external_downloader': '',
     },
     'watch': {
         'quality': '1080p',
         'fallback_qualities': ['720p', '480p', '360p'],
         'log_level': 'INFO',
-        'provider': 'animepahe',
+        'provider': 'twist.moe',
     },
     "siteconfig": {
         "nineanime": {
