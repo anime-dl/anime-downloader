@@ -1,6 +1,5 @@
 import logging
 import re
-import sys
 
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
