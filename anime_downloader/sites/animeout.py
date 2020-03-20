@@ -13,7 +13,7 @@ class AnimeOut(Anime, sitename='animeout'):
                                          params={'s': query})).select('h3.post-title > a')
 
             title_data = {
-                'data' : [] 
+                'data' : []
             }
             for a in range(len(search_results)):
                 url = search_results[a].get('href')
@@ -23,7 +23,7 @@ class AnimeOut(Anime, sitename='animeout'):
                     'title' : title,
                 }
                 title_data['data'].append(data)
-            
+
             search_results = [
                 SearchResult(
                     title=result["title"],
@@ -36,7 +36,7 @@ class AnimeOut(Anime, sitename='animeout'):
             soup = helpers.soupify(helpers.get(self.url))
             elements = soup.select('div.article-content > p > a')
 
-            episode_links = []  
+            episode_links = []
             for a in elements:
                 if 'Direct Download' in a.text:
                     episode_links.append(a.get('href'))
@@ -47,7 +47,7 @@ class AnimeOut(Anime, sitename='animeout'):
             self.title = soup.select('h1.page-title')[0].text
 
 class AnimeOutEpisode(AnimeEpisode, sitename='animeout'):
-        def _get_sources(self): 
+        def _get_sources(self):
             soup = helpers.soupify(helpers.get(self.url))
             link = soup.select('div.Center > p > h2 > a')[0].get('href')
             script = helpers.soupify(helpers.get(link)).select('script')[2].text
