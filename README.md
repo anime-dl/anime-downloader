@@ -44,6 +44,7 @@ Yeah. Me too! That's why this tool exists.
   
 ## Supported Sites
 
+- twist.moe
 - Animepahe
 - Anistream
 - Animeflix
