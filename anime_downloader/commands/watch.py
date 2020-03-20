@@ -52,6 +52,9 @@ def command(anime_name, new, update_all, _list, quality, remove,
     download   : Download episodes of selected anime
     """
     util.print_info(__version__)
+    echo('Watch is deprecated in favour of adl: https://github.com/RaitaroH/adl .')
+    echo('You can use dl command to stream anime if you do not want anime tracking.')
+    echo('watch command may come back in the future.')
 
     watcher = _watch.Watcher()
 

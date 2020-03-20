@@ -39,6 +39,7 @@ NOTE: To download from sites marked `[cloudflare]`, anime-downloader has to be i
 
    usage/installation
    usage/dl
+   usage/test
    usage/watch
    usage/config
    usage/sites

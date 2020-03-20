@@ -77,7 +77,6 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             external_downloader, chunk_size, disable_ssl, fallback_qualities, choice):
     """ Download the anime using the url or search for it.
     """
-    
     util.print_info(__version__)
     # TODO: Replace by factory
     cls = get_anime_class(anime_url)
