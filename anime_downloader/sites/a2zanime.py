@@ -11,9 +11,9 @@ class A2zanime(Anime, sitename='a2zanime'):
         @classmethod
         def search(cls, query):
             search_results = helpers.soupify(helpers.get(f'{cls.url}/search?url=search&q={query}')).select('div.main-con > a')
-            
+
             title_data = {
-                'data' : [] 
+                'data' : []
             }
             for a in range(len(search_results)):
                 url = cls.url + search_results[a].get('href')
@@ -36,12 +36,12 @@ class A2zanime(Anime, sitename='a2zanime'):
             soup = helpers.soupify(helpers.get(self.url))
             #print(soup)
             elements = soup.select('div.card-bodyu > a')
-            
 
-            episode_links = []  
-            for a in elements[::-1]: 
+
+            episode_links = []
+            for a in elements[::-1]:
                 episode_links.append('https://a2zanime.com' + a.get('href'))
-            
+
             return [a for a in episode_links]
 
         def _scrape_metadata(self):
@@ -49,12 +49,12 @@ class A2zanime(Anime, sitename='a2zanime'):
             self.title = soup.select('h1.title')[0].text
 
 class A2zanimeEpisode(AnimeEpisode, sitename='a2zanime'):
-        def _get_sources(self): 
+        def _get_sources(self):
             #You can get multiple sources from this
             soup = helpers.soupify(helpers.get(self.url))
             regex = r"data-video-link=\"//[^\"]*"
             url = 'https:' + re.search(regex,str(soup)).group().replace('data-video-link="','')
-            
+
             soup = helpers.soupify(helpers.get(url))
             url = (soup.select('div > iframe')[0].get('src'))
 
@@ -63,5 +63,5 @@ class A2zanimeEpisode(AnimeEpisode, sitename='a2zanime'):
 
             soup = helpers.soupify(helpers.get(url))
             url = soup.select('div.dowload > a')[0].get('href')
-            
+
             return [('no_extractor', url ,)]
