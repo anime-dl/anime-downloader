@@ -52,6 +52,7 @@ Yeah. Me too! That's why this tool exists.
 - Gogoanime
 - Dubbedanime
 - a2zanime
+- animeout
 - itsaturday
 - Animeflv
 - Kissanime - requires Node.js
