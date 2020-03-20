@@ -21,9 +21,9 @@
 </a>
 </div>
 
-  
+
 ---
-  
+
 # Anime Downloader
 
 Ever dreamt about watching anime for free effortlessly without all those unbearable ads? Ever dreamt of downloading your favourite anime for that long trip?
@@ -41,7 +41,7 @@ Yeah. Me too! That's why this tool exists.
 - Add any anime to your watch list using `anime watch` and let anime downloader take care of everything for you.
 - Download using external downloader ([aria2](https://aria2.github.io/) recommended).
 - Configurable using `config.json`. See [documentation](https://github.com/vn-ki/anime-downloader/wiki/Config).
-  
+
 ## Supported Sites
 
 - twist.moe
@@ -50,6 +50,7 @@ Yeah. Me too! That's why this tool exists.
 - Animeflix
 - Animefreak
 - Gogoanime
+- Dubbedanime
 - itsaturday
 - Animeflv
 - Kissanime - requires Node.js
@@ -65,9 +66,9 @@ If you have trouble installing, see extended installation instructions [here](ht
 - For cloudflare scraping [cfscrape](https://github.com/Anorov/cloudflare-scrape) is used. It depends on [`node-js`](https://nodejs.org/en/). So if you want to use cloudflare, make sure you have [node-js](https://nodejs.org/en/) installed.
 - You might have to use pip3 depending on your system
 
-## Usage 
+## Usage
 
-See [wiki](https://github.com/vn-ki/anime-downloader/wiki).  
+See [wiki](https://github.com/vn-ki/anime-downloader/wiki).
 
 Anime downloader has two sub commands, `dl` and `watch`.
 
