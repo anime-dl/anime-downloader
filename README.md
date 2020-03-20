@@ -51,6 +51,7 @@ Yeah. Me too! That's why this tool exists.
 - Animefreak
 - Gogoanime
 - Dubbedanime
+- a2zanime
 - itsaturday
 - Animeflv
 - Kissanime - requires Node.js
