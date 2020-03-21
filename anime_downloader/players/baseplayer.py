@@ -31,10 +31,10 @@ class BasePlayer(metaclass=ABCMeta):
         '''
         return
 
-    def __init__(self, stream_url):
+    def __init__(self, episode):
         # TODO: Stream urls is a list of urls for now
         # It should be a list of seperate class with title and other metadata
-        self.stream_url = stream_url
+        self.episdoe = episode
 
     def _get_executable(self):
         if os.name == 'nt':
