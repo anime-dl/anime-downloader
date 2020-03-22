@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 # Don't warn if not using fuzzywuzzy[speedup]
 with warnings.catch_warnings():
     warnings.simplefilter('ignore')
-    from fuzzywuzzy import process
+    from rapidfuzz import process
 
 
 class Watcher:

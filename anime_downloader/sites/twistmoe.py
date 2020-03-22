@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 # Don't warn if not using fuzzywuzzy[speedup]
 with warnings.catch_warnings():
     warnings.simplefilter('ignore')
-    from fuzzywuzzy import process
+    from rapidfuzz import process
 
 BLOCK_SIZE = 16
 KEY = b"LXgIVP&PorO68Rq7dTx8N^lP!Fa5sGJ^*XK"
