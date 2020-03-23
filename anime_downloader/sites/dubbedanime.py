@@ -55,15 +55,11 @@ class Dubbedanime(Anime, sitename='dubbedanime'):
 
 class DubbedanimeEpisode(AnimeEpisode, sitename='dubbedanime'):
         def _get_sources(self):
-            # TODO: refractor to extractor
             soup = helpers.soupify(helpers.get(self.url)).text
-            xuath = r"xuath = '[^']*"
-            x = re.search(xuath,soup).group().split("xuath = '")[1]
-            tokenregex = r'"trollvid","id":"[^"]*'
-            token = re.search(tokenregex,soup).group(0).split('"trollvid","id":"')[1]
+
+            x = re.search(r"xuath = '[^']*", soup).group().replace("xuath = '",'')
+            token = re.search(r'"trollvid","id":"[^"]*', soup).group(0).replace('"trollvid","id":"','')
+            
             url = f'https://mp4.sh/embed/{token}{x}'
+            return [('mp4sh', url)]
 
-            soup = helpers.get(url, referer=self.url).text
-            url = re.search(r'source src="[^"]*',soup).group().split('source src="')[1]
-
-            return [('no_extractor', url,)]
