@@ -38,7 +38,7 @@ class AnimeSimple(Anime, sitename='animesimple'):
         def _scrape_episodes(self):
             soup = helpers.soupify(helpers.get(self.url))
             anime_id = soup.find(id = 'animeid').get('value')
-            
+
             elements = helpers.soupify(helpers.get('https://animesimple.com/request',
                                         params={
                                         'anime-id': anime_id,
@@ -51,7 +51,7 @@ class AnimeSimple(Anime, sitename='animesimple'):
         def _scrape_metadata(self):
             soup = helpers.soupify(helpers.get(self.url)).select('h1.media-heading')
             regex = r'class="media-heading">[^<]*'
-            self.title = re.search(regex,str(soup)).group().replace('class="media-heading">','')
+            self.title = re.search(regex,str(soup)).group().replace('class="media-heading">','').strip()
 
 class AnimeSimpleEpisode(AnimeEpisode, sitename='animesimple'):
         def _get_sources(self):
@@ -59,8 +59,8 @@ class AnimeSimpleEpisode(AnimeEpisode, sitename='animesimple'):
 
             regex = r'var json = [^;]*'
             json = re.search(regex,str(soup)).group().replace('var json = ','') #Lots of sources can be found here
-            
+
             trollvid = r"src='https:\\/\\/trollvid.net\\/embed\\/[^']*"
             embed = re.search(trollvid,json).group().replace('\\','').replace("src='",'')
-            
+
             return [('trollvid', embed,)]
