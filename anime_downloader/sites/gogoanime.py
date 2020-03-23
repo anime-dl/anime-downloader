@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class GogoanimeEpisode(AnimeEpisode, sitename='gogoanime'):
-    _base_url = 'https://www2.gogoanime.se'
+    _base_url = 'https://gogoanime.io/'
 
     def _get_sources(self):
 
@@ -70,7 +70,8 @@ class GogoAnime(Anime, sitename='gogoanime'):
     """
     sitename = 'gogoanime'
     QUALITIES = ['360p', '480p', '720p', '1080p']
-    _episode_list_url = 'https://www2.gogoanime.se//load-list-episode'
+    _base_url = 'https://gogoanime.io/'
+    _episode_list_url = 'https://gogoanime.io/load-list-episode'
     _search_api_url = 'https://ajax.apimovie.xyz/site/loadAjaxSearch'
 
     @classmethod
@@ -110,7 +111,7 @@ class GogoAnime(Anime, sitename='gogoanime'):
                                            params=params))
 
         epurls = list(
-            reversed(['https://www2.gogoanime.se'+a.get('href').strip()
+            reversed([self._base_url + a.get('href').strip()
                       for a in soup.select('li a')])
         )
 
