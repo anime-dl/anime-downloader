@@ -42,12 +42,13 @@ class TwistMoe(Anime, sitename='twist.moe'):
         }
         soup = helpers.soupify(helpers.get('https://twist.moe/', allow_redirects=True, headers=headers))
         if 'being redirected' in soup.text:
+            logger.debug('Tring to extract cookie')
             cookie = get_cookie(soup)
-            with requests_cache.disabled():
-                headers['cookie'] = cookie
-                # XXX: Can't use helpers.get here becuse that one is cached. Investigate
-                r = requests.get('https://twist.moe/api/anime', headers=headers)
-                all_anime = r.json()
+            logger.debug('Got cookie: ' + cookie)
+            headers['cookie'] = cookie
+            # XXX: Can't use helpers.get here becuse that one is cached. Investigate
+            r = helpers.get('https://twist.moe/api/anime', headers=headers)
+            all_anime = r.json()
         animes = []
         for anime in all_anime:
             animes.append(SearchResult(
