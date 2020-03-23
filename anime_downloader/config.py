@@ -38,7 +38,11 @@ DEFAULT_CONFIG = {
         },
         'gogoanime': {
             "server": "cdn",
-        }
+        },
+        'animesimple': {
+            "version": "subbed",
+            "server": "trollvid",
+        },
     }
 }
 
