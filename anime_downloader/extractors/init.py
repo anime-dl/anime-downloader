@@ -44,6 +44,12 @@ ALL_EXTRACTORS = [
         'class': 'Trollvid'
     },
     {
+        'sitename': 'mp4sh',
+        'modulename': 'mp4sh',
+        'regex': 'mp4sh',
+        'class': 'Mp4Sh'
+    },
+    {
         'sitename': 'vidstream',
         'modulename': 'vidstream',
         'regex': 'vidstream',
