@@ -75,7 +75,7 @@ See [wiki](https://github.com/vn-ki/anime-downloader/wiki).
 Anime downloader has two sub commands, `dl` and `watch`.
 
 - [dl](https://github.com/vn-ki/anime-downloader/wiki/dl-command): `dl` can download anime.
-- [watch](https://github.com/vn-ki/anime-downloader/wiki/watch-command): `watch` can manage your anime watch list. Needs [mpv](https://mpv.io). With `watch` you'll never have to go to any anime sites ever again.
+- ~~[watch](https://github.com/vn-ki/anime-downloader/wiki/watch-command)~~: Deprecated in favour of [adl](https://github.com/RaitaroH/adl)
 
 **To use `anime_downloader` in your package:**
 
