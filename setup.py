@@ -36,6 +36,9 @@ setup(
             'pytest',
             'httpretty',
         ],
+        'gui': [
+            'eel>=0.12.0',
+        ]
     },
     long_description=long_description,
     long_description_content_type='text/markdown',

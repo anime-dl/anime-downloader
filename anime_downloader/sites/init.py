@@ -2,11 +2,11 @@ from importlib import import_module
 
 ALL_ANIME_SITES = [
     # ('filename', 'sitename', 'classname')
+    ('twistmoe', 'twist.moe', 'TwistMoe'),
     ('nineanime', '9anime', 'NineAnime'),
     ('gogoanime', 'gogoanime', 'GogoAnime'),
     ('kissanime', 'kissanime', 'KissAnime'),
     ('kisscartoon', 'kisscartoon', 'KissCartoon'),
-    ('twistmoe', 'twist.moe', 'TwistMoe'),
     ('animepahe', 'animepahe', 'AnimePahe'),
     ('animeflv', 'animeflv', 'Animeflv'),
     ('itsaturday', 'itsaturday', 'Itsaturday'),

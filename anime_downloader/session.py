@@ -10,7 +10,8 @@ import tempfile
 
 logger = logging.getLogger(__name__)
 
-cachefile = tempfile.mktemp()
+# cachefile = tempfile.mktemp()
+cachefile = '/tmp/animecache'
 requests_cache.install_cache(cachefile, backend='sqlite', expires_after=300)
 
 _session = requests_cache.CachedSession(cachefile)
