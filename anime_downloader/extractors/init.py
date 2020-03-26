@@ -47,7 +47,7 @@ ALL_EXTRACTORS = [
         'sitename': 'mp4sh',
         'modulename': 'mp4sh',
         'regex': 'mp4sh',
-        'class': 'Mp4Sh'
+        'class': 'MP4Sh'
     },
     {
         'sitename': 'vidstream',
