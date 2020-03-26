@@ -1,9 +1,12 @@
 import logging
 import re
-import sys
+import json
 
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
+from anime_downloader.extractors import get_extractor
+
+logger = logging.getLogger(__name__)
 
 class AnimeSimple(Anime, sitename='animesimple'):
         sitename = 'animesimple'
@@ -55,12 +58,25 @@ class AnimeSimple(Anime, sitename='animesimple'):
 
 class AnimeSimpleEpisode(AnimeEpisode, sitename='animesimple'):
         def _get_sources(self):
+            server = self.config['server']
+
             soup = helpers.soupify(helpers.get(self.url))
 
             regex = r'var json = [^;]*'
-            json = re.search(regex,str(soup)).group().replace('var json = ','') #Lots of sources can be found here
+            sources = re.search(regex,str(soup)).group().replace('var json = ','').split('},') #Lots of sources can be found here
+            
+            sources_list = []
+            for a in sources:
+                sources_list.append(json.loads((a.replace('[','',1).replace('}]','',1))+'}'))
+            for i in range(3):
+                if i == 1:logger.debug('Preferred server %s not found. Trying all supported servers in selected language.',server)
+                if i == 2:logger.debug('No %s servers found, trying all servers',self.config['version'])
+                for a in sources_list:
+                    if a['type'] == self.config['version'] or i > 1:
+                        if a['host'] == self.config['server'] or i > 0:
+                            if get_extractor(a['host']) == None:
+                                server = 'no_extractor'
+                            else:server = a['host']
 
-            trollvid = r"src='https:\\/\\/trollvid.net\\/embed\\/[^']*"
-            embed = re.search(trollvid,json).group().replace('\\','').replace("src='",'')
-
-            return [('trollvid', embed,)]
+                            embed = re.search(r"src=['|\"][^\'|^\"]*",str(a['player']),re.IGNORECASE).group()[5:]
+                            return [(server, embed,)]
