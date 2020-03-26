@@ -35,7 +35,7 @@
         <div class="select">
           <select id="provider" class="select"></select>
         </div>
-        <button class="button" onclick="search_anime()">Search</button>
+        <button class="button" id="search" onclick="search_anime()">Search</button>
 
         <div id="anime-card" class="card">
           <div class="card-content">
@@ -151,7 +151,13 @@
         settings_body.appendChild(el);
       }
     }
-
+    
+    var input = document.getElementById("query");
+    input.addEventListener("keyup", function(event) {
+      if (event.keyCode === 13) {
+        document.getElementById("search").click();
+      }
+    })
 
     eel.expose(populate_dropdown)
     eel.expose(populate_search)
