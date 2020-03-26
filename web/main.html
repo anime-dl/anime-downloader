@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>anime-dl</title>
+
+    <!-- Include eel.js - note this file doesn't exist in the 'web' directory -->
+    <script type="text/javascript" src="/eel.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <style>
+#title {
+  margin: 20px;
+}
+      #settings-button {
+        vertical-align: middle;
+      }
+
+      #anime-card {
+        margin-top: 20px;
+        margin-bottom: 20px;
+      }
+    </style>
+
+  </head>
+  <body>
+    <div class="columns">
+      <div class="column is-three-fifths is-offset-one-fifth">
+        <h1 class="is-size-1" id="title">Anime downloader
+          <button id = "settings-button" class="button is-info is-light is-rounded is-small" onclick="document.getElementById('settings-modal').classList.add('is-active');populate_settings();">
+            Settings
+          </button>
+        </h1>
+
+        <input id="query" class="input" type="text" style="width:400px" placeholder="Query"></input>
+        <div class="select">
+          <select id="provider" class="select"></select>
+        </div>
+        <button class="button" onclick="search_anime()">Search</button>
+
+        <div id="anime-card" class="card">
+          <div class="card-content">
+            <div class="media">
+              <div class="media-content">
+                <p class="title is-4" id="anime-title" style="display:inline">Test</p>
+                <div id="anime-info" class="is-size-7" style="display:inline">eps: 69</div>
+              </div>
+            </div>
+
+            <div class="field has-addons has-addons-right" style="justify-content: flex-start">
+              <p class="control">
+                <input class="input" type="number" placeholder="From, 0 if empty">
+              </p>
+              <p class="control">
+                <input class="input" type="number" placeholder="Till, last ep if empty">
+              </p>
+              <p class="control">
+                <a class="button is-primary">
+                  Download
+                </a>
+              </p>
+            </div>
+
+
+            <div class="content"></div>
+          </div>
+        </div>
+
+        <div id="search-results"></div>
+      </div>
+    </div>
+
+    <div id="settings-modal" class="modal">
+      <div class="modal-background"></div>
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title">Settings</p>
+          <button class="delete" aria-label="close" onclick="close_modal()"></button>
+        </header>
+        <section class="modal-card-body">
+          <div id="settings-body"></div>
+        </section>
+        <footer class="modal-card-foot">
+          <button class="button is-success" onclick="save_settings">Save changes</button>
+          <button class="button" onclick="close_modal()">Cancel</button>
+        </footer>
+      </div>
+    </div>
+
+
+  </body>
+  <script type="text/javascript">
+    var select = document.getElementById("provider");
+    var search_res = document.getElementById("search-results");
+
+    eel.populate_dropdown();
+
+    function populate_dropdown(options){
+      console.log('populaing');
+      for(var i = 0; i < options.length; i++) {
+        var opt = options[i];
+        var el = document.createElement("option");
+        el.textContent = opt;
+        el.value = opt;
+        select.appendChild(el);
+      }
+    }
+
+    async function populate_animeinfo(url) {
+      let info = await eel.get_animeinfo(url)();
+      console.log(info)
+      document.getElementById('anime-title').innerHTML = info.title;
+      document.getElementById('anime-info').innerHTML = `eps: ${info.length}`;
+    }
+
+    function populate_search(results) {
+      console.log(results)
+      search_res.innerHTML = '';
+      for(var i = 0; i < results.length; i++) {
+        var res = results[i];
+        var el = document.createElement("div");
+        el.textContent = res.title;
+        el.url = res.url
+        el.addEventListener('click', function () {
+          console.log(this.url);
+          populate_animeinfo(this.url);
+        })
+        search_res.appendChild(el);
+      }
+    }
+
+    function search_anime() {
+      var provider = document.getElementById('provider').value;
+      var query = document.getElementById('query').value;
+      eel.anime_search(query, provider);
+    }
+
+    function close_modal() {
+      document.getElementById('settings-modal').classList.remove('is-active');
+    }
+
+    async function populate_settings() {
+      var settings_body = document.getElementById("settings-body");
+      settings_body.innerHTML = '';
+      let settings = await eel.get_config()();
+      console.log(settings)
+      let dl_s = settings.dl;
+      for (let j in dl_s) {
+        let el = document.createElement('div');
+        el.classList.add('field');
+        el.innerHTML = `<label class="label" for='${j}'>${j}</label><input type='text' class='input' value="${dl_s[j]}">`
+        settings_body.appendChild(el);
+      }
+    }
+
+
+    eel.expose(populate_dropdown)
+    eel.expose(populate_search)
+  </script>
+</html>
+
