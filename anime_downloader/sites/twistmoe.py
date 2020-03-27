@@ -37,22 +37,23 @@ class TwistMoe(Anime, sitename='twist.moe'):
     @classmethod
     def search(self, query):
         headers = {
-        'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.46 Safari/537.36'
+        'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.46 Safari/537.36',
+        'x-access-token': '1rj2vRtegS8Y60B3w3qNZm5T2Q0TN2NR'
         }
         soup = helpers.soupify(helpers.get('https://twist.moe/', allow_redirects=True, headers=headers))
         if 'being redirected' in soup.text:
+            logger.debug('Tring to extract cookie')
             cookie = get_cookie(soup)
-            with requests_cache.disabled():
-                headers['cookie'] = cookie
-                # XXX: Can't use helpers.get here becuse that one is cached. Investigate
-                r = requests.get('https://twist.moe/', headers=headers)
-                soup = helpers.soupify(r)
-        all_anime = soup.select_one('nav.series').select('li')
+            logger.debug('Got cookie: ' + cookie)
+            headers['cookie'] = cookie
+            # XXX: Can't use helpers.get here becuse that one is cached. Investigate
+            r = helpers.get('https://twist.moe/api/anime', headers=headers)
+            all_anime = r.json()
         animes = []
         for anime in all_anime:
             animes.append(SearchResult(
-                title=anime.find('span').contents[0].strip(),
-                url='https://twist.moe' + anime.find('a')['href'],
+                title=anime['title'],
+                url='https://twist.moe/a/' + anime['slug']['slug'] + '/',
             ))
         animes = [ani[0] for ani in process.extract(query, animes)]
         return animes
@@ -69,7 +70,7 @@ class TwistMoe(Anime, sitename='twist.moe'):
         episodes = episodes.json()
         logging.debug(episodes)
         self.title = anime_name
-        episode_urls = ['https://eu1.twist.moe' +
+        episode_urls = ['https://twist.moe' +
                         decrypt(episode['source'].encode('utf-8'), KEY).decode('utf-8')
                         for episode in episodes]
 

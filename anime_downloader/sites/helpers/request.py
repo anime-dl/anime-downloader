@@ -140,7 +140,7 @@ def _log_response_body(res):
     import pathlib
     file = tempfile.mktemp(dir=temp_dir)
     logger.debug(file)
-    with open(file, 'w') as f:
+    with open(file, 'w', encoding="utf-8") as f:
         f.write(res.text)
 
     data_file = temp_dir + '/data.json'

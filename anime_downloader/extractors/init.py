@@ -43,6 +43,24 @@ ALL_EXTRACTORS = [
         'regex': 'trollvid',
         'class': 'Trollvid'
     },
+    {
+        'sitename': 'mp4sh',
+        'modulename': 'mp4sh',
+        'regex': 'mp4sh',
+        'class': 'MP4Sh'
+    },
+    {
+        'sitename': 'vidstream',
+        'modulename': 'vidstream',
+        'regex': 'vidstream',
+        'class': 'VidStream'
+    },
+    {
+        'sitename': 'haloani',
+        'modulename': 'haloani',
+        'regex': 'haloani',
+        'class': 'Haloani'
+    },
 ]
 
 

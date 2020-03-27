@@ -196,7 +196,7 @@ def format_command(cmd, episode, file_format, path):
     cmd_dict = {
         '{aria2}': 'aria2c {stream_url} -x 12 -s 12 -j 12 -k 10M -o '
                    '{file_format}.mp4 --continue=true --dir={download_dir}'
-                   ' --stream-piece-selector=inorder --min-split-size=5M --referer={referer} --check-certificate=false',
+                   ' --stream-piece-selector=inorder --min-split-size=5M --referer={referer} --check-certificate=false --user-agent={useragent}',
         '{idm}'  : 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4'
     }
 
@@ -206,6 +206,7 @@ def format_command(cmd, episode, file_format, path):
         'file_format': file_format,
         'download_dir': os.path.abspath(path),
         'referer': episode.source().referer,
+        'useragent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36'
     }
 
     if cmd == "{idm}":
@@ -218,6 +219,10 @@ def format_command(cmd, episode, file_format, path):
     cmd = [c.format(**rep_dict) for c in cmd]
     cmd = [format_filename(c, episode) for c in cmd]
     return cmd
+
+
+def deobfuscate_packed_js(packedjs):
+    return eval_in_node('eval=console.log; ' + packedjs)
 
 
 def eval_in_node(js: str):

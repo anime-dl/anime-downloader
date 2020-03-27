@@ -5,6 +5,11 @@ Installation
 The following are extended installation instructions for Windows and
 Linux users. (For windows choco users, scroll to last)
 
+Windows
+~~~~~~~
+
+Please see this video: https://www.youtube.com/watch?v=gC2tctOL5I8
+
 Windows via ``choco``
 ~~~~~~~~~~~~~~~~~~~~~
 

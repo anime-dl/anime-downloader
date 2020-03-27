@@ -25,4 +25,4 @@ def test_length(anime):
 
 
 def test_streamurl(anime):
-    assert anime[0].source().stream_url == 'https://eu1.twist.moe/anime/attackontitan/[Coalgirls]_Shingeki_no_Kyojin_01_(1920x1080_Blu-ray_FLAC)_[AEF12794].mp4'
+    assert anime[0].source().stream_url == 'https://twist.moe/anime/attackontitan/[Coalgirls]_Shingeki_no_Kyojin_01_(1920x1080_Blu-ray_FLAC)_[AEF12794].mp4'
