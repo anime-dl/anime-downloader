@@ -75,8 +75,7 @@ class GogoAnime(Anime, sitename='gogoanime'):
     _search_api_url = 'https://ajax.apimovie.xyz/site/loadAjaxSearch'
 
     @classmethod
-        def search(cls, query):
-        import sys
+    def search(cls, query):
         search_results = helpers.soupify(helpers.get(cls._search_url, params = {'keyword': query}))
         search_results = search_results.select('ul.items > li > p > a')
 
@@ -84,11 +83,9 @@ class GogoAnime(Anime, sitename='gogoanime'):
                 'data' : []
             }
         for a in search_results:
-            url = 'https://gogoanime.io' + a.get('href')
-            title = a.get('title')
             data = {
-                'url' : url,
-                'title' : title,
+                'url' : 'https://gogoanime.io' + a.get('href'),
+                'title' : a.get('title'),
             }
             title_data['data'].append(data)
 
