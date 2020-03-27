@@ -75,27 +75,30 @@ class GogoAnime(Anime, sitename='gogoanime'):
     _search_api_url = 'https://ajax.apimovie.xyz/site/loadAjaxSearch'
 
     @classmethod
-    def search(cls, query):
-        params = {
-            'keyword': query,
-            'id': -1,
-            'link_web': 'https://www1.gogoanime.sh/'
-        }
-        soup = helpers.soupify(helpers.get(
-            cls._search_api_url, params=params
-        ).json()['content'])
+        def search(cls, query):
+        import sys
+        search_results = helpers.soupify(helpers.get(cls._search_url, params = {'keyword': query}))
+        search_results = search_results.select('ul.items > li > p > a')
 
-        search_results = []
+        title_data = {
+                'data' : []
+            }
+        for a in search_results:
+            url = 'https://gogoanime.io' + a.get('href')
+            title = a.get('title')
+            data = {
+                'url' : url,
+                'title' : title,
+            }
+            title_data['data'].append(data)
 
-        for element in soup('a', class_='ss-title'):
-            search_result = SearchResult(
-                title=element.text,
-                url=element.attrs['href'],
-                poster=''
-            )
-            logger.debug(search_result)
-            search_results.append(search_result)
-        return search_results
+        search_results = [
+            SearchResult(
+                title=result["title"],
+                url=result["url"])
+            for result in title_data.get('data', [])
+        ]
+        return(search_results)
 
     def _scrape_episodes(self):
         soup = helpers.soupify(helpers.get(self.url))
