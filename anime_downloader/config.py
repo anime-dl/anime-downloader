@@ -38,7 +38,12 @@ DEFAULT_CONFIG = {
         },
         'gogoanime': {
             "server": "cdn",
-        }
+        },
+        'kickass': {
+            "server": "A-KICKASSANIME",
+            "fallback_servers": ["ORIGINAL-QUALITY-V2","HTML5-HQ","HTML5","A-KICKASSANIME","BETAPLAYER","KICKASSANIME","DEVSTREAM"],
+            "ext_fallback_servers": ["Mp4Upload","Vidcdn","Vidstreaming"],
+        },
     }
 }
 
