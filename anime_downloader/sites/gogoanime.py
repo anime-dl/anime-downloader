@@ -11,11 +11,9 @@ class GogoanimeEpisode(AnimeEpisode, sitename='gogoanime'):
     _base_url = 'https://gogoanime.io/'
 
     def _get_sources(self):
-
         # Scrape episode page to get link for download page
         soup = helpers.soupify(helpers.get(self.url))
         dl_page_url = []
-
 
         server = self.config.get('server', 'cdn')
 
@@ -72,28 +70,17 @@ class GogoAnime(Anime, sitename='gogoanime'):
     QUALITIES = ['360p', '480p', '720p', '1080p']
     _base_url = 'https://gogoanime.io/'
     _episode_list_url = 'https://gogoanime.io/load-list-episode'
-    _search_api_url = 'https://ajax.apimovie.xyz/site/loadAjaxSearch'
-
+    _search_url = 'https://gogoanime.io/search.html'
     @classmethod
     def search(cls, query):
         search_results = helpers.soupify(helpers.get(cls._search_url, params = {'keyword': query}))
         search_results = search_results.select('ul.items > li > p > a')
 
-        title_data = {
-                'data' : []
-            }
-        for a in search_results:
-            data = {
-                'url' : 'https://gogoanime.io' + a.get('href'),
-                'title' : a.get('title'),
-            }
-            title_data['data'].append(data)
-
         search_results = [
             SearchResult(
-                title=result["title"],
-                url=result["url"])
-            for result in title_data.get('data', [])
+                title=a.get('title'),
+                url='https://gogoanime.io' + a.get('href'))
+            for a in search_results
         ]
         return(search_results)
 
