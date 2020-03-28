@@ -18,19 +18,11 @@ class KickAss(Anime, sitename='kickass'):
             regex = r'\[{[\W\w]*?}]'
             search_results = json.loads(re.search(regex,str(search_results)).group())
 
-            title_data = {'data' : []}
-            for a in search_results:
-                data = {
-                    'url' : f'https://kickassanime.rs{a["slug"]}',
-                    'title' : a['name'],
-                }
-                title_data['data'].append(data)
-
             search_results = [
                 SearchResult(
-                    title=result["title"],
-                    url=result["url"])
-                for result in title_data.get('data', [])
+                    title=a['name'],
+                    url=f'https://kickassanime.rs{a["slug"]}')
+                for a in search_results
             ]
             return(search_results)
 
