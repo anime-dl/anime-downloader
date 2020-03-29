@@ -62,21 +62,18 @@ class AnimeSimpleEpisode(AnimeEpisode, sitename='animesimple'):
 
             soup = helpers.soupify(helpers.get(self.url))
 
-            regex = r'var json = [^;]*'
-            sources = re.search(regex,str(soup)).group().replace('var json = ','').split('},') #Lots of sources can be found here
-            
-            sources_list = []
-            for a in sources:
-                sources_list.append(json.loads((a.replace('[','',1).replace('}]','',1))+'}'))
+            regex = r'var json = ([^;]*)'
+            sources = json.loads(re.search(regex,str(soup)).group(1)) #Lots of sources can be found here
+
             for i in range(3):
                 if i == 1:logger.debug('Preferred server %s not found. Trying all supported servers in selected language.',server)
                 if i == 2:logger.debug('No %s servers found, trying all servers',self.config['version'])
-                for a in sources_list:
+                for a in sources:
                     if a['type'] == self.config['version'] or i > 1:
                         if a['host'] == self.config['server'] or i > 0:
                             if get_extractor(a['host']) == None:
                                 server = 'no_extractor'
                             else:server = a['host']
 
-                            embed = re.search(r"src=['|\"][^\'|^\"]*",str(a['player']),re.IGNORECASE).group()[5:]
+                            embed = re.search(r"src=['|\"]([^\'|^\"]*)",str(a['player']),re.IGNORECASE).group(1)
                             return [(server, embed,)]
