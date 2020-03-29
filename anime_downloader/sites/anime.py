@@ -347,7 +347,7 @@ class AnimeEpisode:
 
     def get_data(self):
         self._sources = self._get_sources()
-        logger.debug('Sources : '.format(self._sources))
+        logger.debug('Sources : {}'.format(self._sources))
 
     def _get_sources(self):
         raise NotImplementedError
