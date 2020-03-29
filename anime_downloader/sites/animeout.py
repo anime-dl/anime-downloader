@@ -9,29 +9,15 @@ class AnimeOut(Anime, sitename='animeout'):
         url = f'https://{sitename}.xyz/'
         @classmethod
         def search(cls, query):
-            search_results = helpers.soupify(helpers.get(cls.url,
-                                         params={'s': query})).select('h3.post-title > a')
-
-            title_data = {
-                'data' : []
-            }
-            for a in range(len(search_results)):
-                url = search_results[a].get('href')
-                title = search_results[a].text
-                data = {
-                    'url' : url,
-                    'title' : title,
-                }
-                title_data['data'].append(data)
+            search_results = helpers.soupify(helpers.get(cls.url, params={'s': query})).select('h3.post-title > a')
 
             search_results = [
                 SearchResult(
-                    title=result["title"],
-                    url=result["url"])
-                for result in title_data.get('data', [])
+                    title=search_results[a].text,
+                    url=search_results[a].get('href'))
+                for a in range(len(search_results))
             ]
             return(search_results)
-
         def _scrape_episodes(self):
             soup = helpers.soupify(helpers.get(self.url))
             elements = soup.select('div.article-content > p > a')
