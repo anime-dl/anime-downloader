@@ -8,6 +8,14 @@ from anime_downloader.sites import helpers
 logger = logging.getLogger(__name__)
 
 class KickAss(Anime, sitename='kickass'):
+        """
+        Nice things
+        Siteconfig
+        ----------
+        server: Primary server to use (Default: A-KICKASSANIME)
+        fallback_servers: Recorded working servers which is used if the primary server cannot be found
+        ext_fallback_servers: Recorded working ext_servers (second video player) which is used if the first video player fails
+        """
         sitename = 'kickass'
         url = f'https://kickassanime.rs/search'
 
@@ -42,6 +50,7 @@ class KickAss(Anime, sitename='kickass'):
             self.title = info['name']
             
 class KickAssEpisode(AnimeEpisode, sitename='kickass'):
+        #TODO sitename should be handled at a higher level, allowing shorter names
         def _get_sources(self):
             server = self.config['server']
             fallback = self.config['fallback_servers']
