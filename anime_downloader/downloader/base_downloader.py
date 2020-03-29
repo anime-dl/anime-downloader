@@ -10,43 +10,47 @@ logger = logging.getLogger(__name__)
 
 
 class BaseDownloader:
-    def __init__(self, options=None):
-        if options is None:
-            options = {}
-        self.options = options
-        # TODO: replace
-        self.referer = self.options.get('referer', '')
-
+    def __init__(self, source, path, force, range_size, callback=None):
         self.chunksize = 16384
         self._total_size = None
-        self.url = None
+        self.source = source
+        self.path = path
+
+        # these should be included in a options dict, maybe
+        self.force = force
+        self.range_size = range_size
+
+        if callback is None:
+            callback = write_status
+        self.callback = callback
 
     def check_if_exists(self):
         # Added Referer Header as kwik needd it.
+        headers = {
+            'user-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101Firefox/56.0",
+        }
+        if self.source.referer:
+            headers['referer'] = self.source.referer
         r = session.get_session().get(
-            self.url, headers={'referer': self.referer}, stream=True)
+            self.source.stream_url, headers=headers, stream=True)
 
         self._total_size = int(r.headers['Content-length'])
+        logger.debug('total size: ' + str(self._total_size))
         if os.path.exists(self.path):
             if abs(os.stat(self.path).st_size - self._total_size) < 10 \
-               and not self.options['force']:
+               and not self.force:
                 logger.warning('File already downloaded. Skipping download.')
                 return
             else:
                 os.remove(self.path)
 
-    def download(self, url, path, options=None):
+    def download(self):
         # TODO: Clean this up
         self.pre_process()
-        self.url = url
-        logger.info(path)
+        logger.info(self.path)
 
         # TODO: Use pathlib. Break into functions
-        self.path = path
-        util.make_dir(path.rsplit('/', 1)[0])
-
-        if options is not None:
-            self.options = {**options, **self.options}
+        util.make_dir(self.path.rsplit('/', 1)[0])
 
         self.check_if_exists()
 
@@ -67,7 +71,7 @@ class BaseDownloader:
 
     def report_chunk_downloaded(self):
         self.downloaded += self.chunksize
-        write_status(self.downloaded, self._total_size, self.start_time)
+        self.callback(self.downloaded, self._total_size, self.start_time)
 
 
 def write_status(downloaded, total_size, start_time):

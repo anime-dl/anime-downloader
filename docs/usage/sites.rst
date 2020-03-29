@@ -5,4 +5,4 @@ The following are the sites with configs. These can be configured using the conf
 
 .. autoclass:: anime_downloader.sites.animeflv.Animeflv
 .. autoclass:: anime_downloader.sites.anistream.Anistream
-.. autoclass:: anime_downloader.sites.nineanime.NineAnime
+.. autoclass:: anime_downloader.sites.gogoanime.Gogoanime
