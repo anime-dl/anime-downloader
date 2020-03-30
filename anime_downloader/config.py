@@ -38,6 +38,10 @@ DEFAULT_CONFIG = {
         },
         'gogoanime': {
             "server": "cdn",
+        },
+        'animerush':{
+            "server": "Mp4uploadHD Video",
+            "fallback_servers": ["MP4Upload", "Mp4upload Video", "Youruploads Video"]
         }
     }
 }
