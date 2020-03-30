@@ -49,6 +49,12 @@ ALL_EXTRACTORS = [
         'regex': 'mp4sh',
         'class': 'MP4Sh'
     },
+    {
+        'sitename': 'yourupload',
+        'modulename': 'yourupload',
+        'regex': 'yourupload',
+        'class': 'Yourupload'
+    },
 ]
 
 
