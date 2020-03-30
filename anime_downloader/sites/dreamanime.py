@@ -9,7 +9,7 @@ class DreamAnime(Anime, sitename='dreamanime'):
     Site: http://dreamanime.fun
     Config
     ------
-    version: One of ['subbed', 'dubbed]
+    version: One of ['subbed', 'dubbed']
         Selects the version of audio of anime.
     server: One of ['mp4upload', 'trollvid']
         Selects the server to download from.
