@@ -19,7 +19,7 @@ class DreamAnime(Anime, sitename='dreamanime'):
 
     @classmethod
     def search(cls, query):
-        results = helpers.get("https://dreamanime.fun/search" params = {"term" : query}).text
+        results = helpers.get("https://dreamanime.fun/search", params = {"term" : query}).text
         soup = helpers.soupify(results)
         result_data = soup.find_all("a", {"id":"epilink"})
 
