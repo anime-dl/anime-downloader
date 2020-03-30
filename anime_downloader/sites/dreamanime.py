@@ -17,7 +17,6 @@ class DreamAnime(Anime, sitename='dreamanime'):
     """
 
     sitename='dreamanime'
-    url = f'https://{sitename}.fun/search'
 
     @classmethod
     def search(cls, query):
