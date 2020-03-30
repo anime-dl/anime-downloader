@@ -9,6 +9,13 @@ import sys
 logger = logging.getLogger(__name__)
 
 class AnimeRush(Anime, sitename='animerush'):
+        """
+        Nice things
+        Siteconfig
+        ----------
+        server: primary server to use
+        fallback_servers: servers to use if the primary server cannot be found (in order)
+        """
         sitename = 'animerush'
         url = f'https://www.{sitename}.tv/search.php'
         @classmethod
