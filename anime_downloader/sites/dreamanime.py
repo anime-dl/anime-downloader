@@ -58,7 +58,8 @@ class DreamAnimeEpisode(AnimeEpisode, sitename='dreamanime'):
         server = self.config.get("server", "trollvid")
         soup = helpers.soupify(helpers.get(self.url))
         hosts = json.loads(soup.find("div", {"class":"spatry"}).previous_sibling.previous_sibling.text[21:-2])["videos"]
-        host = list(filter(lambda video: video["host"] == server, hosts))[0]
+        type = hosts[0]["type"]
+        host = list(filter(lambda video: video["host"] == server and video["type"] == type, hosts))[0]
         name = host["host"]
         _id = host["id"]
         if name == "trollvid":
