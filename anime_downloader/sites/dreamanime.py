@@ -43,14 +43,11 @@ class DreamAnime(Anime, sitename='dreamanime'):
         _all = soup.find_all("div", {"class":"episode-wrap"})
         for i in _all:
             ep_type = i.find("div", {"class":re.compile("ep-type type-.* dscd")}).text
-            link = i.find("a").get("data-src")
-
             if ep_type == 'Sub':
-                subbed.append(link)
-            else:
-                dubbed.append(link)
-
-            return eval(version)
+                subbed.append(i.find("a").get("data-src"))
+            elif ep_type == 'Dub':
+                dubbed.append(i.find("a").get("href"))
+        return eval(version)
 
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url))
