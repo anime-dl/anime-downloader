@@ -66,4 +66,4 @@ class DreamAnimeEpisode(AnimeEpisode, sitename='dreamanime'):
             link = "https://trollvid.net/embed/" + _id
         elif name == "mp4upload":
             link = f"https://mp4upload.com/embed-{_id}.html"
-        return [(name, link)]
+        return [name, link]
