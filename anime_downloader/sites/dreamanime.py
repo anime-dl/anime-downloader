@@ -1,7 +1,6 @@
 
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
-from urllib.parse import quote_plus
 import json
 import re
 
@@ -20,7 +19,7 @@ class DreamAnime(Anime, sitename='dreamanime'):
 
     @classmethod
     def search(cls, query):
-        results = helpers.get("https://dreamanime.fun/search?term=" + quote_plus(query)).text
+        results = helpers.get("https://dreamanime.fun/search" param = {"term" : query}).text
         soup = helpers.soupify(results)
         result_data = soup.find_all("a", {"id":"epilink"})
 
