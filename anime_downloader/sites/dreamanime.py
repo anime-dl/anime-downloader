@@ -3,8 +3,19 @@ from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 from urllib.parse import quote_plus
 import json
+import re
 
 class DreamAnime(Anime, sitename='dreamanime'):
+    """
+    Site: http://dreamanime.fun
+    Config
+    ------
+    version: One of ['subbed', 'dubbed]
+        Selects the version of audio of anime.
+    server: One of ['mp4upload', 'trollvid']
+        Selects the server to download from.
+    """
+
     sitename='dreamanime'
     url = f'https://{sitename}.fun/search'
 
@@ -25,8 +36,21 @@ class DreamAnime(Anime, sitename='dreamanime'):
         return search_results
 
     def _scrape_episodes(self):
+        version = self.config.get("version", "subbed")
         soup = helpers.soupify(helpers.get(self.url))
-        return [x.get("data-src") for x in soup.find_all("a", {"class":"ep-link-sub"})]
+        subbed = []
+        dubbed = []
+        _all = soup.find_all("div", {"class":"episode-wrap"})
+        for i in _all:
+            ep_type = i.find("div", {"class":re.compile("ep-type type-.* dscd")}).text
+            link = i.find("a").get("data-src")
+
+            if ep_type == 'Sub':
+                subbed.append(link)
+            else:
+                dubbed.append(link)
+
+            return eval(version)
 
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url))
@@ -34,16 +58,15 @@ class DreamAnime(Anime, sitename='dreamanime'):
 
 class DreamAnimeEpisode(AnimeEpisode, sitename='dreamanime'):
     def _get_sources(self):
+        server = self.config.get("server", "trollvid")
         soup = helpers.soupify(helpers.get(self.url))
-        host = json.loads(soup.find("div", {"class":"spatry"}).previous_sibling.previous_sibling.text[21:-2])["videos"][0]
+        hosts = json.loads(soup.find("div", {"class":"spatry"}).previous_sibling.previous_sibling.text[21:-2])["videos"]
+        host = list(filter(lambda video: video["host"] == server, hosts))[0]
         name = host["host"]
         _id = host["id"]
         if name == "trollvid":
             link = "https://trollvid.net/embed/" + _id
-        elif name == "vidstreaming":
-            link = "https://vidstreaming.io/download?id=" + _id
         elif name == "mp4upload":
             link = f"https://mp4upload.com/embed-{_id}.html"
 
         return [(name, link)]
-
