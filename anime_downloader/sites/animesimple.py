@@ -65,15 +65,30 @@ class AnimeSimpleEpisode(AnimeEpisode, sitename='animesimple'):
             regex = r'var json = ([^;]*)'
             sources = json.loads(re.search(regex,str(soup)).group(1)) #Lots of sources can be found here
 
-            for i in range(3):
-                if i == 1:logger.debug('Preferred server %s not found. Trying all supported servers in selected language.',server)
-                if i == 2:logger.debug('No %s servers found, trying all servers',self.config['version'])
-                for a in sources:
-                    if a['type'] == self.config['version'] or i > 1:
-                        if a['host'] == self.config['server'] or i > 0:
-                            if get_extractor(a['host']) == None:
-                                server = 'no_extractor'
-                            else:server = a['host']
 
-                            embed = re.search(r"src=['|\"]([^\'|^\"]*)",str(a['player']),re.IGNORECASE).group(1)
-                            return [(server, embed,)]
+            for a in sources: #Testing sources with selected language and provider
+                if a['type'] == self.config['version']:
+                    if a['host'] == self.config['server']:
+                        if get_extractor(a['host']) == None:server = 'no_extractor'
+                        else:server = (a['host'])
+
+                        embed = re.search(r"src=['|\"]([^\'|^\"]*)",str(a['player']),re.IGNORECASE).group(1)
+                        return [(server, embed,)]
+            
+            logger.debug('Preferred server %s not found. Trying all supported servers in selected language.',server)
+            
+            for a in sources: #Testing sources with selected language
+                if a['type'] == self.config['version']:
+                    if get_extractor(a['host']) == None:server = 'no_extractor'
+                    else:server = (a['host'])
+
+                    embed = re.search(r"src=['|\"]([^\'|^\"]*)",str(a['player']),re.IGNORECASE).group(1)
+                    return [(server, embed,)]
+
+            logger.debug('No %s servers found, trying all servers',self.config['version'])
+            
+            if get_extractor(sources[0]['host']) == None:server = 'no_extractor'
+            else:server = (sources[0]['host'])
+
+            embed = re.search(r"src=['|\"]([^\'|^\"]*)",str(sources[0]['player']),re.IGNORECASE).group(1)
+            return [(server, embed,)]
