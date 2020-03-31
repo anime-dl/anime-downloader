@@ -1,9 +1,12 @@
 import logging
 import re
-import sys
+import json
 
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
+from anime_downloader.extractors import get_extractor
+
+logger = logging.getLogger(__name__)
 
 class AnimeSimple(Anime, sitename='animesimple'):
         sitename = 'animesimple'
@@ -38,12 +41,37 @@ class AnimeSimple(Anime, sitename='animesimple'):
 
 class AnimeSimpleEpisode(AnimeEpisode, sitename='animesimple'):
         def _get_sources(self):
+            server = self.config['server']
+
             soup = helpers.soupify(helpers.get(self.url))
 
             regex = r'var json = ([^;]*)'
-            json = re.search(regex,str(soup)).group(1) #Lots of sources can be found here
+            sources = json.loads(re.search(regex,str(soup)).group(1)) #Lots of sources can be found here
 
-            trollvid = r"src='(https:\\/\\/trollvid.net\\/embed\\/[^']*)"
-            embed = re.search(trollvid,json).group(1).replace('\\','')
 
-            return [('trollvid', embed,)]
+            for a in sources: #Testing sources with selected language and provider
+                if a['type'] == self.config['version']:
+                    if a['host'] == self.config['server']:
+                        if get_extractor(a['host']) == None:server = 'no_extractor'
+                        else:server = (a['host'])
+
+                        embed = re.search(r"src=['|\"]([^\'|^\"]*)",str(a['player']),re.IGNORECASE).group(1)
+                        return [(server, embed,)]
+            
+            logger.debug('Preferred server %s not found. Trying all supported servers in selected language.',server)
+            
+            for a in sources: #Testing sources with selected language
+                if a['type'] == self.config['version']:
+                    if get_extractor(a['host']) == None:server = 'no_extractor'
+                    else:server = (a['host'])
+
+                    embed = re.search(r"src=['|\"]([^\'|^\"]*)",str(a['player']),re.IGNORECASE).group(1)
+                    return [(server, embed,)]
+
+            logger.debug('No %s servers found, trying all servers',self.config['version'])
+            
+            if get_extractor(sources[0]['host']) == None:server = 'no_extractor'
+            else:server = (sources[0]['host'])
+
+            embed = re.search(r"src=['|\"]([^\'|^\"]*)",str(sources[0]['player']),re.IGNORECASE).group(1)
+            return [(server, embed,)]
