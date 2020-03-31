@@ -89,13 +89,15 @@ class KickAssEpisode(AnimeEpisode, sitename='kickass'):
                                     return [('haloani', a['link'],)]
 
             sources = json.loads(sources.group())
-            for i in range(3):
-                if i == 1:logger.debug('Preferred server "%s" not found. Trying all supported servers.',self.config['server'])
-                if i == 2:logger.warning('No supported servers found. Trying all servers. This will most likely not work')
-                for a in sources:
-                    if i == 1:
-                        for b in fallback:
-                            if a['name'] == b:
-                                return [('haloani', a['src'],)]
-                    if a['name'] == self.config['server'] or i == 2:
+            for a in sources: 
+                if a['name'] == self.config['server']:
+                    return [('haloani', a['src'],)]
+            
+            logger.debug('Preferred server "%s" not found. Trying all supported servers.',self.config['server'])
+            for a in sources:
+                for b in fallback:
+                    if a['name'] == b:
                         return [('haloani', a['src'],)]
+            
+            logger.warning('No supported servers found. Trying all servers. This will most likely not work')
+            return [('haloani', a['src'],)]
