@@ -18,6 +18,7 @@ ALL_ANIME_SITES = [
     ('animesimple', 'animesimple', 'AnimeSimple'),
     ('kickass', 'kickass', 'KickAss'),
     ('dreamanime', 'dreamanime', 'DreamAnime'),
+    ('ryuanime', 'ryuanime', 'RyuAnime'),
 ]
 
 

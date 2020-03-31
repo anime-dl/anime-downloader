@@ -57,6 +57,7 @@ Yeah. Me too! That's why this tool exists.
 - Animeflv
 - Kickassanime
 - DreamAnime
+- RyuAnime
 - Kissanime - requires Node.js
 - Kisscartoon - requires Node.js
 
