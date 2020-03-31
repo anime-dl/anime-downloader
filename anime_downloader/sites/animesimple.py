@@ -37,7 +37,7 @@ class AnimeSimple(Anime, sitename='animesimple'):
         def _scrape_metadata(self):
             soup = helpers.soupify(helpers.get(self.url)).select('h1.media-heading')
             regex = r'class="media-heading">([^<]*)'
-            self.title = re.search(regex,str(soup)).group(1)
+            self.title = re.search(regex,str(soup)).group(1).strip()
 
 class AnimeSimpleEpisode(AnimeEpisode, sitename='animesimple'):
         def _get_sources(self):
@@ -57,9 +57,9 @@ class AnimeSimpleEpisode(AnimeEpisode, sitename='animesimple'):
 
                         embed = re.search(r"src=['|\"]([^\'|^\"]*)",str(a['player']),re.IGNORECASE).group(1)
                         return [(server, embed,)]
-            
+
             logger.debug('Preferred server %s not found. Trying all supported servers in selected language.',server)
-            
+
             for a in sources: #Testing sources with selected language
                 if a['type'] == self.config['version']:
                     if get_extractor(a['host']) == None:server = 'no_extractor'
@@ -69,7 +69,7 @@ class AnimeSimpleEpisode(AnimeEpisode, sitename='animesimple'):
                     return [(server, embed,)]
 
             logger.debug('No %s servers found, trying all servers',self.config['version'])
-            
+
             if get_extractor(sources[0]['host']) == None:server = 'no_extractor'
             else:server = (sources[0]['host'])
 
