@@ -19,6 +19,7 @@ ALL_ANIME_SITES = [
     ('kickass', 'kickass', 'KickAss'),
     ('dreamanime', 'dreamanime', 'DreamAnime'),
     ('ryuanime', 'ryuanime', 'RyuAnime'),
+    ('erairaws', 'erairaws', 'EraiRaws'),
 ]
 
 
