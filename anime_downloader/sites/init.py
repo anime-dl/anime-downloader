@@ -12,11 +12,12 @@ ALL_ANIME_SITES = [
     ('itsaturday', 'itsaturday', 'Itsaturday'),
     ('animefreak', 'animefreak', 'AnimeFreak'),
     ('animeflix', 'animeflix', 'AnimeFlix'),
-    ('dubbedanime','dubbedanime','Dubbedanime'),
-    ('a2zanime','a2zanime','A2zanime'),
+    ('dubbedanime', 'dubbedanime', 'Dubbedanime'),
+    ('a2zanime', 'a2zanime', 'A2zanime'),
     ('animeout', 'animeout', 'AnimeOut'),
-    ('animesimple','animesimple','AnimeSimple'),
-    ('kickass','kickass','KickAss'),
+    ('animesimple', 'animesimple', 'AnimeSimple'),
+    ('kickass', 'kickass', 'KickAss'),
+    ('dreamanime', 'dreamanime', 'DreamAnime'),
 ]
 
 

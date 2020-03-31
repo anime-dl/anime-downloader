@@ -56,6 +56,7 @@ Yeah. Me too! That's why this tool exists.
 - itsaturday
 - Animeflv
 - Kickassanime
+- DreamAnime
 - Kissanime - requires Node.js
 - Kisscartoon - requires Node.js
 
