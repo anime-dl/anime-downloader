@@ -48,6 +48,10 @@ DEFAULT_CONFIG = {
             "version": "subbed",
             "server": "trollvid",
         },
+        'ryuanime': {
+            "version": "subbed",
+            "server": "trollvid",
+        }
     }
 }
 
