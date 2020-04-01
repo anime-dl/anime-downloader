@@ -40,6 +40,10 @@ DEFAULT_CONFIG = {
         'gogoanime': {
             "server": "cdn",
         },
+        'animerush':{
+            "server": "Mp4uploadHD Video",
+            "fallback_servers": ["MP4Upload", "Mp4upload Video", "Youruploads Video"]
+        },
         'kickass': {
             "server": "A-KICKASSANIME",
             "fallback_servers": ["ORIGINAL-QUALITY-V2","HTML5-HQ","HTML5","A-KICKASSANIME","BETAPLAYER","KICKASSANIME","DEVSTREAM"],

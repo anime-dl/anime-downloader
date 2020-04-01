@@ -15,6 +15,7 @@ ALL_ANIME_SITES = [
     ('dubbedanime', 'dubbedanime', 'Dubbedanime'),
     ('a2zanime', 'a2zanime', 'A2zanime'),
     ('animeout', 'animeout', 'AnimeOut'),
+    ('animerush','animerush','AnimeRush'),
     ('animesimple', 'animesimple', 'AnimeSimple'),
     ('kickass', 'kickass', 'KickAss'),
     ('dreamanime', 'dreamanime', 'DreamAnime'),
