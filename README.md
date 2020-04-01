@@ -58,7 +58,7 @@ Yeah. Me too! That's why this tool exists.
 - Kickassanime
 - DreamAnime
 - RyuAnime
-- EraiRaws
+- Erai-Raws
 - Kissanime - requires Node.js
 - Kisscartoon - requires Node.js
 
