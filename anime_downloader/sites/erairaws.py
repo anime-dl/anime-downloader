@@ -4,8 +4,8 @@ from anime_downloader.sites import helpers
 from difflib import get_close_matches
 import base64
 
-class EraiRaws(Anime, sitename='erairaws'):
-    sitename='erairaws'
+class EraiRaws(Anime, sitename='erai-raws'):
+    sitename='erai-raws'
     QUALITIES = ['720p', '1080p']
 
     #Bypass DDosGuard
@@ -71,6 +71,6 @@ class EraiRaws(Anime, sitename='erairaws'):
         soup = helpers.soupify(helpers.get(self.url))
         self.title = soup.find("h1").find("span").text
 
-class EraiRawsEpisode(AnimeEpisode, sitename='erairaws'):
+class EraiRawsEpisode(AnimeEpisode, sitename='erai-raws'):
     def _get_sources(self):
         return [("no_extractor", self.url)]
