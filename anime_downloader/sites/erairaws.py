@@ -27,13 +27,16 @@ class EraiRaws(Anime, sitename='erai-raws'):
 
         for row in rows:
             if row.parent.get("href")[-3:] != "mkv":
-                folder = helpers.soupify(helpers.get(url + row.parent.get("href")))
+                if url[-1] != '/':
+                    url = url + '/'
+                folder = helpers.get(url + "index.php" + row.parent.get("href"))
+                folder = helpers.soupify(folder)
 
                 #Append all episodes in folder - folders are also seperated by quality
                 #So everything in a folder can be taken in one go
-                [episodes.append(url[:-9] + x.parent.get("href")) for x in folder.find("ul", {"id":"directory-listing"}).find_all("div", {"class":"row"})]
+                [episodes.append(url + x.parent.get("href")) for x in folder.find("ul", {"id":"directory-listing"}).find_all("div", {"class":"row"})]
             else:
-                episodes.append(url[:-9] + row.parent.get("href"))
+                episodes.append(url + row.parent.get("href"))
         return episodes[1:]
 
     @classmethod
@@ -60,8 +63,10 @@ class EraiRaws(Anime, sitename='erai-raws'):
         self.bypass()
         soup = helpers.soupify(helpers.get(self.url))
         files = soup.find("div", {"class":"ddmega"}).find("a").get("href")
-        files = files + "index.php"
-        html = helpers.get(files)
+        if files[-1] != '/':
+            files = files + '/'
+        index = files + "index.php"
+        html = helpers.get(index, headers = {"Referer":files})
         soup = helpers.soupify(html)
         rows = soup.find("ul", {"id":"directory-listing"}).find_all("div", {"class":"row"})
         episodes = self.parse(rows, files)
