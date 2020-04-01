@@ -6,7 +6,7 @@ from pathlib import Path
 
 def configure_httpretty(sitedir):
     httpretty.enable()
-    dir = Path(f"tests/test_sites/test_{sitedir}/")
+    dir = Path(f"tests/test_sites/data/test_{sitedir}/")
     data_file = dir / 'data.json'
 
     data = None

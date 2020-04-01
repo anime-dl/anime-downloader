@@ -55,6 +55,18 @@ ALL_EXTRACTORS = [
         'regex': 'yourupload',
         'class': 'Yourupload'
     },
+    {
+        'sitename': 'vidstream',
+        'modulename': 'vidstream',
+        'regex': 'vidstream',
+        'class': 'VidStream'
+    },
+    {
+        'sitename': 'haloani',
+        'modulename': 'haloani',
+        'regex': 'haloani',
+        'class': 'Haloani'
+    },
 ]
 
 

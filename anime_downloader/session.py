@@ -1,4 +1,5 @@
 import logging
+import os
 
 import requests
 import requests_cache
@@ -10,7 +11,7 @@ import tempfile
 
 logger = logging.getLogger(__name__)
 
-cachefile = tempfile.mktemp()
+cachefile = os.path.join(tempfile.gettempdir(), 'cache')
 requests_cache.install_cache(cachefile, backend='sqlite', expires_after=300)
 
 _session = requests_cache.CachedSession(cachefile)
