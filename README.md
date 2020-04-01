@@ -40,7 +40,7 @@ Yeah. Me too! That's why this tool exists.
 - Save yourselves from those malicious ads.
 - Add any anime to your watch list using `anime watch` and let anime downloader take care of everything for you.
 - Download using external downloader ([aria2](https://aria2.github.io/) recommended).
-- Configurable using `config.json`. See [documentation](https://github.com/vn-ki/anime-downloader/wiki/Config).
+- Configurable using `config.json`. See [documentation](https://anime-downlader.readthedocs.io/en/latest/usage/config.html).
 
 ## Supported Sites
 
@@ -56,14 +56,17 @@ Yeah. Me too! That's why this tool exists.
 - itsaturday
 - Animeflv
 - Kickassanime
+- DreamAnime
+- RyuAnime
+- Erai-Raws
 - Kissanime - requires Node.js
 - Kisscartoon - requires Node.js
 
 ## Installation
 
-[**Installation instructions***](https://github.com/vn-ki/anime-downloader/wiki/Installation)
+[**Installation instructions***](https://anime-downlader.readthedocs.io/en/latest/usage/installation.html)
 
-If you have trouble installing, see extended installation instructions [here](https://github.com/vn-ki/anime-downloader/wiki/Installation) or join the [discord server](https://discord.gg/Qn2nWGm) for help.
+If you have trouble installing, see extended installation instructions [here](https://anime-downlader.readthedocs.io/en/latest/usage/installation.html) or join the [discord server](https://discord.gg/Qn2nWGm) for help.
 
 **Note**:
 - For cloudflare scraping [cfscrape](https://github.com/Anorov/cloudflare-scrape) is used. It depends on [`node-js`](https://nodejs.org/en/). So if you want to use cloudflare, make sure you have [node-js](https://nodejs.org/en/) installed.
@@ -71,21 +74,21 @@ If you have trouble installing, see extended installation instructions [here](ht
 
 ## Usage
 
-See [wiki](https://github.com/vn-ki/anime-downloader/wiki).
+See [docs](https://anime-downlader.readthedocs.io/en/latest/usage/dl.html).
 
 Anime downloader has two sub commands, `dl` and `watch`.
 
-- [dl](https://github.com/vn-ki/anime-downloader/wiki/dl-command): `dl` can download anime.
-- [watch](https://github.com/vn-ki/anime-downloader/wiki/watch-command): `watch` can manage your anime watch list. Needs [mpv](https://mpv.io). With `watch` you'll never have to go to any anime sites ever again.
+- [dl](https://anime-downlader.readthedocs.io/en/latest/usage/dl.html): `dl` can download anime.
+- [watch](https://anime-downlader.readthedocs.io/en/latest/usage/watch.html): `watch` can manage your anime watch list. Needs [mpv](https://mpv.io). Deprecated in favour of [adl](https://github.com/RaitaroH/adl)
 
 **To use `anime_downloader` in your package:**
 
 This tool can be used as a library. This means you can import it into your own application and search for anime and do many other wonderful things.
-See [documentation](https://github.com/vn-ki/anime-downloader/wiki/Package-documentation).
+See [documentation](https://anime-downlader.readthedocs.io/en/latest/usage/api.html).
 
 **Development Instructions:**
 
-See [development instructions](https://github.com/vn-ki/anime-downloader/wiki/Development-Instructions).
+See [development instructions](https://anime-downlader.readthedocs.io/en/latest/advanced/custom_site.html).
 
 ## Related Projects
 

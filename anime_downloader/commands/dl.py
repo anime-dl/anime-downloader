@@ -2,6 +2,7 @@ import logging
 import os
 
 import click
+import requests_cache
 
 from anime_downloader import session, util
 from anime_downloader.__version__ import __version__
@@ -122,8 +123,9 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             if chunk_size is not None:
                 chunk_size *= 1e6
                 chunk_size = int(chunk_size)
-            episode.download(force=force_download,
-                             path=download_dir,
-                             format=file_format,
-                             range_size=chunk_size)
+            with requests_cache.disabled():
+                episode.download(force=force_download,
+                                 path=download_dir,
+                                 format=file_format,
+                                 range_size=chunk_size)
             print()
