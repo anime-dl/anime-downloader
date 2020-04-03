@@ -4,7 +4,16 @@ import sys
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 
+logger = logging.getLogger(__name__)
+
 class WatchMovie(Anime, sitename='watchmovie'):
+        """
+        Nice things
+        Siteconfig
+        ----------
+        server: Primary server to use (Default: gcloud)
+        fallback_servers: Recorded working servers which is used if the primary server cannot be found
+        """
         sitename = 'watchmovie'
         url = f'https://{sitename}.movie'
         @classmethod
@@ -29,9 +38,27 @@ class WatchMovie(Anime, sitename='watchmovie'):
             
 class WatchMovieEpisode(AnimeEpisode, sitename='watchmovie'):
         def _get_sources(self):
+            server = self.config['server']
+            fallback = self.config['fallback_servers']
+
             soup = helpers.soupify(helpers.get(self.url))
-            test = soup.select('div.anime_muti_link > ul > li > a')
-            for a in test:
+            sources = soup.select('div.anime_muti_link > ul > li > a')
+
+            for a in sources: 
                 url = a.get('data-video')
-                if 'fembed' in url or 'gcloud' in url:
-                    return[('gcloud',url)]
+                if server in url:
+                    if server == 'fembed':extractor = 'gcloud'
+                    else:extractor = server
+                    return [(extractor, url,)]
+            
+            logger.debug('Preferred server "%s" not found. Trying all supported servers.',self.config['server'])
+            for a in sources: 
+                url = a.get('data-video')
+                for b in fallback:
+                    if b in url:
+                        if b == 'fembed':extractor = 'gcloud'
+                        else:extractor = server
+                        return [(extractor, url,)]
+            
+            logger.warning('No supported servers found. Trying all servers. This will most likely not work')
+            return [('no_extractor', sources[0].get('data-video'),)]
