@@ -61,6 +61,7 @@ Yeah. Me too! That's why this tool exists.
 - Erai-Raws
 - Animesimple
 - Animerush
+- Watchmovie
 - Kissanime - requires Node.js
 - Kisscartoon - requires Node.js
 

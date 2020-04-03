@@ -61,6 +61,10 @@ DEFAULT_CONFIG = {
             "version": "subbed",
             "server": "trollvid",
         },
+        'watchmovie': {
+            "server": "gcloud",
+            "fallback_servers": ["fembed","yourupload","mp4upload"],
+        },
     }
 }
 
