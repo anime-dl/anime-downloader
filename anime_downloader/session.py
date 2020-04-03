@@ -11,10 +11,9 @@ import tempfile
 
 logger = logging.getLogger(__name__)
 
-cachefile = os.path.join(tempfile.gettempdir(), 'cache')
-requests_cache.install_cache(cachefile, backend='sqlite', expires_after=300)
+cachefile = os.path.join(tempfile.gettempdir(), 'anime-cache')
 
-_session = requests_cache.CachedSession(cachefile)
+_session = requests_cache.CachedSession(cachefile, backend='sqlite', expires_after=300)
 
 # _session = requests.Session()
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)

@@ -19,7 +19,7 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 req_session = session.get_session()
-cf_session = cfscrape.create_scraper(sess=req_session)
+cf_session = cfscrape.create_scraper()
 default_headers = get_random_header()
 temp_dir = tempfile.mkdtemp(prefix='animedl')
 logger.debug(f"HTML file temp_dir: {temp_dir}")
