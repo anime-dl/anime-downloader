@@ -30,7 +30,7 @@ class Animeflv(Anime, sitename='animeflv'):
 
     @classmethod
     def search(cls, query):
-        soup = helpers.soupify(helpers.get(f"{cls.DOMAIN}browse?q={query}"))
+        soup = helpers.soupify(helpers.get(f"{cls.DOMAIN}browse?q={query}", cf=True))
         results = [
             SearchResult(title=v.h3.text, url=cls.DOMAIN + v.a['href'], poster=v.img['src'])
             for v in soup.select('ul.ListAnimes > li')

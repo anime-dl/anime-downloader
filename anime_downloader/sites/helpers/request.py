@@ -31,7 +31,7 @@ def setup(func):
     and converts it into a request method
     """
     def setup_func(url: str,
-                   cf: bool = True,
+                   cf: bool = False,
                    referer: str = None,
                    headers=None,
                    **kwargs):
@@ -76,7 +76,7 @@ def setup(func):
 
 @setup
 def get(url: str,
-        cf: bool = True,
+        cf: bool = False,
         referer: str = None,
         headers=None,
         **kwargs):
@@ -97,7 +97,7 @@ def get(url: str,
 
 @setup
 def post(url: str,
-         cf: bool = True,
+         cf: bool = False,
          referer: str = None,
          headers=None,
          **kwargs):
