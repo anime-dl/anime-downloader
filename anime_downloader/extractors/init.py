@@ -67,6 +67,12 @@ ALL_EXTRACTORS = [
         'regex': 'haloani',
         'class': 'Haloani'
     },
+    {
+        'sitename': 'gcloud',
+        'modulename': 'gcloud',
+        'regex': 'gcloud',
+        'class': 'Gcloud'
+    },
 ]
 
 
