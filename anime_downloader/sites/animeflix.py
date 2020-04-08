@@ -44,19 +44,32 @@ class AnimeFlix(Anime, sitename='animeflix'):
             logger.debug(self.title)
 
 
-
 class AnimeFlixEpisode(AnimeEpisode, sitename='animeflix'):
         episodeId_url = 'https://animeflix.io/api/episode'
         stream_url = 'https://animeflix.io/api/videos?episode_id'
         anime_url = 'https://www.animeflix.io/shows'
 
         def _get_sources(self):
+            version = self.config['version'] 
+            server = self.config['server']
+            fallback = self.config['fallback_servers']
+
             episode = helpers.get(self.episodeId_url,
                                   params={'episode_num': self.ep_no, 'slug': self.url.strip('/').split('/')[-2]}).json()
-            id = episode['data']['current']['id']
+            _id = episode['data']['current']['id']
             download_link = helpers.get(
-                f'{self.stream_url}={id}').json()
-            i = 0
-            while download_link[i]['provider'] != 'AUEngine' :
-                i = i + 1
-            return [('no_extractor',download_link[i]['file'])]
+                f'{self.stream_url}={_id}').json()
+
+            for a in download_link: #Testing sources with selected language and provider
+                if a['lang'] == self.config['version']:
+                    if a['provider'] == self.config['server']:
+                        return [('no_extractor', a['file'],)]
+
+            logger.debug('Preferred server %s not found. Trying all supported servers in selected language.',server)
+
+            for a in download_link: #Testing sources with selected language
+                if a['lang'] == self.config['version']:
+                    return [('no_extractor', a['file'],)]
+
+            logger.debug('No %s servers found, trying all servers',self.config['version'])
+            return[('no_extractor', download_link[0]['file'],)]
