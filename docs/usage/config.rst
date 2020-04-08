@@ -9,6 +9,8 @@ This can be found under:
 
 -  ``C:\Users\[Username]\AppData\Roaming\anime downloader`` on Windows
 
+- ``~/Library/Application Support/anime downloader`` on macos
+
 You can override the settings in the ``config.json``, with command line
 arguments.
 
