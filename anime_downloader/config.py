@@ -65,6 +65,11 @@ DEFAULT_CONFIG = {
             "server": "gcloud",
             "fallback_servers": ["fembed","yourupload","mp4upload"],
         },
+        'animeflix': {
+            "server": "AUEngine",
+            "fallback_servers": ["FastStream"],
+            "version": "sub",
+        },
     }
 }
 
