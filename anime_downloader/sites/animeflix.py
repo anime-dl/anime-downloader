@@ -6,7 +6,12 @@ logger = logging.getLogger(__name__)
 
 class AnimeFlix(Anime, sitename='animeflix'):
         """
-        Site :https://animeflix.io/
+        Nice things
+        Siteconfig
+        ----------
+        server: Primary server to use (Default: AUEngine)
+        fallback_servers: Recorded working servers which is used if the primary server cannot be found (FastStream works, but downloads m3u8 files)
+        version: sub/dub, language
         """
         sitename = 'animeflix'
         search_url = 'https://animeflix.io/api/search'
