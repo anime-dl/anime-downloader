@@ -24,8 +24,7 @@ class KickAss(Anime, sitename='kickass'):
             search_results = helpers.soupify(helpers.get(cls.url,
                                          params={'q': query}))
             regex = r'\[{[\W\w]*?}]'
-            search_results = json.loads(re.search(regex,str(search_results)).group())
-
+            search_results = json.loads(re.search(regex,str(search_results)).group()) if re.search(regex,str(search_results)) else ''
             search_results = [
                 SearchResult(
                     title=a['name'],
