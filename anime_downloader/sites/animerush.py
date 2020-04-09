@@ -47,17 +47,20 @@ class AnimeRushEpisode(AnimeEpisode, sitename='animerush'):
             sources = ([[self._get_url('https:' + a.get('href')),a.text] for a in soup.select('div.episode_mirrors > div > h3 > a')])
             sources.append([self._get_url(self.url),soup.select('iframe')[-1].get('title')])
             
-            if 'yourupload' in server.lower():extractor = 'yourupload'
-            else:extractor = 'mp4upload'
-
             for a in range (len(sources)): #Primary server
                 if server == sources[a][1]:
+                    if 'yourupload' in sources[a][0]:extractor = 'yourupload'
+                    else:extractor = 'mp4upload'
                     return[(extractor,sources[a][0])]
 
             for a in range (len(sources)): #Fallback servers
                 if sources[a][1] in fallback:
+                    if 'yourupload' in sources[a][0]:extractor = 'yourupload'
+                    else:extractor = 'mp4upload'
                     return[(extractor,sources[a][0])]
             
+            if 'yourupload' in sources[0][0]:extractor = 'yourupload'
+            else:extractor = 'mp4upload'
             return[(extractor,sources[0][0])]
         
         def _get_url(self,url): #The links are hidden on other pages
