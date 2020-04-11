@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 class Gcloud(BaseExtractor):
     def _get_data(self):
         url = self.url
+        url = url.replace('gcloud.live/v/','gcloud.live/api/source/')
         if url.find('#') != -1:url = url[:url.find('#')] 
         url = (url[-url[::-1].find('/'):])
         data = helpers.post(f'https://gcloud.live/api/source/{url}').json()['data']
