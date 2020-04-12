@@ -21,6 +21,7 @@ ALL_ANIME_SITES = [
     ('ryuanime', 'ryuanime', 'RyuAnime'),
     ('erairaws', 'erai-raws', 'EraiRaws'),
     ('watchmovie','watchmovie','WatchMovie'),
+    ('animekisa','animekisa','AnimeKisa')
 ]
 
 
