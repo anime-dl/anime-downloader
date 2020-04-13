@@ -44,7 +44,6 @@ Yeah. Me too! That's why this tool exists.
 
 ## Supported Sites
 
-- twist.moe
 - Animepahe
 - Anistream
 - Animeflix
@@ -62,6 +61,7 @@ Yeah. Me too! That's why this tool exists.
 - Animesimple
 - Animerush
 - Watchmovie
+- twist.moe - requires Node.js
 - Kissanime - requires Node.js
 - Kisscartoon - requires Node.js
 
