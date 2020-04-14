@@ -20,7 +20,7 @@ class Kwik(BaseExtractor):
         # from somewhere, I will just use the url itself. We then
         # have to rebuild the url. Hopefully kwik doesn't block this too
         eval_re = re.compile(r';(eval.*\))')
-        stream_parts_re = re.compile(r'stream\/(\d+)\/(.*)\/.*token=(.*)&expires=([^\']+)')
+        stream_parts_re = re.compile(r'https:\/\/(.*?)\..*\/(\d+)\/(.*)\/.*token=(.*)&expires=([^\']+)')
         title_re = re.compile(r'title>(.*)<')
 
         kwik_text = helpers.get(self.url, referer=self.url).text
@@ -28,8 +28,8 @@ class Kwik(BaseExtractor):
         deobsfucated_js = util.deobfuscate_packed_js(obsfucated_js)
 
         title = title_re.search(kwik_text).group(1)
-        digits, file, token, expires = stream_parts_re.search(deobsfucated_js).group(1, 2, 3, 4)
-        stream_url = f'https://cdn-eu2.nextstream.org/get/{token}/{expires}/mp4/{digits}/{file}/{title}'
+        cdn, digits, file, token, expires = stream_parts_re.search(deobsfucated_js).group(1, 2, 3, 4, 5)
+        stream_url = f'https://{cdn}.nextstream.org/get/{token}/{expires}/mp4/{digits}/{file}/{title}'
 
         logger.debug('Stream URL: %s' % stream_url)
         return {
