@@ -19,7 +19,7 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 req_session = session.get_session()
-cf_session = cfscrape.create_scraper(sess=req_session)
+cf_session = cfscrape.create_scraper()
 default_headers = get_random_header()
 temp_dir = tempfile.mkdtemp(prefix='animedl')
 logger.debug(f"HTML file temp_dir: {temp_dir}")
@@ -31,7 +31,7 @@ def setup(func):
     and converts it into a request method
     """
     def setup_func(url: str,
-                   cf: bool = True,
+                   cf: bool = False,
                    referer: str = None,
                    headers=None,
                    **kwargs):
@@ -76,7 +76,7 @@ def setup(func):
 
 @setup
 def get(url: str,
-        cf: bool = True,
+        cf: bool = False,
         referer: str = None,
         headers=None,
         **kwargs):
@@ -97,7 +97,7 @@ def get(url: str,
 
 @setup
 def post(url: str,
-         cf: bool = True,
+         cf: bool = False,
          referer: str = None,
          headers=None,
          **kwargs):

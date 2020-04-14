@@ -50,6 +50,12 @@ ALL_EXTRACTORS = [
         'class': 'MP4Sh'
     },
     {
+        'sitename': 'yourupload',
+        'modulename': 'yourupload',
+        'regex': 'yourupload',
+        'class': 'Yourupload'
+    },
+    {
         'sitename': 'vidstream',
         'modulename': 'vidstream',
         'regex': 'vidstream',
@@ -60,6 +66,12 @@ ALL_EXTRACTORS = [
         'modulename': 'haloani',
         'regex': 'haloani',
         'class': 'Haloani'
+    },
+    {
+        'sitename': 'gcloud',
+        'modulename': 'gcloud',
+        'regex': 'gcloud',
+        'class': 'Gcloud'
     },
 ]
 

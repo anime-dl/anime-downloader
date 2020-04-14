@@ -30,7 +30,7 @@ class Animeflv(Anime, sitename='animeflv'):
 
     @classmethod
     def search(cls, query):
-        soup = helpers.soupify(helpers.get(f"{cls.DOMAIN}browse?q={query}"))
+        soup = helpers.soupify(helpers.get(f"{cls.DOMAIN}browse?q={query}", cf=True))
         results = [
             SearchResult(title=v.h3.text, url=cls.DOMAIN + v.a['href'], poster=v.img['src'])
             for v in soup.select('ul.ListAnimes > li')
@@ -42,7 +42,7 @@ class Animeflv(Anime, sitename='animeflv'):
         #'<h3 class="Title">' + anime_info[1] + '</h3>'
         #'<p>Episodio ' + episodes[i][0] + '</p></a>'
         #'<label for="epi' + episodes[i][0]
-        html = helpers.get(self.url).text
+        html = helpers.get(self.url, cf=True).text
         anime_info = json.loads(
             re.findall('anime_info = (.*);', html)[0]
         )
@@ -56,15 +56,15 @@ class Animeflv(Anime, sitename='animeflv'):
         return links[::-1]
 
     def _scrape_metadata(self):
-        soup = helpers.soupify(helpers.get(self.url).text)
+        soup = helpers.soupify(helpers.get(self.url, cf=True).text)
         self.title = soup.select_one('h2.Title').text
 
 
 class AnimeflvEpisode(AnimeEpisode, sitename='animeflv'):
     """
 
-    Natsuki and amus are the site's default servers, however amus is not yet implemented here.  
-    
+    Natsuki and amus are the site's default servers, however amus is not yet implemented here.
+
     """
     # TODO: Implement support for amus and perhaps Zippyshare?
     # Hint:  https://github.com/Cartmanishere/zippyshare-scraper
@@ -76,7 +76,7 @@ class AnimeflvEpisode(AnimeEpisode, sitename='animeflv'):
 
     def _get_sources(self):
         videos = json.loads(
-            re.findall('videos = (.*);', helpers.get(self.url).text)[0]
+            re.findall('videos = (.*);', helpers.get(self.url, cf=True).text)[0]
         )
         lang = {'subbed': 'SUB', 'latin': 'LAT'}
         videos = videos[lang[self.config.get('version', 'subbed')]]
@@ -90,7 +90,7 @@ class AnimeflvEpisode(AnimeEpisode, sitename='animeflv'):
                     return [(server, video['code'])]
                 if server == 'natsuki':
                     url = helpers.get(video['code'].replace('embed', 'check')).json()['file']
-                    return [('no_extractor', url)] 
+                    return [('no_extractor', url)]
 
         logger.debug('Preferred server %s not found.  Trying all supported servers.', server)
 
@@ -106,5 +106,3 @@ class AnimeflvEpisode(AnimeEpisode, sitename='animeflv'):
         err = 'No supported host server found.  Try another site.'
         args = [self.url]
         raise NotFoundError(err, *args)
-
-

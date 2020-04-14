@@ -11,10 +11,10 @@ import tempfile
 
 logger = logging.getLogger(__name__)
 
-cachefile = os.path.join(tempfile.gettempdir(), 'cache')
-requests_cache.install_cache(cachefile, backend='sqlite', expires_after=300)
+cachefile = os.path.join(tempfile.gettempdir(), 'anime-cache')
+# requests_cache.install_cache(cachefile, backend='sqlite', expire_after=3600)
 
-_session = requests_cache.CachedSession(cachefile)
+_session = requests_cache.CachedSession(cachefile, backend='sqlite', expire_after=3600)
 
 # _session = requests.Session()
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -26,8 +26,8 @@ def get_session(custom_session=None):
     if custom_session:
         custom_session.verify = _session.verify
         _session = custom_session
-    else:
-        _session = _session or requests.Session()
+    # else:
+    #     _session = _session or requests.Session()
 
     retry = Retry(
         total=10,

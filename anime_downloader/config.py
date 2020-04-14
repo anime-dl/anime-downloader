@@ -13,7 +13,7 @@ DEFAULT_CONFIG = {
         'skip_download': False,
         'download_dir': '.',
         'quality': '1080p',
-        'chunk_size': '10',
+      	'chunk_size': '10',
         'fallback_qualities': ['720p', '480p', '360p'],
         'force_download': False,
         'file_format': '{anime_title}/{anime_title}_{ep_no}',
@@ -39,7 +39,42 @@ DEFAULT_CONFIG = {
         },
         'gogoanime': {
             "server": "cdn",
-        }
+        },
+        'animerush':{
+            "server": "Mp4uploadHD Video",
+            "fallback_servers": ["MP4Upload", "Mp4upload Video", "Youruploads Video"]
+        },
+        'kickass': {
+            "server": "A-KICKASSANIME",
+            "fallback_servers": ["ORIGINAL-QUALITY-V2","HTML5-HQ","HTML5","A-KICKASSANIME","BETAPLAYER","KICKASSANIME","DEVSTREAM"],
+            "ext_fallback_servers": ["Mp4Upload","Vidcdn","Vidstreaming"],
+        },
+        'animesimple': {
+            "version": "subbed",
+            "server": "trollvid",
+        },
+        'dreamanime': {
+            "version": "subbed",
+            "server": "trollvid",
+        },
+        'ryuanime': {
+            "version": "subbed",
+            "server": "trollvid",
+        },
+        'animekisa': {
+            "server": "gcloud",
+            "fallback_servers": ["mp4upload","vidstream"]
+        },
+        
+        'watchmovie': {
+            "server": "gcloud",
+            "fallback_servers": ["fembed","yourupload","mp4upload"],
+        },
+        'animeflix': {
+            "server": "AUEngine",
+            "fallback_servers": ["FastStream"],
+            "version": "sub",
+        },
     }
 }
 
