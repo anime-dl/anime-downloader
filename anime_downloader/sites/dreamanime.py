@@ -3,6 +3,9 @@ from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 import json
 import re
+import logging
+
+logger = logging.getLogger(__name__)
 
 class DreamAnime(Anime, sitename='dreamanime'):
     """
@@ -46,7 +49,11 @@ class DreamAnime(Anime, sitename='dreamanime'):
                 episodes.append(i.find("a").get("data-src"))
             elif ep_type == 'Dub':
                 episodes.append(i.find("a").get("href"))
-        return episodes
+        
+        if len(episodes) == 0:
+            logger.warning("No episodes found")
+
+        return episodes[::-1]
 
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url))

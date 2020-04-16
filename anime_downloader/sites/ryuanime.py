@@ -2,6 +2,9 @@
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 class RyuAnime(Anime, sitename='ryuanime'):
     """
@@ -36,7 +39,11 @@ class RyuAnime(Anime, sitename='ryuanime'):
         soup = helpers.soupify(helpers.get(self.url))
         ep_list = [x for x in soup.find_all("div", {"class":"col-sm-6"}) if x.find("h5").text == version.title()][0].find_all("a")
         episodes = [x.get("href") for x in ep_list]
-        return episodes
+
+        if len(episodes) == 0:
+            logger.warning("No episodes found")
+
+        return episodes[::-1]
 
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url))
