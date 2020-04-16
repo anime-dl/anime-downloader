@@ -130,7 +130,10 @@ class _Config:
 
     def _read_config(self):
         with open(self.CONFIG_FILE, 'r') as configfile:
-            conf = json.load(configfile)
+            try:
+                conf = json.load(configfile)
+            except:
+                raise SyntaxWarning('The config file is not correctly formatted')
         return conf
 
     def _write_default_config(self):
