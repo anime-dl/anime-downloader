@@ -73,6 +73,12 @@ ALL_EXTRACTORS = [
         'regex': 'gcloud',
         'class': 'Gcloud'
     },
+    {
+        'sitename': 'xstreamcdn',
+        'modulename': 'xstreamcdn',
+        'regex': 'xstreamcdn',
+        'class': 'XStreamCDN'
+    }
 ]
 
 
