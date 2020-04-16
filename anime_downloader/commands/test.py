@@ -50,7 +50,7 @@ def command(test_query):
         threads.append(t)
 
     for thread in threads:
-        if os.name != 'nt':p, f = 'Works: ', "Doesn't work: " #Emojis doesn't work in cmd
+        if os.name == 'nt':p, f = 'Works: ', "Doesn't work: " #Emojis doesn't work in cmd
         else:p, f = '✅ ', '❌ '
         thread.join(timeout=10)
         if not thread.is_alive():
