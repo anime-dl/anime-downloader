@@ -84,8 +84,8 @@ class AnimePahe(Anime, sitename='animepahe'):
         return results
 
     def get_data(self):
-        resp = helpers.get(self.url, cf=True).text
-        anime_id = re.search(r'&id=(\d+)', resp).groups()[0]
+        page = helpers.get(self.url, cf=True).text
+        anime_id = re.search(r'&id=(\d+)', page).group(1)
 
         self.params = {
             'm': 'release',
@@ -94,12 +94,10 @@ class AnimePahe(Anime, sitename='animepahe'):
             'page': 1
         }
 
-        resp = helpers.get(self.api_url, params=self.params).json()
-
-        self._scrape_metadata(resp['data'])
-        self._episode_urls = self._scrape_episodes(resp)
+        json_resp = helpers.get(self.api_url, params=self.params).json()
+        self._scrape_metadata(page)
+        self._episode_urls = self._scrape_episodes(json_resp)
         self._len = len(self._episode_urls)
-
         return self._episode_urls
 
     def _collect_episodes(self, ani_json, episodes=[]):
@@ -135,4 +133,4 @@ class AnimePahe(Anime, sitename='animepahe'):
         return episodes
 
     def _scrape_metadata(self, data):
-        self.title = data[0]['title']
+        self.title = re.search(r'<h1>([^<]+)', data).group(1)
