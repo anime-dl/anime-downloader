@@ -1,7 +1,7 @@
 import logging
 import sys
 import threading
-
+import os
 import click
 
 from anime_downloader.sites import get_anime_class, ALL_ANIME_SITES
@@ -50,15 +50,17 @@ def command(test_query):
         threads.append(t)
 
     for thread in threads:
+        if os.name == 'nt':p, f = 'Works: ', "Doesn't work: " #Emojis doesn't work in cmd
+        else:p, f = '✅ ', '❌ '
         thread.join(timeout=10)
         if not thread.is_alive():
             if not thread.exception:
                 # echo(click.style('Works ', fg='green') + site)
-                echo(click.style('✅ ', fg='green') + thread.site)
+                echo(click.style(p, fg='green') + thread.site)
             else:
                 logging.debug('Error occured during testing')
                 logging.debug(thread.exception)
-                echo(click.style("❌ ", fg='red') + thread.site)
+                echo(click.style(f, fg='red') + thread.site)
         else:
             logging.debug('timeout during testing')
-            echo(click.style("❌ ", fg='red') + thread.site)
+            echo(click.style(f, fg='red') + thread.site)

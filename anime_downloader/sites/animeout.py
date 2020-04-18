@@ -20,7 +20,7 @@ class AnimeOut(Anime, sitename='animeout'):
             return(search_results)
         def _scrape_episodes(self):
             soup = helpers.soupify(helpers.get(self.url))
-            elements = soup.select('div.article-content > p > a')
+            elements = soup.select('article.post a')
 
             episode_links = []
             for a in elements:

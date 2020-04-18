@@ -36,8 +36,7 @@ class Dubbedanime(Anime, sitename='dubbedanime'):
 
 class DubbedanimeEpisode(AnimeEpisode, sitename='dubbedanime'):
         def _get_sources(self):
-            soup = helpers.soupify(helpers.get(self.url)).text
-
+            soup = str(helpers.soupify(helpers.get(self.url)))
             x = re.search(r"xuath = '([^']*)", soup).group(1)
             token = re.search(r'"trollvid","id":"([^"]*)', soup).group(1)
 
