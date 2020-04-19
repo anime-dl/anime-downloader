@@ -258,6 +258,13 @@ def make_dir(path):
             raise
 
 
+def write_episode(episode):
+    # Writes episode stream url to file, further calls
+    # append stream urls to file
+    with open('anime.txt', 'a+') as f:
+        f.write(f'{episode.source().stream_url}\n')
+
+
 class ClickListOption(click.Option):
 
     def type_cast_value(self, ctx, value):

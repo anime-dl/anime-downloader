@@ -72,10 +72,15 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     '--choice', '-c',type=int,
     help='Choice to start downloading given anime number '
 )
+@click.option(
+    '-w', '--write', is_flag=True,
+    help='Writes stream links to file'
+)
 @click.pass_context
 def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             force_download, download_dir, file_format, provider,
-            external_downloader, chunk_size, disable_ssl, fallback_qualities, choice):
+            external_downloader, chunk_size, disable_ssl, fallback_qualities, choice,
+            write):
     """ Download the anime using the url or search for it.
     """
     util.print_info(__version__)
@@ -99,7 +104,7 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
     # Two types of plugins:
     #   - Aime plugin: Pass the whole anime
     #   - Ep plugin: Pass each episode
-    if url or player:
+    if url or player or write:
         skip_download = True
 
     if download_dir and not skip_download:
@@ -111,6 +116,9 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
 
         if player:
             util.play_episode(episode, player=player)
+
+        if write:
+            util.write_episode(episode)
 
         if not skip_download:
             if external_downloader:
