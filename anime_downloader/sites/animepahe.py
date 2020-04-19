@@ -75,7 +75,7 @@ class AnimePahe(Anime, sitename='animepahe'):
             search_result_info = SearchResult(
                 title=search_result['title'],
                 url=cls.base_anime_url + search_result['slug'],
-                poster=search_result['image']
+                poster=search_result['poster']
             )
 
             logger.debug(search_result_info)
