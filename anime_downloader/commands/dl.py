@@ -118,7 +118,7 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             util.play_episode(episode, player=player)
 
         if write:
-            util.write_episode(episode)
+            util.write_episode(episode, os.path.abspath(download_dir))
 
         if not skip_download:
             if external_downloader:
