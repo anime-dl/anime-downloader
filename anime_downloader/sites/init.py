@@ -2,7 +2,6 @@ from importlib import import_module
 
 ALL_ANIME_SITES = [
     # ('filename', 'sitename', 'classname')
-    ('nineanime', '9anime', 'NineAnime'),
     ('gogoanime', 'gogoanime', 'GogoAnime'),
     ('kissanime', 'kissanime', 'KissAnime'),
     ('kisscartoon', 'kisscartoon', 'KissCartoon'),
