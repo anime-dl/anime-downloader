@@ -43,7 +43,7 @@ Yeah. Me too! That's why this tool exists.
 - Configurable using `config.json`. See [documentation](https://anime-downlader.readthedocs.io/en/latest/usage/config.html).
 
 ## Supported Sites
-
+**Details about the sites can be found in [FAQ](https://github.com/vn-ki/anime-downloader/wiki/FAQ)**
 - Animepahe
 - Anistream
 - Animeflix
