@@ -14,7 +14,7 @@ import coloredlogs
 from tabulate import tabulate
 
 from anime_downloader import session
-from anime_downloader.sites import get_anime_class
+from anime_downloader.sites import get_anime_class, helpers
 from anime_downloader.const import desktop_headers
 
 logger = logging.getLogger(__name__)
@@ -256,6 +256,32 @@ def make_dir(path):
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
+
+
+def get_filler_episodes():
+    url = click.prompt("Input AnimeFillerList URL", type=str, err=True)
+
+    try:
+        logger.info("Fetching filler episodes...")
+
+        res = helpers.get(url)
+        soup = helpers.soupify(res.text)
+
+        episodes = []
+
+        for filler_episode in soup.find("div", attrs={"class": "filler"}).find_all("a"):
+            txt = filler_episode.text.strip()
+
+            for ep in txt.split("-"):
+                episodes.append(ep)
+
+        logger.debug("Found {} filler episodes.".format(len(episodes)))
+
+        return episodes
+    except:
+        logger.warn("Can't get filler episodes. Will download all specified episodes.")
+
+        return False
 
 
 class ClickListOption(click.Option):
