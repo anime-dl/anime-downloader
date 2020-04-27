@@ -14,7 +14,7 @@ import coloredlogs
 from tabulate import tabulate
 
 from anime_downloader import session
-from anime_downloader.sites import get_anime_class
+from anime_downloader.sites import get_anime_class, helpers
 from anime_downloader.const import desktop_headers
 
 logger = logging.getLogger(__name__)
@@ -96,6 +96,7 @@ def search(query, provider, choice=None):
                      ' Please input a number less than {}'.format(
                          len(search_results), len(search_results)+1))
         sys.exit(1)
+
 
     logger.info('Selected {}'.format(title))
 
@@ -256,6 +257,71 @@ def make_dir(path):
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
+
+
+def get_filler_episodes(query):
+    def search_filler_episodes(query,page):
+        url = 'https://animefillerlist.com/search/node/'
+        search_results = helpers.soupify(helpers.get(url+query, params={'page': page})).select('h3.title > a')
+        urls = [a.get('href') for a in search_results if a.get('href').split('/')[-2] == 'shows']
+        search_results = [
+            [
+                search_results[a].text]
+            for a in range(len(search_results)) if search_results[a].get('href').split('/')[-2] == 'shows'
+        ]
+        return search_results, urls
+
+
+    results_list, urls_list = [],[]
+    prev = ['']
+
+    for a in range(5): #Max 5 pages, could be done using the pager element
+        search_results, urls = search_filler_episodes(query,a)
+        if urls == prev and not (len(urls) == 0 or a == 0): #stops the loop if the same site is visited twice
+            break
+        prev = urls[:]
+
+        for b in search_results:
+            results_list.append(b)
+        for c in urls:
+            urls_list.append(c)
+    
+    [results_list[a].insert(0,a+1)for a in range(len(results_list))] #inserts numbers
+    
+    headers = ["SlNo", "Title"]
+    table = tabulate(results_list, headers, tablefmt='psql')
+    table = '\n'.join(table.split('\n')[::-1])
+    
+    click.echo(table)
+    val = click.prompt('Enter the filler-anime no (0 to cancel): ', type=int, default=1, err=True)
+    if val == 0:
+        return False
+
+    url = urls_list[val-1]
+
+    try:
+        logger.info("Fetching filler episodes...")
+
+        res = helpers.get(url)
+        soup = helpers.soupify(res.text)
+
+        episodes = []
+
+        for filler_episode in soup.find("div", attrs={"class": "filler"}).find_all("a"):
+            txt = filler_episode.text.strip()
+            if '-' in txt:
+                split = txt.split('-')
+                for a in range(int(split[0]),int(split[1])+1):
+                    episodes.append(a)
+            else:
+                episodes.append(int(txt))
+    
+        logger.debug("Found {} filler episodes.".format(len(episodes)))
+        return episodes
+    
+    except:
+        logger.warn("Can't get filler episodes. Will download all specified episodes.")
+        return False
 
 
 class ClickListOption(click.Option):
