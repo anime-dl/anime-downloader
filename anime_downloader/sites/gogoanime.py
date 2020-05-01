@@ -16,23 +16,12 @@ class GogoanimeEpisode(AnimeEpisode, sitename='gogoanime'):
         dl_page_url = []
 
         server = self.config.get('server', 'cdn')
-
         if server == 'cdn':
-            # TODO: This should be a extractor class
             for element in soup.find_all('a', href=re.compile('https://vidstreaming\.io')):
                 source_url = element.get('href')
                 logger.debug('%s' % (source_url))
                 dl_page_url = source_url
-            # Scrape download page for default hoster (cdnfile) file link
-            soup_cdnfile = helpers.soupify(helpers.get(dl_page_url))
-            cdnfile_url = []
-
-            for element in soup_cdnfile.find_all('a', href=re.compile('https://.*\.cdnfile\.info')):
-                extractor_class = 'no_extractor'
-                source_url = element.get('href')
-                logger.debug('%s: %s' % (extractor_class, source_url))
-                cdnfile_url.append((extractor_class, source_url,))
-            return cdnfile_url
+                return[('vidstream',source_url)]
 
         else:
             soup = helpers.soupify(helpers.get(self.url))
