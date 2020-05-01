@@ -16,7 +16,6 @@ from tabulate import tabulate
 from anime_downloader import session
 from anime_downloader.sites import get_anime_class, helpers
 from anime_downloader.const import desktop_headers
-from anime_downloader.config import Config
 
 logger = logging.getLogger(__name__)
 
@@ -195,6 +194,7 @@ def format_filename(filename, episode):
 
 
 def format_command(cmd, episode, file_format, path):
+    from anime_downloader.config import Config
     if not Config._CONFIG['dl']['aria2c_for_torrents'] and episode.url.startswith('magnet:?xt=urn:btih:'):
         return ['open',episode.url]
 
