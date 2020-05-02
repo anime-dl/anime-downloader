@@ -40,56 +40,56 @@ class Dubbedanime(Anime, sitename='dubbedanime'):
 class DubbedanimeEpisode(AnimeEpisode, sitename='dubbedanime'):
         def _get_sources(self):
             version = self.config['version']
-            server = self.config['server']
-            fallback = self.config['fallback_servers']
+            servers = self.config['servers']
 
             server_links = {
                 'mp4upload':'https://www.mp4upload.com/embed-{}.html',
                 'trollvid': 'https://trollvid.net/embed/{}',
                 'mp4sh': 'https://mp4.sh/embed/{0}{1}',
+                'vidstreaming':'https://vidstreaming.io/download?id={}'
             }
 
             soup = str(helpers.soupify(helpers.get(self.url)))
             x = re.search(r"xuath = '([^']*)", soup).group(1)
             episode_regex = r'var episode = ({[^;]*)'
-            sources = json.loads(re.search(episode_regex,soup).group(1))['videos']
+            api = json.loads(re.search(episode_regex,soup).group(1))
+            slug = api['slug']
+            sources = api['videos']
+            vidstream = helpers.get(f'https://vid.xngine.com/api/episode/{slug}',referer = self.url).json()
+            for a in vidstream:
+                if a['host'] == 'vidstreaming' and 'id' in a and 'type' in a:
+                    sources.append(a)
 
-            for a in sources: #Testing sources with selected language and provider
-                if a['type'] == version:
-                    if a['host'] == server:
-                        if get_extractor(server) == None:
-                            continue
-                        else:
-                            provider = server[:]
-
-                        embed = server_links.get(provider,'{}').format(a['id'],x)
-                        return [(provider, embed,)]
-
-            logger.debug('Preferred server %s not found in selected language. Trying all supported servers in selected language.',server)
-
-            for a in fallback: #Testing sources with selected language
-                for b in sources: 
+            for a in servers: #trying all supported servers in order using the correct language
+                for b in sources:
                     if b['type'] == version:
                         if b['host'] == a:
                             if get_extractor(a) == None:
                                 continue
                             else:
                                 provider = a[:]
-                            
+                            embed = server_links.get(provider,'{}').format(b['id'],x)
+                            return [(provider, embed,)]
+            
+            logger.debug('No servers found in selected language. Trying all supported servers')
+
+            for a in servers: #trying all supported servers in order
+                for b in sources:
+                    if b['type'] == version:
+                        if b['host'] == a:
+                            if get_extractor(a) == None:
+                                continue
+                            else:
+                                provider = a[:]
                             embed = server_links.get(provider,'{}').format(b['id'],x)
                             return [(provider, embed,)]
 
-            logger.debug('No %s servers found, trying all supported servers.',version)
-            
-            for a in fallback: #Testing all sources
-                for b in sources: 
-                    if b['host'] == a:
-                        if get_extractor(a) == None:
-                            continue
-                        else:
-                            provider = a[:]
-                        
-                        embed = server_links.get(provider,'{}').format(b['id'],x)
-                        return [(provider, embed,)]
+            logger.debug('No supported servers found, trying mp4sh')
+            if re.search(r'"trollvid","id":"([^"]*)', soup):
+                token = re.search(r'"trollvid","id":"([^"]*)', soup).group(1)
+                embed = server_links.get('mp4sh','{}').format(token,x)
+                return [('mp4sh', embed,)]
+            else:
+                logger.debug('No servers found')
+                return [('no_extractor', '',)]
 
-            return [('no_extractor', '',)]
