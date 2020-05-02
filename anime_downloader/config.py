@@ -76,8 +76,7 @@ DEFAULT_CONFIG = {
             "version": "sub",
         },
         'dubbedanime': {
-            "server": "trollvid",
-            "fallback_servers": ["mp4upload","trollvid"],
+            "servers": ["vidstream","mp4upload","trollvid"],
             "version": "dubbed",
         },
     }
