@@ -1,8 +1,11 @@
 import logging
 import re
-
+import json
+from anime_downloader.extractors import get_extractor
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
+
+logger = logging.getLogger(__name__)
 
 class Dubbedanime(Anime, sitename='dubbedanime'):
         sitename = 'dubbedanime'
@@ -32,14 +35,61 @@ class Dubbedanime(Anime, sitename='dubbedanime'):
 
         def _scrape_metadata(self):
             soup = helpers.soupify(helpers.get(self.url))
-            self.title= soup.select('h1.h3')[0].text
+            self.title = soup.select('h1.h3')[0].text
 
 class DubbedanimeEpisode(AnimeEpisode, sitename='dubbedanime'):
         def _get_sources(self):
+            version = self.config['version']
+            servers = self.config['servers']
+
+            server_links = {
+                'mp4upload':'https://www.mp4upload.com/embed-{}.html',
+                'trollvid': 'https://trollvid.net/embed/{}',
+                'mp4sh': 'https://mp4.sh/embed/{0}{1}',
+                'vidstreaming':'https://vidstreaming.io/download?id={}'
+            }
+
             soup = str(helpers.soupify(helpers.get(self.url)))
             x = re.search(r"xuath = '([^']*)", soup).group(1)
-            token = re.search(r'"trollvid","id":"([^"]*)', soup).group(1)
+            episode_regex = r'var episode = ({[^;]*)'
+            api = json.loads(re.search(episode_regex,soup).group(1))
+            slug = api['slug']
+            sources = api['videos']
+            vidstream = helpers.get(f'https://vid.xngine.com/api/episode/{slug}',referer = self.url).json()
+            for a in vidstream:
+                if a['host'] == 'vidstreaming' and 'id' in a and 'type' in a:
+                    sources.append(a)
 
-            url = f'https://mp4.sh/embed/{token}{x}'
-            return [('mp4sh', url)]
+            for a in servers: #trying all supported servers in order using the correct language
+                for b in sources:
+                    if b['type'] == version:
+                        if b['host'] == a:
+                            if get_extractor(a) == None:
+                                continue
+                            else:
+                                provider = a[:]
+                            embed = server_links.get(provider,'{}').format(b['id'],x)
+                            return [(provider, embed,)]
+            
+            logger.debug('No servers found in selected language. Trying all supported servers')
+
+            for a in servers: #trying all supported servers in order
+                for b in sources:
+                    if b['type'] == version:
+                        if b['host'] == a:
+                            if get_extractor(a) == None:
+                                continue
+                            else:
+                                provider = a[:]
+                            embed = server_links.get(provider,'{}').format(b['id'],x)
+                            return [(provider, embed,)]
+
+            logger.debug('No supported servers found, trying mp4sh')
+            if re.search(r'"trollvid","id":"([^"]*)', soup):
+                token = re.search(r'"trollvid","id":"([^"]*)', soup).group(1)
+                embed = server_links.get('mp4sh','{}').format(token,x)
+                return [('mp4sh', embed,)]
+            else:
+                logger.debug('No servers found')
+                return [('no_extractor', '',)]
 

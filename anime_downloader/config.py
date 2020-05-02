@@ -75,6 +75,10 @@ DEFAULT_CONFIG = {
             "fallback_servers": ["FastStream"],
             "version": "sub",
         },
+        'dubbedanime': {
+            "servers": ["vidstream","mp4upload","trollvid"],
+            "version": "dubbed",
+        },
     }
 }
 
