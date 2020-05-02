@@ -61,6 +61,7 @@ Yeah. Me too! That's why this tool exists.
 - Animesimple
 - Animerush
 - Watchmovie
+- Nyaa.si
 - twist.moe - requires Node.js
 - Kissanime - requires Node.js
 - Kisscartoon - requires Node.js
