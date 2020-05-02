@@ -19,6 +19,7 @@ DEFAULT_CONFIG = {
         'file_format': '{anime_title}/{anime_title}_{ep_no}',
         'provider': 'twist.moe',
         'external_downloader': '',
+        'aria2c_for_torrents': False,
     },
     'watch': {
         'quality': '1080p',

@@ -194,6 +194,10 @@ def format_filename(filename, episode):
 
 
 def format_command(cmd, episode, file_format, path):
+    from anime_downloader.config import Config
+    if not Config._CONFIG['dl']['aria2c_for_torrents'] and episode.url.startswith('magnet:?xt=urn:btih:'):
+        return ['open',episode.url]
+
     cmd_dict = {
         '{aria2}': 'aria2c {stream_url} -x 12 -s 12 -j 12 -k 10M -o '
                    '{file_format}.mp4 --continue=true --dir={download_dir}'
@@ -203,7 +207,7 @@ def format_command(cmd, episode, file_format, path):
 
 
     rep_dict = {
-        'stream_url': episode.source().stream_url,
+        'stream_url': episode.source().stream_url if not episode.url.startswith('magnet:?xt=urn:btih:') else episode.url,
         'file_format': file_format,
         'download_dir': os.path.abspath(path),
         'referer': episode.source().referer,
@@ -231,6 +235,20 @@ def eval_in_node(js: str):
     output = subprocess.check_output(['node', '-e', js])
     return output.decode('utf-8')
 
+def open_magnet(magnet):
+    if sys.platform.startswith('linux'):
+        subprocess.Popen(['xdg-open', magnet],
+                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    elif sys.platform.startswith('win32'):
+        os.startfile(magnet)
+    elif sys.platform.startswith('cygwin'):
+        os.startfile(magnet)
+    elif sys.platform.startswith('darwin'):
+        subprocess.Popen(['open', magnet],
+                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    else:
+        subprocess.Popen(['xdg-open', magnet],
+                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
 def external_download(cmd, episode, file_format, path=''):
@@ -242,13 +260,16 @@ def external_download(cmd, episode, file_format, path=''):
 
     logger.debug('formatted cmd: ' + ' '.join(cmd))
 
-    p = subprocess.Popen(cmd)
-    return_code = p.wait()
+    if cmd[0] == 'open': #for torrents
+        open_magnet(cmd[1])
+    else:
+        p = subprocess.Popen(cmd)
+        return_code = p.wait()
 
-    if return_code != 0:
-        # Sleep for a while to make sure downloader exits correctly
-        time.sleep(2)
-        sys.exit(1)
+        if return_code != 0:
+            # Sleep for a while to make sure downloader exits correctly
+            time.sleep(2)
+            sys.exit(1)
 
 
 def make_dir(path):
