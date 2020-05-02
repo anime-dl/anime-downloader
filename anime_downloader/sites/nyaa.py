@@ -9,7 +9,7 @@ class Nyaa(Anime, sitename = 'nyaa'):
     @classmethod
     def search(cls,query):
         rex = r'(magnet:)+[^"]*'
-        search_results = helpers.soupify(helpers.get(f"https://nyaa.si/?f=2&c=1_2&q={query}&s=seeders&o=desc"))
+        search_results = helpers.soupify(helpers.get(f"https://nyaa.si/?f=2&c=1_2&q={query}&s=size&o=desc"))
         
         search_results = [
             SearchResult(
