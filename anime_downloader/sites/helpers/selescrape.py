@@ -8,7 +8,7 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 from logging import exception
 from sys import platform
-import requests
+import requests, os
 import click
 import time
 import json
@@ -31,36 +31,20 @@ elif gg() == 'win32':
     aa = '\\'
 else:
     raise exception('This OS is not currently supported.')
-
-
-def get_config(s='f'): #can't use config because of circular import
-    if s == 'f':
-        APP_NAME = 'anime downloader'
-        directory = str(click.get_app_dir(APP_NAME) + aa + 'config.json').replace(dd, aa)
-        with open(directory, 'r') as configfile:
-            try:
-                conf = json.load(configfile)
-            except:
-                raise SyntaxWarning('The config file is not correctly formatted')
-        return conf
-    elif s == 'a':
-        APP_NAME = 'anime downloader'
-        directory = str(click.get_app_dir(APP_NAME) + aa + 'data').replace(dd, aa)
-        return directory
+def get_config(): #can't use config because of circular import
+    APP_NAME = 'anime downloader'
+    directory = str(click.get_app_dir(APP_NAME) + aa + 'data').replace(dd, aa)
+    return directory
 
 def browsers():
     config = get_config()
-    if config['dl']['selescrape_browser'] == '.':
-        common_bs = ['chrome', 'firefox']
-        os = test_os()
-        if os == "linux":
-            common_bs = common_bs[1]
-        elif os == "darwin":
-            print('Mac OS is not supported yet.')
-        elif os == "win32":
-            common_bs = common_bs[0]
-    else:
-        common_bs = config['dl']['selescrape_browser']
+    common_bs = ['chrome', 'firefox']
+    if gg == "linux":
+        common_bs = common_bs[0]
+    elif gg == "darwin":
+        print('Mac OS is not supported yet.')
+    elif gg == "win32":
+        common_bs = common_bs[0]
     return common_bs
 
 def add_url_params(url, params):
@@ -70,7 +54,7 @@ def add_url_params(url, params):
 
 default_browser = browsers()
 def driver_select(name=default_browser):
-    data_dir = get_config(s='a')
+    data_dir = get_config()
     if name == 'firefox' or name == 'ff' or name == 'f':
         fireFoxOptions = webdriver.FirefoxOptions()
         fireFoxOptions.headless = True
