@@ -2,13 +2,18 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from anime_downloader.const import get_random_header
 from selenium.webdriver.common.by import By
-import requests, os, click, time, json
 from urllib.parse import urlencode
 from urllib.parse import urlsplit
 from selenium import webdriver
 from bs4 import BeautifulSoup
 from logging import exception
 from sys import platform
+import requests
+import os
+import click
+import time
+import json
+
 
 def test_os():
     if platform.startswith("lin"):
