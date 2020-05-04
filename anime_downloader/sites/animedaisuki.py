@@ -23,7 +23,6 @@ class Animedaisuki(Anime, sitename='animedaisuki'):
         def _scrape_episodes(self):
             soup = helpers.soupify(helpers.get(self.url))
             elements = soup.select('li.fa-play-circle > a')[::-1]
-            print(['https://animedaisuki.moe' + a.get('href') for a in elements if a.get('href').startswith('/watch/')])
             return ['https://animedaisuki.moe' + a.get('href') for a in elements if a.get('href').startswith('/watch/')]
 
         def _scrape_metadata(self):
