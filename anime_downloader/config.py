@@ -80,6 +80,9 @@ DEFAULT_CONFIG = {
             "servers": ["vidstream","mp4upload","trollvid"],
             "version": "dubbed",
         },
+        'animedaisuki': {
+            "servers": ["official"]
+        }
     }
 }
 
