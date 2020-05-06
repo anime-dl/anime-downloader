@@ -2,7 +2,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from anime_downloader.const import get_random_header
 from selenium.webdriver.common.by import By
-import requests, os, click, time, json
+import requests
+import os
+import click
+import time
+import json
 from urllib.parse import urlencode
 from urllib.parse import urlsplit
 from selenium import webdriver
@@ -76,7 +80,7 @@ def driver_select():
             pass
         header = get_random_header()
         profile_path = os.path.join(data_dir, 'Selenium_chromium')
-        log_path = os.join.path(data_dir, 'chromedriver.log')
+        log_path = os.path.join(data_dir, 'chromedriver.log')
         chrome_options.add_argument(f'--log-path {log_path}')
         chrome_options.add_argument(f"--user-data-dir={profile_path}")
         chrome_options.add_argument("--no-sandbox")
