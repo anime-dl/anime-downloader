@@ -75,7 +75,7 @@ def driver_select():
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-gpu")
         try:
-            extension_path = os.join.path(data_dir, 'Extensions', 'ublock.crx')
+            extension_path = os.path.join(data_dir, 'Extensions', 'ublock.crx')
             chrome_options.add_extension(extension_path)
         except:
             pass
