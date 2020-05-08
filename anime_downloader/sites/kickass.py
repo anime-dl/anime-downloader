@@ -93,10 +93,10 @@ class KickAssEpisode(AnimeEpisode, sitename='kickass'):
                     return [('haloani', a['src'],)]
             
             logger.debug('Preferred server "%s" not found. Trying all supported servers.',self.config['server'])
-            for a in sources:
-                for b in fallback:
-                    if a['name'] == b:
-                        return [('haloani', a['src'],)]
+            for a in fallback:
+                for b in sources:
+                    if b['name'] == a:
+                        return [('haloani', b['src'],)]
             
             logger.warning('No supported servers found. Trying all servers. This will most likely not work')
             return [('haloani', a['src'],)]
