@@ -75,14 +75,13 @@ class DubbedanimeEpisode(AnimeEpisode, sitename='dubbedanime'):
 
             for a in servers: #trying all supported servers in order
                 for b in sources:
-                    if b['type'] == version:
-                        if b['host'] == a:
-                            if get_extractor(a) == None:
-                                continue
-                            else:
-                                provider = a[:]
-                            embed = server_links.get(provider,'{}').format(b['id'],x)
-                            return [(provider, embed,)]
+                    if b['host'] == a:
+                        if get_extractor(a) == None:
+                            continue
+                        else:
+                            provider = a[:]
+                        embed = server_links.get(provider,'{}').format(b['id'],x)
+                        return [(provider, embed,)]
 
             logger.debug('No supported servers found, trying mp4sh')
             if re.search(r'"trollvid","id":"([^"]*)', soup):
