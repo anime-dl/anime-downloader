@@ -29,7 +29,10 @@ class WatchMovie(Anime, sitename='watchmovie'):
             return(search_results)
 
         def _scrape_episodes(self):
-            url = self.url+'/season'
+            if 'anime-info' in self.url:
+                url = self.url.replace('anime-info','anime') + '/all'
+            else:
+                url = self.url+'/season'
             soup = helpers.soupify(helpers.get(url)).select('a.videoHname')
             return ['https://watchmovie.movie'+a.get('href') for a in soup[::-1]]
 
