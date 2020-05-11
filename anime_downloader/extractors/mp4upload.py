@@ -13,7 +13,11 @@ class MP4Upload(BaseExtractor):
         regex = r"eval\(function[\W\w]*?</script>"
         script = re.search(regex,soup).group().replace('</script>','')
         script = util.deobfuscate_packed_js(script)
-        url = re.search(r'player\.src\("[^"]*',script).group().replace('player.src("','')
+        url = ''
+        if re.search(r'player\.src\("([^"]*)',script):
+            url = re.search(r'player\.src\("([^"]*)',script).group(1)
+        elif re.search(r'src:"([^"]*)',script):
+            url = re.search(r'src:"([^"]*)',script).group(1)
         return {
             'stream_url': url,
             'referer': self.url
