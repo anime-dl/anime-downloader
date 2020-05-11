@@ -15,7 +15,7 @@ import time
 import json
 
 
-def test_os():
+def test_os(): #pretty self-explanatory
     if platform.startswith("lin"):
         os_name = "linux"
     elif platform.startswith("da"):
@@ -24,34 +24,50 @@ def test_os():
         os_name = "win32"
     return os_name
 
-def get_config(): #can't use config because of circular import
+def get_data_dir(): #gets the folder directory selescrape will store data, such as cookies or browser extensions and logs.
     APP_NAME = 'anime downloader'
-    directory = os.path.join(click.get_app_dir(APP_NAME), 'data') #click.get_app_dir(APP_NAME) + slash_2_use + 'data'
-    return directory
-
-
-def get_browser():
+    directory = os.path.join(click.get_app_dir(APP_NAME), 'data')
+    print(directory)
+    #
+    #
+def get_browser(): #pretty self-explanatory
     ostest = test_os()
     common_bs = ['chrome', 'firefox']
-    if ostest == "linux":
-        common_bs = common_bs[0]
+    if ostest.startswith("linux"):
+        common_bs = common_bs[1]
     elif ostest == "darwin":
-        # 'Safari browser is not supported.'
         common_bs = common_bs[0]
     elif ostest == "win32":
         common_bs = common_bs[0]
     return common_bs
-
-
-def add_url_params(url, params):
+#
+#
+def get_config(): #can't import config directly because of circular import
+    try:
+        APP_NAME = 'anime downloader'
+        with open(os.path.join(click.get_app_dir(APP_NAME), 'config.json')) as json_file:
+            data = json.load(json_file)
+            browser_value = data['dl']['selescrape_browser'].lower()
+            if browser_value == '.':
+                browser = get_browser()
+            elif browser_value == 'chrome' or browser_value == 'c':
+                browser = browser_value
+            elif browser_value == 'firefox' or browser_value == 'f':
+                browser = browser_value
+        return browser
+    except:
+        browser = get_browser()
+#
+#
+def add_url_params(url, params): #pretty self-explanatory
     encoded_params = urlencode(params)
     url = url + '?' + encoded_params
     return url
-
-
-def driver_select():
-    browser = get_browser()
-    data_dir = get_config()
+#
+#
+def driver_select(): #it configures what each browser should do and gives the driver variable that is used to perform any actions below this def
+    browser = get_config()
+    data_dir = get_data_dir()
     if browser == 'firefox':
         fireFoxOptions = webdriver.FirefoxOptions()
         fireFoxOptions.headless = True
@@ -75,7 +91,7 @@ def driver_select():
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-gpu")
         try:
-            extension_path = os.path.join(data_dir, 'Extensions', 'ublock.crx')
+            extension_path = os.path.join(data_dir, 'Extensions', 'adblock.crx')
             chrome_options.add_extension(extension_path)
         except:
             pass
@@ -90,9 +106,9 @@ def driver_select():
         chrome_options.add_argument(f'user-agent={user_agent}')
         driver = webdriver.Chrome(options=chrome_options)
     return driver
-
-
-def status_select(driver, url, status='hide'):
+#
+#
+def status_select(driver, url, status='hide'): #for now it doesnt do what its name suggests, i have planned to add a status reporter of the http response code.
     try:
         if status == 'hide':
             driver.get(url)
@@ -106,9 +122,9 @@ def status_select(driver, url, status='hide'):
             driver.get(url)
     except requests.ConnectionError:
         raise exception("Failed to establish a connection.")
-    
-
-def cloudflare_wait(driver):
+#    
+#
+def cloudflare_wait(driver): #it waits until cloudflare has gone away before doing any further actions.
     try:
         title = driver.title  # title = "Just a moment..."
         while title == "Just a moment...": #or "another title for different kinds of Cloudflare protection."
@@ -118,13 +134,12 @@ def cloudflare_wait(driver):
     except:
         pass
     time.sleep(1)
-
-def request(request_type, url, headers={}, **kwargs): #Headers not yet supported
-    params = {}
+#
+#
+def request(url, params={}, request_type='lol', **kwargs): #Headers not yet supported , headers={}
     for key, value in kwargs.items():
         if key == 'params':
             params = value
-
     new_url = add_url_params(url, params)
     driver = driver_select()
     status = status_select(driver, new_url, 'hide')
@@ -137,9 +152,11 @@ def request(request_type, url, headers={}, **kwargs): #Headers not yet supported
     except:
         driver.save_screenshot("screenshot.png");
         driver.close()
-
-def get_by_css_selector(url, params, css, attr):
-    browser = get_browser()
+#
+#
+def get_by_css_selector(url, params, css, attr): #this is added as an optional command,
+                                                    #it returns the attribute of a web element by the css selector 
+    browser = get_config()
     new_url = add_url_params(url, params)
     driver = driver_select(browser)
     status = status_select(driver, new_url, 'hide')
@@ -149,9 +166,10 @@ def get_by_css_selector(url, params, css, attr):
     except:
         driver.save_screenshot("screenshot.png");
         driver.close()
-
+#
+#
 def get_by_xpath(url, params, full_xpath, attr):
-    browser = get_browser()
+    browser = get_config()
     new_url = add_url_params(url, params)
     driver = driver_select(browser)
     status = status_select(driver, new_url, 'hide')
@@ -161,3 +179,5 @@ def get_by_xpath(url, params, full_xpath, attr):
     except:
         driver.save_screenshot("screenshot.png");
         driver.close()
+#
+#
