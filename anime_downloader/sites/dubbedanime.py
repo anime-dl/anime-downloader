@@ -51,7 +51,7 @@ class DubbedanimeEpisode(AnimeEpisode, sitename='dubbedanime'):
 
             soup = str(helpers.soupify(helpers.get(self.url)))
             x = re.search(r"xuath = '([^']*)", soup).group(1)
-            episode_regex = r'var episode = ({[^;]*)'
+            episode_regex = r'var episode = (.*?});'
             api = json.loads(re.search(episode_regex,soup).group(1))
             slug = api['slug']
             sources = api['videos']
