@@ -21,9 +21,9 @@ class VidStream(BaseExtractor):
 
         url = self.url.replace('https:////','https://')
         url = url.replace('https://vidstreaming.io/download','https://vidstreaming.io/server.php')
-        
+
         soup = helpers.soupify(helpers.get(url))
-        
+
         servers = Config._read_config()['siteconfig']['vidstream']['servers']
         sources_regex = r'sources:(\[{.*?}])'
         sources = re.search(sources_regex,str(soup))
@@ -35,10 +35,8 @@ class VidStream(BaseExtractor):
             for b in linkserver:
                 if b.get('data-video').startswith(links.get(a,'None')):
                     self.url = b.get('data-video')
-                    print(a)
                     return extractors.get_extractor(a)._get_data(self)
-                
-                
+ 
     def _get_link(self,sources):
         QUALITIES = {
             "360":[],
@@ -48,7 +46,7 @@ class VidStream(BaseExtractor):
         }
         sources = sources.group(1)
         sources = sources.replace("'",'"') #json only accepts ""
-        
+
         regex = r"[{|,][\n]*?[ ]*?[\t]*?[A-z]*?[^\"]:"
         for a in re.findall(regex,sources): #Because sometimes it's not valid json
             sources = sources.replace(a,f'{a[:1]}"{a[1:-1]}"{a[-1:]}') #replaces file: with "file":
