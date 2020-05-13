@@ -27,9 +27,7 @@ def test_os(): #pretty self-explanatory
 def get_data_dir(): #gets the folder directory selescrape will store data, such as cookies or browser extensions and logs.
     APP_NAME = 'anime downloader'
     directory = os.path.join(click.get_app_dir(APP_NAME), 'data')
-    print(directory)
-    #
-    #
+
 def get_browser(): #pretty self-explanatory
     ostest = test_os()
     common_bs = ['chrome', 'firefox']
@@ -40,8 +38,7 @@ def get_browser(): #pretty self-explanatory
     elif ostest == "win32":
         common_bs = common_bs[0]
     return common_bs
-#
-#
+
 def get_config(): #can't import config directly because of circular import
     try:
         APP_NAME = 'anime downloader'
@@ -57,14 +54,12 @@ def get_config(): #can't import config directly because of circular import
         return browser
     except:
         browser = get_browser()
-#
-#
+
 def add_url_params(url, params): #pretty self-explanatory
     encoded_params = urlencode(params)
     url = url + '?' + encoded_params
     return url
-#
-#
+
 def driver_select(): #it configures what each browser should do and gives the driver variable that is used to perform any actions below this def
     browser = get_config()
     data_dir = get_data_dir()
@@ -106,8 +101,7 @@ def driver_select(): #it configures what each browser should do and gives the dr
         chrome_options.add_argument(f'user-agent={user_agent}')
         driver = webdriver.Chrome(options=chrome_options)
     return driver
-#
-#
+
 def status_select(driver, url, status='hide'): #for now it doesnt do what its name suggests, i have planned to add a status reporter of the http response code.
     try:
         if status == 'hide':
@@ -122,8 +116,7 @@ def status_select(driver, url, status='hide'): #for now it doesnt do what its na
             driver.get(url)
     except requests.ConnectionError:
         raise exception("Failed to establish a connection.")
-#    
-#
+
 def cloudflare_wait(driver): #it waits until cloudflare has gone away before doing any further actions.
     try:
         title = driver.title  # title = "Just a moment..."
@@ -134,8 +127,7 @@ def cloudflare_wait(driver): #it waits until cloudflare has gone away before doi
     except:
         pass
     time.sleep(1)
-#
-#
+
 def request(url, params={}, request_type='lol', **kwargs): #Headers not yet supported , headers={}
     for key, value in kwargs.items():
         if key == 'params':
@@ -152,8 +144,7 @@ def request(url, params={}, request_type='lol', **kwargs): #Headers not yet supp
     except:
         driver.save_screenshot("screenshot.png");
         driver.close()
-#
-#
+
 def get_by_css_selector(url, params, css, attr): #this is added as an optional command,
                                                     #it returns the attribute of a web element by the css selector 
     browser = get_config()
@@ -166,8 +157,7 @@ def get_by_css_selector(url, params, css, attr): #this is added as an optional c
     except:
         driver.save_screenshot("screenshot.png");
         driver.close()
-#
-#
+
 def get_by_xpath(url, params, full_xpath, attr):
     browser = get_config()
     new_url = add_url_params(url, params)
@@ -179,5 +169,4 @@ def get_by_xpath(url, params, full_xpath, attr):
     except:
         driver.save_screenshot("screenshot.png");
         driver.close()
-#
-#
+    
