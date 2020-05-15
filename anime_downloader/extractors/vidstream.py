@@ -11,6 +11,13 @@ logger = logging.getLogger(__name__)
 
 class VidStream(BaseExtractor):
     def _get_data(self):
+        
+        '''
+        Config:
+        List of servers. Will use servers in order. 
+        For example: ["hydrax","vidstream"] will prioritize the HydraX link.
+        Available servers: links (below) and vidstream 
+        '''
 
         links = {
         "gcloud":"https://gcloud.live/",
