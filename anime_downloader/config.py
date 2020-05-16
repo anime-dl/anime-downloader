@@ -82,6 +82,9 @@ DEFAULT_CONFIG = {
         },
         'animedaisuki': {
             "servers": ["official"]
+        },
+        'vidstream': {
+            "servers": ["vidstream","gcloud","mp4upload","cloud9","hydrax"]
         }
     }
 }

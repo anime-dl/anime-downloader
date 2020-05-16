@@ -78,6 +78,18 @@ ALL_EXTRACTORS = [
         'modulename': 'xstreamcdn',
         'regex': 'xstreamcdn',
         'class': 'XStreamCDN'
+    },
+    {
+        'sitename': 'cloud9',
+        'modulename': 'cloud9',
+        'regex': 'cloud9',
+        'class': 'Cloud9'
+    },
+    {
+        'sitename': 'hydrax',
+        'modulename': 'hydrax',
+        'regex': 'hydrax',
+        'class': 'Hydrax'
     }
 ]
 
