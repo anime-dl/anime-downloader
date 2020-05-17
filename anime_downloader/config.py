@@ -20,6 +20,7 @@ DEFAULT_CONFIG = {
         'provider': 'twist.moe',
         'external_downloader': '',
         'aria2c_for_torrents': False,
+        'selescrape_browser': ".",
     },
     'watch': {
         'quality': '1080p',
@@ -80,12 +81,6 @@ DEFAULT_CONFIG = {
             "servers": ["vidstream","mp4upload","trollvid"],
             "version": "dubbed",
         },
-        'animedaisuki': {
-            "servers": ["official"]
-        },
-        'vidstream': {
-            "servers": ["vidstream","gcloud","mp4upload","cloud9","hydrax"]
-        }
     }
 }
 
