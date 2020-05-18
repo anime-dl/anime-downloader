@@ -121,6 +121,7 @@ def cloudflare_wait(driver): #it waits until cloudflare has gone away before doi
     try:
         title = driver.title  # title = "Just a moment..."
         while title == "Just a moment...": #or "another title for different kinds of Cloudflare protection."
+            time.sleep(0.25)
             title = driver.title
             if not title == "Just a moment...":
                 break
@@ -144,29 +145,3 @@ def request(url, params={}, request_type='lol', **kwargs): #Headers not yet supp
     except:
         driver.save_screenshot("screenshot.png");
         driver.close()
-
-def get_by_css_selector(url, params, css, attr): #this is added as an optional command,
-                                                    #it returns the attribute of a web element by the css selector 
-    browser = get_config()
-    new_url = add_url_params(url, params)
-    driver = driver_select(browser)
-    status = status_select(driver, new_url, 'hide')
-    try:
-        cloudflare_wait(driver)
-        return WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, css))).get_attribute(attr)
-    except:
-        driver.save_screenshot("screenshot.png");
-        driver.close()
-
-def get_by_xpath(url, params, full_xpath, attr):
-    browser = get_config()
-    new_url = add_url_params(url, params)
-    driver = driver_select(browser)
-    status = status_select(driver, new_url, 'hide')
-    try:
-        cloudflare_wait(driver)
-        return WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, full_xpath))).get_attribute(attr)
-    except:
-        driver.save_screenshot("screenshot.png");
-        driver.close()
-    
