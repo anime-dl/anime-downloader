@@ -118,10 +118,15 @@ def status_select(driver, url, status='hide'): #for now it doesnt do what its na
         raise exception("Failed to establish a connection.")
 
 def cloudflare_wait(driver): #it waits until cloudflare has gone away before doing any further actions.
+    abort_after = 30
+    start = time.time()
     try:
         title = driver.title  # title = "Just a moment..."
         while title == "Just a moment...": #or "another title for different kinds of Cloudflare protection."
             time.sleep(0.25)
+            delta = time.time() - start
+            if delta >= abort_after:
+                raise Exception('Timeout:\nThe website is not responding.')
             title = driver.title
             if not title == "Just a moment...":
                 break
