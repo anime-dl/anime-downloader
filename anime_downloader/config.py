@@ -21,6 +21,8 @@ DEFAULT_CONFIG = {
         'external_downloader': '',
         'aria2c_for_torrents': False,
         'selescrape_browser': ".",
+        'selescrape_browser_executable_path' : '.',
+        'selescrape_driver_binary_path' : '.',
     },
     'watch': {
         'quality': '1080p',
