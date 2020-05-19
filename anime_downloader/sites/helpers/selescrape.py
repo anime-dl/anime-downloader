@@ -26,7 +26,7 @@ def test_os(): #pretty self-explanatory
 
 def get_data_dir(): #gets the folder directory selescrape will store data, such as cookies or browser extensions and logs.
     APP_NAME = 'anime downloader'
-    directory = os.path.join(click.get_app_dir(APP_NAME), 'data')
+    return os.path.join(click.get_app_dir(APP_NAME), 'data')
 
 def get_browser(): #pretty self-explanatory
     ostest = test_os()
@@ -39,21 +39,44 @@ def get_browser(): #pretty self-explanatory
         common_bs = common_bs[0]
     return common_bs
 
-def get_config(): #can't import config directly because of circular import
+def open_config(): #can't import config directly because of circular import
     try:
         APP_NAME = 'anime downloader'
         with open(os.path.join(click.get_app_dir(APP_NAME), 'config.json')) as json_file:
             data = json.load(json_file)
-            browser_value = data['dl']['selescrape_browser'].lower()
-            if browser_value == '.':
-                browser = get_browser()
-            elif browser_value == 'chrome' or browser_value == 'c':
-                browser = browser_value
-            elif browser_value == 'firefox' or browser_value == 'f':
-                browser = browser_value
-        return browser
+        return data
     except:
+        return 'The Config File is not yet created. Using the default values.'
+
+def get_browser_config():
+    data = open_config()
+    if data == 'The Config File is not yet created. Using the default values.':
         browser = get_browser()
+    else:
+        browser_value = data['dl']['selescrape_browser'].lower()
+        if browser_value == '.':
+            browser = get_browser()
+        elif browser_value in ['chrome', 'c']:
+            browser = browser_value
+        elif browser_value in ['firefox', 'f']:
+            browser = browser_value
+    return browser
+
+def get_browser_executable():
+    data = open_config()
+    if data == 'The Config File is not yet created. Using the default values.':
+        executable_value = '.'
+    else:
+        executable_value = data['dl']['selescrape_browser_executable_path'].lower()
+    return executable_value
+
+def get_driver_binary():
+    data = open_config()
+    if data == 'The Config File is not yet created. Using the default values.':
+        binary_path = '.'
+    else:
+        binary_path = data['dl']['selescrape_driver_binary_path'].lower()
+    return binary_path
 
 def add_url_params(url, params): #pretty self-explanatory
     encoded_params = urlencode(params)
@@ -61,8 +84,14 @@ def add_url_params(url, params): #pretty self-explanatory
     return url
 
 def driver_select(): #it configures what each browser should do and gives the driver variable that is used to perform any actions below this def
-    browser = get_config()
+    browser = get_browser_config()
     data_dir = get_data_dir()
+    executable = get_browser_executable()
+    driver_binary = get_driver_binary()
+    if driver_binary == '.':
+        binary = None
+    else:
+        binary = driver_binary
     if browser == 'firefox':
         fireFoxOptions = webdriver.FirefoxOptions()
         fireFoxOptions.headless = True
@@ -70,16 +99,24 @@ def driver_select(): #it configures what each browser should do and gives the dr
         fireFoxOptions.add_argument('-CreateProfile f"Selenium_firefox {data_dir}"')
         adblock = os.path.join(data_dir, 'Extensions', 'adblock.xpi')
         profile_path = os.path.join(data_dir, 'Selenium_firefox')
+        if os.path.exists(profile_path):
+            pass
+        else:
+            os.mkdir(profile_path)
         try:
             fireFoxOptions.add_argument(f'--install-app {adblock}')
         except:
             pass
-        try:
-            driver = webdriver.Firefox(firefox_options=fireFoxOptions)
-        except:
-            driver = webdriver.Firefox(firefox_options=fireFoxOptions, firefox_profile=f'{profile_path}', service_log_path=os.path.devnull)
-
-
+        if driver_binary == None:  
+            try:
+                driver = webdriver.Firefox(firefox_options=fireFoxOptions, service_log_path=os.path.devnull)
+            except:
+                driver = webdriver.Firefox(firefox_options=fireFoxOptions, firefox_profile=f'{profile_path}', service_log_path=os.path.devnull)
+        else:
+            try:
+                driver = webdriver.Firefox(firefox_options=fireFoxOptions, service_log_path=os.path.devnull)
+            except:
+                driver = webdriver.Firefox(executable_path=driver_binary, firefox_options=fireFoxOptions, firefox_profile=f'{profile_path}', service_log_path=os.path.devnull)
     elif browser == 'chrome':
         from selenium.webdriver.chrome.options import Options
         chrome_options = Options()
@@ -99,7 +136,22 @@ def driver_select(): #it configures what each browser should do and gives the dr
         chrome_options.add_argument("--window-size=1920,1080")
         user_agent = header
         chrome_options.add_argument(f'user-agent={user_agent}')
-        driver = webdriver.Chrome(options=chrome_options)
+        if driver_binary == None:
+            if executable == '.':
+                driver = webdriver.Chrome(options=chrome_options)
+            else:
+                from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+                cap = DesiredCapabilities.CHROME
+                cap['binary_location'] = executable
+                driver = webdriver.Chrome(desired_capabilities=cap, options=chrome_options)
+        else:
+            if executable == '.':
+                driver = webdriver.Chrome(options=chrome_options)
+            else:
+                from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+                cap = DesiredCapabilities.CHROME
+                cap['binary_location'] = executable
+                driver = webdriver.Chrome(executable_path=driver_binary, desired_capabilities=cap, options=chrome_options)
     return driver
 
 def status_select(driver, url, status='hide'): #for now it doesnt do what its name suggests, i have planned to add a status reporter of the http response code.
@@ -134,10 +186,10 @@ def cloudflare_wait(driver): #it waits until cloudflare has gone away before doi
         pass
     time.sleep(1)
 
-def request(url, params={}, request_type='lol', **kwargs): #Headers not yet supported , headers={}
+def request(url, request_type='lol', **kwargs): #Headers not yet supported , headers={}
+    params = {}
     for key, value in kwargs.items():
-        if key == 'params':
-            params = value
+        params[key] = value
     new_url = add_url_params(url, params)
     driver = driver_select()
     status = status_select(driver, new_url, 'hide')
