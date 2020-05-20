@@ -349,6 +349,36 @@ class AnimeEpisode:
         self._sources = self._get_sources()
         logger.debug('Sources : {}'.format(self._sources))
 
+        if type(self._sources[0]) == dict:
+            version = self.config.get('version','subbed') #TODO add a flag for this
+            servers = self.config.get('servers',[''])
+            data = self._sources
+
+            sources = ''
+
+            logger.debug(data)
+
+            for a in servers: #trying all supported servers in order using the correct language
+                for b in data:
+                    if b['version'] == version:
+                        if b['config'] == a:
+                            if get_extractor(b['extractor']) == None:
+                                continue
+                            sources = [(b['extractor'], b['url'],)]
+
+            logger.debug('No servers found in selected language. Trying all supported servers')
+
+            if not sources:
+                for a in servers: #trying all supported servers in order
+                    for b in data:
+                        if b['config'] == a:
+                            if get_extractor(b['extractor']) == None:
+                                continue
+                            sources = [(b['extractor'], b['url'],)]            
+            self._sources = sources
+
+        logger.debug('Sources : {}'.format(self._sources))
+
     def _get_sources(self):
         raise NotImplementedError
 
