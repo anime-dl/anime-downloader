@@ -354,28 +354,23 @@ class AnimeEpisode:
             servers = self.config.get('servers',[''])
             data = self._sources
 
-            sources = ''
+            logger.debug('Data : {}'.format(data))
 
-            logger.debug(data)
+            sources = []
+            for a in servers: #Servers in order in correct language
+                for b in (list(filter(lambda server: (server['version'] == version and server['config'] == a and get_extractor(server['extractor']) != None) , data))):
+                    sources.append(b)
 
-            for a in servers: #trying all supported servers in order using the correct language
-                for b in data:
-                    if b['version'] == version:
-                        if b['config'] == a:
-                            if get_extractor(b['extractor']) == None:
-                                continue
-                            sources = [(b['extractor'], b['url'],)]
+            for a in servers: #Servers in order in incorrect language
+                for b in (list(filter(lambda server: (server['version'] != version and server['config'] == a and get_extractor(server['extractor']) != None) , data))):
+                    sources.append(b)
 
-            logger.debug('No servers found in selected language. Trying all supported servers')
-
-            if not sources:
-                for a in servers: #trying all supported servers in order
-                    for b in data:
-                        if b['config'] == a:
-                            if get_extractor(b['extractor']) == None:
-                                continue
-                            sources = [(b['extractor'], b['url'],)]            
-            self._sources = sources
+            logger.debug('Sorted sources : {}'.format(sources))
+            
+            if len(sources) == 0:
+                self._sources = ''
+            else:
+                self._sources = [(sources[0]['extractor'],sources[0]['url'])]
 
         logger.debug('Sources : {}'.format(self._sources))
 
