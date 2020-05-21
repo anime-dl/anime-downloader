@@ -367,10 +367,7 @@ class AnimeEpisode:
 
             logger.debug('Sorted sources : {}'.format(sources))
             
-            if len(sources) == 0:
-                self._sources = ''
-            else:
-                self._sources = [(sources[0]['extractor'],sources[0]['url'])]
+            self._sources = '' if not sources else [(sources[0]['extractor'],sources[0]['url'])]
 
         logger.debug('Sources : {}'.format(self._sources))
 
