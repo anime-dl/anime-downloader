@@ -69,7 +69,7 @@ class VidStream(BaseExtractor):
 
         if QUALITIES == {"360":[],"480":[],"720":[],"1080":[],}:
             stream_url = sources[0].get('file','') #In case nothing is found
-            loggger.debug("The streaming link's quality cannot be identified.")
+            logger.debug("The streaming link's quality cannot be identified.")
 
         return {
             'stream_url': stream_url,
