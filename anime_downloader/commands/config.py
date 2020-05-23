@@ -114,6 +114,7 @@ while True:
     clear()
 for a in connected: #Saves the data
     data = (nested_set(data,connected[a][0],connected[a][1]))
-
-print(data)
+APP_NAME = 'anime downloader'
+with open(os.path.join(click.get_app_dir(APP_NAME), 'config.json'), 'w') as json_file:
+        json.dump(data, json_file)
 exit()
