@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from io import StringIO
 
 class Yify(Anime, sitename = 'ytx'):
-    sitename = 'yify'
+    sitename = 'ytx'
     url = f'https://{sitename}.mx'
     @classmethod
     def search(cls, query):
