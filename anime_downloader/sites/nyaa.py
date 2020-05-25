@@ -13,8 +13,10 @@ class Nyaa(Anime, sitename = 'nyaa'):
         
         search_results = [
             SearchResult(
-                title = i.select("a:not(.comments)")[1].get("title") + ' | '+ i.find_all('td',class_ = 'text-center')[1].text,
-                url = i.find_all('a',{'href':re.compile(rex)})[0].get('href'))
+                title = i.select("a:not(.comments)")[1].get("title"),
+                url = i.find_all('a',{'href':re.compile(rex)})[0].get('href'),
+                meta= {'size':i.find_all('td',class_ = 'text-center')[1].text})
+
             for i in search_results.select("tr.default,tr.success")
             ]
 
