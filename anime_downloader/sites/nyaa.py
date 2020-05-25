@@ -15,7 +15,7 @@ class Nyaa(Anime, sitename = 'nyaa'):
             SearchResult(
                 title = i.select("a:not(.comments)")[1].get("title"),
                 url = i.find_all('a',{'href':re.compile(rex)})[0].get('href'),
-                meta= {'size':i.find_all('td',class_ = 'text-center')[1].text})
+                meta= {'peers':i.find_all('td',class_ = 'text-center')[3].text + ' peers','size':i.find_all('td',class_ = 'text-center')[1].text})
 
             for i in search_results.select("tr.default,tr.success")
             ]
