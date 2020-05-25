@@ -4,7 +4,7 @@ from anime_downloader.sites import helpers
 from bs4 import BeautifulSoup
 from io import StringIO
 
-class Yify(Anime, sitename = 'yify'):
+class Yify(Anime, sitename = 'ytx'):
     sitename = 'yify'
     url = f'https://{sitename}.mx'
     @classmethod
