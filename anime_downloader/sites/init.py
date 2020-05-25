@@ -22,6 +22,7 @@ ALL_ANIME_SITES = [
     ('watchmovie','watchmovie','WatchMovie'),
     ('animekisa','animekisa','AnimeKisa'),
     ('nyaa','nyaa','Nyaa'),
+    ('yify', 'yify', 'Yify'),
     ('animedaisuki','animedaisuki','Animedaisuki')
 ]
 
