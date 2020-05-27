@@ -188,5 +188,3 @@ def request(url, request_type='lol', **kwargs): #Headers not yet supported , hea
     except:
         driver.save_screenshot(f"{get_data_dir()}/screenshot.png");
         driver.close()
-#use the below line as a test tool.
-#print(BeautifulSoup(request('https://kissanime.ru/Anime/One-Punch-Man-Season-2'), 'html.parser').prettify())
