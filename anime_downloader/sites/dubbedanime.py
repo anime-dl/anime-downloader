@@ -55,7 +55,12 @@ class DubbedanimeEpisode(AnimeEpisode, sitename='dubbedanime'):
             api = json.loads(re.search(episode_regex,soup).group(1))
             slug = api['slug']
             sources = api['videos']
-            vidstream = helpers.get(f'https://vid.xngine.com/api/episode/{slug}',referer = self.url).json()
+
+            try: #Continues even if vidstream api fails
+                vidstream = helpers.get(f'https://vid.xngine.com/api/episode/{slug}',referer = self.url).json()
+            except:
+                vidstream = []
+            
             for a in vidstream:
                 if a['host'] == 'vidstreaming' and 'id' in a and 'type' in a:
                     sources.append(a)
@@ -70,7 +75,7 @@ class DubbedanimeEpisode(AnimeEpisode, sitename='dubbedanime'):
                                 provider = a[:]
                             embed = server_links.get(provider,'{}').format(b['id'],x)
                             return [(provider, embed,)]
-            
+
             logger.debug('No servers found in selected language. Trying all supported servers')
 
             for a in servers: #trying all supported servers in order
@@ -84,6 +89,7 @@ class DubbedanimeEpisode(AnimeEpisode, sitename='dubbedanime'):
                         return [(provider, embed,)]
 
             logger.debug('No supported servers found, trying mp4sh')
+
             if re.search(r'"trollvid","id":"([^"]*)', soup):
                 token = re.search(r'"trollvid","id":"([^"]*)', soup).group(1)
                 embed = server_links.get('mp4sh','{}').format(token,x)
@@ -91,4 +97,3 @@ class DubbedanimeEpisode(AnimeEpisode, sitename='dubbedanime'):
             else:
                 logger.debug('No servers found')
                 return [('no_extractor', '',)]
-
