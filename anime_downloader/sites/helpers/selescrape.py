@@ -15,64 +15,52 @@ import time
 import json
 
 
-def test_os(): #pretty self-explanatory
-    if platform.startswith("lin"):
-        os_name = "linux"
-    elif platform.startswith("da"):
-        os_name = "darwin"
-    elif platform.startswith("win"):
-        os_name = "win32"
-    return os_name
-
 def get_data_dir(): #gets the folder directory selescrape will store data, such as cookies or browser extensions and logs.
     APP_NAME = 'anime downloader'
     return os.path.join(click.get_app_dir(APP_NAME), 'data')
 
-def get_browser(): #pretty self-explanatory
-    ostest = test_os()
-    common_bs = ['chrome', 'firefox']
-    if ostest.startswith("linux"):
-        common_bs = common_bs[1]
-    elif ostest == "darwin":
-        common_bs = common_bs[0]
-    elif ostest == "win32":
-        common_bs = common_bs[0]
-    return common_bs
 
-def open_config(): #can't import config directly because of circular import
+
+def open_config(): #as the name suggests, it reads the config
     try:
         APP_NAME = 'anime downloader'
-        with open(os.path.join(click.get_app_dir(APP_NAME), 'config.json')) as json_file:
+        with open(os.path.join(click.get_app_dir(APP_NAME), 'config.json'), 'r') as json_file:
             data = json.load(json_file)
-        return data
+            json_file.close()
+        return data #'Error, file not formated correctly or does not exist' ##if you dont have selescrape in the config then return the text commented out.
     except:
-        return 'The Config File is not yet created. Using the default values.'
+        return 'Error, file not formated correctly or does not exist'
 
-def get_browser_config():
-    data = open_config()
-    if data == 'The Config File is not yet created. Using the default values.':
-        browser = get_browser()
+data = open_config()
+
+def get_browser_config(): #decides what browser selescrape will use
+    if data == 'Error, file not formated correctly or does not exist':
+        os_browser = { #maps os to a browser
+        'linux':'firefox',
+        'darwin':'chrome',
+        'win32':'chrome'
+        }
+        for a in os_browser:
+            if platform.startswith(a):
+                browser =  os_browser[a]
+            else:
+                browser = 'firefox'
     else:
-        browser_value = data['dl']['selescrape_browser'].lower()
-        if browser_value == '.':
-            browser = get_browser()
-        elif browser_value in ['chrome', 'c']:
-            browser = browser_value
-        elif browser_value in ['firefox', 'f']:
-            browser = browser_value
+        value = data['dl']['selescrape_browser'].lower()
+        if value in ['chrome', 'firefox']:
+            browser = value
     return browser
 
+
 def get_browser_executable():
-    data = open_config()
-    if data == 'The Config File is not yet created. Using the default values.':
+    if data == 'Error, file not formated correctly or does not exist':
         executable_value = '.'
     else:
         executable_value = data['dl']['selescrape_browser_executable_path'].lower()
     return executable_value
 
 def get_driver_binary():
-    data = open_config()
-    if data == 'The Config File is not yet created. Using the default values.':
+    if data == 'Error, file not formated correctly or does not exist':
         binary_path = '.'
     else:
         binary_path = data['dl']['selescrape_driver_binary_path'].lower()
@@ -107,16 +95,16 @@ def driver_select(): #it configures what each browser should do and gives the dr
             fireFoxOptions.add_argument(f'--install-app {adblock}')
         except:
             pass
-        if driver_binary == None:  
+        if driver_binary == '.':  
             try:
-                driver = webdriver.Firefox(firefox_options=fireFoxOptions, service_log_path=os.path.devnull)
+                driver = webdriver.Firefox(options=fireFoxOptions, service_log_path=os.path.devnull)
             except:
-                driver = webdriver.Firefox(firefox_options=fireFoxOptions, firefox_profile=f'{profile_path}', service_log_path=os.path.devnull)
+                driver = webdriver.Firefox(options=fireFoxOptions, firefox_profile=f'{profile_path}', service_log_path=os.path.devnull)
         else:
             try:
-                driver = webdriver.Firefox(firefox_options=fireFoxOptions, service_log_path=os.path.devnull)
+                driver = webdriver.Firefox(options=fireFoxOptions, service_log_path=os.path.devnull)
             except:
-                driver = webdriver.Firefox(executable_path=driver_binary, firefox_options=fireFoxOptions, firefox_profile=f'{profile_path}', service_log_path=os.path.devnull)
+                driver = webdriver.Firefox(executable_path=driver_binary, options=fireFoxOptions, firefox_profile=f'{profile_path}', service_log_path=os.path.devnull)
     elif browser == 'chrome':
         from selenium.webdriver.chrome.options import Options
         chrome_options = Options()
@@ -127,16 +115,16 @@ def driver_select(): #it configures what each browser should do and gives the dr
             chrome_options.add_extension(extension_path)
         except:
             pass
-        header = get_random_header()
+        # header = get_random_header()
         profile_path = os.path.join(data_dir, 'Selenium_chromium')
         log_path = os.path.join(data_dir, 'chromedriver.log')
         chrome_options.add_argument(f'--log-path {log_path}')
         chrome_options.add_argument(f"--user-data-dir={profile_path}")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--window-size=1920,1080")
-        user_agent = header
-        chrome_options.add_argument(f'user-agent={user_agent}')
-        if driver_binary == None:
+        # user_agent = header
+        chrome_options.add_argument(f'user-agent={get_random_header()}')
+        if driver_binary == '.':
             if executable == '.':
                 driver = webdriver.Chrome(options=chrome_options)
             else:
@@ -167,38 +155,38 @@ def status_select(driver, url, status='hide'): #for now it doesnt do what its na
         else:
             driver.get(url)
     except requests.ConnectionError:
-        raise exception("Failed to establish a connection.")
+        raise exception("Failed to establish a connection using the requests library.")
 
 def cloudflare_wait(driver): #it waits until cloudflare has gone away before doing any further actions.
     abort_after = 30
     start = time.time()
-    try:
-        title = driver.title  # title = "Just a moment..."
-        while title == "Just a moment...": #or "another title for different kinds of Cloudflare protection."
-            time.sleep(0.25)
-            delta = time.time() - start
-            if delta >= abort_after:
-                raise Exception('Timeout:\nThe website is not responding.')
-            title = driver.title
-            if not title == "Just a moment...":
-                break
-    except:
-        pass
-    time.sleep(1)
 
-def request(url, request_type='lol', **kwargs): #Headers not yet supported , headers={}
+    title = driver.title  # title = "Just a moment..."
+    while title == "Just a moment...": #or "another title for different kinds of Cloudflare protection."
+        time.sleep(0.25)
+        delta = time.time() - start
+        if delta >= abort_after:
+            raise Exception(f'Timeout:\nCouldnt bypass cloudflare. See the screenshot for more info:\n{get_data_dir()}/screenshot.png')
+        title = driver.title
+        if not title == "Just a moment...":
+            break
+    time.sleep(1)
+    
+def request(url, request_type='lol', **kwargs): #Headers not yet supported , headers={}, **kwargs
     params = {}
     for key, value in kwargs.items():
-        params[key] = value
+        if key == 'params':
+            params = value
     new_url = add_url_params(url, params)
     driver = driver_select()
     status = status_select(driver, new_url, 'hide')
-
     try:
         cloudflare_wait(driver)
         html = driver.page_source
         driver.close()
         return html
     except:
-        driver.save_screenshot("screenshot.png");
+        driver.save_screenshot(f"{get_data_dir()}/screenshot.png");
         driver.close()
+#use the below line as a test tool.
+#print(BeautifulSoup(request('https://kissanime.ru/Anime/One-Punch-Man-Season-2'), 'html.parser').prettify())
