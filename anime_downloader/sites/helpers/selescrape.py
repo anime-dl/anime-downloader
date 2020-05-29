@@ -172,11 +172,12 @@ def cloudflare_wait(driver): #it waits until cloudflare has gone away before doi
             break
     time.sleep(1)
     
-def request(url, request_type='lol', **kwargs): #Headers not yet supported , headers={}, **kwargs
+def request(url, request_type='GET', **kwargs): #Headers not yet supported , headers={}, **kwargs
     params = {}
     for key, value in kwargs.items():
         if key == 'params':
             params = value
+    nothing = request_type
     new_url = add_url_params(url, params)
     driver = driver_select()
     status = status_select(driver, new_url, 'hide')
