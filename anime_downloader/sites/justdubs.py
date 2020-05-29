@@ -1,5 +1,6 @@
 import logging
 import json
+import re
 
 from anime_downloader.sites.exceptions import AnimeDLError, NotFoundError
 from anime_downloader import util
@@ -36,15 +37,27 @@ class JustDubs(Anime, sitename='justdubs'):
         return list(reversed(ret))
 
 class JustDubsEpisode(AnimeEpisode, sitename='justdubs'):
-    def getLink(self, name, _id):
-        if name == "Source: 1":
-            return f"https://mp4upload.com/embed-{_id}.html"
-        elif name == "Source: 2":
-            return f"https://xstreamcdn.com/v/" + _id
-
     def _get_sources(self):
-        raise NotImplementedError
         server = self.config['server']
+        #server_links = {
+        #    'mp4upload':'https://mp4upload.com/embed-{}.html',
+        #    'gcloud':'https://gcloud.live/v/{}',
+        #    'fembed':'https://www.fembed.com/v/{}',
+        #}
         soup = helpers.soupify(helpers.get(self.url))
-        hosts = json.loads(soup.find(""))
+        link = soup.find('iframe').get("src")
+        #hosts = json.loads(soup.select(f"div.tab-pane iframe[src*='{server_links['mp4upload' or 'gcloud' or 'fembed']}']".format(server_links)))
+        #logger.debug(hosts)
+        #_type = hosts[0]["type"]
         
+
+        #try:
+        #    host = list(filter(lambda video: video["host"] == server and video["type" == _type, hosts]))[0]
+        #except IndexError:
+        #    host = hosts[0]
+        #    if host["host"] == "mp4upload" and len(hosts) > 1:
+        #        host = hosts[1]
+        #name = host["host"]
+        #_id = host["id"]
+        #link = self.getLink(name, _id)
+        return [('mp4upload', link)]

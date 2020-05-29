@@ -29,8 +29,8 @@ DEFAULT_CONFIG = {
     },
     "siteconfig": {
         'justdubs': {
-            "server": "xstreamcdn",
-            "fallback_servers": ["mp4upload"]
+            "server": "mp4upload",
+            "fallback_servers": ["xstreamcdn, gcloud"]
         },
         'nineanime': {
             "server": "mp4upload",
