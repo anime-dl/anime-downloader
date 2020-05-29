@@ -39,30 +39,49 @@ class JustDubs(Anime, sitename='justdubs'):
 class JustDubsEpisode(AnimeEpisode, sitename='justdubs'):
     def _get_sources(self):
         server = self.config['server']
-        server_links = {
-            'mp4upload':'https://mp4upload.com/embed-{}.html',
-            'gcloud':'https://gcloud.live/v/{}',
-            'fembed':'https://www.fembed.com/v/{}'
+        servers =  {
+        'mp4upload':'https://mp4upload.com/',
+        'gcloud':'https://gcloud.live/'
         }
-        soup = helpers.soupify(helpers.get(self.url))
-        link = soup.find_all('iframe')
-        regexmp4 = 'https://mp4upload.com/'
-        regexgc = 'https://gcloud.live/'
-        regexfe = 'https://www.fembed.com/'
-        for x in link:
-            y = x.get("src")
-            logger.debug(y)
-            if re.search(regexmp4, y) != "None":
-                logger.debug("MP4Upload")
-                return [('mp4upload', y)]
-            elif re.search(regexgc, y) != "None":
-                logger.debug("gcloud")
-                return [('gcloud', y)]
-            elif re.search(regexfe, y) != "None":
-                logger.debug("Fembed")
-                return [('fembed', y)]
-            else:
-                logger.error("unsuported URL")
+        soup = helpers.soupify(helpers.get(self.url)).select('iframe')
+        #link = soup.find_all('iframe')
+        
+        for a in soup:
+            for b in servers:
+                if servers[b] in a.get('src'):
+                    return [(b, a.get('src'))]
+
+        logger.debug('Unsuported url, trying mp4upload')
+        link = [('mp4upload',soup[0].get('src'))] if len(soup) != 0 else ''
+        return link
+
+#class JustDubsEpisode(AnimeEpisode, sitename='justdubs'):
+#    def _get_sources(self):
+#        server = self.config['server']
+#        server_links = {
+#            'mp4upload':'https://mp4upload.com/embed-{}.html',
+#            'gcloud':'https://gcloud.live/v/{}',
+#            'fembed':'https://www.fembed.com/v/{}'
+#        }
+#        soup = helpers.soupify(helpers.get(self.url))
+#        link = soup.find_all('iframe')
+#        regexmp4 = 'https://mp4upload.com/'
+#        regexgc = 'https://gcloud.live/'
+#        regexfe = 'https://www.fembed.com/'
+#        for x in link:
+#            y = x.get("src")
+#            logger.debug(y)
+#            if re.search(regexmp4, y) != "None":
+#                logger.debug("MP4Upload")
+#                return [('mp4upload', y)]
+#            elif re.search(regexgc, y) != "None":
+#                logger.debug("gcloud")
+#                return [('gcloud', y)]
+#            elif re.search(regexfe, y) != "None":
+#                logger.debug("Fembed")
+#                return [('fembed', y)]
+#            else:
+#                logger.error("unsuported URL")
 #
 #
 #        logger.debug(link)
