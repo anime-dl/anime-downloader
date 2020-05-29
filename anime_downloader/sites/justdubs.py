@@ -46,25 +46,25 @@ class JustDubsEpisode(AnimeEpisode, sitename='justdubs'):
         }
         soup = helpers.soupify(helpers.get(self.url))
         link = soup.find_all('iframe')
-        regexmp4 = '^https://mp4upload.com/'
-        regexgc = '^https://gcloud.live/'
-        regexfe = '^https://www.fembed.com/'
+        regexmp4 = 'https://mp4upload.com/'
+        regexgc = 'https://gcloud.live/'
+        regexfe = 'https://www.fembed.com/'
         returnServer = ""
         returnLink = ""
         for x in link:
             y = x.get("src")
             logger.debug(y)
-            if re.search(regexmp4, y) == True:
+            if re.search(regexmp4, y) != "None":
                 returnServer = 'mp4upload'
                 returnLink = y
                 logger.debug("MP4Upload")
                 return [('mp4upload', y)]
-            elif re.search(regexgc, y) == True:
+            elif re.search(regexgc, y) != "None":
                 returnServer = 'gcloud'
                 returnLink = y
                 logger.debug("gcloud")
                 return [('gcloud', y)]
-            elif re.search(regexfe, y) == True:
+            elif re.search(regexfe, y) != "None":
                 returnServer = 'fembed'
                 returnLink = y
                 logger.debug("Fembed")
