@@ -28,7 +28,11 @@ DEFAULT_CONFIG = {
         'provider': 'twist.moe',
     },
     "siteconfig": {
-        "nineanime": {
+        'justdubs': {
+            "server": "xstreamcdn",
+            "fallback_servers": ["mp4upload"]
+        },
+        'nineanime': {
             "server": "mp4upload",
         },
         'anistream.xyz': {
