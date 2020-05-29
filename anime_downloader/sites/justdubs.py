@@ -46,9 +46,9 @@ class JustDubsEpisode(AnimeEpisode, sitename='justdubs'):
         }
         soup = helpers.soupify(helpers.get(self.url))
         link = soup.find_all('iframe')
-        regexmp4 = '^https://mp4upload.com/\>'
-        regexgc = '^https://gcloud.live/\>'
-        regexfe = '^https://www.fembed.com/\>'
+        regexmp4 = '^https://mp4upload.com/'
+        regexgc = '^https://gcloud.live/'
+        regexfe = '^https://www.fembed.com/'
         returnServer = ""
         returnLink = ""
         for x in link:
