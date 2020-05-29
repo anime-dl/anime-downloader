@@ -69,6 +69,8 @@ class JustDubsEpisode(AnimeEpisode, sitename='justdubs'):
                 returnLink = y
                 logger.debug("Fembed")
                 return [('fembed', y)]
+            else:
+                logger.error("unsuported URL")
 #
 #
 #        logger.debug(link)
