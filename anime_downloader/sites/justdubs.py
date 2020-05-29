@@ -79,7 +79,8 @@ class JustDubsEpisode(AnimeEpisode, sitename='justdubs'):
             return f"https://xstreamcdn.com/v/" + _id
 
     def _get_sources(self):
+        raise NotImplementedError
         server = self.config.get("server", "Source: 1")
         soup = helpers.soupify(helpers.get(self.url))
         hosts = json.loads(soup.find())
-        raise NotImplementedError
+        
