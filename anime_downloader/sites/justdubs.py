@@ -38,7 +38,6 @@ class JustDubs(Anime, sitename='justdubs'):
 
 class JustDubsEpisode(AnimeEpisode, sitename='justdubs'):
     def _get_sources(self):
-        server = self.config['server']
         servers =  {
         'mp4upload':'https://mp4upload.com/',
         'gcloud':'https://gcloud.live/'
@@ -51,4 +50,5 @@ class JustDubsEpisode(AnimeEpisode, sitename='justdubs'):
                 if servers[b] in a.get('src'):
                     return [(b, a.get('src'))]
 
+        logger.warn('Unsuported url')
         return link
