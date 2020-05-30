@@ -51,8 +51,6 @@ class JustDubsEpisode(AnimeEpisode, sitename='justdubs'):
                 if servers[b] in a.get('src'):
                     return [(b, a.get('src'))]
 
-        logger.debug('Unsuported url, trying mp4upload')
-        link = [('mp4upload',soup[0].get('src'))] if len(soup) != 0 else ''
         return link
 
 #class JustDubsEpisode(AnimeEpisode, sitename='justdubs'):
