@@ -51,4 +51,3 @@ class JustDubsEpisode(AnimeEpisode, sitename='justdubs'):
                     return [(b, a.get('src'))]
 
         logger.warn('Unsuported url')
-        return link
