@@ -24,7 +24,6 @@ setup(
         'beautifulsoup4>=4.6.0',
         'requests>=2.18.4',
         'Click>=6.7',
-        'selenium==3.141.0',
         'fuzzywuzzy>=0.17.0',
         'coloredlogs>=10.0',
         'cfscrape>=2.0.5',
@@ -33,6 +32,7 @@ setup(
         'pycryptodome>=3.8.2',
     ],
     extras_require={
+        'sele':['selenium']
         'dev': [
             'pytest',
             'httpretty',
