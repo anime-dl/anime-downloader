@@ -9,7 +9,6 @@ import requests
 
 from anime_downloader import session
 from anime_downloader.const import get_random_header
-from anime_downloader.sites.helpers import selescrape
 
 __all__ = [
     'get',
@@ -54,7 +53,13 @@ def setup(func):
         if cf:
             sess = cf_session
         elif sel:
-            sess = selescrape
+            try:
+                from selenium import webdriver
+                from anime_downloader.sites.helpers import selescrape
+                sess = selescrape
+            except ImportError:
+                logger.warning('Error on importing selescrape, will use cf_scrape instead.')
+                sess = cf_session
         else: 
             sess = req_session 
 
