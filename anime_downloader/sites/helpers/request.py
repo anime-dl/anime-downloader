@@ -58,8 +58,7 @@ def setup(func):
                 from anime_downloader.sites.helpers import selescrape
                 sess = selescrape
             except ImportError:
-                logger.warning('Error on importing selescrape, will use cf_scrape instead.')
-                sess = cf_session
+                raise Exception('You cant use this provider because it requires selenium to work.\nIf you want to install it then run:  pip install selenium .')
         else: 
             sess = req_session 
 
