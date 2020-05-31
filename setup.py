@@ -32,6 +32,7 @@ setup(
         'pycryptodome>=3.8.2',
     ],
     extras_require={
+        'selescrape': ['selenium'],
         'dev': [
             'pytest',
             'httpretty'
