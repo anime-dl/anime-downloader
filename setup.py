@@ -34,8 +34,7 @@ setup(
     extras_require={
         'dev': [
             'pytest',
-            'httpretty',
-            'selenium',
+            'httpretty'
         ],
     },
     long_description=long_description,
