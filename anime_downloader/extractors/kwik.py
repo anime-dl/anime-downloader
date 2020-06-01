@@ -1,5 +1,6 @@
 import logging
 import re
+import requests
 
 from anime_downloader.extractors.base_extractor import BaseExtractor
 from anime_downloader.sites import helpers
@@ -19,17 +20,26 @@ class Kwik(BaseExtractor):
         # Kwik servers don't have direct link access you need to be referred
         # from somewhere, I will just use the url itself. We then
         # have to rebuild the url. Hopefully kwik doesn't block this too
+
+        #Necessary
+        self.url = self.url.replace(".cx/e/", ".cx/f/")
         eval_re = re.compile(r';(eval.*\))')
         stream_parts_re = re.compile(r'https:\/\/(.*?)\..*\/(\d+)\/(.*)\/.*token=(.*)&expires=([^\']+)')
         title_re = re.compile(r'title>(.*)<')
 
-        kwik_text = helpers.get(self.url, referer=self.url).text
-        obsfucated_js = eval_re.search(kwik_text).group(1)
-        deobsfucated_js = util.deobfuscate_packed_js(obsfucated_js)
+        session = requests.Session()
+        kwik_text = session.get(self.url, headers={"referer": self.url}).text
 
         title = title_re.search(kwik_text).group(1)
-        cdn, digits, file, token, expires = stream_parts_re.search(deobsfucated_js).group(1, 2, 3, 4, 5)
-        stream_url = f'https://{cdn}.nextstream.org/get/{token}/{expires}/mp4/{digits}/{file}/{title}'
+        kwik_text = helpers.soupify(kwik_text)
+        deobfuscated = helpers.soupify(util.deobfuscate_packed_js([x for x in kwik_text.select("script") if 'escape' in x.text][0].text))
+
+        helpers.get(self.url, referer=self.url)
+        post_url = deobfuscated.form["action"]
+        token = deobfuscated.input["value"]
+
+        resp = session.post(post_url, headers={"referer": self.url}, params={"_token": token}, allow_redirects = False)
+        stream_url = resp.headers["Location"]
 
         logger.debug('Stream URL: %s' % stream_url)
         return {
