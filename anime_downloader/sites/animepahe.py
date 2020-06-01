@@ -39,7 +39,7 @@ class AnimePaheEpisode(AnimeEpisode, sitename='animepahe'):
         sources = []
 
         server_list = re.findall(r'data-provider="([^"]+)', source_text)
-        episode_id, session_id = re.search(r'getEmbeds\((\d+), "([^"]+)', source_text).groups()
+        episode_id, session_id = re.search("getUrls\((\d+?), \"(.*)?\"", source_text).groups()
 
         for server in server_list:
             if server not in supported_servers:
