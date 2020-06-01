@@ -34,7 +34,6 @@ class Kwik(BaseExtractor):
         kwik_text = helpers.soupify(kwik_text)
         deobfuscated = helpers.soupify(util.deobfuscate_packed_js([x for x in kwik_text.select("script") if 'escape' in x.text][0].text))
 
-        helpers.get(self.url, referer=self.url)
         post_url = deobfuscated.form["action"]
         token = deobfuscated.input["value"]
 
