@@ -49,7 +49,7 @@ def setup(func):
         referer : str
             a url sent as referer in request headers
         '''
-        
+        selescrape = 'dummy message'
         if cf:
             sess = cf_session
         elif sel:
@@ -58,8 +58,6 @@ def setup(func):
                 from anime_downloader.sites.helpers import selescrape
                 sess = selescrape
             except ImportError:
-                selescrape = 'dummy message'
-                sess = selescrape
                 raise Exception('You cant use this provider because it requires selenium to work.\nIf you want to install it then run:  pip install selenium .')
         else: 
             sess = req_session 
