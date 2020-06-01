@@ -86,13 +86,13 @@ def driver_select(): #
         fireFoxOptions = webdriver.FirefoxOptions()
         fireFoxOptions.headless = True
         fireFoxOptions.add_argument('--log fatal')
-        if driver_binary == None:  
+        if binary == None:  
             driver = webdriver.Firefox(options=fireFoxOptions, service_log_path=os.path.devnull)
         else:
             try:
                 driver = webdriver.Firefox(options=fireFoxOptions, service_log_path=os.path.devnull)
             except:
-                driver = webdriver.Firefox(executable_path=driver_binary, options=fireFoxOptions, service_log_path=os.path.devnull)
+                driver = webdriver.Firefox(executable_path=binary, options=fireFoxOptions, service_log_path=os.path.devnull)
     elif browser == 'chrome':
         from selenium.webdriver.chrome.options import Options
         chrome_options = Options()
@@ -105,8 +105,8 @@ def driver_select(): #
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--window-size=1920,1080")
         chrome_options.add_argument(f'user-agent={get_random_header()}')
-        if driver_binary == '.':
-            if executable == '.':
+        if binary == None:
+            if executable == None:
                 driver = webdriver.Chrome(options=chrome_options)
             else:
                 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
@@ -120,7 +120,7 @@ def driver_select(): #
                 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
                 cap = DesiredCapabilities.CHROME
                 cap['binary_location'] = executable
-                driver = webdriver.Chrome(executable_path=driver_binary, desired_capabilities=cap, options=chrome_options)
+                driver = webdriver.Chrome(executable_path=binary, desired_capabilities=cap, options=chrome_options)
     return driver
 
 
