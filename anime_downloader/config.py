@@ -20,9 +20,9 @@ DEFAULT_CONFIG = {
         'provider': 'twist.moe',
         'external_downloader': '',
         'aria2c_for_torrents': False,
-        'selescrape_browser': ".",
-        'selescrape_browser_executable_path' : '.',
-        'selescrape_driver_binary_path' : '.',
+        'selescrape_browser': None,
+        'selescrape_browser_executable_path' : None,
+        'selescrape_driver_binary_path' : None,
     },
     'watch': {
         'quality': '1080p',
