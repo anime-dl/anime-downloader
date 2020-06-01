@@ -86,22 +86,13 @@ def driver_select(): #
         fireFoxOptions = webdriver.FirefoxOptions()
         fireFoxOptions.headless = True
         fireFoxOptions.add_argument('--log fatal')
-        fireFoxOptions.add_argument('-CreateProfile f"Selenium_firefox {data_dir}"')
-        profile_path = os.path.join(data_dir, 'Selenium_firefox')
-        if os.path.exists(profile_path):
-            pass
-        else:
-            os.mkdir(profile_path)
         if driver_binary == '.':  
-            try:
-                driver = webdriver.Firefox(options=fireFoxOptions, service_log_path=os.path.devnull)
-            except:
-                driver = webdriver.Firefox(options=fireFoxOptions, firefox_profile=f'{profile_path}', service_log_path=os.path.devnull)
+            driver = webdriver.Firefox(options=fireFoxOptions, service_log_path=os.path.devnull)
         else:
             try:
                 driver = webdriver.Firefox(options=fireFoxOptions, service_log_path=os.path.devnull)
             except:
-                driver = webdriver.Firefox(executable_path=driver_binary, options=fireFoxOptions, firefox_profile=f'{profile_path}', service_log_path=os.path.devnull)
+                driver = webdriver.Firefox(executable_path=driver_binary, options=fireFoxOptions, service_log_path=os.path.devnull)
     elif browser == 'chrome':
         from selenium.webdriver.chrome.options import Options
         chrome_options = Options()
@@ -172,7 +163,7 @@ def cloudflare_wait(driver):
     time.sleep(1)
     
     
-def request(url, request_type='GET', **kwargs): #Headers not yet supported , headers={}
+def request(request_type, url, **kwargs): #Headers not yet supported , headers={}
     params = {}
     for key, value in kwargs.items():
         if key == 'params':
