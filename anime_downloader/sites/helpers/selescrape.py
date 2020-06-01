@@ -16,10 +16,10 @@ import json
 
 
 def get_data_dir():
-    """
-    gets the folder directory selescrape will store data, 
+    '''
+    Gets the folder directory selescrape will store data, 
     such as cookies or browser extensions and logs.
-    """
+    '''
     APP_NAME = 'anime downloader'
     return os.path.join(click.get_app_dir(APP_NAME), 'data')
 
@@ -33,9 +33,9 @@ data = open_config()
 
 
 def get_browser_config():
-    """
-    decides what browser selescrape will use
-    """
+    '''
+    Decides what browser selescrape will use.
+    '''
     os_browser = { #maps os to a browser
     'linux':'firefox',
     'darwin':'chrome',
@@ -69,16 +69,16 @@ def add_url_params(url, params):
 
 
 def driver_select(): #
-    """
+    '''
     it configures what each browser should do 
     and gives the driver variable that is used 
-    to perform any actions below this def
-    """
+    to perform any actions below this function.
+    '''
     browser = get_browser_config()
     data_dir = get_data_dir()
     executable = get_browser_executable()
     driver_binary = get_driver_binary()
-    if driver_binary == '.':
+    if driver_binary == None:
         binary = None
     else:
         binary = driver_binary
@@ -86,7 +86,7 @@ def driver_select(): #
         fireFoxOptions = webdriver.FirefoxOptions()
         fireFoxOptions.headless = True
         fireFoxOptions.add_argument('--log fatal')
-        if driver_binary == '.':  
+        if driver_binary == None:  
             driver = webdriver.Firefox(options=fireFoxOptions, service_log_path=os.path.devnull)
         else:
             try:
@@ -114,7 +114,7 @@ def driver_select(): #
                 cap['binary_location'] = executable
                 driver = webdriver.Chrome(desired_capabilities=cap, options=chrome_options)
         else:
-            if executable == '.':
+            if executable == None:
                 driver = webdriver.Chrome(options=chrome_options)
             else:
                 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
@@ -125,49 +125,56 @@ def driver_select(): #
 
 
 def status_select(driver, url, status='hide'):
-    """
-    for now it doesnt do what its name suggests, 
-    i have planned to add a status reporter of the http response code.
-    """
+    '''
+    For now it doesnt do what its name suggests, 
+    I have planned to add a status reporter of the http response code.
+    This part of the code is not removed because it is part of its core.
+    Treat it like it isnt here.
+    '''
     try:
         if status == 'hide':
             driver.get(url)
         elif status == 'show':
             r = requests.head(url)
             if r.status_code == 503:
-                raise exception("WARNING: This website's sevice is unavailable or has cloudflare on.")
+                raise RuntimeError("WARNING: This website's sevice is unavailable or has cloudflare on.")
             driver.get(url)
             return r.status_code
         else:
             driver.get(url)
     except requests.ConnectionError:
-        raise exception("Failed to establish a connection using the requests library.")
+        raise RuntimeError("Failed to establish a connection using the requests library.")
 
         
 def cloudflare_wait(driver):
-    """
-    it waits until cloudflare has gone away before doing any further actions.
-    """
-    abort_after = 30
-    start = time.time()
+    '''
+    It waits until cloudflare has gone away before doing any further actions.
+    The way it works is by getting the title of the page 
+    and as long as it is "Just a moment..." it will keep waiting.
+    This part of the code won't make the code execute slower 
+    if the target website has not a Cloudflare redirection.
+    At most it will sleep 1 second as a precaution. 
+    Also, i have made it time out after 30 seconds, useful if the target website is not responsive 
+    and to stop it from running infinitely.
+    '''
+    abort_after = 30 # The abort timer
+    start = time.time() # The time that the code starts to execute.
 
     title = driver.title  # title = "Just a moment..."
     while title == "Just a moment...":
         time.sleep(0.25)
         delta = time.time() - start
         if delta >= abort_after:
-            raise Exception(f'Timeout:\nCouldnt bypass cloudflare. See the screenshot for more info:\n{get_data_dir()}/screenshot.png')
+            raise Exception(f'Timeout:\nCouldnt bypass cloudflare. \
+            See the screenshot for more info:\n{get_data_dir()}/screenshot.png')
         title = driver.title
         if not title == "Just a moment...":
             break
-    time.sleep(1)
+    time.sleep(1) # This is necessary to make sure everything has loaded fine.
     
     
 def request(request_type, url, **kwargs): #Headers not yet supported , headers={}
-    params = {}
-    for key, value in kwargs.items():
-        if key == 'params':
-            params = value
+    params = kwargs.get('params', {})
     nothing = request_type
     new_url = add_url_params(url, params)
     driver = driver_select()
@@ -180,3 +187,5 @@ def request(request_type, url, **kwargs): #Headers not yet supported , headers={
     except:
         driver.save_screenshot(f"{get_data_dir()}/screenshot.png");
         driver.close()
+        raise Exception(f'There was a problem getting the page: {new_url}. \
+        See the screenshot for more info:\n{get_data_dir()}/screenshot.png')
