@@ -15,25 +15,33 @@ import time
 import json
 
 
-def get_data_dir(): #gets the folder directory selescrape will store data, such as cookies or browser extensions and logs.
+def get_data_dir():
+    """
+    gets the folder directory selescrape will store data, 
+    such as cookies or browser extensions and logs.
+    """
     APP_NAME = 'anime downloader'
     return os.path.join(click.get_app_dir(APP_NAME), 'data')
 
 
-
-def open_config(): #as the name suggests, it reads the config
+def open_config():
     try:
         APP_NAME = 'anime downloader'
         with open(os.path.join(click.get_app_dir(APP_NAME), 'config.json'), 'r') as json_file:
             data = json.load(json_file)
             json_file.close()
-        return data #'Error, file not formated correctly or does not exist' ##if you dont have selescrape in the config then return the text commented out.
+        return data
     except:
         return 'Error, file not formated correctly or does not exist'
 
+    
 data = open_config()
 
-def get_browser_config(): #decides what browser selescrape will use
+
+def get_browser_config():
+    """
+    decides what browser selescrape will use
+    """
     if data == 'Error, file not formated correctly or does not exist':
         os_browser = { #maps os to a browser
         'linux':'firefox',
@@ -59,6 +67,7 @@ def get_browser_executable():
         executable_value = data['dl']['selescrape_browser_executable_path'].lower()
     return executable_value
 
+
 def get_driver_binary():
     if data == 'Error, file not formated correctly or does not exist':
         binary_path = '.'
@@ -66,12 +75,19 @@ def get_driver_binary():
         binary_path = data['dl']['selescrape_driver_binary_path'].lower()
     return binary_path
 
+
 def add_url_params(url, params): #pretty self-explanatory
     encoded_params = urlencode(params)
     url = url + '?' + encoded_params
     return url
 
-def driver_select(): #it configures what each browser should do and gives the driver variable that is used to perform any actions below this def
+
+def driver_select(): #
+    """
+    it configures what each browser should do 
+    and gives the driver variable that is used 
+    to perform any actions below this def
+    """
     browser = get_browser_config()
     data_dir = get_data_dir()
     executable = get_browser_executable()
@@ -142,7 +158,12 @@ def driver_select(): #it configures what each browser should do and gives the dr
                 driver = webdriver.Chrome(executable_path=driver_binary, desired_capabilities=cap, options=chrome_options)
     return driver
 
-def status_select(driver, url, status='hide'): #for now it doesnt do what its name suggests, i have planned to add a status reporter of the http response code.
+
+def status_select(driver, url, status='hide'):
+    """
+    for now it doesnt do what its name suggests, 
+    i have planned to add a status reporter of the http response code.
+    """
     try:
         if status == 'hide':
             driver.get(url)
@@ -157,12 +178,16 @@ def status_select(driver, url, status='hide'): #for now it doesnt do what its na
     except requests.ConnectionError:
         raise exception("Failed to establish a connection using the requests library.")
 
-def cloudflare_wait(driver): #it waits until cloudflare has gone away before doing any further actions.
+        
+def cloudflare_wait(driver):
+    """
+    it waits until cloudflare has gone away before doing any further actions.
+    """
     abort_after = 30
     start = time.time()
 
     title = driver.title  # title = "Just a moment..."
-    while title == "Just a moment...": #or "another title for different kinds of Cloudflare protection."
+    while title == "Just a moment...":
         time.sleep(0.25)
         delta = time.time() - start
         if delta >= abort_after:
@@ -171,6 +196,7 @@ def cloudflare_wait(driver): #it waits until cloudflare has gone away before doi
         if not title == "Just a moment...":
             break
     time.sleep(1)
+    
     
 def request(url, request_type='GET', **kwargs): #Headers not yet supported , headers={}, **kwargs
     params = {}
