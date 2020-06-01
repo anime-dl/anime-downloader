@@ -1,6 +1,5 @@
 import logging
 import re
-import requests
 
 from anime_downloader.extractors.base_extractor import BaseExtractor
 from anime_downloader.sites import helpers
@@ -27,8 +26,9 @@ class Kwik(BaseExtractor):
         stream_parts_re = re.compile(r'https:\/\/(.*?)\..*\/(\d+)\/(.*)\/.*token=(.*)&expires=([^\']+)')
         title_re = re.compile(r'title>(.*)<')
 
-        session = requests.Session()
-        kwik_text = session.get(self.url, headers={"referer": self.url}).text
+        resp = helpers.get(self.url, headers={"referer": self.url})
+        kwik_text = resp.text
+        cookies = resp.cookies
 
         title = title_re.search(kwik_text).group(1)
         kwik_text = helpers.soupify(kwik_text)
@@ -37,7 +37,7 @@ class Kwik(BaseExtractor):
         post_url = deobfuscated.form["action"]
         token = deobfuscated.input["value"]
 
-        resp = session.post(post_url, headers={"referer": self.url}, params={"_token": token}, allow_redirects = False)
+        resp = helpers.post(post_url, headers={"referer": self.url}, params={"_token": token}, cookies=cookies, allow_redirects = False)
         stream_url = resp.headers["Location"]
 
         logger.debug('Stream URL: %s' % stream_url)
