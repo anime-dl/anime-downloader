@@ -9,6 +9,7 @@ APP_DIR = click.get_app_dir(APP_NAME)
 DEFAULT_CONFIG = {
     'dl': {
         'url': False,
+        'title_seperator': '_',
         'player': None,
         'skip_download': False,
         'download_dir': '.',
@@ -82,6 +83,10 @@ DEFAULT_CONFIG = {
         },
         'animedaisuki': {
             "servers": ["official"]
+        },
+        'nyaa': {
+            "filter": "Trusted only",
+            "category": "English-translated"
         },
         'vidstream': {
             "servers": ["vidstream","gcloud","mp4upload","cloud9","hydrax"]
