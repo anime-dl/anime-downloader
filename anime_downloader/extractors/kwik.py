@@ -30,7 +30,7 @@ class Kwik(BaseExtractor):
         cookies = resp.cookies
 
         title = title_re.search(kwik_text).group(1)
-        deobfuscated = helpers.soupify((util.deobfuscate_packed_js(re.search(r'<(script).*(var\s+_.*escape.*?)</\1>(?s)', kwik_text).group(2))))
+        deobfuscated = helpers.soupify(util.deobfuscate_packed_js(re.search(r'<(script).*(var\s+_.*escape.*?)</\1>(?s)', kwik_text).group(2)))
 
         post_url = deobfuscated.form["action"]
         token = deobfuscated.input["value"]
