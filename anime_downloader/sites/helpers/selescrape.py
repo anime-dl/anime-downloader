@@ -25,14 +25,8 @@ def get_data_dir():
 
 
 def open_config():
-    try:
-        APP_NAME = 'anime downloader'
-        with open(os.path.join(click.get_app_dir(APP_NAME), 'config.json'), 'r') as json_file:
-            data = json.load(json_file)
-            json_file.close()
-        return data
-    except:
-        return 'Error, file not formated correctly or does not exist'
+    from anime_downloader.config import Config
+    return Config
 
     
 data = open_config()
@@ -42,41 +36,33 @@ def get_browser_config():
     """
     decides what browser selescrape will use
     """
-    if data == 'Error, file not formated correctly or does not exist':
-        os_browser = { #maps os to a browser
-        'linux':'firefox',
-        'darwin':'chrome',
-        'win32':'chrome'
-        }
-        for a in os_browser:
-            if platform.startswith(a):
-                browser =  os_browser[a]
-            else:
-                browser = 'firefox'
-    else:
-        value = data['dl']['selescrape_browser'].lower()
-        if value in ['chrome', 'firefox']:
-            browser = value
+    os_browser = { #maps os to a browser
+    'linux':'firefox',
+    'darwin':'chrome',
+    'win32':'chrome'
+    }
+    for a in os_browser:
+        if platform.startswith(a):
+            browser =  os_browser[a]
+        else:
+            browser = 'chrome'
+    value = data['dl']['selescrape_browser'].lower()
+    if value in ['chrome', 'firefox']:
+        browser = value
     return browser
 
 
 def get_browser_executable():
-    if data == 'Error, file not formated correctly or does not exist':
-        executable_value = '.'
-    else:
-        executable_value = data['dl']['selescrape_browser_executable_path'].lower()
+    executable_value = data['dl']['selescrape_browser_executable_path'].lower()
     return executable_value
 
 
 def get_driver_binary():
-    if data == 'Error, file not formated correctly or does not exist':
-        binary_path = '.'
-    else:
-        binary_path = data['dl']['selescrape_driver_binary_path'].lower()
+    binary_path = data['dl']['selescrape_driver_binary_path'].lower()
     return binary_path
 
 
-def add_url_params(url, params): #pretty self-explanatory
+def add_url_params(url, params):
     encoded_params = urlencode(params)
     url = url + '?' + encoded_params
     return url
@@ -101,16 +87,11 @@ def driver_select(): #
         fireFoxOptions.headless = True
         fireFoxOptions.add_argument('--log fatal')
         fireFoxOptions.add_argument('-CreateProfile f"Selenium_firefox {data_dir}"')
-        adblock = os.path.join(data_dir, 'Extensions', 'adblock.xpi')
         profile_path = os.path.join(data_dir, 'Selenium_firefox')
         if os.path.exists(profile_path):
             pass
         else:
             os.mkdir(profile_path)
-        try:
-            fireFoxOptions.add_argument(f'--install-app {adblock}')
-        except:
-            pass
         if driver_binary == '.':  
             try:
                 driver = webdriver.Firefox(options=fireFoxOptions, service_log_path=os.path.devnull)
@@ -126,19 +107,12 @@ def driver_select(): #
         chrome_options = Options()
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-gpu")
-        try:
-            extension_path = os.path.join(data_dir, 'Extensions', 'adblock.crx')
-            chrome_options.add_extension(extension_path)
-        except:
-            pass
-        # header = get_random_header()
         profile_path = os.path.join(data_dir, 'Selenium_chromium')
         log_path = os.path.join(data_dir, 'chromedriver.log')
         chrome_options.add_argument(f'--log-path {log_path}')
         chrome_options.add_argument(f"--user-data-dir={profile_path}")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--window-size=1920,1080")
-        # user_agent = header
         chrome_options.add_argument(f'user-agent={get_random_header()}')
         if driver_binary == '.':
             if executable == '.':
@@ -198,7 +172,7 @@ def cloudflare_wait(driver):
     time.sleep(1)
     
     
-def request(url, request_type='GET', **kwargs): #Headers not yet supported , headers={}, **kwargs
+def request(url, request_type='GET', **kwargs): #Headers not yet supported , headers={}
     params = {}
     for key, value in kwargs.items():
         if key == 'params':
