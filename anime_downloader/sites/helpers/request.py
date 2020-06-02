@@ -82,6 +82,9 @@ def setup(func):
         if sess != selescrape: #TODO fix this for selescrape too
             res.raise_for_status()
             logger.debug(res.url)
+            # logger.debug(res.text)
+            if logger.getEffectiveLevel() == logging.DEBUG:
+                _log_response_body(res)
         return res
 
     setup_func.__doc__ = setup_func.__doc__.format(func.__name__)
