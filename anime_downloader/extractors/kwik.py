@@ -22,8 +22,7 @@ class Kwik(BaseExtractor):
 
         #Necessary
         self.url = self.url.replace(".cx/e/", ".cx/f/")
-        eval_re = re.compile(r';(eval.*\))')
-        stream_parts_re = re.compile(r'https:\/\/(.*?)\..*\/(\d+)\/(.*)\/.*token=(.*)&expires=([^\']+)')
+
         title_re = re.compile(r'title>(.*)<')
 
         resp = helpers.get(self.url, headers={"referer": self.url})
@@ -31,8 +30,7 @@ class Kwik(BaseExtractor):
         cookies = resp.cookies
 
         title = title_re.search(kwik_text).group(1)
-        kwik_text = helpers.soupify(kwik_text)
-        deobfuscated = helpers.soupify(util.deobfuscate_packed_js([x for x in kwik_text.select("script") if 'escape' in x.text][0].text))
+        deobfuscated = helpers.soupify(util.deobfuscate_packed_js(re.search(r'<(script).*(var\s+_.*escape.*?)</\1>(?s)', kwik_text).group(2)))
 
         post_url = deobfuscated.form["action"]
         token = deobfuscated.input["value"]
