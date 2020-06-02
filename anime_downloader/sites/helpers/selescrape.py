@@ -47,19 +47,21 @@ def get_browser_config():
         else:
             browser = 'chrome'
     value = data['dl']['selescrape_browser']
-    value = value.lower() if value else value """in case it's NoneType"""
+    value = value.lower() if value else value
     if value in ['chrome', 'firefox']:
         browser = value
     return browser
 
 
 def get_browser_executable():
-    executable_value = data['dl']['selescrape_browser_executable_path'].lower()
+    value = data['dl']['selescrape_browser_executable_path']
+    executable_value = value.lower() if value else value
     return executable_value
 
 
 def get_driver_binary():
-    binary_path = data['dl']['selescrape_driver_binary_path'].lower()
+    value = data['dl']['selescrape_driver_binary_path']
+    binary_path = value.lower() if value else value
     return binary_path
 
 
@@ -138,7 +140,7 @@ def status_select(driver, url, status='hide'):
         elif status == 'show':
             r = requests.head(url)
             if r.status_code == 503:
-                raise RuntimeError("WARNING: This website's sevice is unavailable or has cloudflare on.")
+                raise RuntimeError("This website's sevice is unavailable or has cloudflare on.")
             driver.get(url)
             return r.status_code
         else:
