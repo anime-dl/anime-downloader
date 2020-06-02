@@ -46,7 +46,8 @@ def get_browser_config():
             browser =  os_browser[a]
         else:
             browser = 'chrome'
-    value = data['dl']['selescrape_browser'].lower()
+    value = data['dl']['selescrape_browser']
+    value = value.lower() if value else value """in case it's NoneType"""
     if value in ['chrome', 'firefox']:
         browser = value
     return browser
@@ -175,7 +176,6 @@ def cloudflare_wait(driver):
     
 def request(request_type, url, **kwargs): #Headers not yet supported , headers={}
     params = kwargs.get('params', {})
-    nothing = request_type
     new_url = add_url_params(url, params)
     driver = driver_select()
     status = status_select(driver, new_url, 'hide')
