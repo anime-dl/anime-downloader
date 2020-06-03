@@ -38,15 +38,22 @@ class JustDubs(Anime, sitename='justdubs'):
 
 class JustDubsEpisode(AnimeEpisode, sitename='justdubs'):
     def _get_sources(self):
-        servers =  {
+        servers = self.config['servers']
+        
+        """maps urls to extractors"""
+        server_links =  { 
         'mp4upload':'mp4upload.com',
-        'gcloud':'gcloud.live'
+        'gcloud':'gcloud.live',
+        'gcloud':'fembed.com'
         }
+
         soup = helpers.soupify(helpers.get(self.url)).select('iframe')
-        for a in soup:
-            for b in servers:
-                if servers[b] in a.get('src'):
-                    return [(b, a.get('src'))]
+        
+        for a in servers:
+            for b in soup:
+                for c in server_links:
+                    if server_links[c] in b.get('src') and a == c:
+                        return [(c, b.get('src'))]
         
         logger.warn("Unsupported URL")
         return ""
