@@ -39,21 +39,14 @@ class JustDubs(Anime, sitename='justdubs'):
 class JustDubsEpisode(AnimeEpisode, sitename='justdubs'):
     def _get_sources(self):
         servers =  {
-        'mp4upload':'https://www.mp4upload.com/',
-        'gcloud':'https://gcloud.live/'
+        'mp4upload':'mp4upload.com',
+        'gcloud':'gcloud.live'
         }
         soup = helpers.soupify(helpers.get(self.url)).select('iframe')
-
-        mp4_regex = re.compile('^mp4upload.com$')
-        gcloud_regex = re.compile('^gcloud.live$')
-        
         for a in soup:
             for b in servers:
                 if servers[b] in a.get('src'):
-                    if re.match(mp4_regex, a.get('src')) is not None:
-                        return [(b, a.get('src'))]
-                    elif re.match(gcloud_regex, a.get('src')) is not None:
-                        return [(b, a.get('src'))]
-                    else: 
-                        logger.error("Unsupported URL")
-                        return ""
+                    return [(b, a.get('src'))]
+        
+        logger.warn("Unsupported URL")
+        return ""
