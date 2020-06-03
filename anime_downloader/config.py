@@ -85,6 +85,9 @@ DEFAULT_CONFIG = {
         },
         'vidstream': {
             "servers": ["vidstream","gcloud","mp4upload","cloud9","hydrax"]
+        },
+        'justdubs': {
+            "servers": ["mp4upload","gcloud"]
         }
     }
 }
