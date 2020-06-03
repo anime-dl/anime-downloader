@@ -10,6 +10,11 @@ logger = logging.getLogger(__name__)
 class Gcloud(BaseExtractor):
     def _get_data(self):
         url = self.url
+        
+        """gcloud uses the same video ID as other sites"""
+        url = url.replace('fembed.com','gcloud.live')
+        url = url.replace('feurl.com','gcloud.live')
+        
         url = url.replace('gcloud.live/v/','gcloud.live/api/source/')
         if url.find('#') != -1:url = url[:url.find('#')] 
         url = (url[-url[::-1].find('/'):])
