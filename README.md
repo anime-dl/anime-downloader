@@ -63,6 +63,7 @@ Yeah. Me too! That's why this tool exists.
 - Watchmovie
 - Nyaa.si
 - Animedaisuki
+- Justdubs
 - twist.moe - requires Node.js
 - Kissanime - requires Node.js
 - Kisscartoon - requires Node.js
