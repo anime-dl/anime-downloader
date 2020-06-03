@@ -23,7 +23,8 @@ ALL_ANIME_SITES = [
     ('animekisa','animekisa','AnimeKisa'),
     ('nyaa','nyaa','Nyaa'),
     ('animedaisuki','animedaisuki','Animedaisuki'),
-    ('justdubs','justdubs','JustDubs')
+    ('justdubs','justdubs','JustDubs'),
+    ('animixplay','animixplay','AniMixPlay')
 ]
 
 
