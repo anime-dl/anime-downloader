@@ -48,4 +48,4 @@ class JustDubsEpisode(AnimeEpisode, sitename='justdubs'):
         for a in soup:
             for b in servers:
                 if servers[b] in a.get('src'):
-                    return [(b, a.get('src'))] if servers in a.get('src') else "Unsupported URL"
+                    return [(b, a.get('src'))] if servers in a.get('src') else ""
