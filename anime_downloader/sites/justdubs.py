@@ -36,6 +36,10 @@ class JustDubs(Anime, sitename='justdubs'):
             raise NotFoundError(err, *args)
         return list(reversed(ret))
 
+    def _scrape_metadata(self):
+        soup = helpers.soupify(helpers.get(self.url))
+        self.title = soup.select('h1.page-header')[0].text
+
 class JustDubsEpisode(AnimeEpisode, sitename='justdubs'):
     def _get_sources(self):
         servers = self.config['servers']
