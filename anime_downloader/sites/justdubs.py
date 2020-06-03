@@ -44,7 +44,7 @@ class JustDubsEpisode(AnimeEpisode, sitename='justdubs'):
         server_links =  { 
         'mp4upload':'mp4upload.com',
         'gcloud':'gcloud.live',
-        'gcloud':'fembed.com'
+        'femebd':'fembed.com'
         }
 
         soup = helpers.soupify(helpers.get(self.url)).select('iframe')
