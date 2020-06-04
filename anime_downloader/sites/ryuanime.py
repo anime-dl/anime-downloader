@@ -4,6 +4,7 @@ from anime_downloader.sites import helpers
 import json
 import re
 import logging
+import click
 
 logger = logging.getLogger(__name__)
 
@@ -34,13 +35,21 @@ class RyuAnime(Anime, sitename='ryuanime'):
             ]
         return search_results
 
-    def _scrape_episodes(self):
-        version = self.config.get("version", "subbed")
+    def _scrape_episodes(self, version=None):
+        if version == None:
+            version = self.config.get("version", "subbed")
+
         soup = helpers.soupify(helpers.get(self.url))
         ep_list = [x for x in soup.select("div.col-sm-6") if x.find("h5").text == version.title()][0].find_all("a")
         episodes = [x.get("href") for x in ep_list]
 
         if len(episodes) == 0:
+            if version == "dubbed":
+                version = "subbed"
+                change = click.confirm("No dubbed episodes found. Try again") 
+                if change:
+                    return self._scrape_episodes(version)
+            
             logger.warning("No episodes found")
 
         return episodes[::-1]

@@ -4,6 +4,7 @@ from anime_downloader.sites import helpers
 import json
 import re
 import logging
+import click
 
 logger = logging.getLogger(__name__)
 
@@ -35,8 +36,10 @@ class DreamAnime(Anime, sitename='dreamanime'):
 
         return search_results
 
-    def _scrape_episodes(self):
-        version = self.config.get("version", "subbed")
+    def _scrape_episodes(self, version = None):
+        if version == None:
+            version = self.config.get("version", "subbed")
+
         soup = helpers.soupify(helpers.get(self.url))
 
         episodes = []
@@ -50,7 +53,13 @@ class DreamAnime(Anime, sitename='dreamanime'):
                 episodes.append(i.find("a").get("href"))
         
         if len(episodes) == 0:
+            if version == "dubbed":
+                version = "subbed"
+                change = click.confirm("No dubbed episodes found. Try again")
+                if change:
+                    return self._scrape_episodes(version)
             logger.warning("No episodes found")
+
 
         return episodes[::-1]
 
