@@ -349,30 +349,29 @@ class AnimeEpisode:
         self._sources = self._get_sources()
         logger.debug('Sources : {}'.format(self._sources))
 
-        if type(self._sources[0]) == dict:
-            version = self.config.get('version','subbed') #TODO add a flag for this
-            servers = self.config.get('servers',[''])
-            data = self._sources
-
-            logger.debug('Data : {}'.format(data))
-
-            sources = []
-            for a in servers: #Servers in order in correct language
-                for b in (list(filter(lambda server: (server['version'] == version and server['config'] == a and get_extractor(server['extractor']) != None) , data))):
-                    sources.append(b)
-
-            for a in servers: #Servers in order in incorrect language
-                for b in (list(filter(lambda server: (server['version'] != version and server['config'] == a and get_extractor(server['extractor']) != None) , data))):
-                    sources.append(b)
-
-            logger.debug('Sorted sources : {}'.format(sources))
-            
-            self._sources = '' if not sources else [(sources[0]['extractor'],sources[0]['url'])]
-
-        logger.debug('Sources : {}'.format(self._sources))
-
     def _get_sources(self):
         raise NotImplementedError
+
+
+    def format_data(self,data):
+        version = self.config.get('version','subbed') #TODO add a flag for this
+        servers = self.config.get('servers',[''])
+
+        logger.debug('Data : {}'.format(data))
+
+        sources = []
+        for a in servers: #Servers in order in correct language
+            for b in (list(filter(lambda server: (server['version'] == version and server['config'] == a and get_extractor(server['extractor']) != None) , data))):
+                sources.append(b)
+
+        for a in servers: #Servers in order in incorrect language
+            for b in (list(filter(lambda server: (server['version'] != version and server['config'] == a and get_extractor(server['extractor']) != None) , data))):
+                sources.append(b)
+
+        logger.debug('Sorted sources : {}'.format(sources))
+
+        return '' if not sources else [(sources[0]['extractor'],sources[0]['url'])]
+
 
     def download(self, force=False, path=None,
                  format='{anime_title}_{ep_no}', range_size=None):
