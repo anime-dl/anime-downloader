@@ -353,7 +353,30 @@ class AnimeEpisode:
         raise NotImplementedError
 
 
-    def format_data(self,data):
+    def sort_sources(self,data):
+        """
+        Formatted data should look something like this
+        
+        [
+        {'extractor': 'mp4upload', 'url': 'https://twist.moe/mp4upload/...', 'config': 'mp4upload', 'version': 'subbed'}, 
+        {'extractor': 'vidstream', 'url': 'https://twist.moe/vidstream/...', 'config': 'vidstream', 'version': 'dubbed'},
+        {'extractor': 'no_extractor', 'url': 'https://twist.moe/anime/...', 'config': 'default', 'version': 'subbed'}
+        ]
+
+        extractor = the extractor the link should be passed to
+        url = url to be passed to the extractor
+        config = the server name used in config
+        version = subbed/dubbed
+
+        The config should consist of a list with servers in preferred order and a preferred language, eg
+        
+        servers = ["vidstream","default","mp4upload"]
+        version = "subbed"
+
+        Using the example above, this function will return: [('no_extractor', 'https://twist.moe/anime/...')]
+        as it prioritizes preferred language over preferred server
+        """
+
         version = self.config.get('version','subbed') #TODO add a flag for this
         servers = self.config.get('servers',[''])
 
