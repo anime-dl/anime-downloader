@@ -55,9 +55,15 @@ class DreamAnime(Anime, sitename='dreamanime'):
         if len(episodes) == 0:
             if version == "dubbed":
                 version = "subbed"
-                change = click.confirm("No dubbed episodes found. Try again")
+                change = click.confirm("No dubbed episodes found. Try subbed")
+                if change:
+                    return self._scrape_episodes(version) 
+            elif version == "subbed":
+                change = click.confirm("No subbed episodes found. Try dubbed")
+
                 if change:
                     return self._scrape_episodes(version)
+
             logger.warning("No episodes found")
 
 
