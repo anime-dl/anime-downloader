@@ -35,23 +35,25 @@ class RyuAnime(Anime, sitename='ryuanime'):
             ]
         return search_results
 
-    def _scrape_episodes(self, value=None):
-        if value == None:
-            value = self.config.get("version", "subbed")
+    def _scrape_episodes(self, version = None):
+        if version == None:
+            version = self.config.get("version", "subbed")
 
-        versionDict = {True: "subbed", False: "dubbed"}
-        valueDict = {"subbed": True, "dubbed": False}
-
-        version = versionDict[value] if type(value) == bool else value
+        versions = [
+                "subbed",
+                "dubbed"
+                ]
 
         soup = helpers.soupify(helpers.get(self.url))
         ep_list = [x for x in soup.select("div.col-sm-6") if x.find("h5").text == version.title()][0].find_all("a")
         episodes = [x.get("href") for x in ep_list]
 
         if len(episodes) == 0:
-            change = click.confirm(f"No {version} episodes found. Try {versionDict[not valueDict[version]]}") 
+            newVersion = versions[int(not bool(versions.index(version)
+))]
+            change = click.confirm(f"No {version} episodes found. Try {newVersion}") 
             if change:
-                return self._scrape_episodes(not valueDict[version])
+                return self._scrape_episodes(newVersion)
             
             logger.warning("No episodes found")
 
