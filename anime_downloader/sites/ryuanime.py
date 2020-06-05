@@ -2,6 +2,7 @@
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 import json
+import re
 import logging
 
 logger = logging.getLogger(__name__)
@@ -21,9 +22,8 @@ class RyuAnime(Anime, sitename='ryuanime'):
 
     @classmethod
     def search(cls, query):
-        results = helpers.get("https://www4.ryuanime.com/search", params = {"term" : query}).text
-        soup = helpers.soupify(results)
-        result_data = soup.find("ul", {"class" : "list-inline"}).find_all("a")
+        soup = helpers.soupify(helpers.get("https://www4.ryuanime.com/search", params = {"term" : query}))
+        result_data = soup.select("ul.list-inline")[0].select("a")
 
         search_results = [
             SearchResult(
@@ -37,7 +37,7 @@ class RyuAnime(Anime, sitename='ryuanime'):
     def _scrape_episodes(self):
         version = self.config.get("version", "subbed")
         soup = helpers.soupify(helpers.get(self.url))
-        ep_list = [x for x in soup.find_all("div", {"class":"col-sm-6"}) if x.find("h5").text == version.title()][0].find_all("a")
+        ep_list = [x for x in soup.select("div.col-sm-6") if x.find("h5").text == version.title()][0].find_all("a")
         episodes = [x.get("href") for x in ep_list]
 
         if len(episodes) == 0:
@@ -47,7 +47,7 @@ class RyuAnime(Anime, sitename='ryuanime'):
 
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url))
-        self.title = soup.find("div", {"class" : "card-header"}).find("h1").text
+        self.title = soup.select("div.card-header")[0].find("h1").text
 
 class RyuAnimeEpisode(AnimeEpisode, sitename='ryuanime'):
     def getLink(self, name, _id):
@@ -61,7 +61,9 @@ class RyuAnimeEpisode(AnimeEpisode, sitename='ryuanime'):
     def _get_sources(self):
         server = self.config.get("server", "trollvid")
         soup = helpers.soupify(helpers.get(self.url))
-        hosts = json.loads(soup.find("div", {"class":"col-sm-9"}).find("script").text[30:-6])
+        
+        hosts = json.loads(re.search("\[.*?\]", soup.select("div.col-sm-9")[0].select("script")[0].text).group())
+
         _type = hosts[0]["type"]
         try:
             host = list(filter(lambda video: video["host"] == server and video["type"] == _type, hosts))[0]

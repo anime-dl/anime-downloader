@@ -39,8 +39,11 @@ class AnimeFlix(Anime, sitename='animeflix'):
             # find a way to pass some values within the class
             episodes = helpers.get(self.episodeList_url,
                                    params={'slug': self.slug}).json()
+
+            if episodes.get('@type','') == 'Movie': #different response if movies
+                return [episodes['potentialAction']['target']]
             return [ self.anime_url + episode['url'] for episode in episodes['episodes'] ]
-        
+
         def _scrape_metadata(self):
             self.slug = self.url.strip('/').split('/')[-1]
             meta = helpers.get(self.meta_url, 

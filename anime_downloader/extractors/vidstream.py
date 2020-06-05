@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class VidStream(BaseExtractor):
     def _get_data(self):
-        
+
         '''
         Config:
         List of servers. Will use servers in order. 
@@ -28,30 +28,34 @@ class VidStream(BaseExtractor):
 
         url = self.url.replace('https:////','https://')
         url = url.replace('https://vidstreaming.io/download','https://vidstreaming.io/server.php')
-
         soup = helpers.soupify(helpers.get(url))
-
         servers = Config._read_config()['siteconfig']['vidstream']['servers']
-        sources_regex = r'sources:(\[{.*?}])'
-        sources = re.search(sources_regex,str(soup))
 
         linkserver = soup.select('li.linkserver')
         for a in servers:
             if a == 'vidstream':
-                return self._get_link(sources)
+                return self._get_link(soup)
             for b in linkserver:
                 if b.get('data-video').startswith(links.get(a,'None')):
-                    self.url = b.get('data-video')
-                    return extractors.get_extractor(a)._get_data(self)
+                    """
+                    Another class needs to get created instead of using self not to impact future loops
+                    If the extractor fails vidstream.py will get run again with changed self
+                    """
+                    info = self.__dict__.copy()
+                    info['url'] = b.get('data-video')
+                    _self = Extractor(info)  
+                    return extractors.get_extractor(a)._get_data(_self)
  
-    def _get_link(self,sources):
+    def _get_link(self,soup):
         QUALITIES = {
             "360":[],
             "480":[],
             "720":[],
             "1080":[],
         }
-        sources = sources.group(1)
+
+        sources_regex = r'sources:(\[{.*?}])'
+        sources = re.search(sources_regex,str(soup)).group(1)
         sources = sources.replace("'",'"') #json only accepts ""
 
         regex = r"[{|,][\n]*?[ ]*?[\t]*?[A-z]*?[^\"]:"
@@ -75,3 +79,10 @@ class VidStream(BaseExtractor):
             'stream_url': stream_url,
             'referer': self.url
         }
+
+
+"""dummy class to prevent changing self"""
+class Extractor: 
+    def __init__(self, dictionary):
+        for k, v in dictionary.items():
+            setattr(self, k, v)

@@ -22,9 +22,8 @@ class DreamAnime(Anime, sitename='dreamanime'):
 
     @classmethod
     def search(cls, query):
-        results = helpers.get("https://dreamanime.fun/search", params = {"term" : query}).text
-        soup = helpers.soupify(results)
-        result_data = soup.find_all("a", {"id":"epilink"})
+        soup = helpers.soupify(helpers.get("https://dreamanime.fun/search", params = {"term" : query}))
+        result_data = soup.select("a#epilink")
 
         search_results = [
             SearchResult(
@@ -42,7 +41,7 @@ class DreamAnime(Anime, sitename='dreamanime'):
 
         episodes = []
  
-        _all = soup.find_all("div", {"class":"episode-wrap"})
+        _all = soup.select("div.episode-wrap")
         for i in _all:
             ep_type = i.find("div", {"class":re.compile("ep-type type-.* dscd")}).text
             if ep_type == 'Sub':
@@ -70,8 +69,8 @@ class DreamAnimeEpisode(AnimeEpisode, sitename='dreamanime'):
 
     def _get_sources(self):
         server = self.config.get("server", "trollvid")
-        soup = helpers.soupify(helpers.get(self.url))
-        hosts = json.loads(soup.find("div", {"class":"spatry"}).previous_sibling.previous_sibling.text[21:-2])["videos"]
+        resp = helpers.get(self.url).text
+        hosts = json.loads(re.search("var\s+episode\s+=\s+({.*})", resp).group(1))["videos"]
         _type = hosts[0]["type"]
         try:
             host = list(filter(lambda video: video["host"] == server and video["type"] == _type, hosts))[0]

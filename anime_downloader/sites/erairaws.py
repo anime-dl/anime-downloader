@@ -2,7 +2,7 @@
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 from difflib import get_close_matches
-import base64
+import re
 
 class EraiRaws(Anime, sitename='erai-raws'):
     sitename='erai-raws'
@@ -11,11 +11,9 @@ class EraiRaws(Anime, sitename='erai-raws'):
     #Bypass DDosGuard
     def bypass(self):
         host = "https://erai-raws.info"
-        url = "https://erai-raws.info/anime-list/"
-        u = base64.b64encode(url.encode('utf-8'))
-        h = base64.b64encode(host.encode('utf-8'))
-        bypass_link = helpers.post('https://ddgu.ddos-guard.net/ddgu/', data = {'u':u, 'h':h, 'p':''}, headers = {'Referer': url}, allow_redirects = False).headers["Location"]
-        helpers.get(bypass_link, allow_redirects = False)
+        resp = helpers.get("https://check.ddos-guard.net/check.js").text
+        ddosBypassPath = re.search("'(.*?)'", resp).groups()[0]
+        helpers.get(host + ddosBypassPath)
 
     def parse(self, rows, url):
         episodes = []

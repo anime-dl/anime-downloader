@@ -28,7 +28,7 @@ DEFAULT_CONFIG = {
         'provider': 'twist.moe',
     },
     "siteconfig": {
-        "nineanime": {
+        'nineanime': {
             "server": "mp4upload",
         },
         'anistream.xyz': {
@@ -85,6 +85,9 @@ DEFAULT_CONFIG = {
         },
         'vidstream': {
             "servers": ["vidstream","gcloud","mp4upload","cloud9","hydrax"]
+        },
+        'justdubs': {
+            "servers": ["mp4upload","gcloud"]
         }
     }
 }

@@ -6,6 +6,37 @@ import time
 import logging
 from tabulate import tabulate
 from anime_downloader.sites import ALL_ANIME_SITES
+from anime_downloader.config import Config
+from anime_downloader import config
+
+logger = logging.getLogger(__name__)
+sitenames = [*config.DEFAULT_CONFIG["siteconfig"]]
+
+data = Config._CONFIG
+
+def create_table(_list):
+    newList = [(x, y) for x, y in zip(range(1,len(_list) + 1), _list)]
+    table = tabulate(newList, tablefmt = "psql")
+    table = "\n".join(table.split("\n")[::-1])
+    return table
+
+def traverse_json(data):
+    click.clear()
+    keys = [*data.keys()]
+    click.echo(create_table(keys))
+    val = click.prompt("Select Option", type = int, default = 1) - 1
+    
+    if type(data[keys[val]]) == dict:
+        traverse_json(data[keys[val]])
+    else:
+        click.echo(f"Current value: {data[keys[val]]}")
+        data[keys[val]] = click.prompt(f"Input new value for {keys[val]}", type = type(data[keys[val]]))
+        return data
+
+traverse_json(data)
+Config._CONFIG = data
+Config.write()
+=======
 sitenames = [v[1] for v in ALL_ANIME_SITES]
 def clear():    
     os.system('cls||clear')
