@@ -36,33 +36,37 @@ class DreamAnime(Anime, sitename='dreamanime'):
 
         return search_results
 
-    def _scrape_episodes(self, version = None):
-        if version == None:
-            version = self.config.get("version", "subbed")
+    def _scrape_episodes(self, value = None):
+        if value == None:
+            value = self.config.get("version", "subbed")
+
+        versionDict = {True: "subbed", False: "dubbed"}
+        valueDict = {"subbed": True, "dubbed": False}
+
+        version = versionDict[value] if type(value) == bool else value
 
         soup = helpers.soupify(helpers.get(self.url))
 
-        episodes = []
+        subbed = []
+        dubbed = []
  
         _all = soup.select("div.episode-wrap")
         for i in _all:
             ep_type = i.find("div", {"class":re.compile("ep-type type-.* dscd")}).text
             if ep_type == 'Sub':
-                episodes.append(i.find("a").get("data-src"))
+                subbed.append(i.find("a").get("data-src"))
             elif ep_type == 'Dub':
-                episodes.append(i.find("a").get("href"))
+                dubbed.append(i.find("a").get("href"))
         
-        if len(episodes) == 0:
-            if version == "dubbed":
-                version = "subbed"
-                change = click.confirm("No dubbed episodes found. Try subbed")
-                if change:
-                    return self._scrape_episodes(version) 
-            elif version == "subbed":
-                change = click.confirm("No subbed episodes found. Try dubbed")
+        if valueDict[version]:
+            episodes = subbed
+        else:
+            episodes = dubbed
 
-                if change:
-                    return self._scrape_episodes(version)
+        if len(episodes) == 0:
+            change = click.confirm(f"No {version} episodes found. Try {versionDict[not valueDict[version]]}")
+            if change:
+                return self._scrape_episodes(not valueDict[version])
 
             logger.warning("No episodes found")
 
