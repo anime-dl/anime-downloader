@@ -36,10 +36,8 @@ class DreamAnime(Anime, sitename='dreamanime'):
 
         return search_results
 
-    def _scrape_episodes(self, version = None):
-        if version == None:
-            version = self.config.get("version", "subbed")
-
+    def _scrape_episodes(self):
+        version = self.config.get("version", "subbed")
         versions = [
                 "subbed",
                 "dubbed"
@@ -54,7 +52,7 @@ class DreamAnime(Anime, sitename='dreamanime'):
             newVersion = versions[int(not bool(versions.index(version)))]
             change = click.confirm(f"No {version} episodes found. Try {newVersion}")
             if change:
-                return self._scrape_episodes(newVersion)
+                episodes = [x.find("a").get("href") if "href" in [*x.find("a").attrs.keys()] else x.find("a").get("data-src") for x in _all if x.select(".ep-type")[0].text == newVersion[0:3].title()]
 
             logger.warning("No episodes found")
 
