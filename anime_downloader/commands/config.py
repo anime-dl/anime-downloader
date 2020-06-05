@@ -45,8 +45,6 @@ def traverse_json(data):
                 exit()
 
         data[keys[val]] = newVal
-        
-        return data
 
 traverse_json(data)
 Config._CONFIG = data
