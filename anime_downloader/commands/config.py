@@ -7,10 +7,6 @@ import logging
 from tabulate import tabulate
 from anime_downloader.sites import ALL_ANIME_SITES
 from anime_downloader.config import Config
-from anime_downloader import config
-
-logger = logging.getLogger(__name__)
-sitenames = [*config.DEFAULT_CONFIG["siteconfig"]]
 
 data = Config._CONFIG
 
