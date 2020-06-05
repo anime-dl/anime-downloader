@@ -30,7 +30,22 @@ def traverse_json(data):
         traverse_json(data[keys[val]])
     else:
         click.echo(f"Current value: {data[keys[val]]}")
-        data[keys[val]] = click.prompt(f"Input new value for {keys[val]}", type = type(data[keys[val]]))
+        newVal = click.prompt(f"Input new value for {keys[val]}", type = str)
+
+        #Normal strings cause an error
+        try:
+            newVal = eval(newVal)
+        except SyntaxError:
+            pass
+        
+        if type(newVal) != type(data[keys[val]]):
+            choice = click.confirm(f"{newVal} appears to be of an incorrect type. Continue")
+
+            if not choice:
+                exit()
+
+        data[keys[val]] = newVal
+        
         return data
 
 traverse_json(data)
