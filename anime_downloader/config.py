@@ -88,6 +88,9 @@ DEFAULT_CONFIG = {
         },
         'justdubs': {
             "servers": ["mp4upload","gcloud"]
+        },
+        'kwik': {
+            'token': ''
         }
     }
 }
