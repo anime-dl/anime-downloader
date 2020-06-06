@@ -10,11 +10,12 @@ from logging import exception
 from sys import platform
 import requests
 import os
+import logging
 import click
 import time
 import json
 
-
+logger = logging.getLogger(__name__)
 def get_data_dir():
     '''
     Gets the folder directory selescrape will store data, 
@@ -160,15 +161,15 @@ def cloudflare_wait(driver):
     Also, i have made it time out after 30 seconds, useful if the target website is not responsive 
     and to stop it from running infinitely.
     '''
-    abort_after = 30 # The abort timer
-    start = time.time() # The time that the code starts to execute.
+    abort_after = 30
+    start = time.time()
 
     title = driver.title  # title = "Just a moment..."
     while title == "Just a moment...":
         time.sleep(0.25)
         delta = time.time() - start
         if delta >= abort_after:
-            raise Exception(f'Timeout:\nCouldnt bypass cloudflare. \
+            logger.DEBUG(f'Timeout:\nCouldnt bypass cloudflare. \
             See the screenshot for more info:\n{get_data_dir()}/screenshot.png')
         title = driver.title
         if not title == "Just a moment...":
@@ -189,5 +190,5 @@ def request(request_type, url, **kwargs): #Headers not yet supported , headers={
     except:
         driver.save_screenshot(f"{get_data_dir()}/screenshot.png");
         driver.close()
-        raise Exception(f'There was a problem getting the page: {new_url}. \
+        logger.DEBUG(f'There was a problem getting the page: {new_url}. \
         See the screenshot for more info:\n{get_data_dir()}/screenshot.png')
