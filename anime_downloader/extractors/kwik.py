@@ -28,6 +28,7 @@ class Kwik(BaseExtractor):
                 ))
             }
     session = requests.session()
+    token = ''
 
 
     #Captcha bypass stuff is mostly thanks to https://github.com/Futei/SineCaptcha
@@ -85,12 +86,9 @@ class Kwik(BaseExtractor):
 
             response = self.session.post(f'https://hcaptcha.com/checkcaptcha/{key}', json = json).json()
             bypassed = response.get("pass")
-            logger.info(f"Bypassed: {bypassed}")
 
             if bypassed:
-                Config._CONFIG["siteconfig"]["kwik"]["token"] = response.get("generated_pass_UUID")
-                Config.write()
-                logger.info(f"Token: {response.get('generated_pass_UUID')}")
+                self.token = response.get("generated_pass_UUID")
 
 
     def _get_data(self):
@@ -99,31 +97,33 @@ class Kwik(BaseExtractor):
         # have to rebuild the url. Hopefully kwik doesn't block this too
 
         #Necessary
-        token = Config._CONFIG["siteconfig"]["kwik"]["token"]
-
-        if token == "":
-            self.bypass_captcha()
-            token = Config._CONFIG["siteconfig"]["kwik"]["token"]
-
         self.url = self.url.replace(".cx/e/", ".cx/f/")
 
-        resp = helpers.soupify(self.session.get(self.url, headers = self.headers))
-        bypass_url = 'https://kwik.cx' + resp.form.get('action')
-
-        data = {}
-        [data.update({x.get("name"): x.get("value")}) for x in resp.select("form > input")]
-        data.update({"id": resp.strong.text, "g-recaptcha-response": token, "h-captcha-response": token})
-
-        #Returning 403, and challenge page.
-        #Should return 200 and actual page.
+        cookies = Config._CONFIG["siteconfig"]["kwik"]["cookies"]
         self.headers.update({"referer": self.url})
-        resp = self.session.post(bypass_url, data = data, headers = self.headers)
+
+        if cookies == "":
+            self.bypass_captcha()
+            token = self.token
+
+            resp = helpers.soupify(self.session.get(self.url, headers = self.headers))
+            bypass_url = 'https://kwik.cx' + resp.form.get('action')
+
+            data = {}
+            [data.update({x.get("name"): x.get("value")}) for x in resp.select("form > input")]
+            data.update({"id": resp.strong.text, "g-recaptcha-response": token, "h-captcha-response": token})
+
+            resp = self.session.post(bypass_url, data = data, headers = self.headers)
+
+            Config._CONFIG["siteconfig"]["kwik"]["cookies"] = resp.cookies.get_dict()
+            Config.write()
+        else:
+            cookies = requests.utils.cookiejar_from_dict(Config._CONFIG["siteconfig"]["kwik"]["cookies"])
+            resp = self.session.get(self.url, headers = self.headers, cookies = cookies)
 
         title_re = re.compile(r'title>(.*)<')
 
-        #resp = self.session.post(self.url, headers={"referer": self.url})
         kwik_text = resp.text
-        logger.debug(resp)
 
         title = title_re.search(kwik_text).group(1)
 

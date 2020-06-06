@@ -90,7 +90,7 @@ DEFAULT_CONFIG = {
             "servers": ["mp4upload","gcloud"]
         },
         'kwik': {
-            'token': ''
+            'cookies': ''
         }
     }
 }
