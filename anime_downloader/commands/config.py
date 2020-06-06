@@ -1,10 +1,5 @@
-import json
-import os
-import sys
 import click
-import time
 from tabulate import tabulate
-from anime_downloader.sites import ALL_ANIME_SITES
 from anime_downloader.config import Config
 
 data = Config._CONFIG
