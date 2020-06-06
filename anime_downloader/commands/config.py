@@ -26,6 +26,7 @@ def traverse_json(data):
         try:
             newVal = eval(newVal)
         except (SyntaxError, NameError) as e:
+            pass
         
         if type(newVal) != type(data[keys[val]]):
             choice = click.confirm(f"{newVal} appears to be of an incorrect type. Continue")
