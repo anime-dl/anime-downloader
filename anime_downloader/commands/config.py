@@ -25,8 +25,12 @@ def traverse_json(data):
         #Normal strings cause an error
         try:
             newVal = eval(newVal)
-        except (SyntaxError, NameError):
-            pass
+        except (SyntaxError, NameError) as e:
+            if type(e) == SyntaxError:
+                choice = click.confirm(f"{newVal} appears to be misconfigured. Continue")
+
+                if not choice:
+                    exit()
         
         if type(newVal) != type(data[keys[val]]):
             choice = click.confirm(f"{newVal} appears to be of an incorrect type. Continue")
