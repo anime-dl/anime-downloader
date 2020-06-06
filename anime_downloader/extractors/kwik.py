@@ -19,7 +19,14 @@ class Kwik(BaseExtractor):
        and the kwik video stream when refered through the corresponding
        kwik video page.
     '''
-    headers = {"User-Agent": None}
+    headers = {
+            'User-Agent': choice((
+                'Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36',
+                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/605.1.15 (KHTML, like Gecko)',
+                'Mozilla/5.0 (iPad; CPU OS 9_3_5 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13G36',
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'
+                ))
+            }
     session = requests.session()
 
 
@@ -110,7 +117,7 @@ class Kwik(BaseExtractor):
 
         #Returning 403, and challenge page.
         #Should return 200 and actual page.
-        resp = self.session.post(bypass_url, json = data, headers = {"referer": self.url})
+        resp = self.session.post(bypass_url, data = data, headers = {"referer": self.url})
 
         title_re = re.compile(r'title>(.*)<')
 
