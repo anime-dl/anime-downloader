@@ -99,7 +99,6 @@ class Kwik(BaseExtractor):
         # have to rebuild the url. Hopefully kwik doesn't block this too
 
         #Necessary
-        self.session.headers.update(self.headers)
         token = Config._CONFIG["siteconfig"]["kwik"]["token"]
 
         if token == "":
@@ -108,7 +107,7 @@ class Kwik(BaseExtractor):
 
         self.url = self.url.replace(".cx/e/", ".cx/f/")
 
-        resp = helpers.soupify(self.session.get(self.url))
+        resp = helpers.soupify(self.session.get(self.url, headers = self.headers))
         bypass_url = 'https://kwik.cx' + resp.form.get('action')
 
         data = {}
@@ -117,7 +116,8 @@ class Kwik(BaseExtractor):
 
         #Returning 403, and challenge page.
         #Should return 200 and actual page.
-        resp = self.session.post(bypass_url, data = data, headers = {"referer": self.url})
+        self.headers.update({"referer": self.url})
+        resp = self.session.post(bypass_url, data = data, headers = self.headers)
 
         title_re = re.compile(r'title>(.*)<')
 
@@ -132,7 +132,7 @@ class Kwik(BaseExtractor):
         post_url = deobfuscated.form["action"]
         token = deobfuscated.input["value"]
 
-        resp = self.session.post(post_url, headers={"referer": self.url}, params={"_token": token}, allow_redirects = False)
+        resp = self.session.post(post_url, headers = self.headers, params={"_token": token}, allow_redirects = False)
         stream_url = resp.headers["Location"]
 
         logger.debug('Stream URL: %s' % stream_url)
