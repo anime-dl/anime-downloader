@@ -25,7 +25,7 @@ def traverse_json(data):
         #Normal strings cause an error
         try:
             newVal = eval(newVal)
-        except SyntaxError:
+        except (SyntaxError, NameError):
             pass
         
         if type(newVal) != type(data[keys[val]]):
