@@ -169,7 +169,7 @@ def cloudflare_wait(driver):
         time.sleep(0.25)
         delta = time.time() - start
         if delta >= abort_after:
-            logger.DEBUG(f'Timeout:\nCouldnt bypass cloudflare. \
+            logger.error(f'Timeout:\nCouldnt bypass cloudflare. \
             See the screenshot for more info:\n{get_data_dir()}/screenshot.png')
         title = driver.title
         if not title == "Just a moment...":
@@ -190,5 +190,5 @@ def request(request_type, url, **kwargs): #Headers not yet supported , headers={
     except:
         driver.save_screenshot(f"{get_data_dir()}/screenshot.png");
         driver.close()
-        logger.DEBUG(f'There was a problem getting the page: {new_url}. \
+        logger.error(f'There was a problem getting the page: {new_url}. \
         See the screenshot for more info:\n{get_data_dir()}/screenshot.png')
