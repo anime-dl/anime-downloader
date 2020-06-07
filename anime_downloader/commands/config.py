@@ -36,7 +36,9 @@ def traverse_json(data):
 
         data[keys[val]] = newVal
 
-traverse_json(data)
-Config._CONFIG = data
-Config.write()
-exit()
+@click.command()
+def command(): 
+    traverse_json(data)
+    Config._CONFIG = data
+    Config.write()
+    exit()
