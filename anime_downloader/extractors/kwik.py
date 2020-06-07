@@ -100,22 +100,18 @@ class Kwik(BaseExtractor):
 
         #Necessary
         self.url = self.url.replace(".cx/e/", ".cx/f/")
-
-        #Check if kwik file exists - that's where cookies are stored
-        exists = os.path.isfile(APP_DIR + '/kwik')
         self.headers.update({"referer": self.url})
 
-        if not exists:
+        if not os.path.isfile(APP_DIR + '/kwik'):
             logger.info("Bypassing captcha...")
             self.bypass_captcha()
-            token = self.token
 
             resp = helpers.soupify(self.session.get(self.url, headers = self.headers))
             bypass_url = 'https://kwik.cx' + resp.form.get('action')
 
             data = {}
             [data.update({x.get("name"): x.get("value")}) for x in resp.select("form > input")]
-            data.update({"id": resp.strong.text, "g-recaptcha-response": token, "h-captcha-response": token})
+            data.update({"id": resp.strong.text, "g-recaptcha-response": self.token, "h-captcha-response": self.token})
 
             resp = self.session.post(bypass_url, data = data, headers = self.headers)
 
