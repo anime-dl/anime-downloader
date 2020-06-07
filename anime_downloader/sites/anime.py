@@ -353,7 +353,29 @@ class AnimeEpisode:
         raise NotImplementedError
 
 
-    def sort_sources(self,data):
+    def check_server(self, current_server, server, preferred_version = True):
+        """
+        Checks if the link server is valid according to version and config
+        
+        current_server = The extractor getting compared to the server, for example "mp4upload"
+        
+        server = dict containing info, for example:
+        {'extractor': 'mp4upload', 'url': 'https://twist.moe/mp4upload/...', 'config': 'mp4upload', 'version': 'subbed'}
+        
+        preferred_version = bool if it should prefer the selected version in config
+        """
+
+        version = self.config.get('version','subbed')
+        servers = self.config.get('servers',[''])
+
+        if server.get('version','subbed') == version or not preferred_version:
+            if server.get('config','no_extractor') == current_server:
+                if get_extractor(server.get('extractor','no_extractor')) != None:
+                    return True
+        return False
+
+
+    def sort_sources(self, data):
         """
         Formatted data should look something like this
         
@@ -383,13 +405,13 @@ class AnimeEpisode:
         logger.debug('Data : {}'.format(data))
 
         sources = []
-        for a in servers: #Servers in order in correct language
-            for b in (list(filter(lambda server: (server['version'] == version and server['config'] == a and get_extractor(server['extractor']) != None) , data))):
-                sources.append(b)
+        for i in servers: #Servers in order in correct language
+            for j in (list(filter(lambda server: self.check_server(i, server), data))):
+                sources.append(j)
 
-        for a in servers: #Servers in order in incorrect language
-            for b in (list(filter(lambda server: (server['version'] != version and server['config'] == a and get_extractor(server['extractor']) != None) , data))):
-                sources.append(b)
+        for i in servers: #Servers in order in incorrect language
+            for j in (list(filter(lambda server: self.check_server(i, server, False), data))):
+                sources.append(j)
 
         logger.debug('Sorted sources : {}'.format(sources))
 
