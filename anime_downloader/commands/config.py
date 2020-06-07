@@ -37,7 +37,12 @@ def traverse_json(data):
         data[keys[val]] = newVal
 
 @click.command()
-def command(): 
+def command():
+    """
+    Presents a list based on the keys in the dictionary.
+
+    If the value of said key is not a dictionary, the user will be able to edit the value.
+    """
     traverse_json(data)
     Config._CONFIG = data
     Config.write()
