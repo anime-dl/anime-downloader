@@ -353,47 +353,25 @@ class AnimeEpisode:
         raise NotImplementedError
 
 
-    def check_server(self, current_server, server, preferred_version = True):
-        """
-        Checks if the link server is valid according to version and config
-        
-        current_server = The extractor getting compared to the server, for example "mp4upload"
-        
-        server = dict containing info, for example:
-        {'extractor': 'mp4upload', 'url': 'https://twist.moe/mp4upload/...', 'config': 'mp4upload', 'version': 'subbed'}
-        
-        preferred_version = bool if it should prefer the selected version in config
-        """
-
-        version = self.config.get('version','subbed')
-        servers = self.config.get('servers',[''])
-
-        if server.get('version','subbed') == version or not preferred_version:
-            if server.get('config','no_extractor') == current_server:
-                if get_extractor(server.get('extractor','no_extractor')) != None:
-                    return True
-        return False
-
-
     def sort_sources(self, data):
         """
         Formatted data should look something like this
         
         [
-        {'extractor': 'mp4upload', 'url': 'https://twist.moe/mp4upload/...', 'config': 'mp4upload', 'version': 'subbed'}, 
-        {'extractor': 'vidstream', 'url': 'https://twist.moe/vidstream/...', 'config': 'vidstream', 'version': 'dubbed'},
-        {'extractor': 'no_extractor', 'url': 'https://twist.moe/anime/...', 'config': 'default', 'version': 'subbed'}
+        {'extractor': 'mp4upload', 'url': 'https://twist.moe/mp4upload/...', 'server': 'mp4upload', 'version': 'subbed'}, 
+        {'extractor': 'vidstream', 'url': 'https://twist.moe/vidstream/...', 'server': 'vidstream', 'version': 'dubbed'},
+        {'extractor': 'no_extractor', 'url': 'https://twist.moe/anime/...', 'server': 'default', 'version': 'subbed'}
         ]
 
         extractor = the extractor the link should be passed to
         url = url to be passed to the extractor
-        config = the server name used in config
+        server = the server name used in config
         version = subbed/dubbed
 
         The config should consist of a list with servers in preferred order and a preferred language, eg
         
-        servers = ["vidstream","default","mp4upload"]
-        version = "subbed"
+        "servers":["vidstream","default","mp4upload"],
+        "version":"subbed"
 
         Using the example above, this function will return: [('no_extractor', 'https://twist.moe/anime/...')]
         as it prioritizes preferred language over preferred server
@@ -404,18 +382,17 @@ class AnimeEpisode:
 
         logger.debug('Data : {}'.format(data))
 
-        sources = []
-        for i in servers: #Servers in order in correct language
-            for j in (list(filter(lambda server: self.check_server(i, server), data))):
-                sources.append(j)
+        """Sorts the dicts by preferred server in config"""
+        sorted_by_server = sorted(data, key=lambda x: servers.index(x['server']))
+        """
+        Sorts the above by preferred language 
+        resulting in a list with the dicts sorted by language and server
+        with language being prioritized over server
+        """
+        sorted_by_lang = sorted(sorted_by_server, key=lambda x: x['version'] == version, reverse=True)
+        logger.debug('Sorted sources : {}'.format(sorted_by_lang))
 
-        for i in servers: #Servers in order in incorrect language
-            for j in (list(filter(lambda server: self.check_server(i, server, False), data))):
-                sources.append(j)
-
-        logger.debug('Sorted sources : {}'.format(sources))
-
-        return '' if not sources else [(sources[0]['extractor'],sources[0]['url'])]
+        return '' if not sorted_by_lang else [(sorted_by_lang[0]['extractor'],sorted_by_lang[0]['url'])]
 
 
     def download(self, force=False, path=None,
