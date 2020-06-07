@@ -1,14 +1,16 @@
 import logging
 import re
+import requests
+import os
+import pickle
 
 from anime_downloader.extractors.base_extractor import BaseExtractor
 from anime_downloader.sites import helpers
+from anime_downloader.config import APP_DIR
 from anime_downloader import util
-from anime_downloader.config import Config
 from uuid import uuid4
 from time import time
 from secrets import choice
-import requests
 
 logger = logging.getLogger(__name__)
 
@@ -99,10 +101,12 @@ class Kwik(BaseExtractor):
         #Necessary
         self.url = self.url.replace(".cx/e/", ".cx/f/")
 
-        cookies = Config._CONFIG["siteconfig"]["kwik"]["cookies"]
+        #Check if kwik file exists - that's where cookies are stored
+        exists = os.path.isfile(APP_DIR + '/kwik')
         self.headers.update({"referer": self.url})
 
-        if cookies == "":
+        if not exists:
+            logger.info("Bypassing captcha...")
             self.bypass_captcha()
             token = self.token
 
@@ -115,10 +119,11 @@ class Kwik(BaseExtractor):
 
             resp = self.session.post(bypass_url, data = data, headers = self.headers)
 
-            Config._CONFIG["siteconfig"]["kwik"]["cookies"] = resp.cookies.get_dict()
-            Config.write()
+            if resp.status_code == 200:
+                logger.info("Captcha bypassed successfully!")
+                pickle.dump(resp.cookies, open(APP_DIR + '/kwik', 'wb'))
         else:
-            cookies = requests.utils.cookiejar_from_dict(Config._CONFIG["siteconfig"]["kwik"]["cookies"])
+            cookies = pickle.load(open(APP_DIR + '/kwik', 'rb'))
             resp = self.session.get(self.url, headers = self.headers, cookies = cookies)
 
         title_re = re.compile(r'title>(.*)<')
