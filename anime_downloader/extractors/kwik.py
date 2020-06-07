@@ -3,10 +3,10 @@ import re
 import requests
 import os
 import pickle
+import tempfile
 
 from anime_downloader.extractors.base_extractor import BaseExtractor
 from anime_downloader.sites import helpers
-from anime_downloader.config import APP_DIR
 from anime_downloader import util
 from uuid import uuid4
 from time import time
@@ -31,7 +31,6 @@ class Kwik(BaseExtractor):
             }
     session = requests.session()
     token = ''
-
 
     #Captcha bypass stuff is mostly thanks to https://github.com/Futei/SineCaptcha
     def _generate_mouse_movements(self, timestamp):
@@ -102,24 +101,25 @@ class Kwik(BaseExtractor):
         self.url = self.url.replace(".cx/e/", ".cx/f/")
         self.headers.update({"referer": self.url})
 
-        if not os.path.isfile(APP_DIR + '/kwik'):
+        TMP_DIR = tempfile.gettempdir()
+
+        if not os.path.isfile(TMP_DIR + '/kwik'):
             logger.info("Bypassing captcha...")
             self.bypass_captcha()
 
             resp = helpers.soupify(self.session.get(self.url, headers = self.headers))
             bypass_url = 'https://kwik.cx' + resp.form.get('action')
 
-            data = {}
-            [data.update({x.get("name"): x.get("value")}) for x in resp.select("form > input")]
+            data = dict((x.get("name"), x.get("value")) for x in resp.select("form > input"))
             data.update({"id": resp.strong.text, "g-recaptcha-response": self.token, "h-captcha-response": self.token})
 
             resp = self.session.post(bypass_url, data = data, headers = self.headers)
 
             if resp.status_code == 200:
                 logger.info("Captcha bypassed successfully!")
-                pickle.dump(resp.cookies, open(APP_DIR + '/kwik', 'wb'))
+                pickle.dump(resp.cookies, open(TMP_DIR + '/kwik', 'wb'))
         else:
-            cookies = pickle.load(open(APP_DIR + '/kwik', 'rb'))
+            cookies = pickle.load(open(TMP_DIR + '/kwik', 'rb'))
             resp = self.session.get(self.url, headers = self.headers, cookies = cookies)
 
         title_re = re.compile(r'title>(.*)<')
