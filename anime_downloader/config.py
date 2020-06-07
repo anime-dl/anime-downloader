@@ -83,6 +83,10 @@ DEFAULT_CONFIG = {
         'animedaisuki': {
             "servers": ["official"]
         },
+        'nyaa': {
+            "filter": "Trusted only",
+            "category": "English-translated"
+        },
         'vidstream': {
             "servers": ["vidstream","gcloud","mp4upload","cloud9","hydrax"]
         },
