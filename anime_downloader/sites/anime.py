@@ -382,14 +382,13 @@ class AnimeEpisode:
 
         logger.debug('Data : {}'.format(data))
 
-        """Sorts the dicts by preferred server in config"""
+        #Sorts the dicts by preferred server in config
         sorted_by_server = sorted(data, key=lambda x: servers.index(x['server']))
-        """
-        Sorts the above by preferred language 
-        resulting in a list with the dicts sorted by language and server
-        with language being prioritized over server
-        """
-        sorted_by_lang = sorted(sorted_by_server, key=lambda x: x['version'] == version, reverse=True)
+
+        #Sorts the above by preferred language 
+        #resulting in a list with the dicts sorted by language and server
+        #with language being prioritized over server
+        sorted_by_lang = list(sorted(sorted_by_server, key=lambda x: x['version'] == version, reverse=True))
         logger.debug('Sorted sources : {}'.format(sorted_by_lang))
 
         return '' if not sorted_by_lang else [(sorted_by_lang[0]['extractor'],sorted_by_lang[0]['url'])]
