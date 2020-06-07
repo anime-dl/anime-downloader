@@ -90,6 +90,12 @@ ALL_EXTRACTORS = [
         'modulename': 'hydrax',
         'regex': 'hydrax',
         'class': 'Hydrax'
+    },
+    {
+        'sitename': 'streamx',
+        'modulename': 'streamx',
+        'regex': 'streamx',
+        'class': 'StreamX'
     }
 ]
 

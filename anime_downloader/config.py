@@ -95,7 +95,17 @@ DEFAULT_CONFIG = {
         },
         'justdubs': {
             "servers": ["mp4upload","gcloud"]
-        }
+        },
+        'kisscartoon': {
+            "servers": [
+                "mpserver",
+                "yuserver",
+                "oserver",
+                "xserver",
+                "ptserver"
+            ]
+        },
+
     }
 }
 
