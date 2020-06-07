@@ -29,10 +29,13 @@ class KisscartoonEpisode(AnimeEpisode, sitename='kisscartoon'):
                 url = re.search(iframe_regex,api['value']).group(1)
                 if url.startswith('//'):
                     url = 'https:' + url
+                if url.endswith('mp4upload.com/embed-.html') or url.endswith('yourupload.com/embed/'): #Sometimes returns empty link
+                    url = ''
+                    continue
                 break
 
         extractor = 'streamx' #defaut extractor
-        extractor_urls = { #dumb, but easily expandable
+        extractor_urls = { #dumb, but easily expandable, maps urls to extractors
         "mp4upload.com":"mp4upload",
         "yourupload.com":"yourupload"
         }
