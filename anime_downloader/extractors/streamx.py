@@ -10,7 +10,6 @@ class StreamX(BaseExtractor):
         url = self.url
         referer = 'https://kisscartoon.nz/'
         res = helpers.get(url, referer=referer).text
-        print(res)
         file_regex = r'"file":"(http[^"]*?)"'
         file = re.search(file_regex,res)
         if file:
