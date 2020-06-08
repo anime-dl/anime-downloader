@@ -27,7 +27,6 @@ class Kwik(BaseExtractor):
         cookies = util.get_hcaptcha_cookies(self.url)
 
         if not cookies:
-            logger.info("No cookies")
             resp = util.bypass_hcaptcha(self.url)
         else:
             resp = requests.get(self.url, cookies = cookies)
