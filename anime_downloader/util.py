@@ -324,8 +324,6 @@ def get_hcaptcha_cookies(url):
 
     if os.path.isfile(COOKIE_FILE):
         return pickle.load(open(COOKIE_FILE, 'rb'))
-    else:
-        return False
 
 def deobfuscate_packed_js(packedjs):
     return eval_in_node('eval=console.log; ' + packedjs)
