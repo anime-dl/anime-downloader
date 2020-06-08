@@ -34,6 +34,12 @@ def traverse_json(data, previous=''):
 
             if not choice:
                 exit()
+            else:
+                try:
+                    newVal = type(data[keys[val]])(newVal)
+                except TypeError:
+                    click.prompt(f"'{newVal}' could not be converted to the correct type")
+                    exit()
 
         data[keys[val]] = newVal
 
