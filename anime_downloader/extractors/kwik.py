@@ -62,10 +62,6 @@ class Kwik(BaseExtractor):
 
             #Mouse movements
             mm = self._generate_mouse_movements(timestamp)
-            ts = self._generate_mouse_movements(timestamp)
-            te = self._generate_mouse_movements(timestamp)
-            md = self._generate_mouse_movements(timestamp)
-            mu = self._generate_mouse_movements(timestamp)
 
             json = {
                 'job_mode': job,
@@ -75,11 +71,7 @@ class Kwik(BaseExtractor):
                 'motionData': {
                     'st': timestamp,
                     'dct': timestamp,
-                    'ts': ts,
-                    'te': te,
                     'mm': mm,
-                    'md': md,
-                    'mu': mu
                     },
                 'n': None,
                 'c': None
