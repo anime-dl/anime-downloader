@@ -67,9 +67,12 @@ def get_driver_binary():
 
 
 def add_url_params(url, params):
-    encoded_params = urlencode(params)
-    url = url + '?' + encoded_params
-    return url
+    if params == {}:
+        return url
+    else:
+        encoded_params = urlencode(params)
+        url = url + '?' + encoded_params
+        return url
 
 
 def driver_select(): #
