@@ -6,7 +6,7 @@ data = Config._CONFIG
 
 def create_table(_list, previous):
     newList = [(x, y) for x, y in zip(range(1,len(_list) + 1), _list)]
-    headers = ['SlNo', f'{previous} settings']
+    headers = ['SlNo', f'{previous} settings'.strip()]
     table = tabulate(newList, headers, tablefmt = "psql")
     table = "\n".join(table.split("\n")[::-1])
     return table
