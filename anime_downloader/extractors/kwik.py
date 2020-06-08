@@ -5,7 +5,6 @@ import requests
 from anime_downloader.extractors.base_extractor import BaseExtractor
 from anime_downloader.sites import helpers
 from anime_downloader import util
-from requests.exceptions import HTTPError
 
 logger = logging.getLogger(__name__)
 
