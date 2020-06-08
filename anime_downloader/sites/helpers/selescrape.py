@@ -29,7 +29,7 @@ def open_config():
     from anime_downloader.config import Config
     return Config
 
-    
+
 data = open_config()
 
 
@@ -67,13 +67,7 @@ def get_driver_binary():
 
 
 def add_url_params(url, params):
-    if params == {}:
-        return url
-    else:
-        encoded_params = urlencode(params)
-        url = url + '?' + encoded_params
-        return url
-
+    return url if not params else url + '?' + urlencode(params)
 
 def driver_select(): #
     '''
@@ -85,10 +79,7 @@ def driver_select(): #
     data_dir = get_data_dir()
     executable = get_browser_executable()
     driver_binary = get_driver_binary()
-    if driver_binary == None:
-        binary = None
-    else:
-        binary = driver_binary
+    binary = None if not driver_binary else driver_binary
     if browser == 'firefox':
         fireFoxOptions = webdriver.FirefoxOptions()
         fireFoxOptions.headless = True
@@ -152,7 +143,7 @@ def status_select(driver, url, status='hide'):
     except requests.ConnectionError:
         raise RuntimeError("Failed to establish a connection using the requests library.")
 
-        
+
 def cloudflare_wait(driver):
     '''
     It waits until cloudflare has gone away before doing any further actions.
@@ -178,8 +169,8 @@ def cloudflare_wait(driver):
         if not title == "Just a moment...":
             break
     time.sleep(1) # This is necessary to make sure everything has loaded fine.
-    
-    
+
+
 def request(request_type, url, **kwargs): #Headers not yet supported , headers={}
     params = kwargs.get('params', {})
     new_url = add_url_params(url, params)
