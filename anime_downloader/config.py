@@ -23,6 +23,7 @@ DEFAULT_CONFIG = {
         'selescrape_browser': None,
         'selescrape_browser_executable_path' : None,
         'selescrape_driver_binary_path' : None,
+        'header_position': 'bottom'
     },
     'watch': {
         'quality': '1080p',
