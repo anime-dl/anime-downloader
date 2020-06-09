@@ -34,7 +34,7 @@ def traverse_json(data, previous=''):
 
             if not choice:
                 exit()
-            else:
+            elif data[keys[val]] is not None:
                 try:
                     newVal = type(data[keys[val]])(newVal)
                 except TypeError:
