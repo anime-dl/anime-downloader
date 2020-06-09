@@ -34,11 +34,18 @@ class Kwik(BaseExtractor):
         title_re = re.compile(r'title>(.*)<')
 
         kwik_text = resp.text
-        cookies = resp.cookies
 
-        title = title_re.search(kwik_text).group(1)
+        try:
+            deobfuscated = helpers.soupify(util.deobfuscate_packed_js(re.search(r'<(script).*(var\s+_.*escape.*?)</\1>(?s)', kwik_text).group(2)))
+        except AttributeError:
+            resp = util.bypass_hcaptcha(self.url)
+            kwik_text = resp.text
+            deobfuscated = helpers.soupify(util.deobfuscate_packed_js(re.search(r'<(script).*(var\s+_.*escape.*?)</\1>(?s)', kwik_text).group(2)))
+        finally:
+            cookies = resp.cookies
+            title = title_re.search(kwik_text).group(1)
 
-        deobfuscated = helpers.soupify(util.deobfuscate_packed_js(re.search(r'<(script).*(var\s+_.*escape.*?)</\1>(?s)', kwik_text).group(2)))
+
 
         post_url = deobfuscated.form["action"]
         token = deobfuscated.input["value"]
