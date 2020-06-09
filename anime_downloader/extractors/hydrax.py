@@ -11,10 +11,10 @@ class Hydrax(BaseExtractor):
     def _get_data(self):
         url = self.url
         end = url[url.find('=')+1:]
-        obfuscated_url = json.loads(helpers.post('https://ping.idocdn.com/',
+        obfuscated_url = helpers.post('https://ping.idocdn.com/',
             data={'slug':end},
             referer=url,
-            ).text)['url']
+            ).json()['url']
 
         decoded_url = base64.b64decode(obfuscated_url[-1] + obfuscated_url[:-1]).decode('utf-8')
 
