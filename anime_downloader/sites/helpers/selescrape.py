@@ -16,6 +16,8 @@ import time
 import json
 
 logger = logging.getLogger(__name__)
+
+
 def get_data_dir():
     '''
     Gets the folder directory selescrape will store data, 
@@ -68,6 +70,7 @@ def get_driver_binary():
 
 def add_url_params(url, params):
     return url if not params else url + '?' + urlencode(params)
+
 
 def driver_select(): #
     '''
@@ -170,19 +173,23 @@ def cloudflare_wait(driver):
             break
     time.sleep(1) # This is necessary to make sure everything has loaded fine.
 
-
-def request(request_type, url, **kwargs): #Headers not yet supported , headers={}
-    params = kwargs.get('params', {})
-    new_url = add_url_params(url, params)
-    driver = driver_select()
-    status = status_select(driver, new_url, 'hide')
-    try:
-        cloudflare_wait(driver)
-        html = driver.page_source
-        driver.close()
-        return html
-    except:
-        driver.save_screenshot(f"{get_data_dir()}/screenshot.png");
-        driver.close()
-        logger.error(f'There was a problem getting the page: {new_url}. \
-        See the screenshot for more info:\n{get_data_dir()}/screenshot.png')
+class get_session:
+    def request(self, request_type, url, **kwargs): #Headers not yet supported , headers={}
+        self.url = url
+        self.method = request_type
+        params = kwargs.get('params', {})
+        new_url = add_url_params(url, params)
+        driver = driver_select()
+        status = status_select(driver, new_url, 'hide')
+        try:
+            cloudflare_wait(driver)
+            self.text = driver.page_source
+            self.cookies = driver.get_cookies() #may need some formatting
+            self.user_agent = driver.execute_script("return navigator.userAgent;") #dirty, but allows for all sorts of things above
+            driver.close()
+            return self
+        except:
+            driver.save_screenshot(f"{get_data_dir()}/screenshot.png");
+            driver.close()
+            logger.error(f'There was a problem getting the page: {new_url}. \
+            See the screenshot for more info:\n{get_data_dir()}/screenshot.png')
