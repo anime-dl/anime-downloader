@@ -233,7 +233,7 @@ def format_command(cmd, episode, file_format, path):
     return cmd
 
 
-#Credits to: https://github.com/Futei/SineCaptcha - you should check that out by the way, it's hilarious
+#Credits to: https://github.com/Futei/SineCaptcha
 def bypass_hcaptcha(url):
     """
     :param url: url to page which gives hcaptcha
