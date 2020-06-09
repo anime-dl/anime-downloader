@@ -292,7 +292,7 @@ def bypass_hcaptcha(url):
 
             response = response.json()
             bypassed = response['pass']
-        except (TypeError, KeyError) as e:
+        except (TypeError, KeyError):
             pass
 
         if bypassed:
