@@ -5,7 +5,7 @@ from anime_downloader.config import Config
 data = Config._CONFIG
 
 def create_table(_list, previous):
-    newList = [(x, y) for x, y in zip(range(1,len(_list) + 1), _list)]
+    newList = list(enumerate(_list, 1))
     headers = ['SlNo', f'{previous} settings'.strip()]
     table = tabulate(newList, headers, tablefmt = "psql")
     table = "\n".join(table.split("\n")[::-1])
@@ -13,7 +13,7 @@ def create_table(_list, previous):
 
 def traverse_json(data, previous=''):
     click.clear()
-    keys = [*data.keys()]
+    keys = list(data.keys())
     click.echo(create_table(keys, previous))
     val = click.prompt("Select Option", type = int, default = 1) - 1
     
@@ -38,7 +38,7 @@ def traverse_json(data, previous=''):
                 try:
                     newVal = type(data[keys[val]])(newVal)
                 except TypeError:
-                    click.prompt(f"'{newVal}' could not be converted to the correct type")
+                    click.echo(f"'{newVal}' could not be converted to the correct type")
                     exit()
 
         data[keys[val]] = newVal
