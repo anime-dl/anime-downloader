@@ -318,7 +318,7 @@ def bypass_hcaptcha(url):
 def get_hcaptcha_cookies(url):
     """
     :param url: url that you want to use cookies for
-    :return: returns cookies if they were stored, or False, if they weren't
+    :return: returns cookies if they were stored, or nothing, if they weren't
     """
 
     COOKIE_FILE = f'{tempfile.gettempdir()}/{urlparse(url).netloc}'
