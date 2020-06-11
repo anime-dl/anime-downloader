@@ -105,6 +105,16 @@ DEFAULT_CONFIG = {
                 "ptserver"
             ]
         },
+        'animevibe': {
+            "servers": [
+                "vidstream",
+                "3rdparty",
+                "mp4upload",
+                "hydrax",
+                "gcloud",
+                "fembed"
+            ]
+        },
 
     }
 }
