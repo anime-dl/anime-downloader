@@ -96,6 +96,12 @@ ALL_EXTRACTORS = [
         'modulename': 'streamx',
         'regex': 'streamx',
         'class': 'StreamX'
+    },
+    {
+        'sitename': '3rdparty',
+        'modulename': '3rdparty',
+        'regex': '3rdparty',
+        'class': 'Thirdparty'
     }
 ]
 
