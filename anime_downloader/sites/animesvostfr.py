@@ -3,6 +3,10 @@ from anime_downloader.sites import helpers
 import logging
 import re
 
+from requests.exceptions import HTTPError
+from anime_downloader.config import Config
+from anime_downloader.extractors import get_extractor
+
 logger = logging.getLogger(__name__)
 
 class AnimesVOSTFR(Anime, sitename='animesvostfr'):
@@ -14,7 +18,7 @@ class AnimesVOSTFR(Anime, sitename='animesvostfr'):
         @classmethod
         def search(cls, query):
             
-            soup = helpers.soupify(helpers.get(cls.DOMAIN, params={'s' : query}, cf=True))
+            soup = helpers.soupify(helpers.get(cls.DOMAIN, params={'s' : query}))
             
             results = []
             
@@ -31,16 +35,20 @@ class AnimesVOSTFR(Anime, sitename='animesvostfr'):
                 
                 #logger.debug( "results: {}".format(eps) )
                 
-                if re.search('VOSTFR', lang, re.IGNORECASE):
-                    t += ' (VOSTFR '+eps+')'
-                elif re.search('VF', lang, re.IGNORECASE):
-                    t += ' (VF '+eps+')'
-                elif re.search('VO', lang, re.IGNORECASE):
-                    t += ' (VO '+eps+')'
-                else:
-                    t += ' (V? '+eps+')'
-                    
+                lang_dict = {
+                'VOSTFR':f' (VOSTFR {eps})',
+                'VF':f' (VF {eps})',
+                'VO':f' (VO {eps})'
+                }
+                selected_lang = f' (V? {eps})' #default lang
+                for a in lang_dict:
+                    if a in lang.upper():
+                        selected_lang = lang_dict[a]
+                        break
+                t += selected_lang
                 
+                #logger.debug( "title: %s", t )
+ 
                 search_result_info = SearchResult(title=t, url=u, poster=p)
                
                 results.append(search_result_info)
@@ -80,7 +88,7 @@ class AnimesVOSTFR(Anime, sitename='animesvostfr'):
             
             logger.debug("_scrape_metadata url: %s", str(self.url) )
             
-            soup = helpers.soupify(helpers.get(self.url, cf=True))
+            soup = helpers.soupify(helpers.get(self.url))
      
             h1 = soup.select_one('div.main-content h1')
             logger.debug("_scrape_metadata H1: %s", str(h1))
@@ -89,15 +97,15 @@ class AnimesVOSTFR(Anime, sitename='animesvostfr'):
             
 
 class AnimesVOSTFREpisode(AnimeEpisode, sitename='animesvostfr'):
-        episodeId_url = 'https://www1.animesvostfr.net/api/episode'
-        stream_url = 'https://www1.animesvostfr.net/api/videos?episode_id'
-        anime_url = 'https://www.www1.animesvostfr.net/shows'
         
         link_stream_url = "https://www1.animesvostfr.net/ajax-get-link-stream/"
         
         SERVERS = [
-            'rapidvideo',
-            'photoss'
+            'rapidvideo', #gcloud
+            'photoss', #gcloud embeded
+            'opencdn', # ???
+            'photos', #hydrax
+            'photo'   #hydrax
         ]
 
         def _get_sources(self):
@@ -115,7 +123,7 @@ class AnimesVOSTFREpisode(AnimeEpisode, sitename='animesvostfr'):
             episodeid = None
             episodenum = None
             
-            soup = helpers.soupify(helpers.get(self.url, params={'server' : 'rapidvideo'}, cf=True))
+            soup = helpers.soupify(helpers.get(self.url, params={'server' : 'rapidvideo'}))
             
             shortlink = soup.find( 'link', {'rel': 'shortlink'})
             logger.debug( "shortlink: {}".format(shortlink) )
@@ -143,105 +151,112 @@ class AnimesVOSTFREpisode(AnimeEpisode, sitename='animesvostfr'):
             
             if not filmid:
                 filmid = episodeid
-            
-            episodeurl = None
-            if filmid:
-                episodeurl = helpers.get(self.link_stream_url, params={'server' : 'rapidvideo', 'filmId' : filmid}, cf=True).text.strip()
                 
-                if not episodeurl or episodeurl == '':
-                    episodeurl = helpers.get(self.link_stream_url, params={'server' : 'photoss', 'filmId' : filmid}, cf=True).text.strip()
+            # Sample 1
+            # 'rapidvideo': ''
+            # 'photoss': 'https://play.comedyshow.to/embedplay/4a2faf54b99e8d1152e598b24916d0d9'
+            # 'opencdn': 'https://lb.cartoonwire.to/public/dist/index.html?id=76eb47ca7bbf5a548938bf90a4bceaa8'
+            # 'photos': 'https://hydrax.net/watch?v=wZsRPKrmb'
+            # 'photo': 'https://hydrax.net/watch?v=wZsRPKrmb'
+            #
+            # Sample 2
+            # 'rapidvideo': 'https://youtubedownloader.cx/v/1e660ijq873-ldr'
+            # 'photoss': 'https://play.comedyshow.to/embedplay/d187decc7e7596c0c9ad831c4a09038d'
+            # 'opencdn': 'https://lb.cartoonwire.to/public/dist/index.html?id=77790c2132de4b173c86db105a96b5af'
+            # 'photos': 'https://hydrax.net/watch?v=pVkQjLHxO'
+            # 'photo': 'https://hydrax.net/watch?v=pVkQjLHxO'
+            #
+            # Sample 3
+            # 'rapidvideo': ''
+            # 'photoss': 'https://play.comedyshow.to/embedplay/b6bab9c780325ff53644cbc4dba32558'
+            # 'opencdn': 'https://lb.cartoonwire.to/public/dist/index.html?id=cb5c81f15593ae88cf17bebe0f73b177'
+            # 'photos': 'https://hydrax.net/watch?v=rTaZnpvMdp'
+            # 'photo': 'https://hydrax.net/watch?v=rTaZnpvMdp'
+            #
+            # Sample 4
+            # 'rapidvideo': 'https://youtubedownloader.cx/v/xd33pu5401xy78p'
+            # 'photoss': 'https://play.comedyshow.to/embedplay/1c047309aebdb11797aa93f0b689eb9f'
+            # 'opencdn': 'https://lb.cartoonwire.to/public/dist/index.html?id=No m3u8Id'
+            # 'photos': ''
+            # 'photo': ''
+            #
+            #
+            urls_server = {} 
+            for serv in self.SERVERS:
+                urls_server[serv] = helpers.get(self.link_stream_url, params={'server' : serv, 'filmId' : filmid}).text.strip()
+               
+            logger.debug( "_get_sources urls: {}".format(urls_server) )
+            
+            sources = []
+  
+            for serv in self.SERVERS:
+                if urls_server[serv] and (urls_server[serv] > '') and (urls_server[serv].find('No m3u8Id') < 0):
+                
+                    soup = None
+                    try:
+                        soup = helpers.soupify(helpers.get(urls_server[serv]))
+                    except HTTPError as err:
+                        logger.debug("_get_sources HTTP Err: %s", str(err))
                     
-            else:
-                raise NotFoundError
-                
-            logger.debug( "_get_sources url:%s", episodeurl )
-            
-            
-            
-            
-            #https://youtubedownloader.cx/v/y0661ue6-8jzj34
-            #https://youtubedownloader.cx/api/source/y0661ue6-8jzj34
-            
-            
-            #https://play.comedyshow.to/embedplay/4a2faf54b99e8d1152e598b24916d0d9
-            #<iframe src="https://www.fembed.net/v/1ekm5ij-3l2rp8p"
-            #https://feurl.com/api/source/1ekm5ij-3l2rp8p
-            # POST r: https://play.comedyshow.to
-            #d: feurl.com
-            
-            episodeurl1 = episodeurl          
-            episodeurlapi1 = episodeurl1.replace('/v/', '/api/source/' )
-            
-            episodeurl2 = ''
-            episodeurlapi2 = ''
-            
-            soup = helpers.soupify(helpers.get(episodeurl, cf=True))
-            #logger.debug( "results: {}".format(soup) )
-            
-            iframe = soup.select_one("iframe")
-            if iframe:
-                episodeurl2 = iframe['src']
-                
-                logger.debug( "_get_sources episodeurl2:%s", episodeurl2 )
-                
-                episodeurlapi2 = episodeurl2.replace('/v/', '/api/source/' )
-                
-            
-            logger.debug( "_get_sources episodeurlapi1:%s", episodeurlapi1 )    
-            logger.debug( "_get_sources episodeurlapi2:%s", episodeurlapi2 )   
-            
-            #data = helpers.post(episodeurlapi, params={'r' : '', 'd' : 'youtubedownloader.cx' }, referer=episodeurl, cf=True).json()
-            #data = helpers.post(episodeurlapi, params={'r' : '', 'd' : '' }, referer=episodeurl).json()
-            #data = helpers.post(episodeurlapi, params={'r' : '' }, referer=episodeurl).json()
-            
-            data = None
-            if episodeurlapi2:
-                data = helpers.post(episodeurlapi2, referer=episodeurl2).json()
-            elif episodeurlapi1:
-                data = helpers.post(episodeurlapi1, referer=episodeurl1).json()
-                
-            if data:
-                #logger.debug( "data: {}".format(data) )
-                logger.debug( 'Success: %s', str(data['success']) )
-                logger.debug( "data: {}".format(data['data']) )
-                
-                url_quality = {}
-                
-                for d in data['data']:
-                    #logger.debug( "data: {}".format(d) )
-                    
-                    quality = d['label']
-                    url = d['file']
-                    
-                    if not quality in url_quality:
-                        #self.__emails.append(email)
-                        url_quality[quality] = url
-                 
-                  
-                logger.debug( "quality: {}".format(url_quality) )
-                logger.debug( "quality by def: {}".format(self.quality) ) 
-                logger.debug( "quality fallback: {}".format(self._parent._fallback_qualities) )
-                
-                quality_chosen = None
-                if self.quality in url_quality:
-                    quality_chosen = url_quality[self.quality]
-                else:
-                    for quality in self._parent._fallback_qualities:
-                        if quality in url_quality:
-                            quality_chosen = url_quality[quality_chosen]
+                    if soup:
+                        #logger.debug( "soup: {}".format(soup) )
+                        iframe = soup.select_one("iframe")
+                        if iframe:
+                            url = iframe['src'].strip()
+                            if url and (url > ''):
+                                logger.debug( "%s -> %s", urls_server[serv], url )
+                                urls_server[serv] = url 
                             
-                if not quality_chosen:
-                    quality_chosen = url_quality[0]   
+                    #video = soup.select_one("video") 
+                    #if video:
+                    #    logger.debug( "_get_sources urls: {}".format(video) )
+                        
                     
-                logger.debug( "quality_chosen: %s", str(quality_chosen) );
+                    #if serv == "rapidvideo":
+                    #    sources.append(('no_extractor', urls_server[serv]))
+                    if 'youtubedownloader' in urls_server[serv]:
+                        sources.append({'extractor':'gcloud', 'server':'youtubedownloader', 'url':urls_server[serv], 'version':'subbed'})
+                        
+                    elif 'gcloud' in urls_server[serv]:
+                        sources.append({'extractor':'gcloud', 'server':'gcloud', 'url':urls_server[serv], 'version':'subbed'})
                     
-                if not quality_chosen:
-                    raise NotFoundError      
-                
-                return [('no_extractor', quality_chosen)]
+                    elif 'feurl' in urls_server[serv]:
+                        sources.append({'extractor':'gcloud', 'server':'feurl', 'url':urls_server[serv], 'version':'subbed'})
+                            
+                    elif 'fembed' in urls_server[serv]:
+                        sources.append({'extractor':'gcloud', 'server':'fembed', 'url':urls_server[serv], 'version':'subbed'})
+                    
+                    elif 'hydrax' in urls_server[serv]:
+                        sources.append({'extractor':'hydrax', 'server':'hydrax', 'url':urls_server[serv], 'version':'subbed'})
+                        
+                    else:
+                        logger.warn( "_get_sources url: %s not supported", urls_server[serv])
+               
+            # TODO: put it into config.py   
+            if not self.sitename in Config['siteconfig']:         
+                Config['siteconfig'][self.sitename] = {
+                    "servers": [
+                        "youtubedownloader",
+                        "gcloud",
+                        "feurl",
+                        "fembed",
+                        "hydrax"
+                    ]
+                } 
             
-            raise NotFoundError
-
+            # TODO: Add These proterties to base_extractor
+            extGcloud = get_extractor('gcloud')
+            if extGcloud:
+                setattr(extGcloud, 'extractorVersion', 2)
+                setattr(extGcloud, 'fallback_qualities', self._parent._fallback_qualities)
+                
+            # TODO: Add These proterties to base_extractor
+            extHydrax = get_extractor('hydrax')
+            if extHydrax:
+                setattr(extHydrax, 'extractorVersion', 2)
+                setattr(extHydrax, 'fallback_qualities', self._parent._fallback_qualities)
+                       
+            return self.sort_sources(sources)
             
             
          

@@ -105,5 +105,6 @@ ENV/
 *.sqlite
 /anime_downloader/__main__.py
 
-# perosanl script and tests
+# personal script and tests
 *.mp4*
+*.sh
