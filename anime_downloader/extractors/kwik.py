@@ -37,7 +37,8 @@ class Kwik(BaseExtractor):
         kwik_text = resp.text
         deobfuscated = None
 
-        while not deobfuscated:
+        loops = 0
+        while not deobfuscated and loops < 6:
             try:
                 deobfuscated = helpers.soupify(util.deobfuscate_packed_js(re.search(r'<(script).*(var\s+_.*escape.*?)</\1>(?s)', kwik_text).group(2)))
             except (AttributeError, CalledProcessError) as e:
@@ -50,6 +51,7 @@ class Kwik(BaseExtractor):
             finally:
                 cookies = resp.cookies
                 title = title_re.search(kwik_text).group(1)
+                loops += 1
 
 
 
