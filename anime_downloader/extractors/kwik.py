@@ -5,6 +5,7 @@ import requests
 from anime_downloader.extractors.base_extractor import BaseExtractor
 from anime_downloader.sites import helpers
 from anime_downloader import util
+from subprocess import CalledProcessError
 
 logger = logging.getLogger(__name__)
 
@@ -34,16 +35,23 @@ class Kwik(BaseExtractor):
         title_re = re.compile(r'title>(.*)<')
 
         kwik_text = resp.text
+        deobfuscated = None
 
-        try:
-            deobfuscated = helpers.soupify(util.deobfuscate_packed_js(re.search(r'<(script).*(var\s+_.*escape.*?)</\1>(?s)', kwik_text).group(2)))
-        except AttributeError:
-            resp = util.bypass_hcaptcha(self.url)
-            kwik_text = resp.text
-            deobfuscated = helpers.soupify(util.deobfuscate_packed_js(re.search(r'<(script).*(var\s+_.*escape.*?)</\1>(?s)', kwik_text).group(2)))
-        finally:
-            cookies = resp.cookies
-            title = title_re.search(kwik_text).group(1)
+        loops = 0
+        while not deobfuscated and loops < 6:
+            try:
+                deobfuscated = helpers.soupify(util.deobfuscate_packed_js(re.search(r'<(script).*(var\s+_.*escape.*?)</\1>(?s)', kwik_text).group(2)))
+            except (AttributeError, CalledProcessError) as e:
+                if type(e) == AttributeError:
+                    resp = util.bypass_hcaptcha(self.url)
+                    kwik_text = resp.text
+
+                if type(e) == CalledProcessError:
+                    resp = requests.get(self.url, cookies = cookies)
+            finally:
+                cookies = resp.cookies
+                title = title_re.search(kwik_text).group(1)
+                loops += 1
 
 
 
