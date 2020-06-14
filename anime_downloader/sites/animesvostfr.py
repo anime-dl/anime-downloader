@@ -4,8 +4,6 @@ import logging
 import re
 
 from requests.exceptions import HTTPError
-from anime_downloader.config import Config
-from anime_downloader.extractors import get_extractor
 
 logger = logging.getLogger(__name__)
 
@@ -113,6 +111,18 @@ class AnimesVOSTFREpisode(AnimeEpisode, sitename='animesvostfr'):
             #version = self.config['version'] 
             #server = self.config['server']
             #fallback = self.config['fallback_servers']
+            dl_servers = self.config['servers']
+            logger.debug( "_get_sources dl_servers: {}".format(dl_servers) )
+            
+            ext_servers = {
+                'youtubedownloader':'gcloud',
+                'gcloud':'gcloud',
+                'feurl':'gcloud',
+                'fembed':'gcloud',
+                'hydrax':'hydrax'
+            }            
+            logger.debug( "_get_sources ext_servers: {}".format(ext_servers) )
+            
             
             logger.debug( "_get_sources url: %s", self.url )
             
@@ -187,8 +197,10 @@ class AnimesVOSTFREpisode(AnimeEpisode, sitename='animesvostfr'):
                
             logger.debug( "_get_sources urls: {}".format(urls_server) )
             
+            
+            # Test Hydrax HD: anime -ll DEBUG dl "neverland" --provider animesvostfr -c 1 -e 1 -q 720p
+            # Test Hydrax SD: anime -ll DEBUG dl "neverland" --provider animesvostfr -c 1 -e 1 -q 360p                            
             sources = []
-  
             for serv in self.SERVERS:
                 if urls_server[serv] and (urls_server[serv] > '') and (urls_server[serv].find('No m3u8Id') < 0):
                 
@@ -206,55 +218,20 @@ class AnimesVOSTFREpisode(AnimeEpisode, sitename='animesvostfr'):
                             if url and (url > ''):
                                 logger.debug( "%s -> %s", urls_server[serv], url )
                                 urls_server[serv] = url 
+                     
+                    notAppend = True       
+                    for dl_serv in dl_servers:
+                        ext = 'no_extractor'
+                        if dl_serv in ext_servers:
+                            ext = ext_servers[dl_serv]
+                        
+                        if dl_serv in urls_server[serv]:
+                            sources.append({'extractor':ext, 'server':dl_serv, 'url':urls_server[serv], 'version':'subbed'})
+                            notAppend = False
                             
-                    #video = soup.select_one("video") 
-                    #if video:
-                    #    logger.debug( "_get_sources urls: {}".format(video) )
-                        
-                    
-                    #if serv == "rapidvideo":
-                    #    sources.append(('no_extractor', urls_server[serv]))
-                    if 'youtubedownloader' in urls_server[serv]:
-                        sources.append({'extractor':'gcloud', 'server':'youtubedownloader', 'url':urls_server[serv], 'version':'subbed'})
-                        
-                    elif 'gcloud' in urls_server[serv]:
-                        sources.append({'extractor':'gcloud', 'server':'gcloud', 'url':urls_server[serv], 'version':'subbed'})
-                    
-                    elif 'feurl' in urls_server[serv]:
-                        sources.append({'extractor':'gcloud', 'server':'feurl', 'url':urls_server[serv], 'version':'subbed'})
-                            
-                    elif 'fembed' in urls_server[serv]:
-                        sources.append({'extractor':'gcloud', 'server':'fembed', 'url':urls_server[serv], 'version':'subbed'})
-                    
-                    elif 'hydrax' in urls_server[serv]:
-                        sources.append({'extractor':'hydrax', 'server':'hydrax', 'url':urls_server[serv], 'version':'subbed'})
-                        
-                    else:
+                    if notAppend:
                         logger.warn( "_get_sources url: %s not supported", urls_server[serv])
                
-            # TODO: put it into config.py   
-            if not self.sitename in Config['siteconfig']:         
-                Config['siteconfig'][self.sitename] = {
-                    "servers": [
-                        "youtubedownloader",
-                        "gcloud",
-                        "feurl",
-                        "fembed",
-                        "hydrax"
-                    ]
-                } 
-            
-            # TODO: Add These proterties to base_extractor
-            extGcloud = get_extractor('gcloud')
-            if extGcloud:
-                setattr(extGcloud, 'extractorVersion', 2)
-                setattr(extGcloud, 'fallback_qualities', self._parent._fallback_qualities)
-                
-            # TODO: Add These proterties to base_extractor
-            extHydrax = get_extractor('hydrax')
-            if extHydrax:
-                setattr(extHydrax, 'extractorVersion', 2)
-                setattr(extHydrax, 'fallback_qualities', self._parent._fallback_qualities)
                        
             return self.sort_sources(sources)
             

@@ -115,7 +115,15 @@ DEFAULT_CONFIG = {
                 "fembed"
             ]
         },
-
+        'animesvostfr': {
+            "servers": [
+                "youtubedownloader",
+                "gcloud",
+                "feurl",
+                "fembed",
+                "hydrax"
+            ]
+        }
     }
 }
 
