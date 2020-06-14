@@ -16,6 +16,7 @@ from tabulate import tabulate
 from anime_downloader import session
 from anime_downloader.sites import get_anime_class, helpers
 from anime_downloader.const import desktop_headers
+from anime_downloader.config import Config
 
 logger = logging.getLogger(__name__)
 
@@ -65,10 +66,21 @@ def format_search_results(search_results):
         'Title',
         'Meta',
     ]
+    
+    positions = {"top": 1, "bottom": -1}
+    layout = -1
+    position = Config._CONFIG['dl']['header_position']
+
+    try:
+        layout = positions[position]
+    except KeyError:
+        logger.warn(f"The value '{position}' is not a valid header position")
+
     table = [(i+1, v.title, v.pretty_metadata)
              for i, v in enumerate(search_results)]
     table = tabulate(table, headers, tablefmt='psql')
-    table = '\n'.join(table.split('\n')[::-1])
+
+    table = '\n'.join(table.split('\n')[::layout])
     return table
 
 
