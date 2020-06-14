@@ -18,8 +18,7 @@ class AnimesVOSTFR(Anime, sitename='animesvostfr'):
             
             soup = helpers.soupify(helpers.get(cls.DOMAIN, params={'s' : query}))
             
-            results = []
-            
+            results = []           
             for v in soup.select('div.movies-list > div.ml-item'):
                 t = v.h2.text
                 u = v.a['href']
@@ -29,10 +28,14 @@ class AnimesVOSTFR(Anime, sitename='animesvostfr'):
                 
                 #logger.debug( "results: {}".format(lang) )
                 
-                eps = v.select_one('span.mli-quality').text.upper()
-                
+                eps = v.select_one('span.mli-quality').text.upper()               
                 #logger.debug( "results: {}".format(eps) )
                 
+                #add part at the title like:
+                #(VOSTR 12/12)
+                #(VF 12/12)
+                #(VF MOVIE)
+                #...
                 lang_dict = {
                 'VOSTFR':f' (VOSTFR {eps})',
                 'VF':f' (VF {eps})',
@@ -50,8 +53,6 @@ class AnimesVOSTFR(Anime, sitename='animesvostfr'):
                 search_result_info = SearchResult(title=t, url=u, poster=p)
                
                 results.append(search_result_info)
-
-            
             logger.debug( "results: {}".format(results) )
             
             return results
@@ -105,25 +106,33 @@ class AnimesVOSTFREpisode(AnimeEpisode, sitename='animesvostfr'):
             'photos', #hydrax
             'photo'   #hydrax
         ]
+        
+        def FindBetterExtractor(self, url=''):
+            ext_servers_regex = {
+                '^(?:http|https)://.*youtubedownloader\..+/v/.+$':['youtubedownloader','gcloud'], # https://youtubedownloader.cx/v/1e660ijq873-ld
+                '^(?:http|https)://.*gcloud\..+/v/.+$'           :['gcloud','gcloud'],
+                '^(?:http|https)://.*feurl\..+/v/.+$'            :['feurl','gcloud'],
+                '^(?:http|https)://.*fembed\..+/v/.+$'           :['fembed','gcloud'], #https://www.fembed.net/v/ewy7-u-18pn8rzl
+                '^(?:http|https)://.*hydrax\..+/.*v=.+$'         :['hydrax','hydrax']  #https://hydrax.net/watch?v=wZsRPKrmb
+            } 
+            
+            best_ext = ['unknown server','no_extractor']
+            
+            for k, v in ext_servers_regex.items():
+                if re.match(k, url):
+                    best_ext = v 
+                    
+            return best_ext
+        
 
         def _get_sources(self):
             
             #version = self.config['version'] 
             #server = self.config['server']
             #fallback = self.config['fallback_servers']
-            dl_servers = self.config['servers']
-            logger.debug( "_get_sources dl_servers: {}".format(dl_servers) )
-            
-            ext_servers = {
-                'youtubedownloader':'gcloud',
-                'gcloud':'gcloud',
-                'feurl':'gcloud',
-                'fembed':'gcloud',
-                'hydrax':'hydrax'
-            }            
-            logger.debug( "_get_sources ext_servers: {}".format(ext_servers) )
-            
-            
+            config_servers = self.config['servers']
+            logger.debug( "_get_sources dl_servers: {}".format(config_servers) )
+                    
             logger.debug( "_get_sources url: %s", self.url )
             
             #https://www1.animesvostfr.net/ajax-get-link-stream/?server=rapidvideo&filmId=45532
@@ -218,20 +227,21 @@ class AnimesVOSTFREpisode(AnimeEpisode, sitename='animesvostfr'):
                             if url and (url > ''):
                                 logger.debug( "%s -> %s", urls_server[serv], url )
                                 urls_server[serv] = url 
+                                
+                    dl_serv, ext_serv = self.FindBetterExtractor(urls_server[serv])  
+                    
+                    logger.debug( "_get_sources server:%s extractor:%s", dl_serv, ext_serv )
+                    
+                    if ext_serv == 'no_extractor':
+                        if not dl_serv in config_servers:
+                            #if not in the list of sorted authorized servers
+                            dl_serv = None
                      
-                    notAppend = True       
-                    for dl_serv in dl_servers:
-                        ext = 'no_extractor'
-                        if dl_serv in ext_servers:
-                            ext = ext_servers[dl_serv]
-                        
-                        if dl_serv in urls_server[serv]:
-                            sources.append({'extractor':ext, 'server':dl_serv, 'url':urls_server[serv], 'version':'subbed'})
-                            notAppend = False
-                            
-                    if notAppend:
+                    if dl_serv:
+                        sources.append({'extractor':ext_serv, 'server':dl_serv, 'url':urls_server[serv], 'version':'subbed'})
+                    else:
                         logger.warn( "_get_sources url: %s not supported", urls_server[serv])
-               
+                           
                        
             return self.sort_sources(sources)
             
