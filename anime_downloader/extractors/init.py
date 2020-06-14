@@ -102,6 +102,18 @@ ALL_EXTRACTORS = [
         'modulename': '3rdparty',
         'regex': '3rdparty',
         'class': 'Thirdparty'
+    },
+    {
+        'sitename': 'yify',
+        'modulename': 'yify',
+        'regex': 'yify',
+        'class': 'Yify'
+    },
+    {
+        'sitename': 'mixdrop',
+        'modulename': 'mixdrop',
+        'regex': 'mixdrop',
+        'class': 'Mixdrop'
     }
 ]
 
