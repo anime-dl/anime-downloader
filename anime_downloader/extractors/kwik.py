@@ -1,19 +1,12 @@
 import logging
 import re
 import requests
-import os
-import pickle
-import tempfile
 
 from anime_downloader.extractors.base_extractor import BaseExtractor
 from anime_downloader.sites import helpers
 from anime_downloader import util
-from uuid import uuid4
-from time import time
-from secrets import choice
 
 logger = logging.getLogger(__name__)
-
 
 class Kwik(BaseExtractor):
     '''Extracts video url from kwik pages, Kwik has some `security`
@@ -21,76 +14,6 @@ class Kwik(BaseExtractor):
        and the kwik video stream when refered through the corresponding
        kwik video page.
     '''
-    headers = {
-            'User-Agent': choice((
-                'Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36',
-                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/605.1.15 (KHTML, like Gecko)',
-                'Mozilla/5.0 (iPad; CPU OS 9_3_5 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13G36',
-                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'
-                ))
-            }
-    session = requests.session()
-    token = ''
-
-    #Captcha bypass stuff is mostly thanks to https://github.com/Futei/SineCaptcha
-    def _generate_mouse_movements(self, timestamp):
-        mouse_movements = []
-        last_movement = timestamp
-
-        for index in range(choice(range(1000, 10000))):
-            last_movement += choice(range(10))
-            mouse_movements.append([choice(range(500)), choice(range(500)), last_movement])
-
-        return mouse_movements
-
-    def bypass_captcha(self):
-        bypassed = False
-        
-        #Retry until success
-        while not bypassed:
-            site_key = str(uuid4())
-            response = self.session.post('https://hcaptcha.com/getcaptcha', data = {
-                'sitekey': site_key,
-                'host': 'kwik.cx'
-                }).json()
-            
-            key = response.get('key')
-            tasks = [row['task_key'] for row in response.get('tasklist')]
-            job = response.get('request_type')
-            timestamp = round(time()) + choice(range(30, 120))
-            answers = dict(zip(tasks, [choice(['true', 'false']) for index in range(len(tasks))]))
-
-            #Mouse movements
-            mm = self._generate_mouse_movements(timestamp)
-            ts = self._generate_mouse_movements(timestamp)
-            te = self._generate_mouse_movements(timestamp)
-            md = self._generate_mouse_movements(timestamp)
-            mu = self._generate_mouse_movements(timestamp)
-
-            json = {
-                'job_mode': job,
-                'answers': answers,
-                'serverdomain': 'kwik.cx',
-                'sitekey': site_key,
-                'motionData': {
-                    'st': timestamp,
-                    'dct': timestamp,
-                    'ts': ts,
-                    'te': te,
-                    'mm': mm,
-                    'md': md,
-                    'mu': mu
-                    },
-                'n': None,
-                'c': None
-                }
-
-            response = self.session.post(f'https://hcaptcha.com/checkcaptcha/{key}', json = json).json()
-            bypassed = response.get("pass")
-
-            if bypassed:
-                self.token = response.get("generated_pass_UUID")
-
 
     def _get_data(self):
         # Kwik servers don't have direct link access you need to be referred
@@ -101,42 +24,37 @@ class Kwik(BaseExtractor):
         self.url = self.url.replace(".cx/e/", ".cx/f/")
         self.headers.update({"referer": self.url})
 
-        TMP_DIR = tempfile.gettempdir()
+        cookies = util.get_hcaptcha_cookies(self.url)
 
-        if not os.path.isfile(TMP_DIR + '/kwik'):
-            logger.info("Bypassing captcha...")
-            self.bypass_captcha()
-
-            resp = helpers.soupify(self.session.get(self.url, headers = self.headers))
-            bypass_url = 'https://kwik.cx' + resp.form.get('action')
-
-            data = dict((x.get("name"), x.get("value")) for x in resp.select("form > input"))
-            data.update({"id": resp.strong.text, "g-recaptcha-response": self.token, "h-captcha-response": self.token})
-
-            resp = self.session.post(bypass_url, data = data, headers = self.headers)
-
-            if resp.status_code == 200:
-                logger.info("Captcha bypassed successfully!")
-                pickle.dump(resp.cookies, open(TMP_DIR + '/kwik', 'wb'))
+        if not cookies:
+            resp = util.bypass_hcaptcha(self.url)
         else:
-            cookies = pickle.load(open(TMP_DIR + '/kwik', 'rb'))
-            resp = self.session.get(self.url, headers = self.headers, cookies = cookies)
+            resp = requests.get(self.url, cookies = cookies)
 
         title_re = re.compile(r'title>(.*)<')
 
         kwik_text = resp.text
 
-        title = title_re.search(kwik_text).group(1)
+        try:
+            deobfuscated = helpers.soupify(util.deobfuscate_packed_js(re.search(r'<(script).*(var\s+_.*escape.*?)</\1>(?s)', kwik_text).group(2)))
+        except AttributeError:
+            resp = util.bypass_hcaptcha(self.url)
+            kwik_text = resp.text
+            deobfuscated = helpers.soupify(util.deobfuscate_packed_js(re.search(r'<(script).*(var\s+_.*escape.*?)</\1>(?s)', kwik_text).group(2)))
+        finally:
+            cookies = resp.cookies
+            title = title_re.search(kwik_text).group(1)
 
-        deobfuscated = helpers.soupify(util.deobfuscate_packed_js(re.search(r'<(script).*(var\s+_.*escape.*?)</\1>(?s)', kwik_text).group(2)))
+
 
         post_url = deobfuscated.form["action"]
         token = deobfuscated.input["value"]
 
-        resp = self.session.post(post_url, headers = self.headers, params={"_token": token}, allow_redirects = False)
+        resp = helpers.post(post_url, headers = self.headers, params={"_token": token}, cookies = cookies, allow_redirects = False)
         stream_url = resp.headers["Location"]
 
         logger.debug('Stream URL: %s' % stream_url)
+
         return {
             'stream_url': stream_url,
             'meta': {
