@@ -23,7 +23,8 @@ class VidStream(BaseExtractor):
         "gcloud":"https://gcloud.live/",
         "mp4upload":"https://www.mp4upload.com/",
         "cloud9":"https://cloud9.to",
-        "hydrax":"https://hydrax.net"
+        "hydrax":"https://hydrax.net",
+        "mixdrop":"https://mixdrop.co"
         }
 
         url = self.url.replace('https:////','https://')
@@ -32,8 +33,10 @@ class VidStream(BaseExtractor):
         servers = Config._read_config()['siteconfig']['vidstream']['servers']
 
         linkserver = soup.select('li.linkserver')
+        logger.debug('Linkserver: {}'.format(linkserver))
+
         for a in servers:
-            if a == 'vidstream':
+            if a == 'vidstream' and 'vidstream' in self.url:
                 return self._get_link(soup)
             for b in linkserver:
                 if b.get('data-video').startswith(links.get(a,'None')):
@@ -45,7 +48,8 @@ class VidStream(BaseExtractor):
                     info['url'] = b.get('data-video')
                     _self = Extractor(info)  
                     return extractors.get_extractor(a)._get_data(_self)
- 
+    
+
     def _get_link(self,soup):
         QUALITIES = {
             "360":[],

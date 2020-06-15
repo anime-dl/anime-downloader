@@ -44,7 +44,6 @@ Yeah. Me too! That's why this tool exists.
 
 ## Supported Sites
 **Details about the sites can be found in [FAQ](https://github.com/vn-ki/anime-downloader/wiki/FAQ)**
-- Animepahe
 - Anistream
 - Animeflix
 - Animefreak
@@ -64,9 +63,12 @@ Yeah. Me too! That's why this tool exists.
 - Nyaa.si
 - Animedaisuki
 - Justdubs
+- Animevibe
+- Yify
+- Animepahe - requires Node.js
 - twist.moe - requires Node.js
-- Kissanime - requires Node.js
-- Kisscartoon - requires Node.js
+- Kissanime - requires Selenium
+- Kisscartoon - requires Selenium
 
 ## Installation
 
