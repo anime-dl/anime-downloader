@@ -121,7 +121,18 @@ DEFAULT_CONFIG = {
                 "gcloud",
                 "feurl",
                 "fembed",
-                "hydrax"
+                "hydrax",
+                "youtube-dl"
+            ]
+        },
+        'gum-gum-streaming': {
+            "servers": [
+                "youtubedownloader",
+                "gcloud",
+                "feurl",
+                "fembed",
+                "hydrax",
+                "youtube-dl"
             ]
         }
     }

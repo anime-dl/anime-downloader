@@ -4,8 +4,21 @@ import logging
 import re
 
 from requests.exceptions import HTTPError
+from anime_downloader import util
+import click
 
 logger = logging.getLogger(__name__)
+
+youtube_dl_supported = True
+try:   
+    #from __future__ import unicode_literals
+    import youtube_dl
+    
+    youtube_dl_supported = util.check_in_path('youtube-dl')
+except ImportError:
+    youtube_dl_supported = False
+    # need: python3 -m pip install --upgrade youtube-dl
+    logger.warn(' "youtube-dl" external downloader not supported')
 
 class AnimesVOSTFR(Anime, sitename='animesvostfr'):
        
@@ -74,7 +87,33 @@ class AnimesVOSTFR(Anime, sitename='animesvostfr'):
                 logger.debug( "episode_links: {}".format(episode_links) )
                 
                 #results = [a.get('href') for a in episode_links[::-1]]
-                results = [a.get('href') for a in episode_links]
+                #results = [a.get('href') for a in episode_links]
+                
+                eps = []
+                id = 0
+                for ep in episode_links:
+                    if ep.get('href') and ep.get('href') != '#':
+                        logger.debug( '%s -> %s', ep.text.replace("• ", ""), ep.get('href') )
+                        title = ep.text.strip()
+                        id = id + 1
+                        eps.append( SearchResult(title=title, url=ep.get('href'), meta={'id':str(id)} ) )
+                
+                click.echo(util.format_search_results(eps), err=True) 
+            
+                #Get Param episode_range
+                episode_range_value = None
+                ctx = click.get_current_context()
+                episode_range = [x for x in ctx.command.params if x.name == "episode_range"][0]
+                logger.debug("ctx.params: {}".format(ctx.params) )           
+                if episode_range.expose_value:
+                    episode_range_value = ctx.params[episode_range.name]
+                logger.debug("episode_range: {}".format(episode_range_value) )
+                
+                if not episode_range_value:
+                    episode_range_value = click.prompt('Enter the episode no (e.g. 1|1:5|1,2,5|1:5,7:8,12): ', type=str, default='1:'+str(len(eps)), err=True)
+                
+                eps_sel = util.parse_ep_str(eps, episode_range_value)
+                results = [(ep.meta['id'], ep.url) for ep in eps_sel]
                 
                 logger.debug( "results: {}".format(results) )
             else:
@@ -92,7 +131,11 @@ class AnimesVOSTFR(Anime, sitename='animesvostfr'):
             h1 = soup.select_one('div.main-content h1')
             logger.debug("_scrape_metadata H1: %s", str(h1))
             
-            self.title = h1.text.strip()
+            title = h1.text.strip()
+            while title.startswith( '.' ):
+                title = title[1:].strip()
+ 
+            self.title = title
             
 
 class AnimesVOSTFREpisode(AnimeEpisode, sitename='animesvostfr'):
@@ -107,25 +150,104 @@ class AnimesVOSTFREpisode(AnimeEpisode, sitename='animesvostfr'):
             'photo'   #hydrax
         ]
         
-        def FindBetterExtractor(self, url=''):
+        lastQualityQuery = None
+        
+        def FindBetterExtractor(self, url='', quality=None, ytdlMode=False):
             ext_servers_regex = {
-                '^(?:http|https)://.*youtubedownloader\..+/v/.+$':['youtubedownloader','gcloud'], # https://youtubedownloader.cx/v/1e660ijq873-ld
-                '^(?:http|https)://.*gcloud\..+/v/.+$'           :['gcloud','gcloud'],
-                '^(?:http|https)://.*feurl\..+/v/.+$'            :['feurl','gcloud'],
-                '^(?:http|https)://.*fembed\..+/v/.+$'           :['fembed','gcloud'], #https://www.fembed.net/v/ewy7-u-18pn8rzl
-                '^(?:http|https)://.*hydrax\..+/.*v=.+$'         :['hydrax','hydrax']  #https://hydrax.net/watch?v=wZsRPKrmb
-            } 
+                '^(?:http|https)://.*youtubedownloader\..+/v/.+$':['youtubedownloader','gcloud', url], # https://youtubedownloader.cx/v/1e660ijq873-ld
+                '^(?:http|https)://.*gcloud\..+/v/.+$'           :['gcloud','gcloud', url],
+                '^(?:http|https)://.*feurl\..+/v/.+$'            :['feurl','gcloud', url],
+                '^(?:http|https)://.*fembed\..+/v/.+$'           :['fembed','gcloud', url], #https://www.fembed.net/v/ewy7-u-18pn8rzl
+                '^(?:http|https)://.*hydrax\..+/.*v=.+$'         :['hydrax','hydrax', url]  #https://hydrax.net/watch?v=wZsRPKrmb
+            }
             
-            best_ext = ['unknown server','no_extractor']
+            bestOK = False
+            
+            if ytdlMode: # Direct Link -> Aria2
+                best_ext = ['youtube-dl','no_extractor', url]
+            else:
+                best_ext = ['unknown server','no_extractor', url]
             
             for k, v in ext_servers_regex.items():
                 if re.match(k, url):
-                    best_ext = v 
+                    best_ext = v
+                    bestOK = True
+                    break
+            
+            if not ytdlMode and not bestOK and youtube_dl_supported: 
+            
+                info_dict = None
+                ydl_opts = {'logger': logger}
+                try:
+                    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                        ydl.cache.remove()
+                        info_dict = ydl.extract_info(url, download=False)
+                except Exception as ex:
+                    logger.error("Not lucky: youtube-dl Failed (%s)", url )
+                    #raise ex
+                                   
+                if info_dict:
+                    #logger.debug("youtube-dl info_dict:{}".format(info_dict))
+                     
+                    urls = []
+                    best_url = None    
+                    if 'formats' in info_dict:
+                        for format in info_dict['formats']:
+                            protocol = format.get('protocol')
+                            ext = format.get('ext')
+                            url = format.get('url')
+                            height = format.get('height')
+                            format_note = format.get('format_note')
+                            format_note2 = format.get('format')
+                            
+                            vcodec = format.get('vcodec')
+                            if vcodec and 'none' in vcodec:
+                                vcodec = None
+                                
+                            acodec = format.get('acodec')
+                            if acodec and 'none' in acodec:
+                                acodec = None
+                            
+                            format_quality = None
+                            if not format_quality and height:
+                                format_quality = str(height)+"p"
+                            if not format_quality and format_note:
+                                format_quality = format_note
+                            if not format_quality and format_note2:
+                                if 'sd' in format_note2:
+                                    format_quality = '240p 480p'
+                                elif 'hd' in format_note2:
+                                    format_quality = '720p 1080p'
+                            
+                            logger.debug(f"youtube-dl format:{protocol}/{ext}/{vcodec}/{acodec}/{format_quality}/{format_note}/{format_note2}")
+                            
+                            if protocol in ['http', 'https'] and ext in ['mp4'] and ((vcodec and acodec) or not( vcodec or acodec )):                            
+                                urls.append( {'quality':format_quality, 'url':url})
+                                
+                                
+                                if not format_quality:
+                                    logger.debug(f"youtube-dl format:{format}")
+                                    
+                                    
+                                    
+                                if not best_url and format_quality and quality in format_quality:
+                                    best_url = url
+
+                    logger.debug(f"youtube-dl urls:{urls}")
+                    
+                    if best_url:
+                        #recursive
+                        return self.FindBetterExtractor( best_url, quality, True )
                     
             return best_ext
         
 
         def _get_sources(self):
+            
+            # Swap multi Call to _get_sources when previous previous call return self._sources = [] = '' = None
+            if self.lastQualityQuery == self.quality:
+                return self._sources
+            self.lastQualityQuery = self.quality
             
             #version = self.config['version'] 
             #server = self.config['server']
@@ -213,6 +335,8 @@ class AnimesVOSTFREpisode(AnimeEpisode, sitename='animesvostfr'):
             for serv in self.SERVERS:
                 if urls_server[serv] and (urls_server[serv] > '') and (urls_server[serv].find('No m3u8Id') < 0):
                 
+                    logger.info( "%s", urls_server[serv] )
+                    
                     soup = None
                     try:
                         soup = helpers.soupify(helpers.get(urls_server[serv]))
@@ -221,14 +345,17 @@ class AnimesVOSTFREpisode(AnimeEpisode, sitename='animesvostfr'):
                     
                     if soup:
                         #logger.debug( "soup: {}".format(soup) )
+                        
                         iframe = soup.select_one("iframe")
                         if iframe:
                             url = iframe['src'].strip()
                             if url and (url > ''):
-                                logger.debug( "%s -> %s", urls_server[serv], url )
+                                logger.info( "%s -> %s", urls_server[serv], url )
                                 urls_server[serv] = url 
                                 
-                    dl_serv, ext_serv = self.FindBetterExtractor(urls_server[serv])  
+                                
+                                
+                    dl_serv, ext_serv, url_serv = self.FindBetterExtractor(urls_server[serv], self.quality)  
                     
                     logger.debug( "_get_sources server:%s extractor:%s", dl_serv, ext_serv )
                     
@@ -238,12 +365,9 @@ class AnimesVOSTFREpisode(AnimeEpisode, sitename='animesvostfr'):
                             dl_serv = None
                      
                     if dl_serv:
-                        sources.append({'extractor':ext_serv, 'server':dl_serv, 'url':urls_server[serv], 'version':'subbed'})
+                        sources.append({'extractor':ext_serv, 'server':dl_serv, 'url':url_serv, 'version':'subbed'})
                     else:
                         logger.warn( "_get_sources url: %s not supported", urls_server[serv])
                            
                        
             return self.sort_sources(sources)
-            
-            
-         

@@ -108,3 +108,4 @@ ENV/
 # personal script and tests
 *.mp4*
 *.sh
+*.sh.swp
