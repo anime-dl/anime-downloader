@@ -33,7 +33,7 @@ setup(
     ],
     extras_require={
         'selescrape': ['selenium'],
-        'pycryptodome>=3.8.2',
+        'crypto' : ['pycryptodome>=3.8.2'],
         'dev': [
             'pytest',
             'httpretty'
