@@ -25,7 +25,8 @@ ALL_ANIME_SITES = [
     ('animedaisuki','animedaisuki','Animedaisuki'),
     ('justdubs','justdubs','JustDubs'),
     ('animevibe','animevibe','AnimeVibe'),
-    ('yify','yify','Yify'),
+    ('yify','yify','Yify'),    
+    ('animefree','animefree','AnimeFree'),
 ]
 
 
