@@ -31,7 +31,7 @@ setup(
         'tabulate>=0.8.3',
     ],
     extras_require={
-        'selescrape': ['selenium'],
+        'selescrape' : ['selenium'],
         'crypto' : ['pycryptodome>=3.8.2'],
         'dev': [
             'pytest',
