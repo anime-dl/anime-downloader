@@ -40,7 +40,7 @@ def command(test_query):
     """Test all sites to see which ones are working and which ones aren't. Test naruto as a default."""
     util.print_info(__version__)
     logger = logging.getLogger("anime_downloader")
-    logger.setLevel(logging.WARNING)
+    logger.setLevel(logging.ERROR)
 
     threads = []
 
