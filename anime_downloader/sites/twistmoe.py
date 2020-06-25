@@ -16,7 +16,7 @@ try:
     from Crypto.Cipher import AES
 
 except ImportError:
-    logger.warn("import Failed, check to make sure pycryptodome is installed")
+    logger.warning("import Failed, check to make sure pycryptodome is installed")
 
 # Don't warn if not using fuzzywuzzy[speedup]
 with warnings.catch_warnings():
