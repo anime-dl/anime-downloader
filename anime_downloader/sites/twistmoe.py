@@ -6,6 +6,9 @@ import requests_cache
 import requests
 import logging
 
+except importError:
+    logger.warn("import Failed, check to make sure pycryptodome is installed")
+    
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 from anime_downloader.util import eval_in_node
