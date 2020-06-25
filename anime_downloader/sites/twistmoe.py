@@ -1,10 +1,12 @@
-from Crypto.Cipher import AES
 import base64
 from hashlib import md5
 import warnings
 import requests_cache
 import requests
 import logging
+
+try:
+    from Crypto.Cipher import AES
 
 except importError:
     logger.warn("import Failed, check to make sure pycryptodome is installed")
