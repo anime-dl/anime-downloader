@@ -67,23 +67,24 @@
             eval(s)
         }
         
+        try {
+            var cf = String(c);
+            //var myRe = /ashh = '({}[^\']*).*?/g;
+            var myRe = /ashh.*?=.*?'([^\']*)'.*?/;
+            let myArray = cf.match(myRe) || ["", ""];
+            console.log( 'myArray: '+myArray );
+            console.log( 'myArray: '+myArray[1] );
+            ashh = myArray[1]
+        }catch(e) {}
         
-        var cf = String(c);
-        //var myRe = /ashh = '({}[^\']*).*?/g;
-        var myRe = /ashh.*?=.*?'([^\']*)'.*?/;
-        let myArray = cf.match(myRe) || ["", ""];
-        console.log( 'myArray: '+myArray );
-        console.log( 'myArray: '+myArray[1] );
-        ashh = myArray[1]
-        
-        document.getElementById("videoid").innerHTML = videoid;
-        document.getElementById("videokeyorig").innerHTML = videokeyorig;
-        document.getElementById("userid").innerHTML = userid;
-        document.getElementById("cookieIndex").innerHTML = cookieIndex;
-        document.getElementById("ddomain").innerHTML = ddomain;
-        document.getElementById("shh").innerHTML = shh;
-        document.getElementById("ashh").innerHTML = ashh;
-        document.getElementById("tsh").innerHTML = tsh;
+        document.getElementById("videoid").innerHTML = (typeof videoid === 'object' || typeof videoid === 'undefined' ? '' : videoid);
+        document.getElementById("videokeyorig").innerHTML = (typeof videokeyorig === 'object' || typeof videokeyorig === 'undefined' ? '' : videokeyorig);
+        document.getElementById("userid").innerHTML = (typeof userid === 'object' || typeof userid === 'undefined' ? '' : userid);
+        document.getElementById("cookieIndex").innerHTML = (typeof cookieIndex === 'object' || typeof cookieIndex === 'undefined' ? '' : cookieIndex);
+        document.getElementById("ddomain").innerHTML = (typeof ddomain === 'object' || typeof ddomain === 'undefined' ? '' : ddomain);
+        document.getElementById("shh").innerHTML = (typeof shh === 'object' || typeof shh === 'undefined' ? '' : shh);
+        document.getElementById("ashh").innerHTML = (typeof ashh === 'object' || typeof ashh === 'undefined' ? '' : ashh);
+        document.getElementById("tsh").innerHTML = (typeof tsh === 'object' || typeof tsh === 'undefined' ? '' : tsh);
         //console.dir(window);
          
     </script>
