@@ -8,7 +8,7 @@ import logging
 try:
     from Crypto.Cipher import AES
 
-except importError:
+except ImportError:
     logger.warn("import Failed, check to make sure pycryptodome is installed")
     
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
