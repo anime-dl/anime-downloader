@@ -4,12 +4,6 @@ import warnings
 import requests_cache
 import requests
 import logging
-
-try:
-    from Crypto.Cipher import AES
-
-except ImportError:
-    logger.warn("import Failed, check to make sure pycryptodome is installed")
     
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
@@ -17,6 +11,13 @@ from anime_downloader.util import eval_in_node
 
 
 logger = logging.getLogger(__name__)
+
+try:
+    from Crypto.Cipher import AES
+
+except ImportError:
+    logger.warn("import Failed, check to make sure pycryptodome is installed")
+
 # Don't warn if not using fuzzywuzzy[speedup]
 with warnings.catch_warnings():
     warnings.simplefilter('ignore')
