@@ -17,7 +17,7 @@ try:
 
 except ImportError:
     logger.warning("import Failed, check to make sure pycryptodome is installed")
-    logger.error(ImportError)
+    logger.error(str(ImportError))
 
 # Don't warn if not using fuzzywuzzy[speedup]
 with warnings.catch_warnings():
