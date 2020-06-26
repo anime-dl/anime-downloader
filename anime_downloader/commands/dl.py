@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 
 import click
 import requests_cache
@@ -72,11 +73,15 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     '--choice', '-c',type=int,
     help='Choice to start downloading given anime number '
 )
+@click.option(
+    '--shutdown', '-s', is_flag=True,
+    help='Choice to start downloading given anime number '
+)
 @click.option("--skip-fillers", is_flag=True, help="Skip downloading of fillers.")
 @click.pass_context
 def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             force_download, download_dir, file_format, provider,
-            external_downloader, chunk_size, disable_ssl, fallback_qualities, choice, skip_fillers):
+            external_downloader, chunk_size, disable_ssl, fallback_qualities, choice, skip_fillers, shutdown):
     """ Download the anime using the url or search for it.
     """
     query = anime_url[:]
@@ -138,3 +143,13 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
                                  format=file_format,
                                  range_size=chunk_size)
             print()
+    if shutdown:
+        echo("Shutting down system")
+        if sys.platform == 'win32':
+            os.system('shutdown /t 60 /s /c "Downloads complete, shutting down in 60 seconds. Do \'shutdown /a\' to abort"')
+        elif sys.platform == 'darwin':
+            os.system('osascript -e \'tell app "System Events" to shut down\'')
+        else:
+            #Assuming systemd
+            #wanted to avoid sudo shutdown
+            os.system('systemctl poweroff --no-ask-password')
