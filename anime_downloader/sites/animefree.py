@@ -60,6 +60,9 @@ class AnimeFreeEpisode(AnimeEpisode, sitename='kissanimefree'):
 
             d = helpers.post("https://kissanimefree.xyz/wp-admin/admin-ajax.php",referer=f"https://kissanimefree.xyz/episode/{_referer}-episode-{realId}/",data={"action":"kiss_player_ajax","server":"vidcdn","filmId":realId})
             realUrl = d.text[d.text.find('url=')+4:]
+            if(realUrl[0:4] != "http"):
+                realUrl = "https:" + d.text
+                
             txt = helpers.get(realUrl).text
             vidstream_regex = r"(\"|)file(\"|):.*?('|\")([^^('|\")]*)" # you could add the vidstream extractor and qualities here
             surl = re.search(vidstream_regex,txt).group(4)
