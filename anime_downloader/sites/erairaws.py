@@ -3,9 +3,6 @@ from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 from difflib import get_close_matches
 import re
-import logging
-
-logger = logging.getLogger(__name__)
 
 class EraiRaws(Anime, sitename='erai-raws'):
     sitename='erai-raws'
@@ -42,7 +39,6 @@ class EraiRaws(Anime, sitename='erai-raws'):
         episodes = episodes[1:]
 
         if len(rows) == 1:
-            logger.debug("One Row")
             if rows[0].parent.get("href")[-3:] != "mkv":
                 url = f"{url}index.php" if url[:-1] == "/" else f"{url}/index.php"
                 folder = helpers.soupify(helpers.get(url + rows[0].parent.get("href")))
@@ -50,7 +46,6 @@ class EraiRaws(Anime, sitename='erai-raws'):
             else:
                 episodes = [url + rows[0].parent["href"]]
 
-        logger.debug(len(rows))
         return episodes
 
     @classmethod
@@ -84,7 +79,6 @@ class EraiRaws(Anime, sitename='erai-raws'):
         soup = helpers.soupify(html)
         rows = soup.find("ul", {"id":"directory-listing"}).find_all("div", {"class":"row"})
         episodes = self.parse(rows, files)
-        logger.debug(f"Here: {rows}")
         return episodes
 
     def _scrape_metadata(self):
