@@ -71,8 +71,7 @@ DEFAULT_CONFIG = {
         },
         
         'watchmovie': {
-            "server": "gcloud",
-            "fallback_servers": ["fembed","yourupload","mp4upload"],
+            "servers": ["vidstream",'gcloud','yourupload','hydrax']
         },
         'animeflix': {
             "server": "AUEngine",
