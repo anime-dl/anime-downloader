@@ -71,8 +71,7 @@ DEFAULT_CONFIG = {
         },
         
         'watchmovie': {
-            "server": "gcloud",
-            "fallback_servers": ["fembed","yourupload","mp4upload"],
+            "servers": ["vidstream",'gcloud','yourupload','hydrax']
         },
         'animeflix': {
             "server": "AUEngine",
@@ -91,7 +90,7 @@ DEFAULT_CONFIG = {
             "category": "English-translated"
         },
         'vidstream': {
-            "servers": ["vidstream","gcloud","mp4upload","cloud9","hydrax"]
+            "servers": ["vidstream","gcloud","mp4upload","cloud9","hydrax","mixdrop"]
         },
         'justdubs': {
             "servers": ["mp4upload","gcloud"]
