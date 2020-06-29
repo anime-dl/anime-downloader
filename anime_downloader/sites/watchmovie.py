@@ -11,8 +11,7 @@ class WatchMovie(Anime, sitename='watchmovie'):
         Nice things
         Siteconfig
         ----------
-        server: Primary server to use (Default: gcloud)
-        fallback_servers: Recorded working servers which is used if the primary server cannot be found
+        servers: servers used in order
         """
         sitename = 'watchmovie'
         url = f'https://{sitename}.movie'
@@ -38,30 +37,32 @@ class WatchMovie(Anime, sitename='watchmovie'):
 
         def _scrape_metadata(self):
             self.title = helpers.soupify(helpers.get(self.url)).select('div.page-title > h1')[0].text
-            
+
+
 class WatchMovieEpisode(AnimeEpisode, sitename='watchmovie'):
         def _get_sources(self):
-            server = self.config['server']
-            fallback = self.config['fallback_servers']
-
             soup = helpers.soupify(helpers.get(self.url))
             sources = soup.select('div.anime_muti_link > ul > li > a')
 
-            for a in sources: 
-                url = a.get('data-video')
-                if server in url:
-                    if server == 'fembed':extractor = 'gcloud'
-                    else:extractor = server
-                    return [(extractor, url,)]
-            
-            logger.debug('Preferred server "%s" not found. Trying all supported servers.',self.config['server'])
-            for a in sources: 
-                url = a.get('data-video')
-                for b in fallback:
-                    if b in url:
-                        if b == 'fembed':extractor = 'gcloud'
-                        else:extractor = server
-                        return [(extractor, url,)]
-            
-            logger.warning('No supported servers found. Trying all servers. This will most likely not work')
-            return [('no_extractor', sources[0].get('data-video'),)]
+            #logger.debug('Sources: {}'.format([i.get('data-video') for i in sources]))
+
+            extractors = { 
+            #url             #Extractor   #Server in config
+            'vidcloud9.com/':['vidstream','vidstream'],
+            'hydrax.net/':['hydrax','hydrax'],
+            'gcloud.live/v/':['gcloud','gcloud'],
+            'yourupload.com/':['yourupload','yourupload'],
+            }
+
+            sources_list = []
+            for i in sources:
+                for j in extractors:
+                    if j in i.get('data-video'):
+                        sources_list.append({
+                            'extractor':extractors[j][0],
+                            'url':i.get('data-video'),
+                            'server':extractors[j][1],
+                            'version':'subbed'
+                            })
+
+            return self.sort_sources(sources_list)
