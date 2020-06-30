@@ -16,7 +16,6 @@ import tempfile
 import requests
 from tabulate import tabulate
 from uuid import uuid4
-from time import time
 from secrets import choice
 from urllib.parse import urlparse
 
