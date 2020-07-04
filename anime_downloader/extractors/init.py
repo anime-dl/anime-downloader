@@ -114,6 +114,18 @@ ALL_EXTRACTORS = [
         'modulename': 'mixdrop',
         'regex': 'mixdrop',
         'class': 'Mixdrop'
+    },
+    {
+        'sitename': 'sibnet',
+        'modulename': 'sibnet',
+        'regex': 'sibnet',
+        'class': 'SibNet'
+    },
+    {
+        'sitename': 'uqload',
+        'modulename': 'uqload',
+        'regex': 'uqload',
+        'class': 'Uqload'
     }
 ]
 

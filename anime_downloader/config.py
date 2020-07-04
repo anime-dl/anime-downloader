@@ -120,6 +120,9 @@ DEFAULT_CONFIG = {
                 "yify"
             ]
         },
+        'vostfree': {
+            'server': 'sibnet'
+        },
         'voiranime': {
             "servers":[
                 "gounlimited"
