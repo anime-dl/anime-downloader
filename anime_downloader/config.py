@@ -120,7 +120,11 @@ DEFAULT_CONFIG = {
                 "yify"
             ]
         },
-
+        'voiranime': {
+            "servers":[
+                "gounlimited"
+            ]
+        },
     }
 }
 
