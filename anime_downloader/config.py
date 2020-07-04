@@ -120,7 +120,9 @@ DEFAULT_CONFIG = {
                 "yify"
             ]
         },
-
+        'vostfree': {
+            'server': 'sibnet'
+        }
     }
 }
 
