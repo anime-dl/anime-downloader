@@ -26,6 +26,7 @@ ALL_ANIME_SITES = [
     ('justdubs','justdubs','JustDubs'),
     ('animevibe','animevibe','AnimeVibe'),
     ('yify','yify','Yify'),
+    ('voiranime','voiranime','VoirAnime')
 ]
 
 
