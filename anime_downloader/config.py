@@ -122,7 +122,12 @@ DEFAULT_CONFIG = {
         },
         'vostfree': {
             'server': 'sibnet'
-        }
+        },
+        'voiranime': {
+            "servers":[
+                "gounlimited"
+            ]
+        },
     }
 }
 
