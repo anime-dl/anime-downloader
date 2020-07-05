@@ -18,9 +18,9 @@ class EraiRaws(Anime, sitename='erai-raws'):
     def parse(self, rows, url):
         episodes = []
 
-        if self.quality == self.QUALITIES[0]:
+        if self.quality == self.QUALITIES[0] and len(rows) > 1:
             rows = rows[::2]
-        else:
+        elif len(rows) > 1:
             rows = rows[1::2]
 
         for row in rows:
@@ -35,7 +35,18 @@ class EraiRaws(Anime, sitename='erai-raws'):
                 [episodes.append(url + x.parent.get("href")) for x in folder.find("ul", {"id":"directory-listing"}).find_all("div", {"class":"row"})]
             else:
                 episodes.append(url + row.parent.get("href"))
-        return episodes[1:]
+
+        episodes = episodes[1:]
+
+        if len(rows) == 1:
+            if rows[0].parent.get("href")[-3:] != "mkv":
+                url = f"{url}index.php" if url[:-1] == "/" else f"{url}/index.php"
+                folder = helpers.soupify(helpers.get(url + rows[0].parent.get("href")))
+                episodes = [url + x.parent.get("href") for x in folder.find("ul", {"id":"directory-listing"}).find_all("div", {"class":"row"})]
+            else:
+                episodes = [url + rows[0].parent["href"]]
+
+        return episodes
 
     @classmethod
     def search(cls, query):

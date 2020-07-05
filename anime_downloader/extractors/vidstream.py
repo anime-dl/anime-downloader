@@ -1,6 +1,5 @@
 import logging
 import re
-import json
 
 from anime_downloader.config import Config
 from anime_downloader.extractors.base_extractor import BaseExtractor
@@ -11,13 +10,12 @@ logger = logging.getLogger(__name__)
 
 class VidStream(BaseExtractor):
     def _get_data(self):
-
-        '''
+        """
         Config:
         List of servers. Will use servers in order. 
         For example: ["hydrax","vidstream"] will prioritize the HydraX link.
-        Available servers: links (below) and vidstream 
-        '''
+        Available servers: links (below) and vidstream
+        """
 
         links = {
         "gcloud":"https://gcloud.live/",
@@ -30,59 +28,69 @@ class VidStream(BaseExtractor):
         url = self.url.replace('https:////','https://')
         url = url.replace('https://vidstreaming.io/download','https://vidstreaming.io/server.php')
         soup = helpers.soupify(helpers.get(url))
-        servers = Config._read_config()['siteconfig']['vidstream']['servers']
-
         linkserver = soup.select('li.linkserver')
         logger.debug('Linkserver: {}'.format(linkserver))
 
-        for a in servers:
-            if a == 'vidstream' and 'vidstream' in self.url:
+        """Dirty, but self.config isn't supported for extractors."""
+        servers = Config._read_config()['siteconfig']['vidstream']['servers']
+
+        for i in servers:
+            """
+            Will only use _get_link() if the site is actually the real vidstream, as clones 
+            use a different layout for their own videos
+            """
+            if 'vidstream' in i and 'vidstream' in self.url:
                 return self._get_link(soup)
-            for b in linkserver:
-                if b.get('data-video').startswith(links.get(a,'None')):
+            for j in linkserver:
+                if j.get('data-video').startswith(links.get(i,'None')):
                     """
-                    Another class needs to get created instead of using self not to impact future loops
-                    If the extractor fails vidstream.py will get run again with changed self
+                    Another class needs to get created instead of using self, not to impact future loops.
+                    If the extractor fails it will rerun, which would lead to an error if self was changed 
                     """
                     info = self.__dict__.copy()
-                    info['url'] = b.get('data-video')
-                    _self = Extractor(info)  
-                    return extractors.get_extractor(a)._get_data(_self)
-    
+                    info['url'] = j.get('data-video')
+                    _self = Extractor(info)
+                    """Gives away the link to another extractor"""
+                    return extractors.get_extractor(i)._get_data(_self)
+
 
     def _get_link(self,soup):
-        QUALITIES = {
-            "360":[],
-            "480":[],
-            "720":[],
-            "1080":[],
+        """
+        Matches something like
+        f("MTE2MDIw&title=Yakusoku+no+Neverland");
+        """
+        sources_regex = r'>\s*?f\("(.*?)"\);'
+        sources_url = re.search(sources_regex,str(soup)).group(1)
+        sources_json = helpers.get(f'https://vidstreaming.io/ajax.php?id={sources_url}', referer=self.url).json()
+
+        logger.debug('Sources json: {}'.format(str(sources_json)))
+        """
+        Maps config vidstreaming sources to json results.
+        When adding config in the future make sure "vidstream"
+        is in the name in order to pass the check above.
+        """
+        sources_keys = {
+            "vidstream":"source",
+            "vidstream_bk":"source_bk"
         }
 
-        sources_regex = r'sources:(\[{.*?}])'
-        sources = re.search(sources_regex,str(soup)).group(1)
-        sources = sources.replace("'",'"') #json only accepts ""
+        """
+        Elaborate if statements to get sources_json["source"][0]["file"]
+        based on order in config.
+        """
 
-        regex = r"[{|,][\n]*?[ ]*?[\t]*?[A-z]*?[^\"]:"
-        for a in re.findall(regex,sources): #Because sometimes it's not valid json
-            sources = sources.replace(a,f'{a[:1]}"{a[1:-1]}"{a[-1:]}') #replaces file: with "file":
+        servers = Config._read_config()['siteconfig']['vidstream']['servers']
+        print(sources_json["source"][0]["file"])
+        for i in servers:
+            if i in sources_keys:
+                if sources_keys[i] in sources_json:
+                    if 'file' in sources_json[sources_keys[i]][0]:
+                        return {
+                            'stream_url': sources_json[sources_keys[i]][0]['file'],
+                            'referer': self.url
+                        }
 
-        sources = json.loads(sources)
-
-        for a in QUALITIES:
-            for b in sources:
-                if a in b.get('label',None):
-                    QUALITIES[a].append(b.get('file',''),)
-
-        stream_url = QUALITIES[self.quality[:-1]][0] if len(QUALITIES[self.quality[:-1]]) != 0 else ''
-
-        if QUALITIES == {"360":[],"480":[],"720":[],"1080":[],}:
-            stream_url = sources[0].get('file','') #In case nothing is found
-            logger.debug("The streaming link's quality cannot be identified.")
-
-        return {
-            'stream_url': stream_url,
-            'referer': self.url
-        }
+        return {'stream_url':''}
 
 
 """dummy class to prevent changing self"""
