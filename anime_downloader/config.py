@@ -128,6 +128,10 @@ DEFAULT_CONFIG = {
                 "gounlimited"
             ]
         },
+        'dbanimes': {
+            'server': 'fembed',
+            'fallback_servers': ['mixdrop', 'sendvid']
+        }
     }
 }
 

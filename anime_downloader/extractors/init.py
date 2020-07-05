@@ -126,6 +126,12 @@ ALL_EXTRACTORS = [
         'modulename': 'uqload',
         'regex': 'uqload',
         'class': 'Uqload'
+    },
+    {
+        'sitename': 'sendvid',
+        'modulename': 'sendvid',
+        'regex': 'sendvid',
+        'class': 'SendVid'
     }
 ]
 
