@@ -90,7 +90,7 @@ DEFAULT_CONFIG = {
             "category": "English-translated"
         },
         'vidstream': {
-            "servers": ["vidstream","gcloud","mp4upload","cloud9","hydrax","mixdrop"]
+            "servers": ["vidstream","vidstream_bk","gcloud","mp4upload","cloud9","hydrax","mixdrop"]
         },
         'justdubs': {
             "servers": ["mp4upload","gcloud"]
