@@ -27,7 +27,8 @@ ALL_ANIME_SITES = [
     ('animevibe','animevibe','AnimeVibe'),
     ('yify','yify','Yify'),
     ('vostfree', 'vostfree', 'VostFree'),
-    ('voiranime','voiranime','VoirAnime')
+    ('voiranime','voiranime','VoirAnime'),
+    ('vidstream','vidstream','VidStream')
 ]
 
 
