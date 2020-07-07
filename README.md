@@ -66,6 +66,9 @@ Yeah. Me too! That's why this tool exists.
 - Animevibe
 - Yify
 - Kissanimefree
+- Vostfree
+- Voiranime
+- Vidstream
 - Animepahe - requires Node.js
 - twist.moe - requires Node.js
 - Kissanime - requires Selenium
