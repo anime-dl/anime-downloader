@@ -25,9 +25,9 @@ class AnimePaheEpisode(AnimeEpisode, sitename='animepahe'):
         episode_data = episode_data['data']
         sources = {}
 
-        for info in episode_data:
+        for info in range(len(episode_data)):
             quality = list(episode_data[info].keys())[0]
-            sources[f'{quality}p'] = episode_data[info][quality]['url']
+            sources[f'{quality}p'] = episode_data[info][quality]['kwik']
 
         if self.quality in sources:
             return (server, sources[self.quality])

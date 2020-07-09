@@ -90,6 +90,42 @@ ALL_EXTRACTORS = [
         'modulename': 'hydrax',
         'regex': 'hydrax',
         'class': 'Hydrax'
+    },
+    {
+        'sitename': 'streamx',
+        'modulename': 'streamx',
+        'regex': 'streamx',
+        'class': 'StreamX'
+    },
+    {
+        'sitename': '3rdparty',
+        'modulename': '3rdparty',
+        'regex': '3rdparty',
+        'class': 'Thirdparty'
+    },
+    {
+        'sitename': 'yify',
+        'modulename': 'yify',
+        'regex': 'yify',
+        'class': 'Yify'
+    },
+    {
+        'sitename': 'mixdrop',
+        'modulename': 'mixdrop',
+        'regex': 'mixdrop',
+        'class': 'Mixdrop'
+    },
+    {
+        'sitename': 'sibnet',
+        'modulename': 'sibnet',
+        'regex': 'sibnet',
+        'class': 'SibNet'
+    },
+    {
+        'sitename': 'uqload',
+        'modulename': 'uqload',
+        'regex': 'uqload',
+        'class': 'Uqload'
     }
 ]
 

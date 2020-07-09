@@ -32,6 +32,7 @@ def setup(func):
     """
     def setup_func(url: str,
                    cf: bool = False,
+                   sel: bool = False,
                    referer: str = None,
                    headers=None,
                    **kwargs):
@@ -48,7 +49,20 @@ def setup(func):
         referer : str
             a url sent as referer in request headers
         '''
-        sess = cf_session if cf else req_session
+        selescrape = None
+        if cf:
+            sess = cf_session
+        elif sel:
+            try:
+                from selenium import webdriver
+                from anime_downloader.sites.helpers import selescrape
+                sess = selescrape
+            except ImportError:
+                sess = cf_session
+                logger.warning("This provider may not work correctly because it requires selenium to work.\nIf you want to install it then run:  'pip install selenium' .")
+        else: 
+            sess = req_session 
+
         if headers:
             default_headers.update(headers)
         if referer:
@@ -64,12 +78,15 @@ def setup(func):
                            url,
                            headers=default_headers,
                            **kwargs)
-        res.raise_for_status()
-        logger.debug(res.url)
-        # logger.debug(res.text)
-        if logger.getEffectiveLevel() == logging.DEBUG:
-            _log_response_body(res)
+
+        if sess != selescrape: #TODO fix this for selescrape too
+            res.raise_for_status()
+            logger.debug(res.url)
+            # logger.debug(res.text)
+            if logger.getEffectiveLevel() == logging.DEBUG:
+                _log_response_body(res)
         return res
+
     setup_func.__doc__ = setup_func.__doc__.format(func.__name__)
     return setup_func
 
