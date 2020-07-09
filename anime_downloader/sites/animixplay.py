@@ -25,8 +25,7 @@ class AniMixPlay(Anime, sitename='animixplay'):
     def _scrape_episodes(self):
         url = self.url
         soup = helpers.soupify(helpers.get(url))
-        ep_list_raw = soup.find('div', {'id':'epslistplace'}).get_text()
-        ep_list = ep_list_raw.replace("\\\\", "")
+        ep_list = soup.find('div', {'id':'epslistplace'}).get_text()
         logger.debug(ep_list)
         jdata = json.loads(ep_list)
         keyList = list(jdata.keys())
