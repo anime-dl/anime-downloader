@@ -33,6 +33,10 @@ class AniMixPlay(Anime, sitename='animixplay'):
         logger.debug(keyList)
         return [jdata[x] for x in keyList]
 
+    def _scrape_metadata(self):
+        soup = helpers.soupify(helpers.get(self.url).text)
+        self.title = soup.select_one("span.animetitle").get_text()
+
 class AniMixPlayEpisode(AnimeEpisode, sitename='animixplay'):
     def _get_sources(self):
         logger.debug(self.url)
