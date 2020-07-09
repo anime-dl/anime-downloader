@@ -1,4 +1,4 @@
-import json, requests, os
+import json, requests
 
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
@@ -47,7 +47,7 @@ class AnimeOnline(Anime, sitename = 'animeonline360'):
             return [self.url]
 
     def _scrape_metadata(self):
-            self.title = helpers.soupify(helpers.get(self.url)).title.text.split('|')[0].strip()
+            self.title = helpers.soupify(helpers.get(self.url)).title.text.split('|')[0].strip().title()
 
 
 class AnimeOnline360Episode(AnimeEpisode, sitename='animeonline360'):
