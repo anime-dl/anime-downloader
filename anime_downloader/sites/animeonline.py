@@ -33,6 +33,6 @@ class AnimeOnline(Anime, sitename = 'animeonline360'):
             self.title = helpers.soupify(helpers.get(self.url)).title.text.split('|')[0].strip().title()
 
 
-class AnimeOnline360Episode(AnimeEpisode, sitename='animeonline360'):
+class AnimeOnlineEpisode(AnimeEpisode, sitename='animeonline360'):
     def _get_sources(self):
         return [('animeonline360', self.url)]
