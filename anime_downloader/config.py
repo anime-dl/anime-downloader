@@ -31,6 +31,9 @@ DEFAULT_CONFIG = {
         'provider': 'twist.moe',
     },
     "siteconfig": {
+        'animixplay': {
+            "server": "vidstream",
+        },
         'nineanime': {
             "server": "mp4upload",
         },
