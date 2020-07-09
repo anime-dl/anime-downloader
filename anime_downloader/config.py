@@ -20,6 +20,9 @@ DEFAULT_CONFIG = {
         'provider': 'twist.moe',
         'external_downloader': '',
         'aria2c_for_torrents': False,
+        'selescrape_browser': None,
+        'selescrape_browser_executable_path' : None,
+        'selescrape_driver_binary_path' : None,
     },
     'watch': {
         'quality': '1080p',
@@ -68,8 +71,7 @@ DEFAULT_CONFIG = {
         },
         
         'watchmovie': {
-            "server": "gcloud",
-            "fallback_servers": ["fembed","yourupload","mp4upload"],
+            "servers": ["vidstream",'gcloud','yourupload','hydrax']
         },
         'animeflix': {
             "server": "AUEngine",
@@ -83,12 +85,49 @@ DEFAULT_CONFIG = {
         'animedaisuki': {
             "servers": ["official"]
         },
+        'nyaa': {
+            "filter": "Trusted only",
+            "category": "English-translated"
+        },
         'vidstream': {
-            "servers": ["vidstream","gcloud","mp4upload","cloud9","hydrax"]
+            "servers": ["vidstream","vidstream_bk","gcloud","mp4upload","cloud9","hydrax","mixdrop"]
         },
         'justdubs': {
             "servers": ["mp4upload","gcloud"]
-        }
+        },
+        'kisscartoon': {
+            "servers": [
+                "mpserver",
+                "yuserver",
+                "oserver",
+                "xserver",
+                "ptserver"
+            ]
+        },
+        'animevibe': {
+            "servers": [
+                "vidstream",
+                "3rdparty",
+                "mp4upload",
+                "hydrax",
+                "gcloud",
+                "fembed"
+            ]
+        },
+        'yify': {
+            "servers": [
+                "vidstream",
+                "yify"
+            ]
+        },
+        'vostfree': {
+            'server': 'sibnet'
+        },
+        'voiranime': {
+            "servers":[
+                "gounlimited"
+            ]
+        },
     }
 }
 

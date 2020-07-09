@@ -11,7 +11,13 @@ import time
 import ast
 import math
 import coloredlogs
+import pickle
+import tempfile
+import requests
 from tabulate import tabulate
+from uuid import uuid4
+from secrets import choice
+from urllib.parse import urlparse
 
 from anime_downloader import session
 from anime_downloader.sites import get_anime_class, helpers
@@ -225,6 +231,99 @@ def format_command(cmd, episode, file_format, path):
     cmd = [format_filename(c, episode) for c in cmd]
     return cmd
 
+
+#Credits to: https://github.com/Futei/SineCaptcha
+def bypass_hcaptcha(url):
+    """
+    :param url: url to page which gives hcaptcha
+    :return: Returns Response object (cookies stored for future use)
+    """
+    host = urlparse(url).netloc
+    bypassed = False
+    session = requests.session()
+
+    headers = {
+        'User-Agent': choice((
+            'Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36',
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/605.1.15 (KHTML, like Gecko)',
+            'Mozilla/5.0 (iPad; CPU OS 9_3_5 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13G36',
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'
+            ))
+        }
+
+    logger.info("Bypassing captcha...")
+
+    #Retry until success
+    while not bypassed:
+        site_key = str(uuid4())
+        response = session.post('https://hcaptcha.com/getcaptcha', headers = headers, data = {
+            'sitekey': site_key,
+            'host': host
+            }).json()
+
+        try:
+            key = response['key']
+            tasks = [row['task_key'] for row in response['tasklist']]
+            job = response['request_type']
+            timestamp = round(time()) + choice(range(30, 120))
+            answers = dict(zip(tasks, [choice(['true', 'false']) for index in range(len(tasks))]))
+
+            mouse_movements = []
+            last_movement = timestamp
+
+            for index in range(choice(range(1000, 10000))):
+                last_movement += choice(range(10))
+                mouse_movements.append([choice(range(500)), choice(range(500)), last_movement])
+
+            json = {
+                'job_mode': job,
+                'answers': answers,
+                'serverdomain': host,
+                'sitekey': site_key,
+                'motionData': {
+                    'st': timestamp,
+                    'dct': timestamp,
+                    'mm': mouse_movements
+                    }
+                }
+
+            response = session.post(f'https://hcaptcha.com/checkcaptcha/{key}', json = json)
+
+            response = response.json()
+            bypassed = response['pass']
+        except (TypeError, KeyError):
+            pass
+
+        if bypassed:
+            token = response['generated_pass_UUID']
+
+            resp = helpers.soupify(session.get(url))
+            bypass_url = f'https://{host}{resp.form.get("action")}'
+
+            data = dict((x.get('name'), x.get('value')) for x in resp.select('form > input'))
+            data.update({'id': resp.strong.text, 'g-recaptcha-response': token, 'h-captcha-response': token})
+
+            resp = session.post(bypass_url, data = data)
+
+            if resp.status_code == 200:
+                pickle.dump(resp.cookies, open(f'{tempfile.gettempdir()}/{host}', 'wb'))
+                logger.info("Succesfully bypassed captcha!")
+                
+                return resp
+            else:
+                bypassed = False
+
+
+def get_hcaptcha_cookies(url):
+    """
+    :param url: url that you want to use cookies for
+    :return: returns cookies if they were stored, or nothing, if they weren't
+    """
+
+    COOKIE_FILE = f'{tempfile.gettempdir()}/{urlparse(url).netloc}'
+
+    if os.path.isfile(COOKIE_FILE):
+        return pickle.load(open(COOKIE_FILE, 'rb'))
 
 def deobfuscate_packed_js(packedjs):
     return eval_in_node('eval=console.log; ' + packedjs)
