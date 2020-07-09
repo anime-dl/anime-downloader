@@ -10,14 +10,13 @@ class AnimeOnline(Anime, sitename = 'animeonline360'):
     @classmethod
     def search(cls, query):
         try:
-            # r = helpers.get('https://animeonline360.me/wp-json/dooplay/search/?nonce=12d75e884b', params = {'keyword': query}).json()
             r = helpers.soupify(helpers.get('https://animeonline360.me/', params = {'s': query})).select('div.title')
             results = [{"title": x.text, "url": x.a['href']} for x in r]
             search_results = [
                 SearchResult(
                     title = i['title'],
                     url = i['url'],
-                    meta= {})
+                    )
 
                 for i in results
                 ]
@@ -27,23 +26,8 @@ class AnimeOnline(Anime, sitename = 'animeonline360'):
             return ""
 
     def _scrape_episodes(self):
-
-        r = helpers.get(self.url).text
-        soup = helpers.soupify(r)
-        try:
-            soup = soup.find('div', id="seasons").find_all('li')
-            episodes = []
-            for i in soup:
-                data = i.find('div', class_='episodiotitle')
-                url = data.a['href']
-                episode = int(i.find('div', class_='numerando').text.replace('Episode ', ''))
-                title = data.a.text
-                entry = {"title": title, "episode": episode, "url": url}
-                episodes.append(entry)
-            episodes.reverse()
-            return [x['url'] for x in episodes]
-        except:
-            return [self.url]
+        data = helpers.soupify(helpers.get(self.url)).select('div.episodiotitle > a')
+        return [i.get('href') for i in data[::-1]]
 
     def _scrape_metadata(self):
             self.title = helpers.soupify(helpers.get(self.url)).title.text.split('|')[0].strip().title()
