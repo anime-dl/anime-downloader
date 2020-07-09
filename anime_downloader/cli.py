@@ -1,4 +1,4 @@
-﻿import click
+import click
 import sys
 import os
 import importlib
@@ -29,6 +29,18 @@ class CLIClass(click.MultiCommand):
             "anime_downloader.commands.{}".format(name))
         return command.command
 
+@click.option(
+    '--update', '-u',
+    is_flag=True,
+    help="Update anime dl."
+)
+
+def update_anime_dl(update):
+    flag = update
+    if flag:
+        import subprocess
+        subprocess.call(['python', '-m', 'pip', 'install', 'git+git://github.com/vn-ki/anime-downloader.git', '--upgrade', '--force-reinstall', '--user'], shell=True)
+        exit()
 
 @click.group(cls=CLIClass, context_settings=Config.CONTEXT_SETTINGS)
 @click.version_option(version=__version__)
@@ -38,6 +50,7 @@ class CLIClass(click.MultiCommand):
     default='INFO',
     help="Log Level"
 )
+
 def cli(log_level):
     """Anime Downloader
 
@@ -46,7 +59,6 @@ def cli(log_level):
     if not util.check_in_path('aria2c'):
         raise RuntimeError("Aria2 is not in path. Please follow installation instructions: https://github.com/vn-ki/anime-downloader/wiki/Installation")
     util.setup_logger(log_level)
-
 
 def main():
     try:
