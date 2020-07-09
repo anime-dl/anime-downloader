@@ -11,7 +11,7 @@ class AniMixPlay(Anime, sitename='animixplay'):
     @classmethod
     def search(cls, query):
         jsonVar = helpers.post("https://animixplay.com/api/search", data = {"qfast": query}, verify = False).json()
-        soup = helpers.soupify(jsonVar["result"]).select('div.details a:not([href*=v2]):not([href*=v3]):not([href*=v4])')
+        soup = helpers.soupify(jsonVar["result"]).select('div.details a:not([href*=v2]):not([href*=v3]):not([href*=v4])')#
         logger.debug(soup)
         search_results = [
             SearchResult(
@@ -36,7 +36,5 @@ class AniMixPlay(Anime, sitename='animixplay'):
 
 class AniMixPlayEpisode(AnimeEpisode, sitename='animixplay'):
     def _get_sources(self):
-        url = self.url
         logger.debug(self.url)
-        for x in url:
-            return [('vidstream', self.url)]
+        return [('vidstream', self.url)]
