@@ -6,7 +6,6 @@ from anime_downloader.sites import helpers
 class AnimeOnline(Anime, sitename = 'animeonline360'):
 
     sitename = 'animeonline360'
-    url = f'https://{sitename}.me'
 
     @classmethod
     def search(cls, query):
