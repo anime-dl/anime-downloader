@@ -27,6 +27,8 @@ class VidStream(Anime, sitename='vidstream'):
                 for i in search_results
             ]
             """
+            # Only using page 1, resulting in max 30 results
+            # Very few shows will get impacted by this
             search_results = helpers.soupify(helpers.get('https://vidstreaming.io/search.html', 
                 params = {'keyword':query})
             ).select('ul.listing > li.video-block > a')
