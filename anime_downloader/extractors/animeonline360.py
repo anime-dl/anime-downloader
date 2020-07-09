@@ -15,4 +15,4 @@ class AnimeOnline360(BaseExtractor):
                 'referer': referrer
             }
         except:
-        	return {"stream_url": ''}
+            return {"stream_url": ''}
