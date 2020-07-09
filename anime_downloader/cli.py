@@ -29,19 +29,6 @@ class CLIClass(click.MultiCommand):
             "anime_downloader.commands.{}".format(name))
         return command.command
 
-@click.option(
-    '--update', '-u',
-    is_flag=True,
-    help="Update anime dl."
-)
-
-def update_anime_dl(update):
-    flag = update
-    if flag:
-        import subprocess
-        subprocess.call(['python', '-m', 'pip', 'install', 'git+git://github.com/vn-ki/anime-downloader.git', '--upgrade', '--force-reinstall', '--user'], shell=True)
-        exit()
-
 @click.group(cls=CLIClass, context_settings=Config.CONTEXT_SETTINGS)
 @click.version_option(version=__version__)
 @click.option(
