@@ -17,7 +17,6 @@ class AnimeOnline(Anime, sitename = 'animeonline360'):
                     title = i['title'],
                     url = i['url'],
                     )
-
                 for i in results
                 ]
 
@@ -31,8 +30,7 @@ class AnimeOnline(Anime, sitename = 'animeonline360'):
 
     def _scrape_metadata(self):
             self.title = helpers.soupify(helpers.get(self.url)).title.text.split('|')[0].strip().title()
-
-
+            
 class AnimeOnlineEpisode(AnimeEpisode, sitename='animeonline360'):
     def _get_sources(self):
         return [('animeonline360', self.url)]
