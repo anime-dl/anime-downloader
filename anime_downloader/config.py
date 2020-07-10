@@ -31,6 +31,10 @@ DEFAULT_CONFIG = {
         'provider': 'twist.moe',
     },
     "siteconfig": {
+        'animefrenzy': {
+            "lang": "subbed"
+            #Lang Key can either be "subbed" or "dubbed"
+        },
         'animixplay': {
             "server": "vidstream",
         },
