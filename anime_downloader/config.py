@@ -32,8 +32,7 @@ DEFAULT_CONFIG = {
     },
     "siteconfig": {
         'animefrenzy': {
-            "lang": "subbed"
-            #Lang Key can either be "subbed" or "dubbed"
+            "varsion": "subbed"
         },
         'animixplay': {
             "server": "vidstream",
