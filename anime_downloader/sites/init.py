@@ -31,7 +31,8 @@ ALL_ANIME_SITES = [
     ('vostfree', 'vostfree', 'VostFree'),
     ('voiranime','voiranime','VoirAnime'),
     ('vidstream','vidstream','VidStream'),
-    ('animixplay','animixplay','AniMixPlay')
+    ('animixplay','animixplay','AniMixPlay'),
+    ('horriblesubs', 'horriblesubs', 'HorribleSubs')
 ]
 
 
