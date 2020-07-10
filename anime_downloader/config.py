@@ -32,7 +32,7 @@ DEFAULT_CONFIG = {
     },
     "siteconfig": {
         'animefrenzy': {
-            "varsion": "subbed"
+            "version": "subbed"
         },
         'animixplay': {
             "server": "vidstream",
