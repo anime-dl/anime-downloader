@@ -42,6 +42,14 @@ Yeah. Me too! That's why this tool exists.
 - Download using external downloader ([aria2](https://aria2.github.io/) recommended).
 - Configurable using `config.json`. See [documentation](https://anime-downlader.readthedocs.io/en/latest/usage/config.html).
 
+## Supported Operating Systems:
+- Windows
+- Mac OS
+- Linux
+- Android
+- iOS (requires Jailbreak and some tinkering)
+  * Instructions for Mobile Operating Systems can be found in the [Installation Documentation Page](https://anime-downlader.readthedocs.io/en/latest/usage/installation.html)
+
 ## Supported Sites
 **Details about the sites can be found in [FAQ](https://github.com/vn-ki/anime-downloader/wiki/FAQ)**
 - Anistream
@@ -75,6 +83,10 @@ Yeah. Me too! That's why this tool exists.
 - twist.moe - requires Node.js
 - Kissanime - requires Selenium
 - Kisscartoon - requires Selenium
+
+Sites That require Selenium **DO NOT** and **WILL NOT** work on mobile operating systems
+
+Twist.moe **DOES NOT** work and **WILL NOT** work on iOS, a Python Module that is required for twist.moe is not supported on iOS and cannot be installed
 
 ## Installation
 
