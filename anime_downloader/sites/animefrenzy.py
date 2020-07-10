@@ -24,7 +24,7 @@ class AnimeFrenzy(Anime, sitename='animefrenzy'):
 
     def _scrape_episodes(self):
         soup = helpers.soupify(helpers.get(self.url))
-        lang = self.config.get("lang")
+        lang = self.config.get("version")
         if lang == "subbed":
             ep_list = [x for x in soup.select("div.sub1 > a")]
         elif lang == "dubbed":
