@@ -45,6 +45,7 @@ Yeah. Me too! That's why this tool exists.
 ## Supported Sites
 **Details about the sites can be found in [FAQ](https://github.com/vn-ki/anime-downloader/wiki/FAQ)**
 - Anistream
+- AnimeOnline360
 - Animeflix
 - Animefreak
 - Gogoanime
@@ -106,6 +107,7 @@ See [development instructions](https://anime-downlader.readthedocs.io/en/latest/
 ## Related Projects
 
 - [adl](https://github.com/RaitaroH/adl) - a command-line tool for watching anime that makes use of anime-downloader.
+- [Cloudstream](https://github.com/LagradOst/CloudStream-2) - mobile gui for pirating anime and movies.
 
 ---
 
