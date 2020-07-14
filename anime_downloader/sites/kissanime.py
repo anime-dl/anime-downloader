@@ -35,7 +35,7 @@ class KissAnime(Anime, sitename='kissanime'):
     def search(cls, query):
         sel = helpers.get("https://kissanime.ru",sel=True)
         cookies = sel.cookies
-        agent = sel.user_agent #Note that the user agent must be the same as the one which generated the cookies
+        agent = sel.user_agent # Note that the user agent must be the same as the one which generated the cookies
         cookies = {c['name']: c['value'] for c in cookies}
         soup = helpers.soupify((helpers.post("https://kissanime.ru/Search/Anime", headers = {
             "User-Agent": agent,
