@@ -2,7 +2,6 @@ from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 import base64
 import json
-import re
 import logging
 
 logger = logging.getLogger(__name__)
@@ -11,17 +10,28 @@ class AniMixPlay(Anime, sitename='animixplay'):
     sitename='animixplay'
     @classmethod
     def search(cls, query):
-        jsonVar = helpers.post("https://animixplay.com/api/search/", data = {"qfast": query}, verify = False).json()
-        logger.debug(jsonVar)
-        soup = helpers.soupify(jsonVar["result"]).select('div.details a:not([href*=v3]):not([href*=v2])')#        logger.debug(soup)
-        search_results = [
-            SearchResult(
-                title = a.text,
-                url = 'https://animixplay.com' + a.get('href')
-            )
-            for a in soup
-        ]
-        return(search_results)
+        # V3 not supported
+        v1 = helpers.soupify(helpers.post("https://animixplay.com/api/search/v1", 
+            data = {"q2": query}, verify = False).json()['result']).select('p.name > a')
+        v2 = helpers.soupify(helpers.post("https://animixplay.com/api/search/", 
+            data = {"qfast2": query}, verify = False).json()['result']).select('p.name > a')
+        #v3 = helpers.soupify(helpers.post("https://animixplay.com/api/search/v3", 
+        #    data = {"q3": query}, verify = False).json()['result'])
+        v4 = helpers.soupify(helpers.post("https://animixplay.com/api/search/v4", 
+            data = {"q": query}, verify = False).json()['result']).select('p.name > a')
+        # Meta will be name of the key in versions_dict
+        versions_dict = {'v1':v1, 'v2':v2, 'v4':v4}
+        logger.debug('Versions: {}'.format(versions_dict))
+        data = []
+        for i in versions_dict:
+            for j in versions_dict[i]:
+                data.append(SearchResult(
+                    title = j.text,
+                    url = 'https://animixplay.com' + j.get('href'),
+                    meta = {'version': i}))
+
+        return data
+
 
     def _scrape_episodes(self):
         url = self.url
@@ -40,13 +50,16 @@ class AniMixPlay(Anime, sitename='animixplay'):
                 data={data_id:post_id}).json())
             logger.debug(data)
             if '/v4/' in self.url:
-                return [x for x in data]
+                # Has a list of mp4 links.
+                return data
             elif '/v2/' in self.url:
-                for x in data: 
-                    logger.debug("")
-                    raise NotImplementedError
-            else:
-                logger.error("What have you done? you managed to bypass the first check. good job and have a pat on the back. BTW this wasnt supposed to happen")
+                # Has elaborate list for all metadata on episodes.
+                episodes = []
+                for i in data:
+                    info_dict = i.get('src',[{'file':''}])
+                    # Looks like mp4 is always first in the list
+                    episodes.append(info_dict[0].get('file',''))
+                return episodes
         else:
             ep_list = soup.find('div', {'id':'epslistplace'}).get_text()
             logger.debug(ep_list)
@@ -54,7 +67,7 @@ class AniMixPlay(Anime, sitename='animixplay'):
             keyList = list(jdata.keys())
             del keyList[0]
             logger.debug(keyList)
-            return [jdata[x] for x in keyList]
+            return [jdata[x] for x in keyList if '.' in jdata[x]]
 
     def _scrape_metadata(self):
         self.title = helpers.soupify(helpers.get(self.url).text).select_one("span.animetitle").get_text()
