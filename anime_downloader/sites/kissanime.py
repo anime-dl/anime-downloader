@@ -11,17 +11,17 @@ logger = logging.getLogger(__name__)
 class KissanimeEpisode(AnimeEpisode, sitename='kissanime'):
     """KissanimeEpisode"""
     _base_url = 'https://kissanime.ru'
-    VERIFY_HUMAN = True
 
     def _get_sources(self):
-        ret = helpers.get(self.url+'&s=rapidvideo', cf=True)
+        ret = helpers.get(self.url+'&s=hydrax', sel=True).text
         data = self._scrape_episode(ret)
         return data
 
+
     def _scrape_episode(self, response):
-        rapid_re = re.compile(r'iframe.*src="https://(.*?)"')
-        rapid_url = rapid_re.findall(response.text)[0]
-        return [('rapidvideo', rapid_url)]
+        regex = r'iframe.*src="(https://.*?)"'
+        url = (re.search(regex,response).group(1))
+        return [('hydrax', url)]
 
 
 class KissAnime(Anime, sitename='kissanime'):
@@ -33,12 +33,14 @@ class KissAnime(Anime, sitename='kissanime'):
 
     @classmethod
     def search(cls, query):
-        soup = helpers.soupify(helpers.post(
-            cls.domain + '/Search/Anime',
-            data=dict(keyword=query),
-            referer=cls._referer,
-            cf=True
-        ))
+        sel = helpers.get("https://kissanime.ru",sel=True)
+        cookies = sel.cookies
+        agent = sel.user_agent # Note that the user agent must be the same as the one which generated the cookies
+        cookies = {c['name']: c['value'] for c in cookies}
+        soup = helpers.soupify((helpers.post("https://kissanime.ru/Search/Anime", headers = {
+            "User-Agent": agent,
+            "Referer": "https://kissanime.ru/Search/Anime"
+            },data = {"keyword": query},cookies=cookies)))
 
         # If only one anime found, kissanime redirects to anime page.
         # We don't want that
@@ -64,8 +66,9 @@ class KissAnime(Anime, sitename='kissanime'):
 
         return ret
 
+
     def _scrape_episodes(self):
-        soup = helpers.soupify(helpers.get(self.url, cf=True))
+        soup = helpers.soupify(helpers.get(self.url, sel=True).text)
         ret = [self.domain + str(a['href'])
                for a in soup.select('table.listing a')]
         logger.debug('Unfiltered episodes : {}'.format(ret))
@@ -83,7 +86,8 @@ class KissAnime(Anime, sitename='kissanime'):
         ret = ret[::-1]
         return ret
 
+
     def _scrape_metadata(self):
-        soup = helpers.soupify(helpers.get(self.url, cf=True))
+        soup = helpers.soupify(helpers.get(self.url, sel=True).text)
         info_div = soup.select_one('.barContent')
         self.title = info_div.select_one('a.bigChar').text
