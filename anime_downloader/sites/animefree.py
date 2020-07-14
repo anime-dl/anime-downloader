@@ -58,11 +58,10 @@ class AnimeFreeEpisode(AnimeEpisode, sitename='kissanimefree'):
             realId = int(ids[0]) + int(ids[1]) + 2
             _referer = ids[2]
 
-            d = helpers.post("https://kissanimefree.xyz/wp-admin/admin-ajax.php",
+            realUrl = helpers.post("https://kissanimefree.xyz/wp-admin/admin-ajax.php",
                 referer=f"https://kissanimefree.xyz/episode/{_referer}-episode-{realId}/",
-                data={"action":"kiss_player_ajax","server":"vidcdn","filmId":realId})
+                data={"action":"kiss_player_ajax","server":"vidcdn","filmId":realId}).text
 
-            realUrl = d.text
             realUrl = realUrl if realUrl.startswith('http') else "https:" + realUrl
 
             txt = helpers.get(realUrl).text
