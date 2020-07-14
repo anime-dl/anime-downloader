@@ -56,7 +56,7 @@ def setup(func):
             try:
                 from selenium import webdriver
                 from anime_downloader.sites.helpers import selescrape
-                sess = selescrape.get_session()
+                sess = selescrape
             except ImportError:
                 sess = cf_session
                 logger.warning("This provider may not work correctly because it requires selenium to work.\nIf you want to install it then run:  'pip install selenium' .")
@@ -79,7 +79,7 @@ def setup(func):
                            headers=default_headers,
                            **kwargs)
 
-        if not selescrape: #TODO fix this for selescrape too
+        if sess != selescrape: #TODO fix this for selescrape too
             res.raise_for_status()
             logger.debug(res.url)
             # logger.debug(res.text)
