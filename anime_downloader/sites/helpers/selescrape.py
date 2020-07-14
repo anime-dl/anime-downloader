@@ -173,23 +173,54 @@ def cloudflare_wait(driver):
             break
     time.sleep(1) # This is necessary to make sure everything has loaded fine.
 
-class get_session:
-    def request(self, request_type, url, **kwargs): #Headers not yet supported , headers={}
+
+def request(request_type, url, **kwargs): #Headers not yet supported , headers={}
+    params = kwargs.get('params', {})
+    new_url = add_url_params(url, params)
+    driver = driver_select()
+    status = status_select(driver, new_url, 'hide')
+    try:
+        cloudflare_wait(driver)
+        user_agent = driver.execute_script("return navigator.userAgent;") #dirty, but allows for all sorts of things above
+        cookies = driver.get_cookies()
+        text = driver.page_source
+        driver.close()
+        return SeleResponse(url, request_type, text, cookies, user_agent)
+    except:
+        driver.save_screenshot(f"{get_data_dir()}/screenshot.png");
+        driver.close()
+        logger.error(f'There was a problem getting the page: {new_url}. \
+        See the screenshot for more info:\n{get_data_dir()}/screenshot.png')
+
+
+class SeleResponse:
+    """
+    Class for the selenium response.
+
+    Attributes
+    ----------
+    url: string
+        URL of the webpage.
+    medthod: GET or POST
+        Request type.
+    text/content: string
+        Webpage contents.
+    cookies: dict
+        Stored cookies from the website.
+    user_agent: string
+        User agent used on the webpage
+    """
+    def __init__(self, url, method, text, cookies, user_agent):
         self.url = url
-        self.method = request_type
-        params = kwargs.get('params', {})
-        new_url = add_url_params(url, params)
-        driver = driver_select()
-        status = status_select(driver, new_url, 'hide')
-        try:
-            cloudflare_wait(driver)
-            self.text = driver.page_source
-            self.cookies = driver.get_cookies() #may need some formatting
-            self.user_agent = driver.execute_script("return navigator.userAgent;") #dirty, but allows for all sorts of things above
-            driver.close()
-            return self
-        except:
-            driver.save_screenshot(f"{get_data_dir()}/screenshot.png");
-            driver.close()
-            logger.error(f'There was a problem getting the page: {new_url}. \
-            See the screenshot for more info:\n{get_data_dir()}/screenshot.png')
+        self.method = method
+        self.text = text
+        self.content = text
+        self.cookies = cookies
+        self.user_agent = user_agent
+
+    def __str__(self):
+        return self.text
+
+    def __repr__(self):
+        return '<SeleResponse URL: {} METHOD: {} TEXT: {} COOKIES {} USERAGENT {}>'.format(
+            self.url, self.method, self.text, self.cookies, self.user_agent)
