@@ -92,9 +92,10 @@ def search(query, provider, choice=None):
 
     season_info = animeinfo.search_mal(query)
     match = animeinfo.fuzzy_match_metadata(season_info, search_results)
-    # You can probably return a ratio here and make the user choose based on a set ratio
-    # E.g if it's below 50 the user is promted to choose instead
-    return match.url
+    logger.debug('Match ratio: {}'.format(match.ratio))
+    # Arbitrary ratio, could probably be defined in config.
+    if match.ratio >= 50:
+        return match.SearchResult.url
 
     if choice:
         val = choice
