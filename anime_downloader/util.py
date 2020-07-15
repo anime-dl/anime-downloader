@@ -79,6 +79,7 @@ def format_search_results(search_results):
 
 
 def search(query, provider, choice=None):
+    from anime_downloader import animeinfo
     # Since this function outputs to stdout this should ideally be in
     # cli. But it is used in watch too. :(
     cls = get_anime_class(provider)
@@ -88,6 +89,12 @@ def search(query, provider, choice=None):
     if not search_results:
         logger.error('No such Anime found. Please ensure correct spelling.')
         sys.exit(1)
+
+    season_info = animeinfo.search_mal(query)
+    match = animeinfo.fuzzy_match_metadata(season_info, search_results)
+    # You can probably return a ratio here and make the user choose based on a set ratio
+    # E.g if it's below 50 the user is promted to choose instead
+    return match.url
 
     if choice:
         val = choice
