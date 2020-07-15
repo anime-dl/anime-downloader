@@ -1,16 +1,48 @@
 from anime_downloader.sites import helpers
 import logging
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
+# Need to silence the warning or add a dependency
 from fuzzywuzzy import fuzz
 
 logger = logging.getLogger(__name__)
 
 class AnimeInfo:
+    """
+    Attributes
+    ----------
+    url: string
+        URL for the info page
+    title: string
+        English name of the show.
+    jap_title: string
+        Japanase name of the show.
+    metadata: dict
+        Data not critical for core functions
+    """
     def __init__(self, url, title=None, jap_title=None, metadata={}):
         self.url = url
         self.title = title
         self.jap_title = jap_title
         self.metadata = metadata
+
+
+class MatchObject:
+    """
+    Attributes
+    ----------
+    AnimeInfo: object
+        Metadata object from the MAL search.
+    SearchResult: object
+        Metadata object from the provider search
+    ratio: int
+        A number between 0-100 describing the similarities between SearchResult and AnimeInfo.
+        Higher number = more similar.
+    """
+    def __init__(self, AnimeInfo, SearchResult, ratio = 100):
+        self.AnimeInfo = AnimeInfo
+        self.SearchResult = SearchResult
+        self.ratio = ratio
+
 
 def search_mal(query):
 
@@ -72,12 +104,12 @@ def fuzzy_match_metadata(seasons_info, search_results):
     results = []
     for i in seasons_info:
         for j in search_results:
+            # TODO add synonyms
             # 0 if there's no japanese name
             jap_ratio = fuzz.ratio(i.jap_title, j.meta_info['jap_title']) if j.meta_info.get('jap_title') else 0
             # Outputs the max ratio for japanese or english name (0-100)
             ratio = max(fuzz.ratio(i.title,j.title), jap_ratio)
-            results.append([ratio,j])
+            results.append(MatchObject(i, j, ratio))
 
     # Returns the result with highest ratio
-    return max(results, key=lambda item:item[0])[1]
-    # Should probably be made an object or dict to include the MAL info
+    return max(results, key=lambda item:item.ratio)
