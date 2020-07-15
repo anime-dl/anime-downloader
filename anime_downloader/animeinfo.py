@@ -14,15 +14,15 @@ class AnimeInfo:
         URL for the info page
     title: string
         English name of the show.
-    jap_title: string
+    jp_title: string
         Japanase name of the show.
     metadata: dict
         Data not critical for core functions
     """
-    def __init__(self, url, title=None, jap_title=None, metadata={}):
+    def __init__(self, url, title=None, jp_title=None, metadata={}):
         self.url = url
         self.title = title
-        self.jap_title = jap_title
+        self.jp_title = jp_title
         self.metadata = metadata
 
 
@@ -62,11 +62,11 @@ def search_mal(query):
         info_dict contains something like this: [{
         'url': 'https://myanimelist.net/anime/37779/Yakusoku_no_Neverland',
         'title': 'The Promised Neverland',
-        'jap_title': '約束のネバーランド'
+        'jp_title': '約束のネバーランド'
         },{
         'url': 'https://myanimelist.net/anime/39617/Yakusoku_no_Neverland_2nd_Season',
         'title': 'The Promised Neverland 2nd Season',
-        'jap_title': '約束のネバーランド 第2期'}]
+        'jp_title': '約束のネバーランド 第2期'}]
         """
         info_dict = {
             'url':url
@@ -74,7 +74,7 @@ def search_mal(query):
 
         # Maps specified info in sidebar to variables in info_dict
         name_dict = {
-        'Japanese:':'jap_title',
+        'Japanese:':'jp_title',
         'English:':'title',
         'synonyms:':'synonyms'
         }
@@ -89,7 +89,7 @@ def search_mal(query):
         # TODO error message when this stuff is not correctly scraped
         # Can happen if MAL is down or something similar
         return AnimeInfo(url = info_dict['url'], title = info_dict.get('title'),
-                jap_title = info_dict.get('jap_title'))
+                jp_title = info_dict.get('jp_title'))
     
     search_results = search(query)
     # Max 10 results
@@ -106,7 +106,7 @@ def fuzzy_match_metadata(seasons_info, search_results):
         for j in search_results:
             # TODO add synonyms
             # 0 if there's no japanese name
-            jap_ratio = fuzz.ratio(i.jap_title, j.meta_info['jap_title']) if j.meta_info.get('jap_title') else 0
+            jap_ratio = fuzz.ratio(i.jp_title, j.meta_info['jp_title']) if j.meta_info.get('jp_title') else 0
             # Outputs the max ratio for japanese or english name (0-100)
             ratio = max(fuzz.ratio(i.title,j.title), jap_ratio)
             results.append(MatchObject(i, j, ratio))
