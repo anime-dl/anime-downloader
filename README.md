@@ -95,7 +95,7 @@ Twist.moe **DOES NOT** work and **WILL NOT** work on iOS, a Python Module that i
 If you have trouble installing, see extended installation instructions [here](https://anime-downlader.readthedocs.io/en/latest/usage/installation.html) or join the [discord server](https://discord.gg/Qn2nWGm) for help.
 
 **Note**:
-- For cloudflare scraping [cfscrape](https://github.com/Anorov/cloudflare-scrape) is used. It depends on [`node-js`](https://nodejs.org/en/). So if you want to use cloudflare, make sure you have [node-js](https://nodejs.org/en/) installed.
+- For cloudflare scraping either [cfscrape](https://github.com/Anorov/cloudflare-scrape) or [selenium](https://www.selenium.dev/) is used. [Cfscrape](https://github.com/Anorov/cloudflare-scrape) depends on [`node-js`](https://nodejs.org/en/) and [selenium](https://www.selenium.dev/) utilizes an automated invisible instance of a browser (chrome/firefox). So, if you want to use cloudflare enabled sites, make sure you have [node-js](https://nodejs.org/en/) and a [webdriver](https://www.selenium.dev/selenium/docs/api/py/index.html#drivers) installed.
 - You might have to use pip3 depending on your system
 
 ## Usage
