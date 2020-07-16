@@ -94,7 +94,8 @@ def search(query, provider, choice=None):
     match = animeinfo.fuzzy_match_metadata(season_info, search_results)
     logger.debug('Match ratio: {}'.format(match.ratio))
     # Arbitrary ratio, could probably be defined in config.
-    if match.ratio >= 50:
+    if match.ratio >= 50 and not choice:
+        logger.info('Selected {}'.format(match.SearchResult.title))
         return match.SearchResult.url
 
     if choice:
