@@ -39,7 +39,7 @@ class VidStream(Anime, sitename='vidstream'):
                     title=re.sub(r"(E|e)pisode\s*[0-9]*", '', i.select('div.name')[0].text.strip()),
                     url=f"https://vidstreaming.io{i.get('href')}",
                     meta_info = {
-                    'version_key':'(Dub)'
+                    'version_key_dubbed':'(Dub)'
                     })
                 for i in search_results
             ]
