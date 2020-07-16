@@ -19,6 +19,6 @@ class Hydrax(BaseExtractor):
         decoded_url = base64.b64decode(obfuscated_url[-1] + obfuscated_url[:-1]).decode('utf-8')
 
         return {
-            'stream_url': f'https://{decoded_url}',
+            'stream_url': f'https://www.{decoded_url}',
             'referer': url
         }
