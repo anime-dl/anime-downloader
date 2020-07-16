@@ -3,6 +3,8 @@ import logging
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 # Need to silence the warning or add a dependency
 from fuzzywuzzy import fuzz
+from anime_downloader.sites import get_anime_class
+from anime_downloader.config import Config
 
 logger = logging.getLogger(__name__)
 
@@ -104,11 +106,26 @@ def fuzzy_match_metadata(seasons_info, search_results):
     results = []
     for i in seasons_info:
         for j in search_results:
+            # Allows for returning of cleaned title by the provider using 'title_cleaned' in meta_info.
+            # To make fuzzy matching better.
+            # TODO allow this for japanese titles too
+            title_provider = j.title if not j.meta_info.get('title_cleaned') else j.meta_info.get('title_cleaned')
+            title_info = i.title
+
+            # Essentially adds the chosen key to the query if the version is in use
+            # Example "Naruto" -> "Naruto (Dub)" if 'dubbed' in 'version' in config and 'version_key' == '(Dub)'
+            # Dirty solution, but should work pretty well
+            config = Config['siteconfig'].get(get_anime_class(j.url).sitename,{})
+            version = config.get('version')
+            version_use = version == 'dubbed'
+            if 'version_key' in j.meta_info and version_use:
+                title_info += ' ' + j.meta_info['version_key']
+            
             # TODO add synonyms
             # 0 if there's no japanese name
             jap_ratio = fuzz.ratio(i.jp_title, j.meta_info['jp_title']) if j.meta_info.get('jp_title') else 0
             # Outputs the max ratio for japanese or english name (0-100)
-            ratio = max(fuzz.ratio(i.title,j.title), jap_ratio)
+            ratio = max(fuzz.ratio(title_info,title_provider), jap_ratio)
             results.append(MatchObject(i, j, ratio))
 
     # Returns the result with highest ratio
