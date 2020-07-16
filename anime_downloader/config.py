@@ -135,6 +135,9 @@ DEFAULT_CONFIG = {
                 "gounlimited"
             ]
         },
+        'kissanime': {
+            "version":'subbed'
+        },
     }
 }
 
