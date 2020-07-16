@@ -12,10 +12,16 @@ class AnimeOut(Anime, sitename='animeout'):
         @classmethod
         def search(cls, query):
             search_results = helpers.soupify(helpers.get(cls.url, params={'s': query})).select('h3.post-title > a')
+            # Removes the unneded metadata from the title
+            # Used by MAL matcher
+            clean_title_regex = r'\(.*?\)' 
             return [
                 SearchResult(
                     title = i.text,
-                    url = i.get('href'))
+                    url = i.get('href'),
+                    meta_info = {
+                        'title_cleaned':re.sub(clean_title_regex,"",i.text).strip()
+                    })
                 for i in search_results
             ]
 
