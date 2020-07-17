@@ -88,6 +88,11 @@ def search_mal(query):
                 if text.startswith(j):
                     info_dict[name_dict[j]] = text[len(j):].strip()
 
+        # Backup name if no English name isn't registered in sidebar
+        if not info_dict.get('title'):
+            name = soup.select('span[itemprop=name]')
+            info_dict['title'] = name[0].text if name else None
+
         # TODO error message when this stuff is not correctly scraped
         # Can happen if MAL is down or something similar
         return AnimeInfo(url = info_dict['url'], title = info_dict.get('title'),
@@ -110,6 +115,8 @@ def fuzzy_match_metadata(seasons_info, search_results):
             # To make fuzzy matching better.
             # TODO allow this for japanese titles too
             title_provider = j.title if not j.meta_info.get('title_cleaned') else j.meta_info.get('title_cleaned')
+            # On some titles this will be None
+            # causing errors below
             title_info = i.title
 
             # Essentially adds the chosen key to the query if the version is in use
@@ -120,6 +127,7 @@ def fuzzy_match_metadata(seasons_info, search_results):
             version_use = version == 'dubbed'
             # Adds something like (Sub) or (Dub) to the title
             key_used = j.meta_info.get('version_key_dubbed','') if version_use else j.meta_info.get('version_key_subbed','')
+
             title_info += ' ' + key_used
             
             # TODO add synonyms
