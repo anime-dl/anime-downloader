@@ -1,6 +1,6 @@
 from anime_downloader.sites import helpers
 import logging
-import json
+# import json
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 # Need to silence the warning or add a dependency
 from fuzzywuzzy import fuzz
