@@ -88,7 +88,7 @@ def search(query, provider, choice=None):
 
     if not search_results:
         logger.error('No such Anime found. Please ensure correct spelling.')
-        sys.exit(1)
+        return None
 
     season_info = animeinfo.search_mal(query)
     match = animeinfo.fuzzy_match_metadata(season_info, search_results)
@@ -100,18 +100,23 @@ def search(query, provider, choice=None):
 
     if choice:
         val = choice
-    else:
-        val = click.prompt('Enter the anime no: ', type=int, default=1, err=True)
 
-    try:
-        url = search_results[val-1].url
-        title = search_results[val-1].title
-    except IndexError:
-        logger.error('Only maximum of {} search results are allowed.'
-                     ' Please input a number less than {}'.format(
-                         len(search_results), len(search_results)+1))
-        sys.exit(1)
+    # Loop to allow re-propmt if the user chooses incorrectly
+    # Makes it harder to unintentionally exit the anime command if it's automated
+    while True:
+        if not val:
+            val = click.prompt('Enter the anime no: ', type=int, default=1, err=True)
 
+        try:
+            url = search_results[val-1].url
+            title = search_results[val-1].title
+        except IndexError:
+            logger.error('Only maximum of {} search results are allowed.'
+                         ' Please input a number less than {}'.format(
+                             len(search_results), len(search_results)+1))
+            val = False
+            continue
+        break
 
     logger.info('Selected {}'.format(title))
 
