@@ -1,6 +1,5 @@
 from anime_downloader.sites import helpers
 import logging
-# import json
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 # Need to silence the warning or add a dependency
 from fuzzywuzzy import fuzz
@@ -108,41 +107,43 @@ def search_mal(query):
     return season_info
 
 
-# To use anilist change the function from util.py search_mal to search_anilist
 def search_anilist(query):
-	def search(query):
-		ani_query = """
-			query ($id: Int, $page: Int, $search: String, $type: MediaType) {
-				Page (page: $page, perPage: 1) {
-					media (id: $id, search: $search, type: $type) {
-						id
-						idMal
-						description(asHtml: false)
-						seasonYear
-						title {
-							english
-							romaji
-							native
-						}
-						coverImage {
-							extraLarge
-						}
-						bannerImage
-						averageScore
-						status
-						episodes
-						}
-					}
-				}
-			"""
-		url = 'https://graphql.anilist.co'
-		
-		results = helpers.post(url, json={'query': ani_query, 'variables': {'search': query, 'page': 1, 'type': 'ANIME'}}).json()['data']['Page']['media'][0]
-		return [AnimeInfo(url = 'https://anilist.co/anime/' + str(results['id']), title = results['title']['romaji'],
-				jp_title = results['title']['native'])]
-	# using the first result to compare
-	search_results = search(query)
-	return search_results
+    def search(query):
+        ani_query = """
+            query ($id: Int, $page: Int, $search: String, $type: MediaType) {
+                Page (page: $page, perPage: 1) {
+                    media (id: $id, search: $search, type: $type) {
+                        id
+                        idMal
+                        description(asHtml: false)
+                        seasonYear
+                        title {
+                            english
+                            romaji
+                            native
+                        }
+                        coverImage {
+                            extraLarge
+                        }
+                        bannerImage
+                        averageScore
+                        status
+                        episodes
+                        }
+                    }
+                }
+            """
+        url = 'https://graphql.anilist.co'
+        
+        # TODO check in case there's no results
+        # It seems to error on no results (anime -ll DEBUG dl "nev")
+        results = helpers.post(url, json={'query': ani_query, 'variables': {'search': query, 'page': 1, 'type': 'ANIME'}}).json()['data']['Page']['media'][0]
+        return [AnimeInfo(url = 'https://anilist.co/anime/' + str(results['id']), title = results['title']['romaji'],
+                jp_title = results['title']['native'])]
+    # using the first result to compare
+    search_results = search(query)
+    return search_results
+
 
 def fuzzy_match_metadata(seasons_info, search_results):
     # Gets the SearchResult object with the most similarity title-wise to the first MAL result
