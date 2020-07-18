@@ -98,9 +98,7 @@ def search(query, provider, choice=None):
         logger.info('Selected {}'.format(match.SearchResult.title))
         return match.SearchResult.url
 
-    if choice:
-        val = choice
-
+    val = choice if choice else None
     # Loop to allow re-propmt if the user chooses incorrectly
     # Makes it harder to unintentionally exit the anime command if it's automated
     while True:
