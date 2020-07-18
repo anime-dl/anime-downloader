@@ -23,6 +23,7 @@ DEFAULT_CONFIG = {
         'selescrape_browser': None,
         'selescrape_browser_executable_path' : None,
         'selescrape_driver_binary_path' : None,
+        'fallback_providers':['vidstream'],
     },
     'watch': {
         'quality': '1080p',
