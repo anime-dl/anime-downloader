@@ -84,13 +84,12 @@ def search(query, provider, choice=None):
     # cli. But it is used in watch too. :(
     cls = get_anime_class(provider)
     search_results = cls.search(query)
-    click.echo(format_search_results(search_results), err=True)
 
     if not search_results:
         logger.error('No such Anime found. Please ensure correct spelling.')
         return None
 
-    season_info = animeinfo.search_mal(query)
+    season_info = animeinfo.search_anilist(query)
     match = animeinfo.fuzzy_match_metadata(season_info, search_results)
     logger.debug('Match ratio: {}'.format(match.ratio))
     # Arbitrary ratio, could probably be defined in config.
@@ -98,6 +97,7 @@ def search(query, provider, choice=None):
         logger.info('Selected {}'.format(match.SearchResult.title))
         return match.SearchResult.url
 
+    click.echo(format_search_results(search_results), err=True)
     val = choice if choice else None
     # Loop to allow re-propmt if the user chooses incorrectly
     # Makes it harder to unintentionally exit the anime command if it's automated
@@ -133,11 +133,12 @@ def split_anime(anime, episode_range):
     return anime
 
 
-def parse_episode_range(anime, episode_range):
+def parse_episode_range(max_range, episode_range):
     if not episode_range:
         episode_range = '1:'
     if episode_range.endswith(':'):
-        episode_range += str(len(anime) + 1)
+        length = max_range if type(max_range) == int else len(max_range)
+        episode_range += str(length + 1)
     if episode_range.startswith(':'):
         episode_range = '1' + episode_range
     return episode_range
