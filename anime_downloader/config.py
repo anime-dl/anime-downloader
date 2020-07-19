@@ -16,7 +16,7 @@ DEFAULT_CONFIG = {
       	'chunk_size': '10',
         'fallback_qualities': ['720p', '480p', '360p'],
         'force_download': False,
-        'file_format': '{anime_title}/{anime_title}_{ep_no}',
+        'file_format': '{animeinfo_anime_title}/{animeinfo_anime_title}_{provider}_{ep_no}',
         'provider': 'twist.moe',
         'external_downloader': '',
         'aria2c_for_torrents': False,
