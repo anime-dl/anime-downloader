@@ -21,8 +21,9 @@ class AnimeInfo:
     metadata: dict
         Data not critical for core functions
     """
-    def __init__(self, url, title=None, jp_title=None, metadata={}):
+    def __init__(self, url, episodes,title=None, jp_title=None, metadata={}):
         self.url = url
+        self.episodes = episodes
         self.title = title
         self.jp_title = jp_title
         self.metadata = metadata
@@ -45,7 +46,7 @@ class MatchObject:
         self.SearchResult = SearchResult
         self.ratio = ratio
 
-
+# Currently episodes not implemented, causing error
 def search_mal(query):
 
     def search(query):
@@ -137,9 +138,13 @@ def search_anilist(query):
         
         # TODO check in case there's no results
         # It seems to error on no results (anime -ll DEBUG dl "nev")
-        results = helpers.post(url, json={'query': ani_query, 'variables': {'search': query, 'page': 1, 'type': 'ANIME'}}).json()['data']['Page']['media'][0]
+        results = helpers.post(url, json={'query': ani_query, 'variables': {'search': query, 'page': 1, 'type': 'ANIME'}}).json()['data']['Page']['media']
+        if not results:
+            logger.error('No results found in anilist')
+            raise NameError
+        results = results[0]
         return [AnimeInfo(url = 'https://anilist.co/anime/' + str(results['id']), title = results['title']['romaji'],
-                jp_title = results['title']['native'])]
+                jp_title = results['title']['native'], episodes = int(results['episodes']))]
     # using the first result to compare
     search_results = search(query)
     return search_results
