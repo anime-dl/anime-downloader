@@ -87,7 +87,7 @@ def search(query, provider, choice=None):
 
     if not search_results:
         logger.error('No such Anime found. Please ensure correct spelling.')
-        return None
+        return None, None
 
     season_info = animeinfo.search_anilist(query)
     match = animeinfo.fuzzy_match_metadata(season_info, search_results)
@@ -95,16 +95,15 @@ def search(query, provider, choice=None):
     # Arbitrary ratio, could probably be defined in config.
     if match.ratio >= 50 and not choice:
         logger.info('Selected {}'.format(match.SearchResult.title))
-        return match.SearchResult.url
+        return match.SearchResult.url, None
 
     click.echo(format_search_results(search_results), err=True)
-    val = choice if choice else None
+    val = choice if choice != None else None
     # Loop to allow re-propmt if the user chooses incorrectly
     # Makes it harder to unintentionally exit the anime command if it's automated
     while True:
-        if not val:
-            val = click.prompt('Enter the anime no: ', type=int, default=1, err=True)
-
+        if val == None:
+            val = click.prompt('Enter the anime no (0 to switch provider): ', type=int, default=1, err=True)
         try:
             url = search_results[val-1].url
             title = search_results[val-1].title
@@ -116,9 +115,12 @@ def search(query, provider, choice=None):
             continue
         break
 
+    if val == 0:
+        return None, 0
+
     logger.info('Selected {}'.format(title))
 
-    return url
+    return url, val
 
 
 def split_anime(anime, episode_range):
