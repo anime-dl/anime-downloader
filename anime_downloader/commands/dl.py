@@ -44,7 +44,7 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     '--force-download', '-f', is_flag=True,
     help='Force downloads even if file exists')
 @click.option(
-    '--file-format', '-ff', default='{anime_title}/{anime_title}_{ep_no}',
+    '--file-format', '-ff', default='{animeinfo_anime_title}/{animeinfo_anime_title}_{provider}_{ep_no}',
     help='Format for how the files to be downloaded be named.',
     metavar='FORMAT STRING'
 )
@@ -87,36 +87,52 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
     fallback_providers = Config['dl']['fallback_providers']
     fallback_providers.insert(0, provider)
 
-    # TODO: keep track on episodes so the next provider can take over on the current episode
-    # TODO: make the downloaded title consistent, (maybe use the title from MAL) if another 
-    # provider takes over it uses a different naming scheme
-    # TODO: Proper provider handling. If the episode is correctly downloaded it should reset the
-    # fallback list. The current for loop will probably be prone to breakage under longer downloads 
-    # (One Piece) due to this.
-    # TODO: Allow the user to skip to the next provider in search select (util.py)
-
     # TODO: flag/config to turn off this
     # TODO: make the function used based on config (MAL or Anilist)
-    episode_count = animeinfo.search_anilist(query)[0].episodes - 1
+    info = animeinfo.search_anilist(query)[0]
+    episode_count = info.episodes - 1
     episode_range = util.parse_episode_range(episode_count, episode_range)
     episode_range_split = episode_range.split(':')
 
+    # Stores the choices for each provider, to prevent re-prompting search
+    choice_dict = {}
     for _episode in range(int(episode_range_split[0]), int(episode_range_split[-1])+1):
         episode_range = str(_episode)
         for provider in fallback_providers:
-            #logger.info('Current provider: {}'.format(provider))
+            if not get_anime_class(provider):
+                logger.info('"{}" is an invalid provider'.format(provider))
+                continue
+
+            logger.info('Current provider: {}'.format(provider))
             # A copy because _anime_url gets modified
             _anime_url = anime_url[:]
-            """ Download the anime using the url or search for it.
-            """
             # TODO: Replace by factory
             cls = get_anime_class(_anime_url)
+
+            _choice_provider = choice[:] if choice else None
+            if choice_dict.get(provider) != None and not _choice_provider:
+                # May need some better naming
+                _choice_provider = choice_dict.get(provider)
+
+            # To make the downloads use the correct name if URL:s are used
+            real_provider = cls.sitename if cls else provider
+            # This will allow for animeinfo metadata in filename and one filename for multiple providers
+            rep_dict = {
+                'animeinfo_anime_title': util.slugify(info.title),
+                'provider': util.slugify(real_provider),
+                'anime_title':'{anime_title}',
+                'ep_no':'{ep_no}'
+            }
+            fixed_file_format = file_format.format(**rep_dict)
 
             disable_ssl = cls and cls.__name__ == 'Masterani' or disable_ssl
             session.get_session().verify = not disable_ssl
 
             if not cls:
-                _anime_url = util.search(_anime_url, provider, choice)
+                _anime_url, choice_provider = util.search(_anime_url, provider, _choice_provider)
+                # Simple if would not work with 0
+                if choice_provider != None:
+                    choice_dict[provider] = choice_provider
                 if not _anime_url:
                     continue
 
@@ -166,7 +182,7 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
                             episode.ep_no, anime.title)
                         )
                         util.external_download(external_downloader, episode,
-                                               file_format, path=download_dir)
+                                               fixed_file_format, path=download_dir)
                         continue
                     if chunk_size is not None:
                         chunk_size *= 1e6
@@ -174,7 +190,7 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
                     with requests_cache.disabled():
                         episode.download(force=force_download,
                                          path=download_dir,
-                                         format=file_format,
+                                         format=fixed_file_format,
                                          range_size=chunk_size)
                     print()
             break
