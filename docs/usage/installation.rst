@@ -45,7 +45,7 @@ Windows via ``choco``
 
 -  then the commands to view a show would be::
 
-        anime watch --provider *Insert provider name* --new
+        anime dl "showname" --provider *Insert provider name* --new --play *mpv or vlc*
         
 
 Mac
