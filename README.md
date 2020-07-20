@@ -38,7 +38,6 @@ Yeah. Me too! That's why this tool exists.
 - Specify the quality you want to stream or download.
 - Search and download.
 - Save yourselves from those malicious ads.
-- Add any anime to your watch list using `anime watch` and let anime downloader take care of everything for you.
 - Download using external downloader ([aria2](https://aria2.github.io/) recommended).
 - Configurable using `config.json`. See [documentation](https://anime-downlader.readthedocs.io/en/latest/usage/config.html).
 
