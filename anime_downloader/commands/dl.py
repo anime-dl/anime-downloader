@@ -96,7 +96,7 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
         # Default anilist
         info_provider = animeinfo.search_anilist
 
-    info = info_provider(query)[0]
+    info = info_provider(query)
     episode_count = info.episodes - 1
     # Interprets the episode range for use in a for loop
     # 1:3 -> for _episode in range(1, 4):
@@ -142,7 +142,7 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             session.get_session().verify = not disable_ssl
 
             if not cls:
-                _anime_url, choice_provider = util.search(_anime_url, provider, _choice_provider)
+                _anime_url, choice_provider = util.search(_anime_url, provider, _choice_provider, season_info=info)
                 # Simple if would not work with 0
                 if choice_provider != None:
                     choice_dict[provider] = choice_provider
