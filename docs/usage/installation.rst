@@ -2,6 +2,7 @@
 Installation
 ------------
 This document provides complete installation instructions for the following systems: Windows, Mac, Linux, Android, iOS and Windows Choco. Please contact the dev team if you find any errors or inconsistencies in this document. 
+
 Windows
 ~~~~~~~
 
@@ -10,7 +11,7 @@ Please see this video: https://www.youtube.com/watch?v=gC2tctOL5I8
 Automatic Windows install
 ~~~~~~~~~~~~~~~~~~~~~
 
-Add the following to a file named install.bat and then run it as administrator;
+Add the following to a file named install.bat and then run it as Administrator;
 
 .. code::
 
@@ -24,21 +25,19 @@ Add the following to a file named install.bat and then run it as administrator;
 Windows via ``choco``
 ~~~~~~~~~~~~~~~~~~~~~
 
-   Contributed by @CodaTheOtaku
-
-.. note::
-    make sure you are running the Command Prompt in "Run as Adminstrator" mode
+ Contributed by @CodaTheOtaku
+**NOTE** Ensure the Command Prompt (cmd) is being ran as Administrator.
 
 - Install `Chocolatey`_ Package manager.
 
--  Using the Chocolatey Package Manager;::
+-  Using the Chocolatey Package Manager; ::
 
        choco install -y git mpv python3 aria2 nodejs
--  Once these are installed;::
+-  Once these are installed; ::
 
         pip3 install -U git+https://github.com/vn-ki/anime-downloader.git
 
--  then the commands to view a show would be;::
+-  Then, the commands to view a show would be; ::
 
         anime dl "showname" --provider *Insert provider name* --new --play *mpv or vlc*
         
@@ -46,14 +45,14 @@ Windows via ``choco``
 Mac
 ~~~
 
-Anime-Downloader is avaible from brew via the following command;::
+Anime-Downloader is available from brew via the following command; ::
 
     brew install anime-downloader
 
 Linux
 ~~~~~
 
-If you are using Linux, you most probably already have python installed.
+If you are using Linux, Python is probably already installed.
 Type ``pip --version`` into your terminal. If the command returns python2, replace
 all the following ``pip`` with ``pip3``.
 
@@ -83,7 +82,7 @@ Android
 
 This does not require a rooted device to work.
 
-- Install Termux or similar Terminal Emulator
+- Install Termux or similar Terminal Emulator.
 
 - Install Aria2c via the following command if using Termux; ::
 
@@ -106,9 +105,9 @@ This does not require a rooted device to work.
 iOS (Jailbreak Required)
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you want this project to work on an iOS Device, you will need a jailbroken iPhone. Visit r/jailbreak on reddit for the latest jailbreak news and information.
+ A jailbroken iPhone is required. Visit r/jailbreak on Reddit for the latest jailbreak news and information.
 
-Tinkering May be Required
+Tinkering May be Required.
 
 - Install the following packages from the mcapollo repo (https://mcapollo.github.io/Public/) using your favorite package manager; ::
 
