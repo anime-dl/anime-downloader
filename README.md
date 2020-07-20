@@ -85,7 +85,7 @@ Yeah. Me too! That's why this tool exists.
 
 Sites That require Selenium **DO NOT** and **WILL NOT** work on mobile operating systems
 
-Twist.moe **DOES NOT** work and **WILL NOT** work on iOS, a Python Module that is required for twist.moe is not supported on iOS and cannot be installed
+Twist.moe **DOES NOT** work and **WILL NOT** work on iOS, a specific Python module that is required for twist.moe is not supported on iOS and cannot be installed.
 
 ## Installation
 
