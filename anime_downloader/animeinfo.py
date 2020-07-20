@@ -5,6 +5,7 @@ from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from fuzzywuzzy import fuzz
 from anime_downloader.sites import get_anime_class
 from anime_downloader.config import Config
+from anime_downloader.util import primitive_search
 
 logger = logging.getLogger(__name__)
 
@@ -97,25 +98,33 @@ def search_mal(query):
             name = soup.select('span[itemprop=name]')
             info_dict['title'] = name[0].text if name else None
 
+        # Always sets episodes
+        if not info_dict.get('episodes') or info_dict.get('episodes') == 'Unknown':
+            info_dict['episodes'] = 0
+
         # TODO error message when this stuff is not correctly scraped
         # Can happen if MAL is down or something similar
         return AnimeInfo(url = info_dict['url'], title = info_dict.get('title'),
-                jp_title = info_dict.get('jp_title'), episodes= int(info_dict.get('episodes')))
+                jp_title = info_dict.get('jp_title'), episodes = int(info_dict['episodes']))
     
     search_results = search(query)
+    season_info = []
     # Max 10 results
-    # season_info = [scrape_metadata(search_results[i].url) for i in range(min(len(search_results), 10))]
-    
+    for i in range(min(len(search_results), 10)):
+        anime_info = scrape_metadata(search_results[i].url)
+        if anime_info.episodes != 'Unknown':
+            season_info.append(anime_info)
+
     # Uses the first result to compare
-    season_info = [scrape_metadata(search_results[0].url)] 
-    return season_info
+    #season_info = [scrape_metadata(search_results[0].url)] 
+    return primitive_search(season_info)
 
 
 def search_anilist(query):
     def search(query):
         ani_query = """
             query ($id: Int, $page: Int, $search: String, $type: MediaType) {
-                Page (page: $page, perPage: 1) {
+                Page (page: $page, perPage: 10) {
                     media (id: $id, search: $search, type: $type) {
                         id
                         idMal
@@ -145,13 +154,13 @@ def search_anilist(query):
         if not results:
             logger.error('No results found in anilist')
             raise NameError
-        results = results[0]
-        return [AnimeInfo(url = 'https://anilist.co/anime/' + str(results['id']), title = results['title']['romaji'],
-                jp_title = results['title']['native'], episodes = int(results['episodes']))]
-    # using the first result to compare
-    search_results = search(query)
-    return search_results
 
+        search_results = [AnimeInfo(url = 'https://anilist.co/anime/' + str(i['id']), title = i['title']['romaji'],
+                jp_title = i['title']['native'], episodes = int(i['episodes'])) for i in results if i['episodes'] != None]
+        return search_results
+
+    search_results = search(query)
+    return primitive_search(search_results)
 
 def fuzzy_match_metadata(seasons_info, search_results):
     # Gets the SearchResult object with the most similarity title-wise to the first MAL result
