@@ -1,12 +1,7 @@
 
 Installation
 ------------
-
-The following are extended installation instructions for Windows and
-Linux users. (For windows choco users, scroll to last)
-
-Installation Instructions for *Mobile operating systems* are at the bottom, the 2 OS's explained are Android and iOS
-
+This document provides complete installation instructions for the following systems: Windows, Mac, Linux, Android, iOS and Windows Choco. Please contact the dev team if you find any errors or inconsistencies in this document. 
 Windows
 ~~~~~~~
 
@@ -51,7 +46,7 @@ Windows via ``choco``
 Mac
 ~~~
 
-Anime downloader is avaible from brew.::
+Anime-Downloader is avaible from brew.::
 
     brew install anime-downloader
 
@@ -65,7 +60,7 @@ all the following ``pip`` with ``pip3``.
 
 - Install aria2.
 
--  Install anime-downloader ::
+-  Install Anime-Downloader ::
 
     pip3 install anime-downloader
 
