@@ -86,17 +86,30 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
     # Should maybe make this a whole new command?
     fallback_providers = Config['dl']['fallback_providers']
     fallback_providers.insert(0, provider)
-
+    # Eliminates duplicates while keeping order
+    fallback_providers = sorted(set(fallback_providers),key=fallback_providers.index)  
+    # TODO: flag for fallback providers
     # TODO: flag/config to turn off this
-    # TODO: make the function used based on config (MAL or Anilist)
-    info = animeinfo.search_anilist(query)[0]
+    # Config based info provider
+    info_provider = animeinfo.match_info_provider(Config['dl']['info_provider']) 
+    if not info_provider:
+        # Default anilist
+        info_provider = animeinfo.search_anilist
+
+    info = info_provider(query)[0]
     episode_count = info.episodes - 1
+    # Interprets the episode range for use in a for loop
+    # 1:3 -> for _episode in range(1, 4):
     episode_range = util.parse_episode_range(episode_count, episode_range)
     episode_range_split = episode_range.split(':')
 
     # Stores the choices for each provider, to prevent re-prompting search
     choice_dict = {}
     for _episode in range(int(episode_range_split[0]), int(episode_range_split[-1])+1):
+        # Exits if all providers are skipped
+        if [choice_dict[i] for i in choice_dict] == [0]*len(fallback_providers):
+            logger.info('All providers skipped, exiting')
+            exit()
         episode_range = str(_episode)
         for provider in fallback_providers:
             if not get_anime_class(provider):
@@ -141,7 +154,7 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             try:
                 anime = cls(_anime_url, quality=quality,
                             fallback_qualities=fallback_qualities)
-            
+
             # I have yet to investigate all errors this can output
             # No sources found gives error which exits the script
             except:
