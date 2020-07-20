@@ -2,7 +2,6 @@ import pyaes
 import base64
 from hashlib import md5
 import warnings
-import tempfile
 import requests_cache
 import requests
 import logging
