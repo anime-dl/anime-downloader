@@ -3,10 +3,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to anime-downloader's documentation!
+Welcome to Anime-Downloader's documentation!
 ============================================
 
-anime-downloader helps you download your favorite anime
+Anime-Downloader helps you download your favorite anime
 
 Features
 --------
@@ -15,22 +15,34 @@ Features
 - Specify the quality you want to stream or download.
 - Search and download.
 - Save yourselves from those malicious ads.
-- Add any anime to your watch list using `anime watch` and let anime downloader take care of everything for you.
 - Download using external downloader ([aria2](https://aria2.github.io/) recommended).
 - Configurable using `config.json`. See [doc](https://github.com/vn-ki/anime-downloader/wiki/Config).
 
 Supported Sites
 ---------------
 
-- 9anime
-- twist.moe
-- KissAnime [cloudflare]
-- Masterani.me [cloudlfare]
-- KissCartoon [cloudflare]
+- Animepahe
+- Anistream
+- Animeflix
+- Animefreak
 - Gogoanime
-- AnimePahe [cloudflare]
+- Dubbedanime
+- a2zanime
+- animeout
+- itsaturday
+- Animeflv
+- Kickassanime
+- DreamAnime
+- RyuAnime
+- Erai-Raws
+- Animesimple
+- Animerush
+- Watchmovie
+- twist.moe - requires Node.js
+- Kissanime - requires Node.js
+- Kisscartoon - requires Node.js
 
-NOTE: To download from sites marked `[cloudflare]`, anime-downloader has to be installed with cloudflare support(See below).
+NOTE: To download from sites marked `[cloudflare]`, anime-downloader has to be installed with cloudflare support(See below);
 
 .. toctree::
    :maxdepth: 2
