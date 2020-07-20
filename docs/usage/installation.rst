@@ -149,7 +149,7 @@ Tinkering May be Required
    
 - And Delete that line so it looks like this
 
-::image: https://i.imgur.com/0fRiNP6.png
+:image: https://i.imgur.com/0fRiNP6.png
 
 - press the ctrl button then the letter "o", press enter, then press the ctrl button again, then press the letter "X"
 
