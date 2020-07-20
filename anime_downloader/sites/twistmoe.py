@@ -1,4 +1,4 @@
-from Crypto.Cipher import AES
+import pyaes
 import base64
 from hashlib import md5
 import warnings
@@ -111,7 +111,8 @@ def decrypt(encrypted, passphrase):
     key_iv = bytes_to_key(passphrase, salt, 32+16)
     key = key_iv[:32]
     iv = key_iv[32:]
-    aes = AES.new(key, AES.MODE_CBC, iv)
+    aes = pyaes.AESModeOfOperationCBC(key, iv=iv)
+#    aes = AES.new(key, AES.MODE_CBC, iv) ## Old ##
     return unpad(aes.decrypt(encrypted[16:]))
 
 
