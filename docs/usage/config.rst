@@ -9,9 +9,9 @@ This can be found under:
 
 -  ``C:\Users\[Username]\AppData\Roaming\anime downloader`` on Windows
 
-- ``~/Library/Application Support/anime downloader`` on macos
+- ``~/Library/Application Support/anime downloader`` on MacOS
 
-You can override the settings in the ``config.json``, with command line
+You can override the settings in the ``config.json`` with the following command line
 arguments.
 
 The default config file is given below.
@@ -153,7 +153,7 @@ Choosing preferred server
 ########
 ``server`` contains the preferred server. 
 
-``servers`` contains a list of servers, used in order. Set preferred server by changing the order of the list.
+``servers`` contains a list of servers, used in order. Set the preferred server by changing the order of the list.
 
 ``fallback_servers`` contains a list of servers to use if the primary server is not found, used in order.
  
