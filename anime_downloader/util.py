@@ -78,7 +78,8 @@ def format_search_results(search_results):
     return table
 
 
-def search(query, provider, choice=None):
+def search(query, provider, choice=None, season_info=None):
+    from anime_downloader.config import Config
     from anime_downloader import animeinfo
     # Since this function outputs to stdout this should ideally be in
     # cli. But it is used in watch too. :(
@@ -89,8 +90,14 @@ def search(query, provider, choice=None):
         logger.error('No such Anime found. Please ensure correct spelling.')
         return None, None
 
-    season_info = animeinfo.search_anilist(query)
-    match = animeinfo.fuzzy_match_metadata(season_info, search_results)
+    if not season_info:
+        season_info = info_provider(query)
+        info_provider = animeinfo.match_info_provider(Config['dl']['info_provider']) 
+        if not info_provider:
+            # Default anilist
+            info_provider = animeinfo.search_anilist
+
+    match = animeinfo.fuzzy_match_metadata([season_info], search_results)
     logger.debug('Match ratio: {}'.format(match.ratio))
     # Arbitrary ratio, could probably be defined in config.
     if match.ratio >= 50 and not choice:
@@ -121,6 +128,27 @@ def search(query, provider, choice=None):
     logger.info('Selected {}'.format(title))
 
     return url, val
+
+
+def primitive_search(search_results):
+    headers = [
+        'SlNo',
+        'Title',
+    ]
+    table = [(i+1, v.title)
+             for i, v in enumerate(search_results)]
+    table = tabulate(table, headers, tablefmt='psql')
+    table = '\n'.join(table.split('\n')[::-1])
+    click.echo(table, err=True)
+    
+    while True:
+        val = click.prompt('Enter the anime no (0 to switch provider): ', type=int, default=1, err=True)
+        try:
+            return search_results[val-1]
+        except IndexError:
+            logger.error('Only maximum of {} search results are allowed.'
+                         ' Please input a number less than {}'.format(
+                             len(search_results), len(search_results)+1))
 
 
 def split_anime(anime, episode_range):
