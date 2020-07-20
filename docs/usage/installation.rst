@@ -135,28 +135,28 @@ Tinkering May be Required
 
    git clone https://github.com/vn-ki/anime-downloader.git
    
-- next you want change your directory into the cloned repo. To do so, use the following command (it is case sensitive) ::
+- Next, change your directory into the cloned repo. To do so, use the following case-sensitive command; ::
 
    cd anime-downloader
    
-- next you want to type in this command to start editing the file ::
+- Following this, type in the following command to start editing the file; ::
 
    nano setup.py
    
-- use the arrow keys to navigate to the line that says ::
+- Navigate to the following line using the arrow keys; ::
 
    'pycryptodome>=3.8.2',
    
-- And Delete that line so it looks like this
+- Delete the highlighted line as to match the image below;
 
 :image: https://i.imgur.com/0fRiNP6.png
 
-- press the ctrl button then the letter "o", press enter, then press the ctrl button again, then press the letter "X"
+- Press ctrl+o then enter then press ctrl+X.
 
-- it should exit you back to the command line
+- If all the steps were performed correctly then you should be back to the command line.
 
-- **(continue)** type the following command to install the project ::
+- **(continue)** Type the following command to install the project; ::
 
    python3 setup.py install
    
-- let it run through, then the program should work as it does on the computer
+- Wait for the line to finish, then the program functions the same as the PC version.
