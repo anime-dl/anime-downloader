@@ -51,37 +51,39 @@ Yeah. Me too! That's why this tool exists.
 
 ## Supported Sites
 **Details about the sites can be found in [FAQ](https://github.com/vn-ki/anime-downloader/wiki/FAQ)**
+
+- a2zanime
 - Anistream
 - AnimeOnline360
 - Animeflix
 - Animefreak
-- Gogoanime
-- Dubbedanime
-- a2zanime
 - animeout
-- itsaturday
 - Animeflv
-- Kickassanime
-- DreamAnime
-- RyuAnime
-- Erai-Raws
+- AnimeKisa
 - Animesimple
 - Animerush
-- Watchmovie
-- Nyaa.si
 - Animedaisuki
-- Justdubs
+- Animixplay
+- Animepahe - requires Node.js
 - Animevibe
-- Yify
+- DreamAnime
+- Dubbedanime
+- Erai-Raws
+- Gogoanime
+- itsaturday
+- Justdubs
+- Kickassanime
 - Kissanimefree
+- Kissanime - requires Selenium
+- Kisscartoon - requires Selenium
+- Nyaa.si
+- RyuAnime
+- twist.moe - requires Node.js
+- Watchmovie
+- Yify
 - Vostfree
 - Voiranime
 - Vidstream
-- Animixplay
-- Animepahe - requires Node.js
-- twist.moe - requires Node.js
-- Kissanime - requires Selenium
-- Kisscartoon - requires Selenium
 
 Sites That require Selenium **DO NOT** and **WILL NOT** work on mobile operating systems
 
