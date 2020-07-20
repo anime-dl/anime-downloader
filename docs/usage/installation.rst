@@ -112,26 +112,23 @@ This does not require a rooted device to work
 iOS (Jailbreak Required)
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you want this project to work on an iOS Device, you will need a jailbroken iPhone. visit r/jailbreak on reddit for the latest jailbreak news and information.
-
-If you already happen to be jailbroken, then great! you are all set to go!
+If you want this project to work on an iOS Device, you will need a jailbroken iPhone. Visit r/jailbreak on reddit for the latest jailbreak news and information.
 
 Tinkering May be Required
 
-- Install the following packages from the mcapollo repo (https://mcapollo.github.io/Public/) using your favorite package manager ::
+- Install the following packages from the mcapollo repo (https://mcapollo.github.io/Public/) using your favorite package manager; ::
 
-   Aria2, Python@3.7, git, nano (for File editing), A Terminal Emulator (I recommend NewTerm because it has navigation keys)
+   Aria2, Python@3.7, git, nano (for File editing) and a Terminal Emulator (NewTerm is an example of this).
    
-- Open your Terminal Emulator and type in the following command ::
+- Open your Terminal Emulator and type in the following command; ::
 
    python3 -m ensurepip
    
-- That should set up pip and setuptools
+- Pip and setuptools should now be installed.
+The following steps install Anime-Downloader;
+- To install Anime-Downloader before the PR which moves an unsupported module into extras follow along, if not, skip to **(continue)**; 
 
-- Next you want to install Anime-Downloader
-- To Install Anime-Downloader before the PR which moves an unsupported module into extras follow along, if not, skip to where it has continue in parentheses 
-
-- First you want to clone the repository via this command ::
+- Firstly, clone the repository via this command; ::
 
    git clone https://github.com/vn-ki/anime-downloader.git
    
