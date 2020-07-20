@@ -2,6 +2,7 @@ import pyaes
 import base64
 from hashlib import md5
 import warnings
+import tempfile
 import requests_cache
 import requests
 import logging
@@ -112,8 +113,11 @@ def decrypt(encrypted, passphrase):
     key = key_iv[:32]
     iv = key_iv[32:]
     aes = pyaes.AESModeOfOperationCBC(key, iv=iv)
-#    aes = AES.new(key, AES.MODE_CBC, iv) ## Old ##
-    return unpad(aes.decrypt(encrypted[16:]))
+    prepared_var = bytearray()
+    for x in [encrypted[i:i+16] for i in range(0, len(encrypted), 16)][1:]:
+        prepared_var += aes.decrypt(x)
+#    oh the pain of all the testing that went into this, all in all thanks @RedGuy for your loop
+    return unpad(prepared_var)
 
 
 def get_cookie(soup):
