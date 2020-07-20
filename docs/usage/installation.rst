@@ -10,7 +10,7 @@ Please see this video: https://www.youtube.com/watch?v=gC2tctOL5I8
 Automatic Windows install
 ~~~~~~~~~~~~~~~~~~~~~
 
-Add the following to a file named install.bat and then run it as administrator.
+Add the following to a file named install.bat and then run it as administrator;
 
 .. code::
 
@@ -31,14 +31,14 @@ Windows via ``choco``
 
 - Install `Chocolatey`_ Package manager.
 
--  Using the Chocolatey Package Manager::
+-  Using the Chocolatey Package Manager;::
 
        choco install -y git mpv python3 aria2 nodejs
--  Once these are installed::
+-  Once these are installed;::
 
         pip3 install -U git+https://github.com/vn-ki/anime-downloader.git
 
--  then the commands to view a show would be::
+-  then the commands to view a show would be;::
 
         anime dl "showname" --provider *Insert provider name* --new --play *mpv or vlc*
         
@@ -46,26 +46,25 @@ Windows via ``choco``
 Mac
 ~~~
 
-Anime-Downloader is avaible from brew.::
+Anime-Downloader is avaible from brew via the following command;::
 
     brew install anime-downloader
 
 Linux
 ~~~~~
 
-If you are using linux, you most probably already have python installed.
-
-Type ``pip --version`` into your terminal. If it says python2, replace
+If you are using Linux, you most probably already have python installed.
+Type ``pip --version`` into your terminal. If the command returns python2, replace
 all the following ``pip`` with ``pip3``.
 
 - Install aria2.
 
--  Install Anime-Downloader ::
+-  Install Anime-Downloader via the following command; ::
 
     pip3 install anime-downloader
 
 
--  To install master branch::
+-  To install the bleeding-edge version of Anime-Downloader use this alternative command;:
 
         pip3 install -U git+https://github.com/vn-ki/anime-downloader.git
 -  Enjoy.
@@ -82,27 +81,27 @@ all the following ``pip`` with ``pip3``.
 Android
 ~~~~~~~
 
-This does not require a rooted device to work
+This does not require a rooted device to work.
 
 - Install Termux or similar Terminal Emulator
 
-- Install Aria2c via the following command if using Termux ::
+- Install Aria2c via the following command if using Termux; ::
 
    pkg install aria2c
    
-- Install Python via the following command if using Termux ::
+- Install Python via the following command if using Termux; ::
 
    pkg install python
    
-- Install git via the following command if using Termux ::
+- Install git via the following command if using Termux; ::
 
    pkg install git
    
-- Install Anime-Downloader via the following command after python and git are installed ::
+- Install Anime-Downloader via the following command after python and git are installed; ::
 
    pip3 install -U git+https://github.com/vn-ki/anime-downloader.git
  
-- Enjoy, The normal commands should work the same as on the computer
+- The usage commands should now match the commands used on PC.
 
 iOS (Jailbreak Required)
 ~~~~~~~~~~~~~~~~~~~~~~~~
