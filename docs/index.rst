@@ -42,7 +42,7 @@ Supported Sites
 - Kissanime - requires Node.js
 - Kisscartoon - requires Node.js
 
-NOTE: To download from sites marked `[cloudflare]`, anime-downloader has to be installed with cloudflare support(See below).
+NOTE: To download from sites marked `[cloudflare]`, anime-downloader has to be installed with cloudflare support(See below);
 
 .. toctree::
    :maxdepth: 2
