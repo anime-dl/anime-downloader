@@ -20,6 +20,8 @@ class AnimeInfo:
         Japanase name of the show.
     metadata: dict
         Data not critical for core functions
+    episodes: int
+        Max amount of episodes
     """
     def __init__(self, url, episodes,title=None, jp_title=None, metadata={}):
         self.url = url
@@ -79,12 +81,13 @@ def search_mal(query):
         name_dict = {
         'Japanese:':'jp_title',
         'English:':'title',
-        'synonyms:':'synonyms'
+        'synonyms:':'synonyms',
+        'Episodes:':'episodes'
         }
-
-        extra_info = [i.text.strip() for i in soup.select('div.spaceit_pad')]
+        info = soup.select('span.dark_text')
+        extra_info = [i.parent.text.strip() for i in info]
         for i in extra_info:
-            text = i.strip()
+            text = i.replace('\n','').strip()
             for j in name_dict:
                 if text.startswith(j):
                     info_dict[name_dict[j]] = text[len(j):].strip()
@@ -97,7 +100,7 @@ def search_mal(query):
         # TODO error message when this stuff is not correctly scraped
         # Can happen if MAL is down or something similar
         return AnimeInfo(url = info_dict['url'], title = info_dict.get('title'),
-                jp_title = info_dict.get('jp_title'))
+                jp_title = info_dict.get('jp_title'), episodes= int(info_dict.get('episodes')))
     
     search_results = search(query)
     # Max 10 results
@@ -184,3 +187,13 @@ def fuzzy_match_metadata(seasons_info, search_results):
 
     # Returns the result with highest ratio
     return max(results, key=lambda item:item.ratio)
+
+
+def match_info_provider(name):
+    ALL_INFO_SITES = {
+    'myanimelist':search_mal,
+    'anilist':search_anilist,
+    }
+    if name.lower() in ALL_INFO_SITES:
+        return ALL_INFO_SITES[name.lower()]
+    return None
