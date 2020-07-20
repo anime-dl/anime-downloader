@@ -3,7 +3,7 @@ Testing
 
 We use pytest for testing.
 
-You can run specific tests by specifying the file.::
+You can run specific tests by specifying the file; ::
 
     $ pytest tests/test_twistmoe.py
 
@@ -23,7 +23,7 @@ To use it, run the tool using the new provider. In this doc, we will use the exa
 In the above output, we can see the temp directory created by the tool.
 Copy this temp directory to tests/test_sites and name it test_<your provider name>.
 
-After this you are ready to write the tests. The twist.moe test file is given below for reference.
+After this, you are ready to write the tests. The twist.moe test file is given below for reference.
 
 Remember to use the function :py:function:`configure_httpretty(<your provider name>)` to configure the mock before making any requests.
 
