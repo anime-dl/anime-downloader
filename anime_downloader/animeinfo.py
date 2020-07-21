@@ -49,19 +49,18 @@ class MatchObject:
         self.SearchResult = SearchResult
         self.ratio = ratio
 
-# Currently episodes not implemented, causing error
+
 def search_mal(query):
 
     def search(query):
         soup = helpers.soupify(helpers.get('https://myanimelist.net/anime.php', params = {'q':query}))
         search_results = soup.select("a.hoverinfo_trigger.fw-b.fl-l")
-        # URL is only really needed, but good to have title too since MAL can be made non-automatic
-        # in the future with a flag if it's bugged
         return [SearchResult(
             url = i.get('href'),
             title = i.select('strong')[0].text
             ) for i in search_results]
-        
+
+
     def scrape_metadata(url):
         soup = helpers.soupify(helpers.get(url))
         """
@@ -106,21 +105,25 @@ def search_mal(query):
         # Can happen if MAL is down or something similar
         return AnimeInfo(url = info_dict['url'], title = info_dict.get('title'),
                 jp_title = info_dict.get('jp_title'), episodes = int(info_dict['episodes']))
-    
+
     search_results = search(query)
     season_info = []
     # Max 10 results
     for i in range(min(len(search_results), 10)):
         anime_info = scrape_metadata(search_results[i].url)
-        if anime_info.episodes != 'Unknown':
+        if anime_info.episodes:
             season_info.append(anime_info)
 
-    # Uses the first result to compare
+    # Code below uses the first result to compare
     #season_info = [scrape_metadata(search_results[0].url)] 
+    #return season_info
+
+    # Prompts the user for selection
     return primitive_search(season_info)
 
 
 def search_anilist(query):
+
     def search(query):
         ani_query = """
             query ($id: Int, $page: Int, $search: String, $type: MediaType) {
@@ -160,10 +163,12 @@ def search_anilist(query):
         return search_results
 
     search_results = search(query)
+    # Prompts the user for selection
     return primitive_search(search_results)
 
+
 def fuzzy_match_metadata(seasons_info, search_results):
-    # Gets the SearchResult object with the most similarity title-wise to the first MAL result
+    # Gets the SearchResult object with the most similarity title-wise to the first MAL/Anilist result
     results = []
     for i in seasons_info:
         for j in search_results:
@@ -199,6 +204,9 @@ def fuzzy_match_metadata(seasons_info, search_results):
 
 
 def match_info_provider(name):
+    """Get the info provider based on a name.
+    This allows dynamic info providers based on config.
+    """
     ALL_INFO_SITES = {
     'myanimelist':search_mal,
     'anilist':search_anilist,
