@@ -115,7 +115,7 @@ def decrypt(encrypted, passphrase):
     prepared_var = bytearray()
     for x in [encrypted[i:i+16] for i in range(0, len(encrypted), 16)][1:]:
         prepared_var += aes.decrypt(x)
-#    oh the pain of all the testing that went into this, all in all thanks @RedGuy for your loop
+#   oh the pain of all the testing that went into this, all in all thanks @RedGuy for your loop
     return unpad(prepared_var)
 
 
