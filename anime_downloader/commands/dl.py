@@ -98,18 +98,21 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
 
     info = info_provider(query)
     episode_count = info.episodes - 1
-    # Interprets the episode range for use in a for loop
+    # Interprets the episode range for use in a for loop.
     # 1:3 -> for _episode in range(1, 4):
     episode_range = util.parse_episode_range(episode_count, episode_range)
     episode_range_split = episode_range.split(':')
 
-    # Stores the choices for each provider, to prevent re-prompting search
+    # Stores the choices for each provider, to prevent re-prompting search.
     choice_dict = {}
+
+    # A ton of fake variables are created, making this a function would probably be preferable.
     for _episode in range(int(episode_range_split[0]), int(episode_range_split[-1])+1):
-        # Exits if all providers are skipped
+        # Exits if all providers are skipped.
         if [choice_dict[i] for i in choice_dict] == [0]*len(fallback_providers):
             logger.info('All providers skipped, exiting')
             exit()
+
         episode_range = str(_episode)
         for provider in fallback_providers:
             if not get_anime_class(provider):
@@ -122,14 +125,15 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             # TODO: Replace by factory
             cls = get_anime_class(_anime_url)
 
+            # This is just to make choices in providers presistent between searches.
             _choice_provider = choice[:] if choice else None
             if choice_dict.get(provider) != None and not _choice_provider:
-                # May need some better naming
+                # May need some better naming.
                 _choice_provider = choice_dict.get(provider)
 
-            # To make the downloads use the correct name if URL:s are used
+            # To make the downloads use the correct name if URL:s are used.
             real_provider = cls.sitename if cls else provider
-            # This will allow for animeinfo metadata in filename and one filename for multiple providers
+            # This will allow for animeinfo metadata in filename and one filename for multiple providers.
             rep_dict = {
                 'animeinfo_anime_title': util.slugify(info.title),
                 'provider': util.slugify(real_provider),
@@ -206,4 +210,6 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
                                          format=fixed_file_format,
                                          range_size=chunk_size)
                     print()
+
+            # If it's all successfull proceeds to next ep instead of looping.
             break
