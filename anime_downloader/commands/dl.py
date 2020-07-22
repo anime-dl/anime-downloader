@@ -7,8 +7,6 @@ import requests_cache
 from anime_downloader import session, util
 from anime_downloader.__version__ import __version__
 from anime_downloader.sites import get_anime_class, ALL_ANIME_SITES
-from anime_downloader.config import Config
-from anime_downloader import animeinfo
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +42,7 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     '--force-download', '-f', is_flag=True,
     help='Force downloads even if file exists')
 @click.option(
-    '--file-format', '-ff', default='{animeinfo_anime_title}/{animeinfo_anime_title}_{provider}_{ep_no}',
+    '--file-format', '-ff', default='{anime_title}/{anime_title}_{ep_no}',
     help='Format for how the files to be downloaded be named.',
     metavar='FORMAT STRING'
 )
@@ -79,137 +77,64 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
 def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             force_download, download_dir, file_format, provider,
             external_downloader, chunk_size, disable_ssl, fallback_qualities, choice, skip_fillers):
-
+    """ Download the anime using the url or search for it.
+    """
     query = anime_url[:]
+
     util.print_info(__version__)
+    # TODO: Replace by factory
+    cls = get_anime_class(anime_url)
 
-    # Should maybe make this a whole new command?
-    fallback_providers = Config['dl']['fallback_providers']
-    fallback_providers.insert(0, provider)
-    # Eliminates duplicates while keeping order
-    fallback_providers = sorted(set(fallback_providers),key=fallback_providers.index)  
-    # TODO: flag for fallback providers
-    # TODO: flag/config to turn off this
-    # Config based info provider
-    info_provider = animeinfo.match_info_provider(Config['dl']['info_provider']) 
-    if not info_provider:
-        # Default anilist
-        info_provider = animeinfo.search_anilist
+    disable_ssl = cls and cls.__name__ == 'Masterani' or disable_ssl
+    session.get_session().verify = not disable_ssl
 
-    info = info_provider(query)
-    episode_count = info.episodes - 1
-    # Interprets the episode range for use in a for loop.
-    # 1:3 -> for _episode in range(1, 4):
-    episode_range = util.parse_episode_range(episode_count, episode_range)
-    episode_range_split = episode_range.split(':')
+    if not cls:
+        anime_url = util.search(anime_url, provider, choice)
+        cls = get_anime_class(anime_url)
 
-    # Stores the choices for each provider, to prevent re-prompting search.
-    choice_dict = {}
+    anime = cls(anime_url, quality=quality,
+                fallback_qualities=fallback_qualities)
+    logger.info('Found anime: {}'.format(anime.title))
 
-    # A ton of fake variables are created, making this a function would probably be preferable.
-    for _episode in range(int(episode_range_split[0]), int(episode_range_split[-1])+1):
-        # Exits if all providers are skipped.
-        if [choice_dict[i] for i in choice_dict] == [0]*len(fallback_providers):
-            logger.info('All providers skipped, exiting')
-            exit()
+    animes = util.parse_ep_str(anime, episode_range)
 
-        episode_range = str(_episode)
-        for provider in fallback_providers:
-            if not get_anime_class(provider):
-                logger.info('"{}" is an invalid provider'.format(provider))
+    # TODO:
+    # Two types of plugins:
+    #   - Aime plugin: Pass the whole anime
+    #   - Ep plugin: Pass each episode
+    if url or player:
+        skip_download = True
+
+    if download_dir and not skip_download:
+        logger.info('Downloading to {}'.format(os.path.abspath(download_dir)))
+    if skip_fillers:
+        fillers = util.get_filler_episodes(query)
+    for episode in animes:
+        if skip_fillers and fillers:
+            if episode.ep_no in fillers:
+                logger.info("Skipping episode {} because it is a filler.".format(episode.ep_no))
                 continue
+        
+        if url:
+            util.print_episodeurl(episode)
 
-            logger.info('Current provider: {}'.format(provider))
-            # A copy because _anime_url gets modified
-            _anime_url = anime_url[:]
-            # TODO: Replace by factory
-            cls = get_anime_class(_anime_url)
+        if player:
+            util.play_episode(episode, player=player)
 
-            # This is just to make choices in providers presistent between searches.
-            _choice_provider = choice[:] if choice else None
-            if choice_dict.get(provider) != None and not _choice_provider:
-                # May need some better naming.
-                _choice_provider = choice_dict.get(provider)
-
-            # To make the downloads use the correct name if URL:s are used.
-            real_provider = cls.sitename if cls else provider
-            # This will allow for animeinfo metadata in filename and one filename for multiple providers.
-            rep_dict = {
-                'animeinfo_anime_title': util.slugify(info.title),
-                'provider': util.slugify(real_provider),
-                'anime_title':'{anime_title}',
-                'ep_no':'{ep_no}'
-            }
-            fixed_file_format = file_format.format(**rep_dict)
-
-            disable_ssl = cls and cls.__name__ == 'Masterani' or disable_ssl
-            session.get_session().verify = not disable_ssl
-
-            if not cls:
-                _anime_url, choice_provider = util.search(_anime_url, provider, _choice_provider, season_info=info)
-                # Simple if would not work with 0
-                if choice_provider != None:
-                    choice_dict[provider] = choice_provider
-                if not _anime_url:
-                    continue
-
-                cls = get_anime_class(_anime_url)
-
-            try:
-                anime = cls(_anime_url, quality=quality,
-                            fallback_qualities=fallback_qualities)
-
-            # I have yet to investigate all errors this can output
-            # No sources found gives error which exits the script
-            except:
+        if not skip_download:
+            if external_downloader:
+                logging.info('Downloading episode {} of {}'.format(
+                    episode.ep_no, anime.title)
+                )
+                util.external_download(external_downloader, episode,
+                                       file_format, path=download_dir)
                 continue
-
-            logger.info('Found anime: {}'.format(anime.title))
-            try:
-                animes = util.parse_ep_str(anime, episode_range)
-            except RuntimeError:
-                logger.error('No episode found with index {}'.format(episode_range))
-                continue
-            # TODO:
-            # Two types of plugins:
-            #   - Aime plugin: Pass the whole anime
-            #   - Ep plugin: Pass each episode
-            if url or player:
-                skip_download = True
-
-            if download_dir and not skip_download:
-                logger.info('Downloading to {}'.format(os.path.abspath(download_dir)))
-            if skip_fillers:
-                fillers = util.get_filler_episodes(query)
-            for episode in animes:
-                if skip_fillers and fillers:
-                    if episode.ep_no in fillers:
-                        logger.info("Skipping episode {} because it is a filler.".format(episode.ep_no))
-                        continue
-                
-                if url:
-                    util.print_episodeurl(episode)
-
-                if player:
-                    util.play_episode(episode, player=player)
-
-                if not skip_download:
-                    if external_downloader:
-                        logging.info('Downloading episode {} of {}'.format(
-                            episode.ep_no, anime.title)
-                        )
-                        util.external_download(external_downloader, episode,
-                                               fixed_file_format, path=download_dir)
-                        continue
-                    if chunk_size is not None:
-                        chunk_size *= 1e6
-                        chunk_size = int(chunk_size)
-                    with requests_cache.disabled():
-                        episode.download(force=force_download,
-                                         path=download_dir,
-                                         format=fixed_file_format,
-                                         range_size=chunk_size)
-                    print()
-
-            # If it's all successfull proceeds to next ep instead of looping.
-            break
+            if chunk_size is not None:
+                chunk_size *= 1e6
+                chunk_size = int(chunk_size)
+            with requests_cache.disabled():
+                episode.download(force=force_download,
+                                 path=download_dir,
+                                 format=file_format,
+                                 range_size=chunk_size)
+            print()
