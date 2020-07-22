@@ -39,7 +39,6 @@ class AniMixPlay(Anime, sitename='animixplay'):
 
         return data
 
-
     def _scrape_episodes(self):
         url = self.url
         soup = helpers.soupify(helpers.get(url))

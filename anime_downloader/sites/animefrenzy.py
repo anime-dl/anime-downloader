@@ -52,4 +52,3 @@ class AnimeFrenzyEpisode(AnimeEpisode, sitename='animefrenzy'):
         link = soup.select_one("div.host > a.btn-video")
         logger.debug(link)
         return [("vidstreaming", link.get("data-video-link"))]
-#        raise NotImplementedError
