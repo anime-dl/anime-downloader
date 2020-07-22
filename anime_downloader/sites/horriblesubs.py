@@ -32,7 +32,10 @@ class HorribleSubs(Anime, sitename='horriblesubs'):
             resp = helpers.get('https://horriblesubs.info/api.php', params = {'method': 'getshows', 'type': 'show', 'showid': show_id, 'nextid': next_id})
 
             if resp.text == "DONE":
-                break
+                if next_id == 1:
+                    resp = helpers.get('https://horriblesubs.info/api.php', params = {'method': 'getshows', 'type': 'show', 'showid': show_id})
+                else:
+                    break
 
             soup = helpers.soupify(resp)
             episodes.extend([x['href'] for x in soup.select(f'div.rls-info-container .link-{self.quality} .hs-magnet-link > a')])
