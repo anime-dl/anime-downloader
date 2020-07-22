@@ -79,8 +79,8 @@ def format_search_results(search_results):
 
 
 def search(query, provider, val=None, season_info=None):
-    from anime_downloader.config import Config
-    from anime_downloader import animeinfo
+    # Will use animeinfo sync if season_info is provided
+
     # Since this function outputs to stdout this should ideally be in
     # cli. But it is used in watch too. :(
     cls = get_anime_class(provider)
@@ -90,22 +90,22 @@ def search(query, provider, val=None, season_info=None):
         logger.error('No such Anime found. Please ensure correct spelling.')
         return None, None
 
-    if not season_info:
-        season_info = animeinfo.search_anilist(query)
-
-    match = animeinfo.fuzzy_match_metadata([season_info], search_results)
-    logger.debug('Match ratio: {}'.format(match.ratio))
-    # Arbitrary ratio, could probably be defined in config.
-    if match.ratio >= 50 and not val:
-        logger.debug('Selected {}'.format(match.SearchResult.title))
-        return match.SearchResult.url, None
+    if season_info:
+        from anime_downloader import animeinfo
+        match = animeinfo.fuzzy_match_metadata([season_info], search_results)
+        logger.debug('Match ratio: {}'.format(match.ratio))
+        # Arbitrary ratio, could probably be defined in config.
+        if match.ratio >= 50 and not val:
+            logger.debug('Selected {}'.format(match.SearchResult.title))
+            return match.SearchResult.url, None
 
     click.echo(format_search_results(search_results), err=True)
     # Loop to allow re-propmt if the user chooses incorrectly
     # Makes it harder to unintentionally exit the anime command if it's automated
     while True:
         if val == None:
-            val = click.prompt('Enter the anime no (0 to switch provider): ', type=int, default=1, err=True)
+            val = click.prompt('Enter the anime no{}:'. format(' (0 to switch provider)'*(season_info != None)),
+                type=int, default=1, err=True)
         try:
             url = search_results[val-1].url
             title = search_results[val-1].title
