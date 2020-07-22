@@ -87,9 +87,9 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
     query = anime_url[:]
     util.print_info(__version__)
 
-    providers.insert(0, provider)
+    fallback_providers.insert(0, provider)
     # Eliminates duplicates while keeping order
-    providers = sorted(set(providers),key=providers.index)  
+    providers = sorted(set(fallback_providers),key=fallback_providers.index)  
     # TODO: flag for fallback providers
 
     info = animeinfo.search_anilist(query)
@@ -114,7 +114,6 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
                 continue
 
             logger.debug('Current provider: {}'.format(provider))
-            # A copy because _anime_url gets modified
             # TODO: Replace by factory
             cls = get_anime_class(anime_url)
 
@@ -135,7 +134,7 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             # This is just to make choices in providers presistent between searches.
             choice_provider = choice if choice else choice_dict.get(provider)
             if not cls:
-                _anime_url, choice_provider = util.search(anime_url, provider, choice_provider, season_info=info)
+                _anime_url, choice_provider = util.search(anime_url, provider, val=choice_provider, season_info=info)
                 choice_dict[provider] = choice_provider
                 if not _anime_url:
                     continue
