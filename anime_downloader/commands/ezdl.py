@@ -136,7 +136,7 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             if not cls:
                 _anime_url, choice_provider = util.search(anime_url, provider, val=choice_provider, season_info=info)
                 choice_dict[provider] = choice_provider
-                if not _anime_url:
+                if choice_provider == 0:
                     continue
 
                 cls = get_anime_class(_anime_url)
