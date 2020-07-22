@@ -117,9 +117,6 @@ def search(query, provider, val=None, season_info=None):
             continue
         break
 
-    if val == 0:
-        return None, 0
-
     logger.info('Selected {}'.format(title))
 
     return url, val
