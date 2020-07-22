@@ -49,7 +49,7 @@ class MatchObject:
         self.SearchResult = SearchResult
         self.ratio = ratio
 
-
+# Not used
 def search_mal(query):
 
     def search(query):
@@ -201,16 +201,3 @@ def fuzzy_match_metadata(seasons_info, search_results):
 
     # Returns the result with highest ratio
     return max(results, key=lambda item:item.ratio)
-
-
-def match_info_provider(name):
-    """Get the info provider based on a name.
-    This allows dynamic info providers based on config.
-    """
-    ALL_INFO_SITES = {
-    'myanimelist':search_mal,
-    'anilist':search_anilist,
-    }
-    if name.lower() in ALL_INFO_SITES:
-        return ALL_INFO_SITES[name.lower()]
-    return None
