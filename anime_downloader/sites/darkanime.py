@@ -36,14 +36,6 @@ class DarkAnime(Anime, sitename = 'darkanime'):
 
 
 class DarkAnimeEpisode(AnimeEpisode, sitename='darkanime'):
-    def getLink(self, name, _id):
-        if name == "trollvid":
-            return "https://trollvid.net/embed/" + _id
-        elif name == "mp4upload":
-            return f"https://mp4upload.com/embed-{_id}.html"
-        elif name == "xstreamcdn":
-            return "https://www.xstreamcdn.com/v/" + _id
-
     def _get_sources(self):
 
         server_links = {
