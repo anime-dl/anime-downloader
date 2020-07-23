@@ -5,20 +5,18 @@ from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 
 class DarkAnime(Anime, sitename = 'darkanime'):
-
     sitename = 'darkanime'
 
     @classmethod
     def search(cls, query):
         soup = helpers.soupify(helpers.get('https://app.darkanime.stream/api/v1/animes', params={'term': query}).json()['animesHtml'])
         soup = soup.find_all('a', href=True)
-        results = [[x.find('h3').text.strip(), 'https://app.darkanime.stream' + x['href']] for x in soup]
         search_results = [
             SearchResult(
-                title = i[0],
-                url = i[1],
+                title = x.find('h3').text.strip(),
+                url = 'https://app.darkanime.stream' + x['href'],
                 )
-            for i in results
+            for x in soup
             ]
         return search_results
     
