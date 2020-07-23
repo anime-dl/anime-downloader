@@ -43,12 +43,9 @@ class DarkAnimeEpisode(AnimeEpisode, sitename='darkanime'):
         server = self.config.get("server", "mp4upload")
         resp = helpers.soupify(helpers.get(self.url).text).find_all('script')#[-3].string
         for a in resp:
-            try:
+            if type(a.string) != type(None):
                 if 'sources' in a.string:
                     res = a.string
-            except:
-                pass
-
         hosts = json.loads(re.search(r"(\[[^)]+\])", res).group(1))
         _type = hosts[0]["type"]
         try:
