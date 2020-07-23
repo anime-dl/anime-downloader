@@ -12,6 +12,7 @@ ALL_ANIME_SITES = [
     ('itsaturday', 'itsaturday', 'Itsaturday'),
     ('animefreak', 'animefreak', 'AnimeFreak'),
     ('animeflix', 'animeflix', 'AnimeFlix'),
+    ('darkanime', 'darkanime', 'DarkAnime'),
     ('dubbedanime', 'dubbedanime', 'Dubbedanime'),
     ('animeout', 'animeout', 'AnimeOut'),
     ('animerush','animerush','AnimeRush'),

@@ -66,6 +66,7 @@ Yeah. Me too! That's why this tool exists.
 - Animixplay
 - Animepahe - requires Node.js
 - Animevibe
+- Darkanime
 - DreamAnime
 - Dubbedanime
 - Erai-Raws
