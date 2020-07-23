@@ -41,8 +41,15 @@ class DarkAnimeEpisode(AnimeEpisode, sitename='darkanime'):
 
     def _get_sources(self):
         server = self.config.get("server", "mp4upload")
-        resp = helpers.soupify(helpers.get(self.url).text).find_all('script')[-3].string
-        hosts = json.loads(re.search(r"(\[[^)]+\])", resp).group(1))
+        resp = helpers.soupify(helpers.get(self.url).text).find_all('script')#[-3].string
+        for a in resp:
+            try:
+                if 'sources' in a.string:
+                    res = a.string
+            except:
+                pass
+
+        hosts = json.loads(re.search(r"(\[[^)]+\])", res).group(1))
         _type = hosts[0]["type"]
         try:
             host = list(filter(lambda video: video["host"] == server and video["type"] == _type, hosts))[0]
@@ -50,9 +57,7 @@ class DarkAnimeEpisode(AnimeEpisode, sitename='darkanime'):
             host = hosts[0]
             if host["host"] == "mp4upload" and len(hosts) > 1:
                 host = hosts[1]
-
         name = host["host"]
         _id = host["source"]
         link = self.getLink(name, _id)
-
         return [(name, link)]
