@@ -63,6 +63,10 @@ DEFAULT_CONFIG = {
             "version": "subbed",
             "server": "trollvid",
         },
+        'darkanime': {
+            "version": "subbed",
+            "server": "mp4upload",
+        },
         'dreamanime': {
             "version": "subbed",
             "server": "trollvid",
