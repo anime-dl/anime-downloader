@@ -1,4 +1,5 @@
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.remote.remote_connection import LOGGER as serverLogger
 from selenium.webdriver.support.ui import WebDriverWait
 from anime_downloader.const import get_random_header
 from selenium.webdriver.common.by import By
@@ -14,7 +15,7 @@ import logging
 import click
 import time
 import json
-
+serverLogger.setLevel(logging.ERROR)
 logger = logging.getLogger(__name__)
 
 
@@ -101,7 +102,7 @@ def driver_select(): #
         chrome_options.add_argument("--disable-gpu")
         profile_path = os.path.join(data_dir, 'Selenium_chromium')
         log_path = os.path.join(data_dir, 'chromedriver.log')
-        chrome_options.add_argument(f'--log-path {log_path}')
+        chrome_options.add_argument('--log-level=OFF')
         chrome_options.add_argument(f"--user-data-dir={profile_path}")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--window-size=1920,1080")
@@ -121,7 +122,7 @@ def driver_select(): #
                 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
                 cap = DesiredCapabilities.CHROME
                 cap['binary_location'] = executable
-                driver = webdriver.Chrome(executable_path=binary, desired_capabilities=cap, options=chrome_options)
+                driver = webdriver.Chrome(executable_path=binary, desired_capabilities=cap, options=chrome_options, service_log_path=os.path.devnull)
     return driver
 
 
