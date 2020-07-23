@@ -33,11 +33,28 @@ class DarkAnime(Anime, sitename = 'darkanime'):
             self.title = helpers.soupify(helpers.get(self.url).text).find_all('h2')[0].text.strip()
             
 class DarkAnimeEpisode(AnimeEpisode, sitename='darkanime'):
+    def getLink(self, name, _id):
+        if name == "trollvid":
+            return "https://trollvid.net/embed/" + _id
+        elif name == "mp4upload":
+            return f"https://mp4upload.com/embed-{_id}.html"
+        elif name == "xstreamcdn":
+            return "https://www.xstreamcdn.com/v/" + _id
+
     def _get_sources(self):
-        soup = helpers.soupify(helpers.get(self.url).text)
-        players = soup.find_all('iframe')
-        sources = soup.find_all('script')[-3].string
-        regex = r"(\[[^)]+\])"
-        sources = json.loads(re.search(regex, sources).group(1))
-        link = 'https://www.mp4upload.com/embed-{}.html'.format(sources[-1]['source']) if sources[-1]['host'] == 'mp4upload' else 'https://www.mp4upload.com/embed-{}.html'.format(sources[0]['source'])
-        return [('mp4upload', link)]
+        server = self.config.get("server", "mp4upload")
+        resp = helpers.soupify(helpers.get(self.url).text).find_all('script')[-3].string
+        hosts = json.loads(re.search(r"(\[[^)]+\])", resp).group(1))
+        _type = hosts[0]["type"]
+        try:
+            host = list(filter(lambda video: video["host"] == server and video["type"] == _type, hosts))[0]
+        except IndexError:
+            host = hosts[0]
+            if host["host"] == "mp4upload" and len(hosts) > 1:
+                host = hosts[1]
+
+        name = host["host"]
+        _id = host["source"]
+        link = self.getLink(name, _id)
+
+        return [(name, link)]
