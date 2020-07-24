@@ -16,7 +16,6 @@ from tabulate import tabulate
 from anime_downloader import session
 from anime_downloader.sites import get_anime_class, helpers
 from anime_downloader.const import desktop_headers
-from anime_downloader.config import Config
 
 logger = logging.getLogger(__name__)
 
@@ -176,7 +175,8 @@ def get_json(url, params=None):
     return data
 
 
-def slugify(file_name):
+def slugify(file_name): 
+    from anime_downloader.config import Config
     seperator = Config._CONFIG["dl"]["title_seperator"]
     file_name = str(file_name).strip().replace(' ', seperator)
 
