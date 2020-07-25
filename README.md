@@ -57,7 +57,6 @@ Yeah. Me too! That's why this tool exists.
 - Animeflix
 - Animefreak
 - Gogoanime
-- Dubbedanime
 - a2zanime
 - animeout
 - itsaturday
