@@ -68,7 +68,6 @@ Yeah. Me too! That's why this tool exists.
 - Animevibe
 - Darkanime
 - DreamAnime
-- Dubbedanime
 - Erai-Raws
 - Gogoanime
 - itsaturday
