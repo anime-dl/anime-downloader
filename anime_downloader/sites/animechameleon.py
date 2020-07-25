@@ -1,7 +1,7 @@
 from anime_downloader.sites import helpers
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 
-class AnimeChameleon(Anime, sitename = 'gurminderboparai'):
+class AnimeChameleon(Anime, sitename = 'gurminder'):
     sitename = "gurminderboparai"
     @classmethod
     def search(cls, query):
@@ -24,7 +24,7 @@ class AnimeChameleon(Anime, sitename = 'gurminderboparai'):
     def _scrape_metadata(self):
         self.title = helpers.soupify(helpers.get(self.url).text).find('h3', class_='panel-title').text
 
-class AnimeChameleonEpisode(AnimeEpisode, sitename='gurminderboparai'):
+class AnimeChameleonEpisode(AnimeEpisode, sitename='gurminder'):
     def _get_sources(self):
         url = helpers.soupify(helpers.get(self.url).text).find('iframe', id='video')['src'].replace('//', 'http://')
         return [('trollvid', url)]
