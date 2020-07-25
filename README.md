@@ -71,6 +71,7 @@ Yeah. Me too! That's why this tool exists.
 - Dubbedanime
 - Erai-Raws
 - Gogoanime
+- GurminderBoparai (AnimeChameleon)
 - itsaturday
 - Justdubs
 - Kickassanime
