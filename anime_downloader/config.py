@@ -61,7 +61,7 @@ DEFAULT_CONFIG = {
         },
         'animesimple': {
             "version": "subbed",
-            "server": "trollvid",
+            "servers": ["vidstreaming","trollvid","mp4upload"]
         },
         'dreamanime': {
             "version": "subbed",
