@@ -2,7 +2,7 @@ from anime_downloader.sites import helpers
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 
 class AnimeChameleon(Anime, sitename = 'gurminder'):
-    sitename = "gurminderboparai"
+    sitename = "gurminder"
     @classmethod
     def search(cls, query):
         soup = helpers.soupify(helpers.get('http://anime.gurminderboparai.com/search/{}'.format(query)).text).find('div', class_='panel-body').find_all('a')
