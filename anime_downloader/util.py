@@ -160,8 +160,17 @@ def download_episode(episode, **kwargs):
     print()
 
 
-def play_episode(episode, *, player):
-    p = subprocess.Popen([player, episode.source().stream_url])
+def play_episode(episode, *, player, title):
+    if player == 'mpv':
+        p = subprocess.Popen([
+            player,
+            '--title={}'.format(title),
+            '--referrer="{}"'.format(episode.source().referer),
+            episode.source().stream_url
+            ])
+    else:
+        p = subprocess.Popen([ player, episode.source().stream_url
+            ])
     p.wait()
 
 

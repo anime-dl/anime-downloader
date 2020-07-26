@@ -13,7 +13,7 @@ DEFAULT_CONFIG = {
         'skip_download': False,
         'download_dir': '.',
         'quality': '1080p',
-      	'chunk_size': '10',
+        'chunk_size': '10',
         'fallback_qualities': ['720p', '480p', '360p'],
         'force_download': False,
         'file_format': '{anime_title}/{anime_title}_{ep_no}',
@@ -31,6 +31,9 @@ DEFAULT_CONFIG = {
         'provider': 'twist.moe',
     },
     "siteconfig": {
+        'animefrenzy': {
+            "version": "subbed"
+        },
         'animixplay': {
             "server": "vidstream",
         },
@@ -59,6 +62,10 @@ DEFAULT_CONFIG = {
         'animesimple': {
             "version": "subbed",
             "server": "trollvid",
+        },
+        'darkanime': {
+            "version": "subbed",
+            "servers": ["mp4upload","trollvid"],
         },
         'dreamanime': {
             "version": "subbed",

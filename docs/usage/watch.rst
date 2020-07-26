@@ -1,4 +1,4 @@
-``watch``
+``watch - DEPRECIATED``
 =========
 .. note::
     You need `mpv`_ to use this subcommand.

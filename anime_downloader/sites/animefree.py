@@ -28,9 +28,9 @@ class AnimeFree(Anime, sitename='animefree'):
         def _scrape_episodes(self): 
             #This is retarded, you need to replace the url, otherwise it will go to the kissanime site because the links are similar
             _referer = self.url.replace("_anime", "kissanime")
-            _id = helpers.soupify( helpers.get(_referer)).select("li.addto-later")[0].get("data-id"); 
+            _id = helpers.soupify( helpers.get(_referer)).select("li.addto-later")[0].get("data-id")
 
-            #data = self.url.split(",");
+            #data = self.url.split(",")
             #_id = data[1]
             #_referer = data[0].replace("_anime", "kissanime")
             for i in range(1,100):
@@ -55,16 +55,23 @@ class AnimeFreeEpisode(AnimeEpisode, sitename='kissanimefree'):
         def _get_sources(self):
             ids = self.url.split(",")
             ep = ids[0]
-            realId = int(ids[0]) + int(ids[1]) + 2; 
-            _referer = ids[2];
+            realId = int(ids[0]) + int(ids[1]) + 2
+            _referer = ids[2]
 
-            d = helpers.post("https://kissanimefree.xyz/wp-admin/admin-ajax.php",referer=f"https://kissanimefree.xyz/episode/{_referer}-episode-{realId}/",data={"action":"kiss_player_ajax","server":"vidcdn","filmId":realId})
-            realUrl = d.text[d.text.find('url=')+4:]
-            if(realUrl[0:4] != "http"):
-                realUrl = "https:" + d.text
-                
+            realUrl = helpers.post("https://kissanimefree.xyz/wp-admin/admin-ajax.php",
+                referer=f"https://kissanimefree.xyz/episode/{_referer}-episode-{realId}/",
+                data={"action":"kiss_player_ajax","server":"vidcdn","filmId":realId}).text
+
+            realUrl = realUrl if realUrl.startswith('http') else "https:" + realUrl
+
             txt = helpers.get(realUrl).text
-            vidstream_regex = r"(\"|)file(\"|):.*?('|\")([^^('|\")]*)" # you could add the vidstream extractor and qualities here
-            surl = re.search(vidstream_regex,txt).group(4)
+            # Group 2 and/or 3 is the vidstreaming links without https://
+            # Not used because I've yet to test if goto always leads to mp4
+            # vidstream_regex = r"window\.location\s=\s(\"|').*?(vidstreaming\.io/[^(\"|')]*?)\"|(vidstreaming\.io/goto\.php[^(\"|')]*?)(\"|')"
 
-            return [('no_extractor', surl,)]
+            vidstream_regex = r"window\.location\s=\s(\"|').*?(vidstreaming\.io/[^(\"|')]*?)\""
+            surl = re.search(vidstream_regex,txt)
+            if surl:
+                if surl.group(2):
+                    return [('vidstreaming', surl.group(2),)]
+            return ''

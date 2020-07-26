@@ -12,7 +12,7 @@ ALL_ANIME_SITES = [
     ('itsaturday', 'itsaturday', 'Itsaturday'),
     ('animefreak', 'animefreak', 'AnimeFreak'),
     ('animeflix', 'animeflix', 'AnimeFlix'),
-    ('dubbedanime', 'dubbedanime', 'Dubbedanime'),
+    ('darkanime', 'darkanime', 'DarkAnime'),
     ('animeout', 'animeout', 'AnimeOut'),
     ('animerush','animerush','AnimeRush'),
     ('animesimple', 'animesimple', 'AnimeSimple'),
@@ -32,9 +32,9 @@ ALL_ANIME_SITES = [
     ('voiranime','voiranime','VoirAnime'),
     ('vidstream','vidstream','VidStream'),
     ('animixplay','animixplay','AniMixPlay'),
-    ('horriblesubs', 'horriblesubs', 'HorribleSubs')
+    ('horriblesubs', 'horriblesubs', 'HorribleSubs'),
+    ('animefrenzy','animefrenzy','AnimeFrenzy')
 ]
-
 
 def get_anime_class(url):
     """
