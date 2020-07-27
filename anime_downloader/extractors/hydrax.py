@@ -1,5 +1,3 @@
-import re
-import json
 from anime_downloader.extractors.base_extractor import BaseExtractor
 from anime_downloader.sites import helpers
 import logging
@@ -18,7 +16,10 @@ class Hydrax(BaseExtractor):
 
         decoded_url = base64.b64decode(obfuscated_url[-1] + obfuscated_url[:-1]).decode('utf-8')
 
+        # HydraX uses www.url for high quality and url for low quality
+        quality = '' if self.quality in ['360p','480p'] else 'www.'
+
         return {
-            'stream_url': f'https://www.{decoded_url}',
+            'stream_url': f'https://{quality}{decoded_url}',
             'referer': url
         }
