@@ -76,7 +76,7 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
 @click.option(
     "--speed-limit", 
     type=str, 
-    help="Set the speed limit for downloading when using aria2c",
+    help="Set the speed limit (in KB/s or MB/s) for downloading when using aria2c",
     metavar='<int>K/M'
 )
 @click.pass_context
