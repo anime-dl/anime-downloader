@@ -60,7 +60,7 @@ class DownloaderSession:
                 "-j", "12", "-k", "10M", "-o", "{file_format}",
                 "--continue", "true", "--dir", "{download_dir}",
                 "--stream-piece-selector", "inorder", "--min-split-size",
-                "5M", "--referer", "{referer}"
+                "5M", "--referer", "{referer}", "--max-overall-download-limit=", "{speed_limit}"
             ],
             "_disable_ssl_additional": ["--check-certificate", "false"],
         },

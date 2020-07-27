@@ -208,7 +208,7 @@ def format_filename(filename, episode):
     return filename
 
 
-def format_command(cmd, episode, file_format, path):
+def format_command(cmd, episode, file_format, speed_limit, path):
     from anime_downloader.config import Config
     if not Config._CONFIG['dl']['aria2c_for_torrents'] and episode.url.startswith('magnet:?xt=urn:btih:'):
         return ['open',episode.url]
@@ -216,7 +216,7 @@ def format_command(cmd, episode, file_format, path):
     cmd_dict = {
         '{aria2}': 'aria2c {stream_url} -x 12 -s 12 -j 12 -k 10M -o '
                    '{file_format}.mp4 --continue=true --dir={download_dir}'
-                   ' --stream-piece-selector=inorder --min-split-size=5M --referer={referer} --check-certificate=false --user-agent={useragent}',
+                   ' --stream-piece-selector=inorder --min-split-size=5M --referer={referer} --check-certificate=false --user-agent={useragent} --max-overall-download-limit={speed_limit}',
         '{idm}'  : 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4'
     }
 
@@ -226,7 +226,8 @@ def format_command(cmd, episode, file_format, path):
         'file_format': file_format,
         'download_dir': os.path.abspath(path),
         'referer': episode.source().referer,
-        'useragent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36'
+        'useragent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36',
+        'speed_limit': speed_limit
     }
 
     if cmd == "{idm}":
@@ -359,12 +360,12 @@ def open_magnet(magnet):
                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
-def external_download(cmd, episode, file_format, path=''):
+def external_download(cmd, episode, file_format, speed_limit, path=''):
     logger.debug('cmd: ' + cmd)
     logger.debug('episode: {!r}'.format(episode))
     logger.debug('file format: ' + file_format)
 
-    cmd = format_command(cmd, episode, file_format, path=path)
+    cmd = format_command(cmd, episode, file_format, speed_limit, path=path)
 
     logger.debug('formatted cmd: ' + ' '.join(cmd))
 
