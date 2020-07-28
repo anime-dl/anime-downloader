@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://cdn.discordapp.com/attachments/484717445538643979/564476620401016862/Banner.png">
+<img src="https://i.imgur.com/7De34Nh.png">
 <br>
 <strong><i>A simple yet powerful tool for downloading anime.</i></strong>
 <br>
