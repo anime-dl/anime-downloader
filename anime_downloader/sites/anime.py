@@ -383,7 +383,7 @@ class AnimeEpisode:
         logger.debug('Data : {}'.format(data))
 
         #Sorts the dicts by preferred server in config
-        sorted_by_server = sorted(data, key=lambda x: servers.index(x['server']))
+        sorted_by_server = sorted(data, key=lambda x: servers.index(x['server']) if x['server'] in servers else len(data))
 
         #Sorts the above by preferred language 
         #resulting in a list with the dicts sorted by language and server
