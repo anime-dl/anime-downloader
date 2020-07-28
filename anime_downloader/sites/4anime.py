@@ -33,11 +33,9 @@ class Anime4(Anime, sitename = '4anime'):
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url).text)
         self.title = soup.title.text
-        for item in soup.find_all('div', class_='detail'):
-            more = item.find_all('a')
-            for i in more:
-                if 'year' in i['href']:
-                    self.year = int(i.text)
+        for i in soup.select('.detail > a'):
+            if 'year' in i.get('href',''):
+                self.year = int(i.text) if i.text.isnumeric() else None
 
 class Anime4Episode(AnimeEpisode, sitename='4anime'):
     def _get_sources(self):
