@@ -97,7 +97,7 @@ def search(query, provider, val=None, season_info=None):
         # Arbitrary ratio, could probably be defined in config.
         if match.ratio >= 50 and not val:
             logger.debug('Selected {}'.format(match.SearchResult.title))
-            return match.SearchResult.url, match.result_number
+            return match.SearchResult.url, None
 
     click.echo(format_search_results(search_results), err=True)
     # Loop to allow re-propmt if the user chooses incorrectly
