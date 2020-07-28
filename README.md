@@ -70,6 +70,7 @@ Yeah. Me too! That's why this tool exists.
 - DreamAnime
 - Erai-Raws
 - Gogoanime
+- GurminderBoparai (AnimeChameleon)
 - HorribleSubs
 - itsaturday
 - Justdubs

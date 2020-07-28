@@ -1,6 +1,5 @@
 import logging
 import re
-import json
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 
@@ -12,13 +11,12 @@ class Yify(Anime, sitename='yify'):
         @classmethod
         def search(cls, query):
             search_results = helpers.soupify(helpers.get(cls.url, params={'keyword': query})).select('div.ml-item > a')
-            search_results = [
+            return [
                 SearchResult(
-                    title=a.get('title'),
-                    url=a.get('href')+'/watching.html')
-                for a in search_results
+                    title=i.get('title'),
+                    url=i.get('href')+'/watching.html')
+                for i in search_results
             ]
-            return search_results
 
 
         def _scrape_episodes(self):
@@ -26,18 +24,11 @@ class Yify(Anime, sitename='yify'):
             regex = r'id:.*?\"([0-9]*?)\"'
             movie_id = re.search(regex,str(soup)).group(1)
             load_episodes = f'https://yify.mx/ajax/v2_get_episodes/{movie_id}'
-            load_embed = 'https://yify.mx/ajax/load_embed/{}'
             elements = helpers.soupify(helpers.get(load_episodes)).select('div.les-content > a')
-            episode_links = []
-            for a in elements:
-                source = a.get('episode-id',None)
-                if source:
-                    embed = helpers.get(load_embed.format(source)).json()
-                    logger.debug('Embed: {}'.format(embed))
-                    if embed.get('embed_url',''):
-                        episode_links.append(embed['embed_url'])
+            # Doesn't really return urls, rather ID:s. This is to prevent loading all episodes with separate
+            # requests if the user only wants one episode
+            return [i.get('episode-id','') for i in elements]
 
-            return episode_links
 
         def _scrape_metadata(self):
             soup = helpers.soupify(helpers.get(self.url))
@@ -46,15 +37,25 @@ class Yify(Anime, sitename='yify'):
 
 class YifyEpisode(AnimeEpisode, sitename='yify'):
         def _get_sources(self):
-            episode_id = self.url.split('#')[-1]
+            if not self.url:
+                return ''
+
+            load_embed = 'https://yify.mx/ajax/load_embed/{}'
+            embed = helpers.get(load_embed.format(self.url)).json()
+            logger.debug('Embed: {}'.format(embed))
+            embed_url = embed['embed_url']
+
+            episode_id = embed_url.split('#')[-1]
             load_embed = f'https://yify.mx/ajax/load_embed_url/{episode_id}'
             episode_info = helpers.get(load_embed).json()
             logger.debug(episode_info)
+
             url = episode_info['url']
             api_id = re.search(r'id=([^&]*)',url).group(1)
             api = f'https://watch.yify.mx/api/?id={api_id}'
             sources = helpers.get(api).json()
             logger.debug(sources)
+
             sources_list = []
             extractors = {
             'yify.mx/embed/':['yify','yify'],

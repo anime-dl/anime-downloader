@@ -23,6 +23,7 @@ DEFAULT_CONFIG = {
         'selescrape_browser': None,
         'selescrape_browser_executable_path' : None,
         'selescrape_driver_binary_path' : None,
+        'speed_limit' : 0,
     },
     'watch': {
         'quality': '1080p',
@@ -61,7 +62,7 @@ DEFAULT_CONFIG = {
         },
         'animesimple': {
             "version": "subbed",
-            "server": "trollvid",
+            "servers": ["vidstreaming","trollvid","mp4upload","xstreamcdn"]
         },
         'darkanime': {
             "version": "subbed",

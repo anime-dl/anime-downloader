@@ -13,6 +13,7 @@ ALL_ANIME_SITES = [
     ('animefreak', 'animefreak', 'AnimeFreak'),
     ('animeflix', 'animeflix', 'AnimeFlix'),
     ('darkanime', 'darkanime', 'DarkAnime'),
+    ('animechameleon', 'gurminder', 'AnimeChameleon'),
     ('animeout', 'animeout', 'AnimeOut'),
     ('animerush','animerush','AnimeRush'),
     ('animesimple', 'animesimple', 'AnimeSimple'),
