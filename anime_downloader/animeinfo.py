@@ -43,17 +43,11 @@ class MatchObject:
     ratio: int
         A number between 0-100 describing the similarities between SearchResult and AnimeInfo.
         Higher number = more similar.
-    result_number: int
-        The number of the SearchResult. Used to remeber results instead of reprompting fuzzywuzzy.
-        Basically lets you figure out which of the inputs got selected.
-        Note: starts from 1.
     """
-    def __init__(self, AnimeInfo, SearchResult, result_number, ratio = 100):
+    def __init__(self, AnimeInfo, SearchResult, ratio = 100):
         self.AnimeInfo = AnimeInfo
         self.SearchResult = SearchResult
         self.ratio = ratio
-        self.result_number = result_number
-
 
 # Not used
 def search_mal(query):
@@ -64,8 +58,7 @@ def search_mal(query):
         return [SearchResult(
             url = i.get('href'),
             title = i.select('strong')[0].text
-            ) 
-        for i in search_results]
+            ) for i in search_results]
 
 
     def scrape_metadata(url):
@@ -178,12 +171,11 @@ def fuzzy_match_metadata(seasons_info, search_results):
     # Gets the SearchResult object with the most similarity title-wise to the first MAL/Anilist result
     results = []
     for i in seasons_info:
-        for j in range(len(search_results)):
-            result = search_results[j]
+        for j in search_results:
             # Allows for returning of cleaned title by the provider using 'title_cleaned' in meta_info.
             # To make fuzzy matching better.
             # TODO allow this for japanese titles too
-            title_provider = result.title if not result.meta_info.get('title_cleaned') else result.meta_info.get('title_cleaned')
+            title_provider = j.title if not j.meta_info.get('title_cleaned') else j.meta_info.get('title_cleaned')
             # On some titles this will be None
             # causing errors below
             title_info = i.title
@@ -191,21 +183,21 @@ def fuzzy_match_metadata(seasons_info, search_results):
             # Essentially adds the chosen key to the query if the version is in use
             # Dirty solution, but should work pretty well
 
-            config = Config['siteconfig'].get(get_anime_class(result.url).sitename,{})
+            config = Config['siteconfig'].get(get_anime_class(j.url).sitename,{})
             version = config.get('version')
             version_use = version == 'dubbed'
             # Adds something like (Sub) or (Dub) to the title
-            key_used = result.meta_info.get('version_key_dubbed','') if version_use else result.meta_info.get('version_key_subbed','')
+            key_used = j.meta_info.get('version_key_dubbed','') if version_use else j.meta_info.get('version_key_subbed','')
 
             title_info += ' ' + key_used
-
+            
             # TODO add synonyms
             # 0 if there's no japanese name
-            jap_ratio = fuzz.ratio(i.jp_title, result.meta_info['jp_title']) if result.meta_info.get('jp_title') else 0
+            jap_ratio = fuzz.ratio(i.jp_title, j.meta_info['jp_title']) if j.meta_info.get('jp_title') else 0
             # Outputs the max ratio for japanese or english name (0-100)
             ratio = max(fuzz.ratio(title_info,title_provider), jap_ratio)
             logger.debug('Ratio: {}, Info title: {}, Provider Title: {}'.format(ratio, title_info, title_provider))
-            results.append(MatchObject(i, result, j+1, ratio))
+            results.append(MatchObject(i, j, ratio))
 
     # Returns the result with highest ratio
     return max(results, key=lambda item:item.ratio)
