@@ -52,6 +52,7 @@ Yeah. Me too! That's why this tool exists.
 ## Supported Sites
 **Details about the sites can be found in [FAQ](https://github.com/vn-ki/anime-downloader/wiki/FAQ)**
 
+- 4Anime
 - a2zanime
 - Anistream
 - AnimeOnline360
