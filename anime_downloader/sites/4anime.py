@@ -27,8 +27,8 @@ class Anime4(Anime, sitename = '4anime'):
         return search_results
 
     def _scrape_episodes(self):
-        soup = helpers.soupify(helpers.get(self.url).text).find('ul', class_='episodes range active').find_all('li')
-        return [x.a['href'] for x in soup]
+        soup = helpers.soupify(helpers.get(self.url)).select('ul.episodes.range.active > li > a')
+        return [x['href'] for x in soup]
 
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url).text)
