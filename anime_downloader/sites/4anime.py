@@ -15,14 +15,14 @@ class Anime4(Anime, sitename = '4anime'):
             "asid": 1, 
             "options": "qtranslate_lang=0&set_intitle=None&customset%5B%5D=anime"
             }
-        soup = helpers.soupify(helpers.post("https://4anime.to/wp-admin/admin-ajax.php", data=data).text)
+        soup = helpers.soupify(helpers.post("https://4anime.to/wp-admin/admin-ajax.php", data=data)).select('div.info > a')
 
         search_results = [
             SearchResult(
-                title = i.find('div', class_='info').a.text,
-                url = i.find('div', class_='info').a['href']
+                title = i.text,
+                url = i['href']
                 )
-            for i in soup.find_all('div', class_='item')
+            for i in soup
             ]
         return search_results
 
