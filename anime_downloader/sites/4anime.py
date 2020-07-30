@@ -35,6 +35,7 @@ class Anime4(Anime, sitename = '4anime'):
         self.title = soup.title.text
         for i in soup.select('.detail > a'):
             if 'year' in i.get('href',''):
+                self.meta = {}
                 self.meta['year'] = int(i.text) if i.text.isnumeric() else None
 
 class Anime4Episode(AnimeEpisode, sitename='4anime'):
