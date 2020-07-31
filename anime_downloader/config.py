@@ -52,8 +52,7 @@ DEFAULT_CONFIG = {
             "server": "cdn",
         },
         'animerush':{
-            "server": "Mp4uploadHD Video",
-            "fallback_servers": ["MP4Upload", "Mp4upload Video", "Youruploads Video"]
+            "servers": ["Mp4uploadHD Video","MP4Upload", "Mp4upload Video", "Youruploads Video"]
         },
         'kickass': {
             "server": "A-KICKASSANIME",
