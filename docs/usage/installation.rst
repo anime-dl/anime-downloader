@@ -111,42 +111,18 @@ Tinkering May be Required.
 
 - Install the following packages from the mcapollo repo (https://mcapollo.github.io/Public/) using your favorite package manager; ::
 
-   Aria2, Python@3.7, git, nano (for File editing) and a Terminal Emulator (NewTerm is an example of this).
+   Aria2, Python@3.7, git, and a Terminal Emulator (NewTerm is an example of this).
    
 - Open your Terminal Emulator and type in the following command; ::
 
    python3 -m ensurepip
    
 - Pip and setuptools should now be installed.
-The following steps install Anime-Downloader;
-- To install Anime-Downloader before the PR which moves an unsupported module into extras follow along, if not, skip to **(continue)**; 
 
-- Firstly, clone the repository via this command; ::
+Use the following steps install Anime-Downloader;
 
-   git clone https://github.com/vn-ki/anime-downloader.git
-   
-- Next, change your directory into the cloned repo. To do so, use the following case-sensitive command; ::
+- Install the iOS friendly version of anime-downloader via this command::
 
-   cd anime-downloader
-   
-- Following this, type in the following command to start editing the file; ::
+    pip install -U git+https://github.com/nate-moo/anime-downloader.git@iOS
 
-   nano setup.py
-   
-- Navigate to the following line using the arrow keys; ::
-
-   'pycryptodome>=3.8.2',
-   
-- Delete the highlighted line as to match the image below;
-
-:image: https://i.imgur.com/0fRiNP6.png
-
-- Press ctrl+o then enter then press ctrl+X.
-
-- If all the steps were performed correctly then you should be back to the command line.
-
-- **(continue)** Type the following command to install the project; ::
-
-   python3 setup.py install
-   
-- Wait for the line to finish, then the program functions the same as the PC version.
+- Wait for the line to finish, then the program should function the same as the PC version.
