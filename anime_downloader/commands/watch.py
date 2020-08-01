@@ -7,11 +7,11 @@ from anime_downloader.__version__ import __version__
 from anime_downloader.players.mpv import mpv
 from anime_downloader import watch as _watch
 from anime_downloader.config import Config
-
+from anime_downloader.sites import get_anime_class, ALL_ANIME_SITES
 logger = logging.Logger(__name__)
 
 echo = click.echo
-
+sitenames = [v[1] for v in ALL_ANIME_SITES]
 
 @click.command()
 @click.argument('anime_name', required=False)
@@ -36,7 +36,7 @@ echo = click.echo
 @click.option(
     '--provider',
     help='The anime provider (website) for search.',
-    type=click.Choice(['9anime', 'kissanime', 'twist.moe', 'kisscartoon', 'masterani'])
+    type=click.Choice(sitenames)
 )
 def command(anime_name, new, update_all, _list, quality, remove,
             download_dir, provider):
@@ -52,10 +52,6 @@ def command(anime_name, new, update_all, _list, quality, remove,
     download   : Download episodes of selected anime
     """
     util.print_info(__version__)
-    echo('Watch is deprecated in favour of adl: https://github.com/RaitaroH/adl .')
-    echo('You can use dl command to stream anime if you do not want anime tracking.')
-    echo('watch command may come back in the future.')
-
     watcher = _watch.Watcher()
 
     if new:
