@@ -196,7 +196,7 @@ def watch_anime(watcher, anime):
                 'Playing episode {}'.format(episode.ep_no)
             )
             try:
-                player = mpv(episode)
+                player =  util.play_episode(episode, player='mpv',title=f'Stream',episode=f'{epside.ep_no}')
             except Exception as e:
                 anime.episodes_done -= 1
                 watcher.update(anime)
