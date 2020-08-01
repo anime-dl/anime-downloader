@@ -42,7 +42,6 @@ def command(anime_name, new, update_all, _list, quality, remove,
             download_dir, provider):
     """
     With watch you can keep track of any anime you watch.
-
     Available Commands after selection of an anime:\n
     set        : set episodes_done, provider and title.
                  Ex: set episodes_done=3\n
@@ -196,7 +195,7 @@ def watch_anime(watcher, anime):
                 'Playing episode {}'.format(episode.ep_no)
             )
             try:
-                player =  util.play_episode(episode, player='mpv',title=f'Stream',episode=f'{epside.ep_no}')
+                player =  util.play_episode(episode, player='mpv',title=f'Stream')
             except Exception as e:
                 anime.episodes_done -= 1
                 watcher.update(anime)
