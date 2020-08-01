@@ -217,7 +217,8 @@ def format_command(cmd, episode, file_format, speed_limit, path):
         '{aria2}': 'aria2c {stream_url} -x 12 -s 12 -j 12 -k 10M -o '
                    '{file_format}.mp4 --continue=true --dir={download_dir}'
                    ' --stream-piece-selector=inorder --min-split-size=5M --referer={referer} --check-certificate=false --user-agent={useragent} --max-overall-download-limit={speed_limit}',
-        '{idm}'  : 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4'
+        '{idm}'  : 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4',
+        '{wget}': 'wget {stream_url} --referer={referer} --user-agent="{useragent}" -P {download_dir} -O {file_format}.mp4 -c'
     }
 
 
@@ -229,7 +230,12 @@ def format_command(cmd, episode, file_format, speed_limit, path):
         'useragent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36',
         'speed_limit': speed_limit
     }
-
+    if cmd == "{wget}":
+        path_string = file_format.replace('\\', '/').split('/')
+        rep_dict['file_format'] = path_string.pop(-1)
+        path_string = '/'.join(path_string)
+        rep_dict['download_dir'] = os.path.join(path, path_string)
+        
     if cmd == "{idm}":
         rep_dict['file_format'] = rep_dict['file_format'].replace('/','\\')
 
