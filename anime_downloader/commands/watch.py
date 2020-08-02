@@ -184,9 +184,19 @@ def list_animes(watcher, quality, download_dir,imp=None):
                 watcher.remove(anime)
                 setattr(anime, key, val)
                 watcher.add(anime)
+
             elif key == 'episodes_done':
+                # Retries if invalid input.
+                if not val.isnumeric():
+                    # Uncomment this if you want to let the user know.
+                    #logger.error("Invalid integer")
+                    #input()
+                    continue
+                # Prevents setting length above max amount of episodes.
+                val = val if int(val) <= len(anime) else len(anime)
                 setattr(anime, key, int(val))
                 watcher.update(anime)
+
             elif key == 'provider':
                 url = util.search(anime.title, val)
                 watcher.remove(anime)
