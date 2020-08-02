@@ -130,7 +130,7 @@ def list_animes(watcher, quality, download_dir,imp=None):
             meta += '{}: {}\n'.format(k, click.style(str(v), bold=True))
         click.echo(meta)
 
-        click.echo('Available Commands: set, remove, update, watch,'
+        click.echo('Available Commands: set, remove, update, watch, back'
                    ' download.\n')
 
         inp = click.prompt('Press q to exit', default='q').strip()
@@ -139,6 +139,8 @@ def list_animes(watcher, quality, download_dir,imp=None):
         # Decorator?
         if inp == 'q':
             break
+        elif inp == 'back':
+            list_animes(watcher, quality, download_dir, imp=None)
         elif inp == 'remove':
             watcher.remove(anime)
             break
@@ -146,7 +148,7 @@ def list_animes(watcher, quality, download_dir,imp=None):
             watcher.update_anime(anime)
         elif inp == 'watch':
             anime.quality = quality
-            watch_anime(watcher, anime,quality,download_dir)
+            watch_anime(watcher, anime,quality, download_dir)
             break
         elif inp.startswith('download'):
             try:
