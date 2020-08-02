@@ -157,11 +157,7 @@ def list_animes(watcher, quality, download_dir,imp=None):
                 inp = inp.split('download ')[1]
             except IndexError:
                 inp = ':'
-            inp = str(anime.episodes_done+1) + \
-                inp if inp.startswith(':') else inp
-            inp = inp+str(len(anime)) if inp.endswith(':') else inp
-
-            anime = util.split_anime(anime, inp)
+            animes = util.parse_ep_str(anime, inp)
 
             # Using the config from dl.
             if not download_dir:
@@ -171,7 +167,7 @@ def list_animes(watcher, quality, download_dir,imp=None):
             file_format = Config['dl']['file_format']
             speed_limit = Config['dl']['speed_limit']
 
-            for episode in anime:
+            for episode in animes:
                 util.external_download(external_downloader, episode,
                                        file_format, speed_limit, path=download_dir)
 
