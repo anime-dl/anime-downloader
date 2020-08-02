@@ -30,6 +30,7 @@ DEFAULT_CONFIG = {
         'fallback_qualities': ['720p', '480p', '360p'],
         'log_level': 'INFO',
         'provider': 'twist.moe',
+        'autoplay_next':True
     },
     "siteconfig": {
         'animefrenzy': {
