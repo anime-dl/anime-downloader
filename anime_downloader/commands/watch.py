@@ -83,7 +83,7 @@ def command(anime_name, new, update_all, _list, quality, remove,
             watcher.update_anime(anime)
 
     if _list:
-        list_animes(watcher, quality, download_dir,None)
+        list_animes(watcher, quality, download_dir, None)
         sys.exit(0)
 
     if anime_name:
@@ -100,15 +100,10 @@ def command(anime_name, new, update_all, _list, quality, remove,
         watch_anime(watcher, anime,quality,download_dir)
 
 
-def list_animes(watcher, quality, download_dir,imp=None):
+def list_animes(watcher, quality, download_dir, imp=None):
     watcher.list()
-    if not imp:
-        inp = click.prompt('Select an anime', default=1)
+    inp = click.prompt('Select an anime', default=1) if not imp else imp
 
-    else:
-        inp = imp
-    global inputValue
-    inputValue = inp #I know this is code smell, the code is already too spaghetti to smartly do this yet, this will change
     try:
         anime = watcher.get(int(inp)-1)
     except IndexError:
@@ -141,7 +136,7 @@ def list_animes(watcher, quality, download_dir,imp=None):
         if inp == 'q':
             sys.exit(0)
         elif inp == 'back':
-            list_animes(watcher, quality, download_dir, imp=None)
+            list_animes(watcher, quality, download_dir, imp=imp)
         elif inp == 'remove':
             watcher.remove(anime)
             break
@@ -150,7 +145,7 @@ def list_animes(watcher, quality, download_dir,imp=None):
         elif inp == 'watch':
             anime.quality = quality
             watch_anime(watcher, anime,quality, download_dir)
-            break
+
         elif inp.startswith('download'):
             # You can use download 3:10 for selected episodes
             try:
@@ -208,7 +203,8 @@ def list_animes(watcher, quality, download_dir,imp=None):
                 anime = newanime
 
 
-def watch_anime(watcher, anime,quality,download_dir):
+def watch_anime(watcher, anime, quality, download_dir):
+    autoplay = Config['watch']['autoplay_next']
     to_watch = anime[anime.episodes_done:]
     logger.debug('Sliced episodes: {}'.format(to_watch._episode_urls))
 
@@ -229,16 +225,22 @@ def watch_anime(watcher, anime,quality,download_dir):
                 sys.exit(1)
 
             returncode = player.play()
-
             if returncode == player.STOP:
-                return list_animes(watcher,quality,download_dir,imp = int(inputValue))
+                # Returns to watch.
+                return
+
             elif returncode == player.CONNECT_ERR:
                 logger.warning("Couldn't connect. Retrying. "
                                 "Attempt #{}".format(tries+1))
                 continue
+
             elif returncode == player.PREV:
                 anime.episodes_done -= 2
                 watcher.update(anime)
                 break
+            # If no other return codes, basically when the player finishes.
+            # Can't find the returncode for success.
+            elif autoplay:
+                break
             else:
-                return list_animes(watcher,quality,download_dir,imp = int(inputValue))
+                return
