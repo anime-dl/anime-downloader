@@ -152,6 +152,7 @@ def list_animes(watcher, quality, download_dir,imp=None):
             watch_anime(watcher, anime,quality, download_dir)
             break
         elif inp.startswith('download'):
+            # You can use download 3:10 for selected episodes
             try:
                 inp = inp.split('download ')[1]
             except IndexError:
@@ -162,13 +163,18 @@ def list_animes(watcher, quality, download_dir,imp=None):
 
             anime = util.split_anime(anime, inp)
 
+            # Using the config from dl.
             if not download_dir:
                 download_dir = Config['dl']['download_dir']
+            # These things could be flags.
+            external_downloader = Config['dl']['external_downloader']
+            file_format = Config['dl']['file_format']
+            speed_limit = Config['dl']['speed_limit']
 
             for episode in anime:
-                episode.download(force=False,
-                                 path=Config['dl']['download_dir'],
-                                 format=Config['dl']['file_format'])
+                util.external_download(external_downloader, episode,
+                                       file_format, speed_limit, path=download_dir)
+
         elif inp.startswith('set '):
             inp = inp.split('set ')[-1]
             key, val = [v.strip() for v in inp.split('=')]
