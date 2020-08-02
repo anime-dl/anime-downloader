@@ -31,7 +31,8 @@
        remove : Remove selected anime from watch list.
        update : Update the episodes of the currrent anime, brilliant for currently airing series.
        watch  : Watch selected anime.
-       download : Download episodes of selected anime
+       download : Download episodes of selected anime.
+       back : Return back to the list.
 
    Options:
      -n, --new                       Add a new entry to the list.
@@ -89,10 +90,17 @@ You can select an anime from this list and perform an action on it.
 \``\` 
 
 Once you select an anime from the table a new enviroment for you to use appears, this has the following options;
+
 - set: Update information about the anime on the list. Episodes, title and provider changes go here.
+
 - remove: Remove an anime from the list.
+
 - update: Update the episode range of the anime.
+
 - watch: Watch an episode of the anime and then return back to this enviroment.
+
 - download: Download an episode of the anime.
+
+- back: Return back to the list
 
 .. _mpv: https://mpv.io/
