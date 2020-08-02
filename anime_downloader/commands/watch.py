@@ -224,4 +224,4 @@ def watch_anime(watcher, anime,quality,download_dir):
                 watcher.update(anime)
                 break
             else:
-                break
+                return list_animes(watcher,quality,download_dir,imp = int(inputValue))
