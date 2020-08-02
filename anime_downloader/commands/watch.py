@@ -139,7 +139,7 @@ def list_animes(watcher, quality, download_dir, imp=None):
             list_animes(watcher, quality, download_dir, imp=imp)
         elif inp == 'remove':
             watcher.remove(anime)
-            break
+            list_anime(watcher, quality, download_dir, imp=imp)
         elif inp == 'update':
             watcher.update_anime(anime)
         elif inp == 'watch':
