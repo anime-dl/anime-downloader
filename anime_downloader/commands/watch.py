@@ -82,7 +82,7 @@ def command(anime_name, new, update_all, _list, quality, remove,
             watcher.update_anime(anime)
 
     if _list:
-        list_animes(watcher, quality, download_dir)
+        list_animes(watcher, quality, download_dir,None)
         sys.exit(0)
 
     if anime_name:
@@ -96,12 +96,18 @@ def command(anime_name, new, update_all, _list, quality, remove,
         anime.quality = quality
 
         logger.info('Found {}'.format(anime.title))
-        watch_anime(watcher, anime)
+        watch_anime(watcher, anime,quality,download_dir)
 
 
-def list_animes(watcher, quality, download_dir):
+def list_animes(watcher, quality, download_dir,imp=None):
     watcher.list()
-    inp = click.prompt('Select an anime', default=1)
+    if not imp:
+        inp = click.prompt('Select an anime', default=1)
+
+    else:
+        inp = imp
+    global inputValue
+    inputValue = inp #I know this is code smell, the code is already too spaghetti to smartly do this yet, this will change
     try:
         anime = watcher.get(int(inp)-1)
     except IndexError:
@@ -140,8 +146,8 @@ def list_animes(watcher, quality, download_dir):
             watcher.update_anime(anime)
         elif inp == 'watch':
             anime.quality = quality
-            watch_anime(watcher, anime)
-            sys.exit(0)
+            watch_anime(watcher, anime,quality,download_dir)
+            break
         elif inp.startswith('download'):
             try:
                 inp = inp.split('download ')[1]
@@ -182,9 +188,9 @@ def list_animes(watcher, quality, download_dir):
                 anime = newanime
 
 
-def watch_anime(watcher, anime):
+def watch_anime(watcher, anime,quality,download_dir):
     to_watch = anime[anime.episodes_done:]
-    logger.debug('Sliced epiosdes: {}'.format(to_watch._episode_urls))
+    logger.debug('Sliced episodes: {}'.format(to_watch._episode_urls))
 
     while anime.episodes_done < len(anime):
         episode = anime[anime.episodes_done]
@@ -195,7 +201,7 @@ def watch_anime(watcher, anime):
                 'Playing episode {}'.format(episode.ep_no)
             )
             try:
-                player =  util.play_episode(episode, player='mpv',title=f'Stream')
+                player = mpv(episode)
             except Exception as e:
                 anime.episodes_done -= 1
                 watcher.update(anime)
@@ -205,7 +211,7 @@ def watch_anime(watcher, anime):
             returncode = player.play()
 
             if returncode == player.STOP:
-                sys.exit(0)
+                return list_animes(watcher,quality,download_dir,imp = int(inputValue))
             elif returncode == player.CONNECT_ERR:
                 logger.warning("Couldn't connect. Retrying. "
                                 "Attempt #{}".format(tries+1))
