@@ -49,6 +49,7 @@ def command(anime_name, new, update_all, _list, quality, remove,
     update     : Update the episodes of the currrent anime\n
     watch      : Watch selected anime\n
     download   : Download episodes of selected anime
+    back       : Returns back to the list
     """
     util.print_info(__version__)
     watcher = _watch.Watcher()
@@ -130,7 +131,7 @@ def list_animes(watcher, quality, download_dir,imp=None):
             meta += '{}: {}\n'.format(k, click.style(str(v), bold=True))
         click.echo(meta)
 
-        click.echo('Available Commands: set, remove, update, watch, back'
+        click.echo('Available Commands: set, remove, update, watch, back,'
                    ' download.\n')
 
         inp = click.prompt('Press q to exit', default='q').strip()
