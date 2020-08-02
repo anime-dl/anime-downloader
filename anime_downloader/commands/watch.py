@@ -198,6 +198,11 @@ def list_animes(watcher, quality, download_dir,imp=None):
                 watcher.update(anime)
 
             elif key == 'provider':
+                # Checks if it's an invalid provider preventing errors.
+                if not get_anime_class(val):
+                    # Probably good to list providers here before looping.
+                    continue
+                # Watch can quit if no anime is found, not ideal.
                 url = util.search(anime.title, val)
                 watcher.remove(anime)
                 newanime = watcher.new(url)
