@@ -104,3 +104,4 @@ ENV/
 .pytest_cache
 *.sqlite
 /anime_downloader/__main__.py
+node_modules/

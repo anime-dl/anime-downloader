@@ -340,8 +340,8 @@ def deobfuscate_packed_js(packedjs):
 
 
 def eval_in_node(js: str):
-    # TODO: This should be in util
-    output = subprocess.check_output(['node', '-e', js])
+    sandboxedScript = 'const {VM} = require("vm2"); console.log(new VM().run(`' + js + '`))'
+    output = subprocess.check_output(['node', '-e', sandboxedScript])
     return output.decode('utf-8')
 
 def open_magnet(magnet):
