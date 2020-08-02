@@ -139,7 +139,7 @@ def list_animes(watcher, quality, download_dir,imp=None):
         # TODO: A better way to handle commands. Use regex. Refractor to class?
         # Decorator?
         if inp == 'q':
-            break
+            sys.exit(0)
         elif inp == 'back':
             list_animes(watcher, quality, download_dir, imp=None)
         elif inp == 'remove':
