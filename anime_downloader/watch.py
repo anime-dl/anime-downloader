@@ -38,21 +38,15 @@ class Watcher:
         ))
         click.echo('-'*65)
         fmt_str = '{:5} | {:35.35} |  {:3}/{:<3} | {:^5} | {}'
-
+        if not filt in [ None, 'all' ]:
+            animes = [ i for i in animes if i.watch_status == filt ]
         for idx, anime in enumerate(animes):
             meta = anime.meta
-            if filt in [ None, 'all']:
-                click.echo(fmt_str.format(idx+1,
+            click.echo(fmt_str.format(idx+1,
                                         anime.title,
                                         *anime.progress(),
                                      anime.score,
                                      anime.watch_status))
-            elif anime.watch_status == filt:
-                click.echo(fmt_str.format(idx+1,
-                        anime.title,
-                        *anime.progress(),
-                        anime.score,
-                        anime.watch_status))
 
     def anime_list(self):
         return self._read_from_watch_file()
