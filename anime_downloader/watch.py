@@ -143,10 +143,6 @@ class Watcher:
                 self.score = 0
                 self.watch_status = 'watching'
                 super(cls, self).__init__(*args, **kwargs)
-            def set_score(self,score):
-                self.score = score
-            def set_watch_status(self,watch_status):
-                self.watch_status = watch_status
             def progress(self):
                 return (self.episodes_done, len(self))
 
