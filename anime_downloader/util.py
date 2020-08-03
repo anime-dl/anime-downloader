@@ -14,6 +14,7 @@ import coloredlogs
 import pickle
 import tempfile
 import requests
+import base64
 from tabulate import tabulate
 from uuid import uuid4
 from secrets import choice
@@ -338,9 +339,13 @@ def get_hcaptcha_cookies(url):
 def deobfuscate_packed_js(packedjs):
     return eval_in_node('eval=console.log; ' + packedjs)
 
-
 def eval_in_node(js: str):
-    sandboxedScript = 'const {VM} = require("vm2"); console.log(new VM().run(`' + js + '`))'
+    js = base64.b64encode(js.encode('utf-8')).decode()
+    sandboxedScript ="""
+                    const {VM} = require('vm2');
+                    const js = Buffer.from('%s','base64').toString()
+                    console.log(new VM().run(js))
+                    """%js
     output = subprocess.check_output(['node', '-e', sandboxedScript])
     return output.decode('utf-8')
 
