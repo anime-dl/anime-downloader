@@ -235,12 +235,12 @@ def list_animes(watcher, quality, download_dir, imp = None, _filter = None):
                 anime = newanime
 
             elif key == 'score':
-                anime.set_score(val)
+                anime.score = val
                 watcher.update(anime)
 
             elif key == 'watch_status':
                 if val in ['all','watching','completed','planned','dropped']:
-                    anime.set_watch_status(val)
+                    anime.watch_status = val
                     watcher.update(anime)
 
 
