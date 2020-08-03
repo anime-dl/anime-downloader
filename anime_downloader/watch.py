@@ -26,7 +26,6 @@ class Watcher:
     def new(self, url):
         AnimeInfo = self._get_anime_info_class(url)
         anime = AnimeInfo(url, timestamp=time())
-
         self._append_to_watch_file(anime)
 
         logger.info('Added {:.50} to watch list.'.format(anime.title))
@@ -34,18 +33,19 @@ class Watcher:
 
     def list(self):
         animes = self._read_from_watch_file()
-
-        click.echo('{:>5} | {:^35} | {:^8} | {:^10}'.format(
-            'SlNo', 'Name', 'Eps', 'Type'
+        click.echo('{:>5} | {:^35} | {:^8} | {} | {:^10}'.format(
+            'SlNo', 'Name', 'Eps','Score', 'Status'
         ))
         click.echo('-'*65)
-        fmt_str = '{:5} | {:35.35} |  {:3}/{:<3} | {meta:10.10}'
+        fmt_str = '{:5} | {:35.35} |  {:3}/{:<3} | {:^5} | {}'
 
         for idx, anime in enumerate(animes):
             meta = anime.meta
-            click.echo(fmt_str.format(idx+1, anime.title,
-                                      *anime.progress(),
-                                      meta=meta.get('Type', '')))
+            click.echo(fmt_str.format(idx+1,
+                                    anime.title,
+                                    *anime.progress(),
+                                    anime.score,
+                                    anime.watch_status))
 
     def anime_list(self):
         return self._read_from_watch_file()
@@ -139,9 +139,13 @@ class Watcher:
             def __init__(self, *args, **kwargs):
                 self.episodes_done = kwargs.pop('episodes_done', 0)
                 self._timestamp = kwargs.pop('timestamp', 0)
-
+                self.score = 0
+                self.watch_status = 'watching'
                 super(cls, self).__init__(*args, **kwargs)
-
+            def set_score(self,score):
+                self.score = score
+            def set_watch_status(self,watch_status):
+                self.watch_status = watch_status
             def progress(self):
                 return (self.episodes_done, len(self))
 
