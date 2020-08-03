@@ -111,7 +111,6 @@ def list_animes(watcher, quality, download_dir, imp=None):
 
     # Make the selected anime first result
     watcher.update(anime)
-
     while True:
         click.clear()
         click.secho('Title: ' + click.style(anime.title,
@@ -120,7 +119,8 @@ def list_animes(watcher, quality, download_dir, imp=None):
             str(anime.episodes_done), bold=True, fg='yellow')))
         click.echo('Length: {}'.format(len(anime)))
         click.echo('Provider: {}'.format(anime.sitename))
-
+        click.echo('Score: {}'.format(anime.score))
+        click.echo('Watch Status: {}'.format(anime.watch_status))
         meta = ''
         for k, v in anime.meta.items():
             meta += '{}: {}\n'.format(k, click.style(str(v), bold=True))
@@ -201,8 +201,13 @@ def list_animes(watcher, quality, download_dir, imp=None):
                 newanime._timestamp = anime._timestamp
                 watcher.update(newanime)
                 anime = newanime
-
-
+            elif key == 'score':
+                anime.set_score(val)
+                watcher.update(anime)
+            elif key == 'watch_status':
+                if val == 'watching' or val == 'complete' or val == 'planned' or val == 'dropped':
+                    anime.set_watch_status(val)
+                    watcher.update(anime)
 def watch_anime(watcher, anime, quality, download_dir):
     autoplay = Config['watch']['autoplay_next']
     to_watch = anime[anime.episodes_done:]
