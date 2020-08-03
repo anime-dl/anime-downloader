@@ -31,7 +31,7 @@ class Watcher:
         logger.info('Added {:.50} to watch list.'.format(anime.title))
         return anime
 
-    def list(self):
+    def list(self, filt = None):
         animes = self._read_from_watch_file()
         click.echo('{:>5} | {:^35} | {:^8} | {} | {:^10}'.format(
             'SlNo', 'Name', 'Eps','Score', 'Status'
@@ -41,11 +41,18 @@ class Watcher:
 
         for idx, anime in enumerate(animes):
             meta = anime.meta
-            click.echo(fmt_str.format(idx+1,
-                                    anime.title,
-                                    *anime.progress(),
-                                    anime.score,
-                                    anime.watch_status))
+            if filt in [ None, 'all']:
+                click.echo(fmt_str.format(idx+1,
+                                        anime.title,
+                                        *anime.progress(),
+                                     anime.score,
+                                     anime.watch_status))
+            elif anime.watch_status == filt:
+                click.echo(fmt_str.format(idx+1,
+                        anime.title,
+                        *anime.progress(),
+                        anime.score,
+                        anime.watch_status))
 
     def anime_list(self):
         return self._read_from_watch_file()
