@@ -81,6 +81,10 @@ def command(anime_name, new, update_all, _list, quality, remove,
         for anime in animes:
             watcher.update_anime(anime)
 
+    # Defaults the command to anime watch -l all.
+    # It's a bit of a hack to use sys.argv, but doesn't break
+    # if new commands are added (provided you used a bunch of and statements)
+    _list = 'all' if sys.argv[-1] == 'watch' else None
     if _list:
         filt = _list
         list_animes(watcher, quality, download_dir, None, _filter = filt)
