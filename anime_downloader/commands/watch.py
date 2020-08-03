@@ -19,8 +19,7 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     '--new', '-n', type=bool, is_flag=True,
     help="Create a new anime to watch")
 @click.option(
-    '--list', '-l', '_list', type=bool, is_flag=True,
-    help="List all animes in watch list")
+    '--list', '-l', '_list', type=click.Choice(['all','watching','completed','planned','dropped']), help="List all animes in watch list")
 @click.option(
     '--remove', '-r', 'remove', type=bool, is_flag=True,
     help="Remove the specified anime")
@@ -83,7 +82,8 @@ def command(anime_name, new, update_all, _list, quality, remove,
             watcher.update_anime(anime)
 
     if _list:
-        list_animes(watcher, quality, download_dir, None)
+        filt = _list
+        list_animes(watcher, quality, download_dir, None, _filter = filt)
         sys.exit(0)
 
     if anime_name:
@@ -100,8 +100,8 @@ def command(anime_name, new, update_all, _list, quality, remove,
         watch_anime(watcher, anime,quality,download_dir)
 
 
-def list_animes(watcher, quality, download_dir, imp=None):
-    watcher.list()
+def list_animes(watcher, quality, download_dir, imp = None, _filter = None):
+    watcher.list(filt= _filter)
     inp = click.prompt('Select an anime', default=1) if not imp else imp
 
     try:
