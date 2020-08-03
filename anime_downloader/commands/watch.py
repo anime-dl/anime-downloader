@@ -37,6 +37,7 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     help='The anime provider (website) for search.',
     type=click.Choice(sitenames)
 )
+
 def command(anime_name, new, update_all, _list, quality, remove,
             download_dir, provider):
     """
@@ -207,13 +208,17 @@ def list_animes(watcher, quality, download_dir, imp = None, _filter = None):
                 newanime._timestamp = anime._timestamp
                 watcher.update(newanime)
                 anime = newanime
+
             elif key == 'score':
                 anime.set_score(val)
                 watcher.update(anime)
+
             elif key == 'watch_status':
                 if val == 'watching' or val == 'complete' or val == 'planned' or val == 'dropped':
                     anime.set_watch_status(val)
                     watcher.update(anime)
+
+
 def watch_anime(watcher, anime, quality, download_dir):
     autoplay = Config['watch']['autoplay_next']
     to_watch = anime[anime.episodes_done:]
