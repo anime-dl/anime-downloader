@@ -198,6 +198,8 @@ def list_animes(watcher, quality, download_dir, imp=None):
                 watcher.remove(anime)
                 newanime = watcher.new(url)
                 newanime.episodes_done = anime.episodes_done
+                newanime.score = anime.score
+                newanime.watch_status = anime.watch_status
                 newanime._timestamp = anime._timestamp
                 watcher.update(newanime)
                 anime = newanime
