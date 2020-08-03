@@ -106,8 +106,33 @@ def command(anime_name, new, update_all, _list, quality, remove,
 
 
 def list_animes(watcher, quality, download_dir, imp = None, _filter = None):
+
+    click.echo('Available Commands: swap, new')
     watcher.list(filt= _filter)
-    inp = click.prompt('Select an anime', default=1) if not imp else imp
+    inp = click.prompt('Select an anime', default="1") if not imp else imp
+    provider = Config['watch']['provider']
+    # Not a number as input and command
+    if not str(inp).isnumeric():
+        if len(str(inp).strip().split(' ')) > 1:
+            args = inp.strip().split(' ')
+            key = args[0].lower()
+            vals = args[1:]
+            if key == 'new':
+                query = vals[0]
+                if '--provider' in vals:
+                    if vals.index('--provider') + 1 < len(vals):
+                        provider = vals[vals.index('--provider') + 1]
+                url = util.search(query, provider)
+                watcher.new(url)
+
+            if key == 'swap':
+                if vals[0] in ['all','watching','completed','planned','dropped']:
+                    return list_animes(watcher, quality, download_dir, imp=imp, _filter=vals[0])
+
+            return list_animes(watcher, quality, download_dir, imp=imp)
+        else:
+            # Exits if neither int or actual command
+            sys.exit(0)
 
     try:
         anime = watcher.get(int(inp)-1)
@@ -144,7 +169,7 @@ def list_animes(watcher, quality, download_dir, imp = None, _filter = None):
             list_animes(watcher, quality, download_dir, imp=imp)
         elif inp == 'remove':
             watcher.remove(anime)
-            list_anime(watcher, quality, download_dir, imp=imp)
+            list_animes(watcher, quality, download_dir, imp=imp)
         elif inp == 'update':
             watcher.update_anime(anime)
         elif inp == 'watch':
@@ -214,7 +239,7 @@ def list_animes(watcher, quality, download_dir, imp = None, _filter = None):
                 watcher.update(anime)
 
             elif key == 'watch_status':
-                if val == 'watching' or val == 'complete' or val == 'planned' or val == 'dropped':
+                if val in ['all','watching','completed','planned','dropped']:
                     anime.set_watch_status(val)
                     watcher.update(anime)
 
