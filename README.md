@@ -36,6 +36,7 @@ Yeah. Me too! That's why this tool exists.
 
 - Download or stream any episode or episode range of any anime.
 - Have a locally stored anime list to track your progress and stream anime using the watch command.
+- Import your MAL anime list to the local anime list.
 - Specify the quality you want to stream or download.
 - Search and download.
 - Save yourselves from those malicious ads.
