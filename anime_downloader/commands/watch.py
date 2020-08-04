@@ -1,6 +1,7 @@
 import click
 import logging
 import sys
+import re
 
 from anime_downloader import util
 from anime_downloader.__version__ import __version__
@@ -104,6 +105,16 @@ def command(anime_name, new, update_all, _list, quality, remove,
         logger.info('Found {}'.format(anime.title))
         watch_anime(watcher, anime,quality,download_dir)
 
+def command_parser(command):
+    # Returns a list of the commands
+    # new "no neverland" --provider vidstream > ['new', '--provider', 'no neverland', 'vidstream']
+
+    # Better than split(' ') because it accounts for quoutes.
+    # Group 3 for qouted command
+    command_regex = r'(("|\')(.*?)("|\')|.*?\s)'
+    matches = re.findall(command_regex,command + " ")
+    commands = [i[0].strip('"').strip("'").strip() for i in matches if i[0].strip()]
+    return commands
 
 def list_animes(watcher, quality, download_dir, imp = None, _filter = None):
 
@@ -113,8 +124,8 @@ def list_animes(watcher, quality, download_dir, imp = None, _filter = None):
     provider = Config['watch']['provider']
     # Not a number as input and command
     if not str(inp).isnumeric():
-        if len(str(inp).strip().split(' ')) > 1:
-            args = inp.strip().split(' ')
+        if ' ' in str(inp).strip():
+            args = command_parser(str(inp))
             key = args[0].lower()
             vals = args[1:]
             if key == 'new':
