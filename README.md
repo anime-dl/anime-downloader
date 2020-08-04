@@ -43,6 +43,8 @@ Yeah. Me too! That's why this tool exists.
 - Download using external downloader ([aria2](https://aria2.github.io/) recommended).
 - Configurable using `config.json`. See [documentation](https://anime-downlader.readthedocs.io/en/latest/usage/config.html).
 
+![sugoi](https://gfycat.com/samewhimsicalearthworm.gif)
+
 ## Supported Operating Systems:
 - Windows
 - Mac OS
