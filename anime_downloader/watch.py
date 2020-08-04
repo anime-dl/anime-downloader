@@ -34,8 +34,8 @@ class Watcher:
     def list(self, filt = None):
         animes = self._read_from_watch_file()
         if filt in [None, 'all']:
-            anime = self._sorting_for_list(animes)
-            animes = anime.copy()
+            animes = self._sorting_for_list(animes)
+            self.sorted = True
         click.echo('{:>5} | {:^35} | {:^8} | {} | {:^10}'.format(
             'SlNo', 'Name', 'Eps','Score', 'Status'
         ))
@@ -43,7 +43,7 @@ class Watcher:
         fmt_str = '{:5} | {:35.35} |  {:3}/{:<3} | {:^5} | {}'
         if not filt in [ None, 'all' ]:
             animes = [ i for i in animes if i.watch_status == filt ]
-       
+            print
         for idx, anime in enumerate(animes):
             meta = anime.meta
             click.echo(fmt_str.format(idx+1,
@@ -57,6 +57,8 @@ class Watcher:
 
     def get(self, anime_name):
         animes = self._read_from_watch_file()
+        if self.sorted == True:
+            animes = self._sorting_for_list(animes)
 
         if isinstance(anime_name, int):
             return animes[anime_name]
@@ -127,7 +129,7 @@ class Watcher:
         for anime_dict in data:
             # For backwards compatibility
             if '_episodeIds' in anime_dict:
-                anime_dict['_episode_urls'] = anime_dict['_episodeIds']
+               anime_dict['_episode_urls'] = anime_dict['_episodeIds']
 
             AnimeInfo = self._get_anime_info_class(anime_dict['url'])
             anime = AnimeInfo(_skip_online_data=True)
