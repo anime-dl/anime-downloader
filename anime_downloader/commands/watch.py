@@ -251,8 +251,10 @@ def list_animes(watcher, quality, download_dir, imp = None, _filter = None):
 
             elif key == 'watch_status':
                 if val in ['watching','completed','dropped','planned','all']:
+                    colours = ['blue', 'green', 'red','yellow','yellow']
                     anime.watch_status = val
                     anime.statusId = ['watching','completed','dropped','planned','all'].index(val)
+                    anime.colours = colours[anime.statusId]
                     watcher.update(anime)
 
 
