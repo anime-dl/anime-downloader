@@ -38,9 +38,14 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     help='The anime provider (website) for search.',
     type=click.Choice(sitenames)
 )
+@click.option(
+    '--mal_import',
+    help='Import xml file from MAL export.',
+    type=bool,
+    is_flag=True)
 
 def command(anime_name, new, update_all, _list, quality, remove,
-            download_dir, provider):
+            download_dir,mal_import,  provider):
     """
     With watch you can keep track of any anime you watch.
     Available Commands after selection of an anime:\n
@@ -82,6 +87,15 @@ def command(anime_name, new, update_all, _list, quality, remove,
         animes = watcher.anime_list()
         for anime in animes:
             watcher.update_anime(anime)
+
+    if mal_import:
+        PATH = anime_name #Click seems to get the first argument as it's user input?
+        if PATH:
+            query = PATH
+        else:
+            query = click.prompt('Enter the file path for the MAL .xml file', type=str)
+        watcher._import_from_MAL(query)
+        sys.exit(0)
 
     # Defaults the command to anime watch -l all.
     # It's a bit of a hack to use sys.argv, but doesn't break
