@@ -8,12 +8,12 @@ from anime_downloader import session, util
 from anime_downloader.__version__ import __version__
 from anime_downloader.sites import get_anime_class, ALL_ANIME_SITES
 from anime_downloader import animeinfo
+from anime_downloader.config import Config
 
 logger = logging.getLogger(__name__)
 
 echo = click.echo
 sitenames = [v[1] for v in ALL_ANIME_SITES]
-
 
 # NOTE: Don't put defaults here. Add them to the dict in config
 @click.command()
@@ -22,23 +22,11 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     '--episodes', '-e', 'episode_range', metavar='<int>:<int>',
     help="Range of anime you want to download in the form <start>:<end>")
 @click.option(
-    '--url', '-u', type=bool, is_flag=True,
-    help="If flag is set, prints the stream url instead of downloading")
-@click.option(
     '--play', 'player', metavar='PLAYER',
     help="Streams in the specified player")
 @click.option(
-    '--skip-download', is_flag=True,
-    help="Retrieve without downloading")
-@click.option(
-    '--download-dir', metavar='PATH',
-    help="Specifiy the directory to download to")
-@click.option(
     '--quality', '-q', type=click.Choice(['360p', '480p', '720p', '1080p']),
     help='Specify the quality of episode. Default-720p')
-@click.option(
-    '--fallback-qualities', '-fq', cls=util.ClickListOption,
-    help='Specifiy the order of fallback qualities as a list.')
 @click.option(
     '--force-download', '-f', is_flag=True,
     help='Force downloads even if file exists')
@@ -53,18 +41,6 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     type=click.Choice(sitenames)
 )
 @click.option(
-    '--external-downloader', '-xd',
-    help='Use an external downloader command to download. '
-         'Use "{aria2}" to use aria2 as downloader. See github wiki.',
-    metavar='DOWNLOAD COMMAND'
-)
-@click.option(
-    '--chunk-size',
-    help='Chunk size for downloading in chunks(in MB). Use this if you '
-         'experience throttling.',
-    type=int
-)
-@click.option(
     '--disable-ssl',
     is_flag=True,
     help='Disable verifying the SSL certificate, if flag is set'
@@ -73,16 +49,24 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     '--choice', '-c',type=int,
     help='Choice to start downloading given anime number '
 )
-@click.option(
-    '--fallback-providers', '-fp', cls=util.ClickListOption,
-    help='Specifiy the order of fallback providers as a list.')
+
 @click.option("--skip-fillers", is_flag=True, help="Skip downloading of fillers.")
 
 @click.pass_context
-def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
-            force_download, download_dir, file_format, provider,
-            external_downloader, chunk_size, disable_ssl, fallback_qualities, choice, skip_fillers,
-            fallback_providers):
+def command(ctx, anime_url, episode_range, player, quality,
+            force_download, file_format, provider,
+            disable_ssl, choice, skip_fillers):
+    
+    # Borrows some config from the original dl command.
+    fallback_qualities = Config['dl']['fallback_qualities']
+    download_dir = Config['dl']['download_dir']
+    quality = Config['dl']['quality']
+    url = Config['dl']['url']
+    external_downloader = Config['dl']['external_downloader']
+    skip_download = Config['dl']['skip_download']
+    chunk_size = Config['dl']['chunk_size']
+
+    fallback_providers = Config['ezdl']['fallback_providers']
 
     query = anime_url[:]
     util.print_info(__version__)
@@ -133,6 +117,7 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
 
             # This is just to make choices in providers presistent between searches.
             choice_provider = choice if choice else choice_dict.get(provider)
+
             if not cls:
                 _anime_url, choice_provider = util.search(anime_url, provider, val=choice_provider, season_info=info)
                 choice_dict[provider] = choice_provider
@@ -144,7 +129,6 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             try:
                 anime = cls(_anime_url, quality=quality,
                             fallback_qualities=fallback_qualities)
-
             # I have yet to investigate all errors this can output
             # No sources found gives error which exits the script
             except:
@@ -189,8 +173,8 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
                                                fixed_file_format, path=download_dir)
                         continue
                     if chunk_size is not None:
-                        chunk_size *= 1e6
                         chunk_size = int(chunk_size)
+                        chunk_size *= 1e6
                     with requests_cache.disabled():
                         episode.download(force=force_download,
                                          path=download_dir,
