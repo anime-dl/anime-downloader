@@ -21,6 +21,7 @@ class Watcher:
     WATCH_FILE = os.path.join(config.APP_DIR, 'watch.json')
 
     def __init__(self):
+        self.sorted = None
         pass
 
     def new(self, url):
@@ -43,14 +44,14 @@ class Watcher:
         fmt_str = '{:5} | {:35.35} |  {:3}/{:<3} | {:^5} | {}'
         if not filt in [ None, 'all' ]:
             animes = [ i for i in animes if i.watch_status == filt ]
-            
+
         for idx, anime in enumerate(animes):
             meta = anime.meta
-            click.echo(fmt_str.format(idx+1,
+            click.echo(click.style(fmt_str.format(idx+1,
                                         anime.title,
                                         *anime.progress(),
                                      anime.score,
-                                     anime.watch_status))
+                                     anime.watch_status),fg=anime.colours))
 
     def anime_list(self):
         return self._read_from_watch_file()
@@ -165,6 +166,7 @@ class Watcher:
                 self.score = 0
                 self.statusId = 0
                 self.watch_status = 'watching'
+                self.colours = 'blue'
                 super(cls, self).__init__(*args, **kwargs)
             def progress(self):
                 return (self.episodes_done, len(self))
