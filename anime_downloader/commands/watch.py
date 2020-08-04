@@ -43,7 +43,7 @@ def command(anime_name, new, update_all, _list, quality, remove,
             download_dir, provider):
     """
     With watch you can keep track of any anime you watch.
-    Available Commands after selection of an anime:\n
+    Available Commans after selection of an anime:\n
     set        : set episodes_done, provider and title.
                  Ex: set episodes_done=3\n
     remove     : remove selected anime from watch list\n
@@ -250,8 +250,9 @@ def list_animes(watcher, quality, download_dir, imp = None, _filter = None):
                 watcher.update(anime)
 
             elif key == 'watch_status':
-                if val in ['all','watching','completed','planned','dropped']:
+                if val in ['watching','completed','dropped','planned','all']:
                     anime.watch_status = val
+                    anime.statusId = ['watching','completed','dropped','planned','all'].index(val)
                     watcher.update(anime)
 
 
