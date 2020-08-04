@@ -43,7 +43,7 @@ class Watcher:
         fmt_str = '{:5} | {:35.35} |  {:3}/{:<3} | {:^5} | {}'
         if not filt in [ None, 'all' ]:
             animes = [ i for i in animes if i.watch_status == filt ]
-            print
+       
         for idx, anime in enumerate(animes):
             meta = anime.meta
             click.echo(fmt_str.format(idx+1,
@@ -127,7 +127,7 @@ class Watcher:
         for anime_dict in data:
             # For backwards compatibility
             if '_episodeIds' in anime_dict:
-               anime_dict['_episode_urls'] = anime_dict['_episodeIds']
+                anime_dict['_episode_urls'] = anime_dict['_episodeIds']
 
             AnimeInfo = self._get_anime_info_class(anime_dict['url'])
             anime = AnimeInfo(_skip_online_data=True)
