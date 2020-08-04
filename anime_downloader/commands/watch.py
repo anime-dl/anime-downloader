@@ -43,7 +43,7 @@ def command(anime_name, new, update_all, _list, quality, remove,
             download_dir, provider):
     """
     With watch you can keep track of any anime you watch.
-    Available Commans after selection of an anime:\n
+    Available Commands after selection of an anime:\n
     set        : set episodes_done, provider and title.
                  Ex: set episodes_done=3\n
     remove     : remove selected anime from watch list\n
