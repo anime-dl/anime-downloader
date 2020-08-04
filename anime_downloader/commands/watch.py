@@ -1,6 +1,7 @@
 import click
 import logging
 import sys
+import re
 
 from anime_downloader import util
 from anime_downloader.__version__ import __version__
@@ -19,8 +20,7 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     '--new', '-n', type=bool, is_flag=True,
     help="Create a new anime to watch")
 @click.option(
-    '--list', '-l', '_list', type=bool, is_flag=True,
-    help="List all animes in watch list")
+    '--list', '-l', '_list', type=click.Choice(['all','watching','completed','planned','dropped']), help="List all animes in watch list")
 @click.option(
     '--remove', '-r', 'remove', type=bool, is_flag=True,
     help="Remove the specified anime")
@@ -38,6 +38,7 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     help='The anime provider (website) for search.',
     type=click.Choice(sitenames)
 )
+
 def command(anime_name, new, update_all, _list, quality, remove,
             download_dir, provider):
     """
@@ -82,8 +83,13 @@ def command(anime_name, new, update_all, _list, quality, remove,
         for anime in animes:
             watcher.update_anime(anime)
 
+    # Defaults the command to anime watch -l all.
+    # It's a bit of a hack to use sys.argv, but doesn't break
+    # if new commands are added (provided you used a bunch of and statements)
+    _list = 'all' if sys.argv[-1] == 'watch' else _list
     if _list:
-        list_animes(watcher, quality, download_dir, None)
+        filt = _list
+        list_animes(watcher, quality, download_dir, None, _filter = filt)
         sys.exit(0)
 
     if anime_name:
@@ -99,10 +105,45 @@ def command(anime_name, new, update_all, _list, quality, remove,
         logger.info('Found {}'.format(anime.title))
         watch_anime(watcher, anime,quality,download_dir)
 
+def command_parser(command):
+    # Returns a list of the commands
+    # new "no neverland" --provider vidstream > ['new', '--provider', 'no neverland', 'vidstream']
 
-def list_animes(watcher, quality, download_dir, imp=None):
-    watcher.list()
-    inp = click.prompt('Select an anime', default=1) if not imp else imp
+    # Better than split(' ') because it accounts for quoutes.
+    # Group 3 for qouted command
+    command_regex = r'(("|\')(.*?)("|\')|.*?\s)'
+    matches = re.findall(command_regex,command + " ")
+    commands = [i[0].strip('"').strip("'").strip() for i in matches if i[0].strip()]
+    return commands
+
+def list_animes(watcher, quality, download_dir, imp = None, _filter = None):
+
+    click.echo('Available Commands: swap, new')
+    watcher.list(filt= _filter)
+    inp = click.prompt('Select an anime', default="1") if not imp else imp
+    provider = Config['watch']['provider']
+    # Not a number as input and command
+    if not str(inp).isnumeric():
+        if ' ' in str(inp).strip():
+            args = command_parser(str(inp))
+            key = args[0].lower()
+            vals = args[1:]
+            if key == 'new':
+                query = vals[0]
+                if '--provider' in vals:
+                    if vals.index('--provider') + 1 < len(vals):
+                        provider = vals[vals.index('--provider') + 1]
+                url = util.search(query, provider)
+                watcher.new(url)
+
+            if key == 'swap':
+                if vals[0] in ['all','watching','completed','planned','dropped']:
+                    return list_animes(watcher, quality, download_dir, imp=imp, _filter=vals[0])
+
+            return list_animes(watcher, quality, download_dir, imp=imp)
+        else:
+            # Exits if neither int or actual command
+            sys.exit(0)
 
     try:
         anime = watcher.get(int(inp)-1)
@@ -111,7 +152,6 @@ def list_animes(watcher, quality, download_dir, imp=None):
 
     # Make the selected anime first result
     watcher.update(anime)
-
     while True:
         click.clear()
         click.secho('Title: ' + click.style(anime.title,
@@ -120,7 +160,8 @@ def list_animes(watcher, quality, download_dir, imp=None):
             str(anime.episodes_done), bold=True, fg='yellow')))
         click.echo('Length: {}'.format(len(anime)))
         click.echo('Provider: {}'.format(anime.sitename))
-
+        click.echo('Score: {}'.format(anime.score))
+        click.echo('Watch Status: {}'.format(anime.watch_status))
         meta = ''
         for k, v in anime.meta.items():
             meta += '{}: {}\n'.format(k, click.style(str(v), bold=True))
@@ -139,7 +180,7 @@ def list_animes(watcher, quality, download_dir, imp=None):
             list_animes(watcher, quality, download_dir, imp=imp)
         elif inp == 'remove':
             watcher.remove(anime)
-            list_anime(watcher, quality, download_dir, imp=imp)
+            list_animes(watcher, quality, download_dir, imp=imp)
         elif inp == 'update':
             watcher.update_anime(anime)
         elif inp == 'watch':
@@ -198,9 +239,27 @@ def list_animes(watcher, quality, download_dir, imp=None):
                 watcher.remove(anime)
                 newanime = watcher.new(url)
                 newanime.episodes_done = anime.episodes_done
+                newanime.score = anime.score
+                newanime.watch_status = anime.watch_status
                 newanime._timestamp = anime._timestamp
                 watcher.update(newanime)
                 anime = newanime
+
+            elif key == 'score':
+                anime.score = val
+                watcher.update(anime)
+
+            elif key == 'watch_status':
+                if val in ['watching','completed','dropped','planned','all']:
+                    colours = {
+                        'watching':'blue',
+                        'completed':'green',
+                        'dropped':'red',
+                        'planned':'yellow',
+                    }
+                    anime.watch_status = val
+                    anime.colours = colours.get(anime.watch_status,'yellow')
+                    watcher.update(anime)
 
 
 def watch_anime(watcher, anime, quality, download_dir):
