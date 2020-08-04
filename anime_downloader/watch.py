@@ -47,8 +47,6 @@ class Watcher:
 
         for idx, anime in enumerate(animes):
             meta = anime.meta
-            # Iggy work your magic here I can't do this better.
-            anime.colours = 'blue'
             click.echo(click.style(fmt_str.format(idx+1,
                                         anime.title,
                                         *anime.progress(),
@@ -77,6 +75,15 @@ class Watcher:
             return anime
 
     def update_anime(self, anime):
+        if not hasattr(anime,'colours'):
+            colours = {
+                'watching':'blue',
+                'completed':'green',
+                'dropped':'red',
+                'planned':'yellow',
+            }
+            anime.colours = colours.get(anime.watch_status,'yellow')
+
         if not hasattr(anime, 'meta') or not anime.meta.get('Status') or \
                 anime.meta['Status'].lower() == 'airing':
             logger.info('Updating anime {}'.format(anime.title))
