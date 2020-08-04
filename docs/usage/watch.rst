@@ -10,7 +10,7 @@
 
 ``anime watch`` can be a all in one solution for your anime needs. Anime watch contains exactly the same providers used in anime dl so you will not be missing anything!
 
-``watch`` will locally track your progress with an anime list making your time with anime watch easy and enjoyable. Anime lists from MyAnimeList can also be imported into your list, so you need not worry about losing a complete tracker!//
+``watch`` will locally track your progress with an anime list making your time with anime watch easy and enjoyable. Anime lists from MyAnimeList can also be imported into your list, so you need not worry about losing a complete tracker!
 
 .. figure:: https://media.giphy.com/media/RKNArLOzM2jUjkXNJu/giphy.gif
    :alt: mp4
