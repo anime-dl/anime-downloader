@@ -33,6 +33,9 @@ class Watcher:
 
     def list(self, filt = None):
         animes = self._read_from_watch_file()
+        if filt in [None, 'all']:
+            anime = self._sorting_for_list(animes)
+            animes = anime.copy()
         click.echo('{:>5} | {:^35} | {:^8} | {} | {:^10}'.format(
             'SlNo', 'Name', 'Eps','Score', 'Status'
         ))
@@ -40,6 +43,7 @@ class Watcher:
         fmt_str = '{:5} | {:35.35} |  {:3}/{:<3} | {:^5} | {}'
         if not filt in [ None, 'all' ]:
             animes = [ i for i in animes if i.watch_status == filt ]
+            print
         for idx, anime in enumerate(animes):
             meta = anime.meta
             click.echo(fmt_str.format(idx+1,
@@ -123,7 +127,7 @@ class Watcher:
         for anime_dict in data:
             # For backwards compatibility
             if '_episodeIds' in anime_dict:
-                anime_dict['_episode_urls'] = anime_dict['_episodeIds']
+               anime_dict['_episode_urls'] = anime_dict['_episodeIds']
 
             AnimeInfo = self._get_anime_info_class(anime_dict['url'])
             anime = AnimeInfo(_skip_online_data=True)
@@ -131,6 +135,22 @@ class Watcher:
             ret.append(anime)
 
         return ret
+    def _sorting_for_list(self,animes):
+        same = []
+        upper = []
+        lower = []
+        if len(animes) > 1:
+            pivot = animes[0]
+            pivot_value = pivot.statusId
+            for anime in animes:
+                if anime.statusId < pivot_value:
+                    lower.append(anime)
+                elif anime.statusId == pivot_value:
+                    same.append(anime)
+                else:
+                    upper.append(anime)
+            return self._sorting_for_list(lower) + same + self._sorting_for_list(upper)
+        return animes
 
     def _get_anime_info_class(self, url):
         cls = get_anime_class(url)
@@ -141,6 +161,7 @@ class Watcher:
                 self.episodes_done = kwargs.pop('episodes_done', 0)
                 self._timestamp = kwargs.pop('timestamp', 0)
                 self.score = 0
+                self.statusId = 0
                 self.watch_status = 'watching'
                 super(cls, self).__init__(*args, **kwargs)
             def progress(self):
