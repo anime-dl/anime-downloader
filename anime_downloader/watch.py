@@ -47,6 +47,8 @@ class Watcher:
 
         for idx, anime in enumerate(animes):
             meta = anime.meta
+            # Iggy work your magic here I can't do this better.
+            anime.colours = 'blue'
             click.echo(click.style(fmt_str.format(idx+1,
                                         anime.title,
                                         *anime.progress(),
@@ -138,21 +140,10 @@ class Watcher:
             ret.append(anime)
 
         return ret
+
     def _sorting_for_list(self,animes):
-        same = []
-        upper = []
-        lower = []
-        if len(animes) > 1:
-            pivot = animes[0]
-            pivot_value = pivot.statusId
-            for anime in animes:
-                if anime.statusId < pivot_value:
-                    lower.append(anime)
-                elif anime.statusId == pivot_value:
-                    same.append(anime)
-                else:
-                    upper.append(anime)
-            return self._sorting_for_list(lower) + same + self._sorting_for_list(upper)
+        status_index = ['watching','completed','dropped','planned','all']
+        animes = sorted(animes, key=lambda x: status_index.index(x.watch_status))
         return animes
 
     def _get_anime_info_class(self, url):
@@ -164,7 +155,6 @@ class Watcher:
                 self.episodes_done = kwargs.pop('episodes_done', 0)
                 self._timestamp = kwargs.pop('timestamp', 0)
                 self.score = 0
-                self.statusId = 0
                 self.watch_status = 'watching'
                 self.colours = 'blue'
                 super(cls, self).__init__(*args, **kwargs)
