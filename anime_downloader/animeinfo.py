@@ -1,11 +1,14 @@
 from anime_downloader.sites import helpers
 import logging
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
-# Need to silence the warning or add a dependency
-from fuzzywuzzy import fuzz
 from anime_downloader.sites import get_anime_class
 from anime_downloader.config import Config
 from anime_downloader.util import primitive_search
+
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter('ignore')
+    from fuzzywuzzy import fuzz
 
 logger = logging.getLogger(__name__)
 
