@@ -91,13 +91,20 @@ def command(anime_name, new, update_all, _list, quality, remove,
 
     if mal_import:
         PATH = anime_name #Click seems to get the first argument as it's user input?
+        reg = r'^.*\b(\.xml)\b.*'
         if PATH:
             query = PATH
+
         else:
             query = click.prompt('Enter the file path for the MAL .xml file', type=str)
-        watcher._import_from_MAL(query)
-        sys.exit(0)
-
+        xml_check = re.search(reg,query)
+        if type(xml_check) == re.Match:
+            watcher._import_from_MAL(query)
+            sys.exit(0)
+        else:
+            logging.error(" Either a the file selected was not a .xml or no file was selected.")
+            sys.exit(1)
+            
     # Defaults the command to anime watch -l all.
     # It's a bit of a hack to use sys.argv, but doesn't break
     # if new commands are added (provided you used a bunch of and statements)
