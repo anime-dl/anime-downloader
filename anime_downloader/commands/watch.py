@@ -41,8 +41,9 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
 @click.option(
     '--mal_import',
     help='Import xml file from MAL export.',
-    type=bool,
-    is_flag=True)
+    type = bool,
+    is_flag = True
+    )
 
 def command(anime_name, new, update_all, _list, quality, remove,
             download_dir,mal_import,  provider):
@@ -120,7 +121,7 @@ def command(anime_name, new, update_all, _list, quality, remove,
         watch_anime(watcher, anime,quality,download_dir)
 
 def command_parser(command):
-    # Returns a list of the commands
+    # Returns<kUp> a list of the commands
     # new "no neverland" --provider vidstream > ['new', '--provider', 'no neverland', 'vidstream']
 
     # Better than split(' ') because it accounts for quoutes.
