@@ -148,7 +148,7 @@ class Watcher:
             mal_episodes = type_tag.find('series_episodes').text
             list_to_dict.append( {
                 "episodes_done": int(mal_watched_episodes),
-                "_timestamp": time.time(), #Probably slows the list production down, but at least you get an accurate timestamp.
+                "_timestamp": time(),
                 "score": int(mal_score),
                 "watch_status": mal_watch_status,
                 "colours": colour,
