@@ -10,8 +10,12 @@
 
 ``anime watch`` can be a all in one solution for your anime needs. Anime watch contains exactly the same providers used in anime dl so you will not be missing anything!
 
-``watch`` will locally track your progress with an anime list making your time with anime watch easy and enjoyable (Work is being done to try and format the locally stored list in a way that importing / exporting to MAL could be possible)
+``watch`` will locally track your progress with an anime list making your time with anime watch easy and enjoyable. Anime lists from MyAnimeList can also be imported into your list, so you need not worry about losing a complete tracker!
 
+.. figure:: https://media.giphy.com/media/RKNArLOzM2jUjkXNJu/giphy.gif
+   :alt: mp4
+   
+   Revamped watch command with an imported MyAnimeList list!!
 ::
 
    CONTROLS IN MPV:
@@ -25,9 +29,16 @@
    Usage: anime watch [OPTIONS] [ANIME_NAME]
 
      With watch you can keep track of any anime you watch.
-
+     
+     Using anime watch without any options:
+        Using anime watch without any options will return the complete tracking list. Allowing for quick access to the list.
+     
+     Available Commands inside a list:
+        swap  : Swap the list
+        add   : Add new anime
+     
      Available Commands after selection of an anime:
-       set    : Set episodes_done, provider and title. Ex: set episodes_done=3
+       set    : Set episodes_done, provider,title, anime_status and stars. Ex: set episodes_done=3
        remove : Remove selected anime from watch list.
        update : Update the episodes of the currrent anime, brilliant for currently airing series.
        watch  : Watch selected anime.
@@ -36,8 +47,10 @@
 
    Options:
      -n, --new                       Add a new entry to the list.
-     -l, --list                      List all animes in watch list.
+     -l, --list  [all,completed,watching,dropped,planned]
+                                     Return a list of the anime from the tracker, sorted by anime_status. 
      -r, --remove                    Remove a specified anime from the list.
+     --mal_import [FILEPATH]                    Give a .xml MAL file to populate the list with MAL.
      -q, --quality [360p|480p|720p|1080p]
                                      Specify the quality of episodes.
      -ll, --log-level [DEBUG|INFO|WARNING|ERROR]

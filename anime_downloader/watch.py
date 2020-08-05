@@ -122,10 +122,44 @@ class Watcher:
 
         self._write_to_watch_file(data)
 
-    def _write_to_watch_file(self, animes):
-        animes = [anime.__dict__ for anime in animes]
+    def _write_to_watch_file(self, animes, MAL_import = False):
+        if not MAL_import:
+            animes = [anime.__dict__ for anime in animes]
+
         with open(self.WATCH_FILE, 'w') as watch_file:
             json.dump(animes, watch_file)
+
+    def _import_from_MAL(self,PATH):
+        import xml.etree.ElementTree as ET #Standard Library import, conditional as it only needs to be imported for this line
+        root = ET.parse(PATH).getroot()
+        list_to_dict = []
+        values = { 'Plan to Watch' : { 'planned' : 'yellow' },
+                   'Completed' : { 'completed' : 'green' },
+                   'Watching' : { 'watching' : 'blue' },
+                   'Dropped' : { 'dropped' : 'red' }
+                   }
+        for type_tag in root.findall('anime'):
+            mal_watched_episodes = type_tag.find('my_watched_episodes').text
+            mal_score = type_tag.find('my_score').text
+            mal_watch_status = type_tag.find('my_status').text
+            colour = str(list(values[mal_watch_status].values())[0])
+            mal_watch_status = str(list(values[mal_watch_status].keys())[0])
+            mal_title = type_tag.find('series_title').text
+            mal_episodes = type_tag.find('series_episodes').text
+            list_to_dict.append( {
+                "episodes_done": int(mal_watched_episodes),
+                "_timestamp": time(),
+                "score": int(mal_score),
+                "watch_status": mal_watch_status,
+                "colours": colour,
+                "url": "https://twist.moe/",
+                "_fallback_qualities": ["720p", "480p", "360p"],
+                "quality": "720p",
+                "title": mal_title,
+                "_episode_urls": [[1, "https://twist.moe/anime/"]],
+                "_len": int(mal_episodes)
+                })
+            self._write_to_watch_file(list_to_dict, MAL_import = True)
 
     def _read_from_watch_file(self):
         if not os.path.exists(self.WATCH_FILE):
