@@ -90,19 +90,17 @@ def command(anime_name, new, update_all, _list, quality, remove,
             watcher.update_anime(anime)
 
     if mal_import:
-        PATH = anime_name #Click seems to get the first argument as it's user input?
-        reg = r'^.*\b(\.xml)\b.*'
+        PATH = anime_name # Hack, but needed to prompt the user. Uses the anime name as parameter.
         if PATH:
             query = PATH
-
         else:
             query = click.prompt('Enter the file path for the MAL .xml file', type=str)
-        xml_check = re.search(reg,query)
-        if type(xml_check) == re.Match:
+
+        if PATH.endswith('.xml'):
             watcher._import_from_MAL(query)
             sys.exit(0)
         else:
-            logging.error(" Either a the file selected was not a .xml or no file was selected.")
+            logging.error("Either the file selected was not an .xml or no file was selected.")
             sys.exit(1)
             
     # Defaults the command to anime watch -l all.
