@@ -139,25 +139,25 @@ class Watcher:
                    'Dropped' : { 'dropped' : 'red' }
                    }
         for type_tag in root.findall('anime'):
-            a = type_tag.find('my_watched_episodes').text
-            b = type_tag.find('my_score').text
-            c = type_tag.find('my_status').text
-            colour = str(list(values[c].values())[0])
-            c = str(list(values[c].keys())[0])
-            d = type_tag.find('series_title').text
-            e = type_tag.find('series_episodes').text
+            mal_watched_episodes = type_tag.find('my_watched_episodes').text
+            mal_score = type_tag.find('my_score').text
+            mal_watch_status = type_tag.find('my_status').text
+            colour = str(list(values[mal_watch_status].values())[0])
+            mal_watch_status = str(list(values[mal_watch_status].keys())[0])
+            mal_title = type_tag.find('series_title').text
+            mal_episodes = type_tag.find('series_episodes').text
             list_to_dict.append( {
-                "episodes_done": int(a),
-                "_timestamp": 0,
-                "score": int(b),
-                "watch_status": c,
+                "episodes_done": int(mal_watched_episodes),
+                "_timestamp": time.time(), #Probably slows the list production down, but at least you get an accurate timestamp.
+                "score": int(mal_score),
+                "watch_status": mal_watch_status,
                 "colours": colour,
                 "url": "https://twist.moe/",
                 "_fallback_qualities": ["720p", "480p", "360p"],
                 "quality": "720p",
-                "title": d,
+                "title": mal_title,
                 "_episode_urls": [[1, "https://twist.moe/anime/"]],
-                "_len": int(e)
+                "_len": int(mal_episodes)
                 })
             self._write_to_watch_file(list_to_dict, MAL_import = True)
 
