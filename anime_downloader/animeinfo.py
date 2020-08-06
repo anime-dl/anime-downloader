@@ -191,15 +191,14 @@ def fuzzy_match_metadata(seasons_info, search_results):
             version_use = version == 'dubbed'
             # Adds something like (Sub) or (Dub) to the title
             key_used = j.meta_info.get('version_key_dubbed','') if version_use else j.meta_info.get('version_key_subbed','')
-
             title_info += ' ' + key_used
-            
+
             # TODO add synonyms
             # 0 if there's no japanese name
             jap_ratio = fuzz.ratio(i.jp_title, j.meta_info['jp_title']) if j.meta_info.get('jp_title') else 0
             # Outputs the max ratio for japanese or english name (0-100)
             ratio = max(fuzz.ratio(title_info,title_provider), jap_ratio)
-            logger.debug('Ratio: {}, Info title: {}, Provider Title: {}'.format(ratio, title_info, title_provider))
+            logger.debug('Ratio: {}, Info title: {}, Provider Title: {}, Key used: {}'.format(ratio, title_info, title_provider, key_used))
             results.append(MatchObject(i, j, ratio))
 
     # Returns the result with highest ratio
