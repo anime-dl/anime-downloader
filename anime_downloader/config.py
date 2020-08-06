@@ -44,8 +44,9 @@ DEFAULT_CONFIG = {
         'animixplay': {
             "server": "vidstream",
         },
-        'nineanime': {
+        '9anime': {
             "server": "mp4upload",
+            'version':'subbed',
         },
         'anistream.xyz': {
             "version": "subbed",
@@ -148,9 +149,6 @@ DEFAULT_CONFIG = {
         },
         'kissanime': {
             "version":'subbed'
-        },
-        'nineanime': {
-            'version':'subbed'
         },
 
     }
