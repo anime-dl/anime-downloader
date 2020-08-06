@@ -7,7 +7,7 @@ from anime_downloader.sites import helpers
 
 logger = logging.getLogger(__name__)
 
-class NineAnime(Anime, sitename='9anime'):
+class NineAnime(Anime, sitename='nineanime'):
         sitename = '9anime'
         url = f'https://{sitename}.to/search'
         @classmethod
