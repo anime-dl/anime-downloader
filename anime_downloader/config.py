@@ -43,6 +43,7 @@ DEFAULT_CONFIG = {
         },
         'animixplay': {
             "server": "vidstream",
+            "version": "subbed"
         },
         '9anime': {
             "server": "mp4upload",
