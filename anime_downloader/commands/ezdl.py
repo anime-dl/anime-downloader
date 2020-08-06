@@ -65,6 +65,7 @@ def command(ctx, anime_url, episode_range, player, quality,
     external_downloader = Config['dl']['external_downloader']
     skip_download = Config['dl']['skip_download']
     chunk_size = Config['dl']['chunk_size']
+    speed_limit = Config['dl']['speed_limit']
 
     fallback_providers = Config['ezdl']['fallback_providers']
 
@@ -170,7 +171,7 @@ def command(ctx, anime_url, episode_range, player, quality,
                             episode.ep_no, anime.title)
                         )
                         util.external_download(external_downloader, episode,
-                                               fixed_file_format, path=download_dir)
+                                               fixed_file_format, path=download_dir, speed_limit=speed_limit)
                         continue
                     if chunk_size is not None:
                         chunk_size = int(chunk_size)
