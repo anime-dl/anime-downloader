@@ -25,6 +25,11 @@ DEFAULT_CONFIG = {
         'selescrape_driver_binary_path' : None,
         'speed_limit' : 0,
     },
+    'ezdl': {
+        'file_format':'{animeinfo_anime_title}/{animeinfo_anime_title}_{provider}_{ep_no}',
+        'provider':'twist.moe',
+        'fallback_providers':['9anime','vidstream','watchmovie']
+    },
     'watch': {
         'quality': '1080p',
         'fallback_qualities': ['720p', '480p', '360p'],
@@ -101,7 +106,8 @@ DEFAULT_CONFIG = {
             "category": "English-translated"
         },
         'vidstream': {
-            "servers": ["vidstream","vidstream_bk","gcloud","mp4upload","cloud9","hydrax","mixdrop"]
+            "servers": ["vidstream","vidstream_bk","gcloud","mp4upload","cloud9","hydrax","mixdrop"],
+            "version": "subbed"
         },
         'justdubs': {
             "servers": ["mp4upload","gcloud"]
@@ -138,6 +144,9 @@ DEFAULT_CONFIG = {
             "servers":[
                 "gounlimited"
             ]
+        },
+        'kissanime': {
+            "version":'subbed'
         },
     }
 }

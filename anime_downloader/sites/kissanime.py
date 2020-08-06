@@ -50,6 +50,10 @@ class KissAnime(Anime, sitename='kissanime'):
                 url=cls.domain +
                     soup.find('a', 'bigChar').get('href'),
                 poster='',
+                meta_info = {
+                    'version_key_dubbed':'(Dub)',
+                    'version_key_subbed':'(Sub)'
+                }
             )]
 
         searched = [s for i, s in enumerate(soup.find_all('td')) if not i % 2]
@@ -60,6 +64,10 @@ class KissAnime(Anime, sitename='kissanime'):
                 title=res.text.strip(),
                 url=cls.domain + res.find('a').get('href'),
                 poster='',
+                meta_info = {
+                    'version_key_dubbed':'(Dub)',
+                    'version_key_subbed':'(Sub)'
+                }
             )
             logger.debug(res)
             ret.append(res)
