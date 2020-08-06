@@ -87,7 +87,8 @@ DEFAULT_CONFIG = {
         },
         
         'watchmovie': {
-            "servers": ["vidstream",'gcloud','yourupload','hydrax']
+            "servers": ["vidstream",'gcloud','yourupload','hydrax'],
+            "version": 'subbed',
         },
         'animeflix': {
             "server": "AUEngine",
@@ -148,6 +149,10 @@ DEFAULT_CONFIG = {
         'kissanime': {
             "version":'subbed'
         },
+        'nineanime': {
+            'version':'subbed'
+        },
+
     }
 }
 
