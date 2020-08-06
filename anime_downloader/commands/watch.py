@@ -67,7 +67,7 @@ def command(anime_name, new, update_all, _list, quality, remove,
         else:
             query = click.prompt('Enter a anime name or url', type=str)
 
-        url = util.search(query, provider)
+        url, _ = util.search(query, provider)
 
         watcher.new(url)
         sys.exit(0)
