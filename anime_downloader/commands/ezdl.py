@@ -49,13 +49,17 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     '--choice', '-c',type=int,
     help='Choice to start downloading given anime number '
 )
-
+@click.option(
+    '--ratio', '-r',type=int,
+    help='Ratio used for the auto select in search. 100 means it only auto selects on complete matches. 0 auto selects regardless of how similar the result is.',
+    default=50
+)
 @click.option("--skip-fillers", is_flag=True, help="Skip downloading of fillers.")
 
 @click.pass_context
 def command(ctx, anime_url, episode_range, player, quality,
             force_download, file_format, provider,
-            disable_ssl, choice, skip_fillers):
+            disable_ssl, choice, skip_fillers, ratio):
     
     # Borrows some config from the original dl command.
     fallback_qualities = Config['dl']['fallback_qualities']
@@ -120,7 +124,7 @@ def command(ctx, anime_url, episode_range, player, quality,
             choice_provider = choice if choice else choice_dict.get(provider)
 
             if not cls:
-                _anime_url, choice_provider = util.search(anime_url, provider, val=choice_provider, season_info=info)
+                _anime_url, choice_provider = util.search(anime_url, provider, val=choice_provider, season_info=info, ratio=ratio)
                 choice_dict[provider] = choice_provider
                 if choice_provider == 0:
                     continue
