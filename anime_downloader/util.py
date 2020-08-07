@@ -78,7 +78,7 @@ def format_search_results(search_results):
     return table
 
 
-def search(query, provider, val=None, season_info=None):
+def search(query, provider, val=None, season_info=None, ratio=50):
     # Will use animeinfo sync if season_info is provided
 
     # Since this function outputs to stdout this should ideally be in
@@ -94,8 +94,8 @@ def search(query, provider, val=None, season_info=None):
         from anime_downloader import animeinfo
         match = animeinfo.fuzzy_match_metadata([season_info], search_results)
         logger.debug('Match ratio: {}'.format(match.ratio))
-        # Arbitrary ratio, could probably be defined in config.
-        if match.ratio >= 50 and not val:
+        # ratios are a range between 0-100 where 100 means 100% match.
+        if match.ratio >= ratio and not val:
             logger.debug('Selected {}'.format(match.SearchResult.title))
             return match.SearchResult.url, None
 
