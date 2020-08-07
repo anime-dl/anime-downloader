@@ -54,18 +54,21 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     help='Ratio used for the auto select in search. 100 means it only auto selects on complete matches. 0 auto selects regardless of how similar the result is.',
     default=50
 )
+@click.option(
+    '--url', '-u', type=bool, is_flag=True,
+    help="If flag is set, prints the stream url instead of downloading")
 @click.option("--skip-fillers", is_flag=True, help="Skip downloading of fillers.")
 
 @click.pass_context
 def command(ctx, anime_url, episode_range, player, quality,
             force_download, file_format, provider,
-            disable_ssl, choice, skip_fillers, ratio):
+            disable_ssl, choice, skip_fillers, ratio, url):
     
     # Borrows some config from the original dl command.
     fallback_qualities = Config['dl']['fallback_qualities']
     download_dir = Config['dl']['download_dir']
-    quality = Config['dl']['quality']
-    url = Config['dl']['url']
+    quality = Config['dl']['quality'] if not quality else quality
+    url = Config['dl']['url'] if not url else url
     external_downloader = Config['dl']['external_downloader']
     skip_download = Config['dl']['skip_download']
     chunk_size = Config['dl']['chunk_size']
