@@ -79,6 +79,7 @@ def command(ctx, anime_url, episode_range, player,
     # As the current setup runs episode wise without this a 12 episode series would give 12+ prompts.
     choice_dict = {}
 
+    # Doesn't work on nyaa since it only returns one episode.
     for episode_range in range(int(episode_range_split[0]), int(episode_range_split[-1])+1):
         # Exits if all providers are skipped.
         if [choice_dict[i] for i in choice_dict] == [0]*len(providers):
