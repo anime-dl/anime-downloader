@@ -25,29 +25,12 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     '--play', 'player', metavar='PLAYER',
     help="Streams in the specified player")
 @click.option(
-    '--quality', '-q', type=click.Choice(['360p', '480p', '720p', '1080p']),
-    help='Specify the quality of episode. Default-720p')
-@click.option(
     '--force-download', '-f', is_flag=True,
     help='Force downloads even if file exists')
-@click.option(
-    '--file-format', '-ff', default='{animeinfo_anime_title}/{animeinfo_anime_title}_{provider}_{ep_no}',
-    help='Format for how the files to be downloaded be named.',
-    metavar='FORMAT STRING'
-)
 @click.option(
     '--provider',
     help='The anime provider (website) for search.',
     type=click.Choice(sitenames)
-)
-@click.option(
-    '--disable-ssl',
-    is_flag=True,
-    help='Disable verifying the SSL certificate, if flag is set'
-)
-@click.option(
-    '--choice', '-c',type=int,
-    help='Choice to start downloading given anime number '
 )
 @click.option(
     '--ratio', '-r',type=int,
@@ -60,14 +43,15 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
 @click.option("--skip-fillers", is_flag=True, help="Skip downloading of fillers.")
 
 @click.pass_context
-def command(ctx, anime_url, episode_range, player, quality,
-            force_download, file_format, provider,
-            disable_ssl, choice, skip_fillers, ratio, url):
-    
+def command(ctx, anime_url, episode_range, player,
+            force_download, provider,
+            skip_fillers, ratio, url):
+
     # Borrows some config from the original dl command.
+    # This can all be flags, but ezdl is made to be easy.
     fallback_qualities = Config['dl']['fallback_qualities']
     download_dir = Config['dl']['download_dir']
-    quality = Config['dl']['quality'] if not quality else quality
+    quality = Config['dl']['quality']
     url = Config['dl']['url'] if not url else url
     external_downloader = Config['dl']['external_downloader']
     skip_download = Config['dl']['skip_download']
@@ -75,6 +59,7 @@ def command(ctx, anime_url, episode_range, player, quality,
     speed_limit = Config['dl']['speed_limit']
 
     fallback_providers = Config['ezdl']['fallback_providers']
+    file_format = Config['ezdl']['file_format']
 
     query = anime_url[:]
     util.print_info(__version__)
@@ -82,7 +67,6 @@ def command(ctx, anime_url, episode_range, player, quality,
     fallback_providers.insert(0, provider)
     # Eliminates duplicates while keeping order
     providers = sorted(set(fallback_providers),key=fallback_providers.index)  
-    # TODO: flag for fallback providers
 
     info = animeinfo.search_anilist(query)
     episode_count = info.episodes - 1
@@ -92,6 +76,7 @@ def command(ctx, anime_url, episode_range, player, quality,
     episode_range_split = episode_range.split(':')
 
     # Stores the choices for each provider, to prevent re-prompting search.
+    # As the current setup runs episode wise without this a 12 episode series would give 12+ prompts.
     choice_dict = {}
 
     for episode_range in range(int(episode_range_split[0]), int(episode_range_split[-1])+1):
@@ -120,11 +105,13 @@ def command(ctx, anime_url, episode_range, player, quality,
             }
             fixed_file_format = file_format.format(**rep_dict)
 
-            disable_ssl = cls and cls.__name__ == 'Masterani' or disable_ssl
+            # Keeping this as I don't know the impact of removing it.
+            # It's False by default in normal dl.
+            disable_ssl = False
             session.get_session().verify = not disable_ssl
 
             # This is just to make choices in providers presistent between searches.
-            choice_provider = choice if choice else choice_dict.get(provider)
+            choice_provider = choice_dict.get(provider)
 
             if not cls:
                 _anime_url, choice_provider = util.search(anime_url, provider, val=choice_provider, season_info=info, ratio=ratio)
