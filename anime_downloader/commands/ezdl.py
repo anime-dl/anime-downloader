@@ -149,6 +149,10 @@ def command(ctx, anime_url, episode_range, player, quality,
             except RuntimeError:
                 logger.error('No episode found with index {}'.format(episode_range))
                 continue
+            except:
+                logger.error('Unknown provider error')
+                continue
+
             # TODO:
             # Two types of plugins:
             #   - Aime plugin: Pass the whole anime
