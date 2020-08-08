@@ -39,7 +39,7 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     type=click.Choice(sitenames)
 )
 @click.option(
-    '--mal_import',
+    '--mal-import',
     help='Import xml file from MAL export.',
     type = bool,
     is_flag = True
