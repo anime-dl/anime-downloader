@@ -157,7 +157,7 @@ def list_animes(watcher, quality, download_dir, imp = None, _filter = None):
                 watcher.new(url)
 
             if key == 'swap':
-                if vals[0] in ['all','watching','completed','planned','dropped']:
+                if vals[0] in ['all','watching','completed','planned','dropped','hold']:
                     return list_animes(watcher, quality, download_dir, imp=imp, _filter=vals[0])
 
             return list_animes(watcher, quality, download_dir, imp=imp)
@@ -272,10 +272,11 @@ def list_animes(watcher, quality, download_dir, imp = None, _filter = None):
             elif key == 'watch_status':
                 if val in ['watching','completed','dropped','planned','all']:
                     colours = {
-                        'watching':'blue',
+                        'watching':'cyan',
                         'completed':'green',
                         'dropped':'red',
                         'planned':'yellow',
+                        'hold':'white'
                     }
                     anime.watch_status = val
                     anime.colours = colours.get(anime.watch_status,'yellow')
