@@ -35,7 +35,12 @@ class AniMixPlay(Anime, sitename='animixplay'):
                 data.append(SearchResult(
                     title = j.text,
                     url = 'https://animixplay.com' + j.get('href'),
-                    meta = {'version': i}))
+                    meta = {'version': i},
+                    meta_info = {
+                        'version_key_dubbed':'(Dub)',
+                        }
+                    )
+                )
 
         return data
 

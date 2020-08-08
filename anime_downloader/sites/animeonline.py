@@ -16,6 +16,10 @@ class AnimeOnline(Anime, sitename = 'animeonline360'):
                 SearchResult(
                     title = i['title'],
                     url = i['url'],
+                    meta_info = {
+                        'version_key_dubbed':'Dubbed',
+                        'version_key_subbed':'Subbed',
+                        }
                     )
                 for i in results
                 ]

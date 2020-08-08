@@ -21,11 +21,16 @@ class WatchMovie(Anime, sitename='watchmovie'):
             
             search_results = [
                 SearchResult(
-                    title=a.get('title'),
-                    url=cls.url+a.get('href'))
-                for a in search_results
+                    title=i.get('title'),
+                    url=cls.url+i.get('href'),
+                    meta_info = {
+                        'version_key_dubbed':'(Dub)',
+                        }
+                    )
+                for i in search_results
             ]
-            return(search_results)
+            return search_results
+
 
         def _scrape_episodes(self):
             if 'anime-info' in self.url:
@@ -34,6 +39,7 @@ class WatchMovie(Anime, sitename='watchmovie'):
                 url = self.url+'/season'
             soup = helpers.soupify(helpers.get(url)).select('a.videoHname')
             return ['https://watchmovie.movie'+a.get('href') for a in soup[::-1]]
+
 
         def _scrape_metadata(self):
             self.title = helpers.soupify(helpers.get(self.url)).select('div.page-title > h1')[0].text

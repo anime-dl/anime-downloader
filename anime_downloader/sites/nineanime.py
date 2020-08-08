@@ -7,7 +7,7 @@ from anime_downloader.sites import helpers
 
 logger = logging.getLogger(__name__)
 
-class NineAnime(Anime, sitename='9anime'):
+class NineAnime(Anime, sitename='nineanime'):
         sitename = '9anime'
         url = f'https://{sitename}.to/search'
         @classmethod
@@ -17,7 +17,11 @@ class NineAnime(Anime, sitename='9anime'):
             return [
                 SearchResult(
                     title = i.text,
-                    url = i.get('href')
+                    url = i.get('href'),
+                    meta_info = {
+                        'version_key_dubbed':'(Dub)',
+                        'version_key_subbed':''
+                        }
                     )
                 for i in search_results
             ]

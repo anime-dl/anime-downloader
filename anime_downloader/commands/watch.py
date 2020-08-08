@@ -67,7 +67,7 @@ def command(anime_name, new, update_all, _list, quality, remove,
         else:
             query = click.prompt('Enter a anime name or url', type=str)
 
-        url = util.search(query, provider)
+        url, _ = util.search(query, provider)
 
         watcher.new(url)
         sys.exit(0)
@@ -153,7 +153,7 @@ def list_animes(watcher, quality, download_dir, imp = None, _filter = None):
                 if '--provider' in vals:
                     if vals.index('--provider') + 1 < len(vals):
                         provider = vals[vals.index('--provider') + 1]
-                url = util.search(query, provider)
+                url, _ = util.search(query, provider)
                 watcher.new(url)
 
             if key == 'swap':
@@ -255,7 +255,7 @@ def list_animes(watcher, quality, download_dir, imp = None, _filter = None):
                     # Probably good to list providers here before looping.
                     continue
                 # Watch can quit if no anime is found, not ideal.
-                url = util.search(anime.title, val)
+                url, _ = util.search(anime.title, val)
                 watcher.remove(anime)
                 newanime = watcher.new(url)
                 newanime.episodes_done = anime.episodes_done

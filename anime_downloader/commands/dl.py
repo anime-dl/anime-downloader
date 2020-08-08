@@ -95,7 +95,7 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
     session.get_session().verify = not disable_ssl
 
     if not cls:
-        anime_url = util.search(anime_url, provider, choice)
+        anime_url, _ = util.search(anime_url, provider, choice)
         cls = get_anime_class(anime_url)
 
     anime = cls(anime_url, quality=quality,

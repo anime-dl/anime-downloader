@@ -33,10 +33,14 @@ class VidStream(Anime, sitename='vidstream'):
                 params = {'keyword':query})
             ).select('ul.listing > li.video-block > a')
             # Regex to cut out the "Episode xxx"
+
             return [
                 SearchResult(
                     title=re.sub(r"(E|e)pisode\s*[0-9]*", '', i.select('div.name')[0].text.strip()),
-                    url=f"https://vidstreaming.io{i.get('href')}")
+                    url=f"https://vidstreaming.io{i.get('href')}",
+                    meta_info = {
+                    'version_key_dubbed':'(Dub)'
+                    })
                 for i in search_results
             ]
 
