@@ -132,9 +132,9 @@ def primitive_search(search_results):
     table = tabulate(table, headers, tablefmt='psql')
     table = '\n'.join(table.split('\n')[::-1])
     click.echo(table, err=True)
-    
+
     while True:
-        val = click.prompt('Enter the anime no (0 to switch provider): ', type=int, default=1, err=True)
+        val = click.prompt('Enter the anime no: ', type=int, default=1, err=True)
         try:
             return search_results[val-1]
         except IndexError:
