@@ -81,6 +81,7 @@ class Watcher:
                 'completed':'green',
                 'dropped':'red',
                 'planned':'yellow',
+                'hold' : 'white'
             }
             anime.colours = colours.get(anime.watch_status,'yellow')
 
@@ -135,8 +136,9 @@ class Watcher:
         list_to_dict = []
         values = { 'Plan to Watch' : { 'planned' : 'yellow' },
                    'Completed' : { 'completed' : 'green' },
-                   'Watching' : { 'watching' : 'blue' },
-                   'Dropped' : { 'dropped' : 'red' }
+                   'Watching' : { 'watching' : 'cyan' },
+                   'Dropped' : { 'dropped' : 'red' },
+                   'On-Hold' : { 'hold' : 'white' }
                    }
         for type_tag in root.findall('anime'):
             mal_watched_episodes = type_tag.find('my_watched_episodes').text
@@ -183,7 +185,7 @@ class Watcher:
         return ret
 
     def _sorting_for_list(self,animes):
-        status_index = ['watching','completed','dropped','planned','all']
+        status_index = ['watching','completed','dropped','planned','hold','all']
         animes = sorted(animes, key=lambda x: status_index.index(x.watch_status))
         return animes
 
