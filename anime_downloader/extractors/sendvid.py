@@ -1,4 +1,3 @@
-
 from anime_downloader.extractors.base_extractor import BaseExtractor
 from anime_downloader.sites import helpers
 
