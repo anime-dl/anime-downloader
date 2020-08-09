@@ -151,7 +151,7 @@ DEFAULT_CONFIG = {
             ]
         },
         'dbanimes': {
-            'servers':['mixdrop','fembed', 'sendvid']
+            'servers':['mixdrop','gounlimited','fembed', 'sendvid']
         },
         'kissanime': {
             'version':'subbed'
