@@ -129,8 +129,7 @@ DEFAULT_CONFIG = {
             ]
         },
         'dbanimes': {
-            'server': 'fembed',
-            'fallback_servers': ['mixdrop', 'sendvid']
+            'servers':['mixdrop','fembed', 'sendvid']
         }
     }
 }
