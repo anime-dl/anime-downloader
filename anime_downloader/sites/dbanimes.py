@@ -1,4 +1,3 @@
-
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 from urllib.parse import urlparse
@@ -14,7 +13,6 @@ class DBAnimes(Anime, sitename='dbanimes'):
     @classmethod
     def search(cls, query):
         soup = helpers.soupify(helpers.get("https://dbanimes.com", params = {'s': query, 'post_type': 'anime'}))
-
         return [
             SearchResult(
                 title = x['title'].strip(),
@@ -23,28 +21,39 @@ class DBAnimes(Anime, sitename='dbanimes'):
             for x in soup.select('h6.fet > a')
         ]
 
+
     def _scrape_episodes(self):
         soup = helpers.soupify(helpers.get(self.url))
         return [x['href'] for x in soup.select('a.btn.btn-default.mb-2')]
+
 
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url))
         self.title = soup.select("li[aria-current=page]")[0].text
 
+
 class DBAnimesEpisode(AnimeEpisode, sitename='dbanimes'):
     def check_server(self, extractor, url):
         #Sendvid returns 404
         try:
-            soup = helpers.soupify(helpers.get(url))
+            soup = helpers.soupify(helpers.get(url,allow_redirects=True))
         except HTTPError:
             return False
 
         if extractor == 'mixdrop':
+            # Checks redirects in mixdrop.
+            redirect_regex = r"\s*window\.location\s*=\s*('|\")(.*?)('|\")"
+            redirect = re.search(redirect_regex,str(soup))
+            if redirect:
+                url = 'https://mixdrop.to' + redirect.group(2)
+                soup = helpers.soupify(helpers.get(url))
+
             try:
                 return soup.h2.text != "WE ARE SORRY"
             except AttributeError:
                 return True
-        if extractor == "fembed":
+
+        if extractor == "gcloud":
             try:
                 return soup.p.text != 'Sorry this video does not exist'
             except AttributeError:
@@ -52,34 +61,20 @@ class DBAnimesEpisode(AnimeEpisode, sitename='dbanimes'):
 
     def _get_sources(self):
         soup = helpers.soupify(helpers.get(self.url))
-        servers = [re.sub('^//', 'https://', helpers.soupify(x['data-url']).iframe['src']) for x in soup.select('li.streamer > div[data-url]')]
-        server = self.config['server']
-        fallbacks = self.config['fallback_servers']
-        domains = [re.search("(.*)\.", urlparse(x).netloc).group(1).replace('www.', '') for x in servers]
+        sources = [re.sub('^//', 'https://', helpers.soupify(x['data-url']).iframe['src']) for x in soup.select('li.streamer > div[data-url]')]
+        domains = [re.search("(.*)\.", urlparse(x).netloc).group(1).replace('www.', '') for x in sources]
+        servers = self.config['servers']
+        sources_list = []
+        for i in range(len(sources)):
+            if domains[i] in servers:
+                # fembed uses the gcloud extractor, should be fixed
+                extractor = domains[i] if domains[i] != 'fembed' else 'gcloud'
+                if self.check_server(extractor, sources[i]):
+                    sources_list.append({
+                    'extractor':extractor,
+                    'url':sources[i],
+                    'server':domains[i],
+                    'version':'subbed'
+                    })
 
-        if server in domains:
-            extractor = server if server != 'fembed' else 'gcloud'
-            link = servers[domains.index(server)]
-
-            #Just In Case
-            exists = self.check_server(extractor, link)
-            if exists:
-                return [(extractor, link)]
-
-        available = list(set(fallbacks) & set(domains))
-
-        for fallback in fallbacks:
-            if fallback in available:
-                extractor = fallback if fallback != 'fembed' else 'gcloud'
-                matches = [i for i, x in enumerate(domains) if x == fallback]
-
-                if matches:
-                    for match in matches:
-                        link = servers[match]
-                        exists = self.check_server(extractor, link)
-
-                        if exists:
-                            return [(extractor, link)]
-
-        logger.warn("No supported servers found")
-        return
+        return self.sort_sources(sources_list)
