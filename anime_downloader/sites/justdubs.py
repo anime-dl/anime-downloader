@@ -34,7 +34,9 @@ class JustDubs(Anime, sitename='justdubs'):
             err = 'No Episodes Found in url "{}"'.format(self.url)
             args = [self.url]
             raise NotFoundError(err, *args)
-        return list(reversed(ret))
+
+        # Could be reversed
+        return ret
 
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url))
