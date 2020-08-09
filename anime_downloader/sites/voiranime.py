@@ -36,7 +36,6 @@ class VoirAnime(Anime, sitename='voiranime'):
 
 class VoirAnimeEpisode(AnimeEpisode, sitename='voiranime'):
         def _get_sources(self):
-            print(self.url)
             soup = helpers.soupify(helpers.get(self.url))
             """These could probably be condensed down to one, but would look too spooky"""
             multilinks_regex = r'var\s*multilinks\s*=\s*\[\[{(.*?)}]];'

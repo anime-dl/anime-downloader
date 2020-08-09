@@ -14,6 +14,12 @@ ALL_EXTRACTORS = [
         'class': 'AnimeVideo',
     },
     {
+        'sitename': 'animeonline360',
+        'modulename': 'animeonline360',
+        'regex': 'animeonline360',
+        'class': 'AnimeOnline360',
+    },
+    {
         'sitename': 'stream.moe',
         'modulename': 'moe',
         'regex': 'stream.moe',
@@ -116,6 +122,12 @@ ALL_EXTRACTORS = [
         'class': 'Mixdrop'
     },
     {
+        'sitename': 'sendvid',
+        'modulename': 'sendvid',
+        'regex': 'sendvid',
+        'class': 'SendVid'
+    },
+    {
         'sitename': 'sibnet',
         'modulename': 'sibnet',
         'regex': 'sibnet',
@@ -126,12 +138,6 @@ ALL_EXTRACTORS = [
         'modulename': 'uqload',
         'regex': 'uqload',
         'class': 'Uqload'
-    },
-    {
-        'sitename': 'sendvid',
-        'modulename': 'sendvid',
-        'regex': 'sendvid',
-        'class': 'SendVid'
     }
 ]
 

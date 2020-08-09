@@ -73,10 +73,16 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     help='Choice to start downloading given anime number '
 )
 @click.option("--skip-fillers", is_flag=True, help="Skip downloading of fillers.")
+@click.option(
+    "--speed-limit", 
+    type=str, 
+    help="Set the speed limit (in KB/s or MB/s) for downloading when using aria2c",
+    metavar='<int>K/M'
+)
 @click.pass_context
 def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             force_download, download_dir, file_format, provider,
-            external_downloader, chunk_size, disable_ssl, fallback_qualities, choice, skip_fillers):
+            external_downloader, chunk_size, disable_ssl, fallback_qualities, choice, skip_fillers, speed_limit):
     """ Download the anime using the url or search for it.
     """
     query = anime_url[:]
@@ -89,7 +95,7 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
     session.get_session().verify = not disable_ssl
 
     if not cls:
-        anime_url = util.search(anime_url, provider, choice)
+        anime_url, _ = util.search(anime_url, provider, choice)
         cls = get_anime_class(anime_url)
 
     anime = cls(anime_url, quality=quality,
@@ -109,6 +115,8 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
         logger.info('Downloading to {}'.format(os.path.abspath(download_dir)))
     if skip_fillers:
         fillers = util.get_filler_episodes(query)
+    if speed_limit:
+        logger.info("Speed is being limited to {}".format(speed_limit))
     for episode in animes:
         if skip_fillers and fillers:
             if episode.ep_no in fillers:
@@ -119,7 +127,7 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             util.print_episodeurl(episode)
 
         if player:
-            util.play_episode(episode, player=player)
+            util.play_episode(episode, player=player, title=f'{anime.title} - Episode {episode.ep_no}')
 
         if not skip_download:
             if external_downloader:
@@ -127,7 +135,7 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
                     episode.ep_no, anime.title)
                 )
                 util.external_download(external_downloader, episode,
-                                       file_format, path=download_dir)
+                                       file_format, speed_limit, path=download_dir)
                 continue
             if chunk_size is not None:
                 chunk_size *= 1e6

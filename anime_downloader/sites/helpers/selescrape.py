@@ -1,4 +1,5 @@
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.remote.remote_connection import LOGGER as serverLogger
 from selenium.webdriver.support.ui import WebDriverWait
 from anime_downloader.const import get_random_header
 from selenium.webdriver.common.by import By
@@ -14,8 +15,10 @@ import logging
 import click
 import time
 import json
-
+serverLogger.setLevel(logging.ERROR)
 logger = logging.getLogger(__name__)
+
+
 def get_data_dir():
     '''
     Gets the folder directory selescrape will store data, 
@@ -69,6 +72,7 @@ def get_driver_binary():
 def add_url_params(url, params):
     return url if not params else url + '?' + urlencode(params)
 
+
 def driver_select(): #
     '''
     it configures what each browser should do 
@@ -98,7 +102,7 @@ def driver_select(): #
         chrome_options.add_argument("--disable-gpu")
         profile_path = os.path.join(data_dir, 'Selenium_chromium')
         log_path = os.path.join(data_dir, 'chromedriver.log')
-        chrome_options.add_argument(f'--log-path {log_path}')
+        chrome_options.add_argument('--log-level=OFF')
         chrome_options.add_argument(f"--user-data-dir={profile_path}")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--window-size=1920,1080")
@@ -118,7 +122,7 @@ def driver_select(): #
                 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
                 cap = DesiredCapabilities.CHROME
                 cap['binary_location'] = executable
-                driver = webdriver.Chrome(executable_path=binary, desired_capabilities=cap, options=chrome_options)
+                driver = webdriver.Chrome(executable_path=binary, desired_capabilities=cap, options=chrome_options, service_log_path=os.path.devnull)
     return driver
 
 
@@ -178,11 +182,46 @@ def request(request_type, url, **kwargs): #Headers not yet supported , headers={
     status = status_select(driver, new_url, 'hide')
     try:
         cloudflare_wait(driver)
-        html = driver.page_source
+        user_agent = driver.execute_script("return navigator.userAgent;") #dirty, but allows for all sorts of things above
+        cookies = driver.get_cookies()
+        text = driver.page_source
         driver.close()
-        return html
+        return SeleResponse(url, request_type, text, cookies, user_agent)
     except:
         driver.save_screenshot(f"{get_data_dir()}/screenshot.png");
         driver.close()
         logger.error(f'There was a problem getting the page: {new_url}. \
         See the screenshot for more info:\n{get_data_dir()}/screenshot.png')
+
+
+class SeleResponse:
+    """
+    Class for the selenium response.
+
+    Attributes
+    ----------
+    url: string
+        URL of the webpage.
+    medthod: GET or POST
+        Request type.
+    text/content: string
+        Webpage contents.
+    cookies: dict
+        Stored cookies from the website.
+    user_agent: string
+        User agent used on the webpage
+    """
+    def __init__(self, url, method, text, cookies, user_agent):
+        self.url = url
+        self.method = method
+        self.text = text
+        self.content = text
+        self.cookies = cookies
+        self.user_agent = user_agent
+
+    def __str__(self):
+        return self.text
+
+    def __repr__(self):
+        return '<SeleResponse URL: {} METHOD: {} TEXT: {} COOKIES {} USERAGENT {}>'.format(
+            self.url, self.method, self.text, self.cookies, self.user_agent)

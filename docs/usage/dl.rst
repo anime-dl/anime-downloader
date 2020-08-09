@@ -10,7 +10,7 @@
 Search and download
 ^^^^^^^^^^^^^^^^^^^
 
--  To search and download all episodes.
+-  To search and download all episodes use the following command;
 
 .. code:: bash
 
@@ -22,38 +22,39 @@ To search on kissanime,
 
    anime dl 'code geass' --provider animepahe
 
-Run ``anime dl --help`` for help text on ``dl`` subcommand.
+Run ``anime dl --help`` for help using the ``dl`` subcommand.
 
 Download directly
 ^^^^^^^^^^^^^^^^^
 
--  To download Fullmetal Alchemist: Brotherhood all episodes
+-  To download Fullmetal Alchemist: Brotherhood all episodes;
 
 ::
 
    anime dl 'https://animepahe.com/anime/fullmetal-alchemist-brotherhood'
 
--  To download Fullmetal Alchemist: Brotherhood episode 1
+-  To download Fullmetal Alchemist: Brotherhood episode 1;
 
 ::
 
    anime dl 'https://animepahe.com/anime/fullmetal-alchemist-brotherhood' --episodes 1
 
--  To download Fullmetal Alchemist: Brotherhood episode 1 to 20
+-  To download Fullmetal Alchemist: Brotherhood episode 1 to 20;
 
 ::
 
    anime dl 'https://animepahe.com/anime/fullmetal-alchemist-brotherhood' --episodes 1:21
 
--  To get stream url of Fullmetal Alchemist: Brotherhood episode 1.
+-  To get stream url of Fullmetal Alchemist: Brotherhood episode 1;
 
 ::
 
    anime dl 'https://animepahe.com/anime/fullmetal-alchemist-brotherhood' --url --episodes 1
 
--  To play using vlc. (On windows use path to exe)
+-  To play using vlc. (On windows use path to exe);
 
 ::
 
    anime dl 'https://animepahe.com/anime/fullmetal-alchemist-brotherhood' --play vlc --episodes 1
+
 

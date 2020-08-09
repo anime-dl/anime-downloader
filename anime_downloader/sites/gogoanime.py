@@ -67,11 +67,15 @@ class GogoAnime(Anime, sitename='gogoanime'):
 
         search_results = [
             SearchResult(
-                title=a.get('title'),
-                url='https://gogoanime.io' + a.get('href'))
-            for a in search_results
+                title=i.get('title'),
+                url='https://gogoanime.io' + i.get('href'),
+                meta_info = {
+                    'version_key_dubbed':'(Dub)'
+                    }
+                )
+            for i in search_results
         ]
-        return(search_results)
+        return search_results
 
     def _scrape_episodes(self):
         soup = helpers.soupify(helpers.get(self.url))
@@ -87,8 +91,8 @@ class GogoAnime(Anime, sitename='gogoanime'):
                                            params=params))
 
         epurls = list(
-            reversed([self._base_url + a.get('href').strip()
-                      for a in soup.select('li a')])
+            reversed([self._base_url + i.get('href').strip()
+                      for i in soup.select('li a')])
         )
 
         return epurls

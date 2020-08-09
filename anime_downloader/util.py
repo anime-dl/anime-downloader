@@ -78,35 +78,69 @@ def format_search_results(search_results):
     return table
 
 
-def search(query, provider, choice=None):
+def search(query, provider, val=None, season_info=None, ratio=50):
+    # Will use animeinfo sync if season_info is provided
+
     # Since this function outputs to stdout this should ideally be in
     # cli. But it is used in watch too. :(
     cls = get_anime_class(provider)
     search_results = cls.search(query)
-    click.echo(format_search_results(search_results), err=True)
 
     if not search_results:
         logger.error('No such Anime found. Please ensure correct spelling.')
-        sys.exit(1)
+        return None, None
 
-    if choice:
-        val = choice
-    else:
-        val = click.prompt('Enter the anime no: ', type=int, default=1, err=True)
+    if season_info:
+        from anime_downloader import animeinfo
+        match = animeinfo.fuzzy_match_metadata([season_info], search_results)
+        logger.debug('Match ratio: {}'.format(match.ratio))
+        # ratios are a range between 0-100 where 100 means 100% match.
+        if match.ratio >= ratio and not val:
+            logger.debug('Selected {}'.format(match.SearchResult.title))
+            return match.SearchResult.url, None
 
-    try:
-        url = search_results[val-1].url
-        title = search_results[val-1].title
-    except IndexError:
-        logger.error('Only maximum of {} search results are allowed.'
-                     ' Please input a number less than {}'.format(
-                         len(search_results), len(search_results)+1))
-        sys.exit(1)
-
+    click.echo(format_search_results(search_results), err=True)
+    # Loop to allow re-propmt if the user chooses incorrectly
+    # Makes it harder to unintentionally exit the anime command if it's automated
+    while True:
+        if val == None:
+            val = click.prompt('Enter the anime no{}:'. format(' (0 to switch provider)'*(season_info != None)),
+                type=int, default=1, err=True)
+        try:
+            url = search_results[val-1].url
+            title = search_results[val-1].title
+        except IndexError:
+            logger.error('Only maximum of {} search results are allowed.'
+                         ' Please input a number less than {}'.format(
+                             len(search_results), len(search_results)+1))
+            val = False
+            continue
+        break
 
     logger.info('Selected {}'.format(title))
 
-    return url
+    return url, val
+
+
+def primitive_search(search_results):
+    headers = [
+        'SlNo',
+        'Title',
+    ]
+    table = [(i+1, v.title)
+             for i, v in enumerate(search_results)]
+    table = tabulate(table, headers, tablefmt='psql')
+    table = '\n'.join(table.split('\n')[::-1])
+    click.echo(table, err=True)
+
+    while True:
+        val = click.prompt('Enter the anime no: ', type=int, default=1, err=True)
+        try:
+            return search_results[val-1]
+        except IndexError:
+            logger.error('Only maximum of {} search results are allowed.'
+                         ' Please input a number less than {}'.format(
+                             len(search_results), len(search_results)+1))
 
 
 def split_anime(anime, episode_range):
@@ -121,11 +155,12 @@ def split_anime(anime, episode_range):
     return anime
 
 
-def parse_episode_range(anime, episode_range):
+def parse_episode_range(max_range, episode_range):
     if not episode_range:
         episode_range = '1:'
     if episode_range.endswith(':'):
-        episode_range += str(len(anime) + 1)
+        length = max_range if type(max_range) == int else len(max_range)
+        episode_range += str(length + 1)
     if episode_range.startswith(':'):
         episode_range = '1' + episode_range
     return episode_range
@@ -160,8 +195,17 @@ def download_episode(episode, **kwargs):
     print()
 
 
-def play_episode(episode, *, player):
-    p = subprocess.Popen([player, episode.source().stream_url])
+def play_episode(episode, *, player, title):
+    if player == 'mpv':
+        p = subprocess.Popen([
+            player,
+            '--title={}'.format(title),
+            '--referrer="{}"'.format(episode.source().referer),
+            episode.source().stream_url
+            ])
+    else:
+        p = subprocess.Popen([ player, episode.source().stream_url
+            ])
     p.wait()
 
 
@@ -199,7 +243,7 @@ def format_filename(filename, episode):
     return filename
 
 
-def format_command(cmd, episode, file_format, path):
+def format_command(cmd, episode, file_format, speed_limit, path):
     from anime_downloader.config import Config
     if not Config._CONFIG['dl']['aria2c_for_torrents'] and episode.url.startswith('magnet:?xt=urn:btih:'):
         return ['open',episode.url]
@@ -207,7 +251,7 @@ def format_command(cmd, episode, file_format, path):
     cmd_dict = {
         '{aria2}': 'aria2c {stream_url} -x 12 -s 12 -j 12 -k 10M -o '
                    '{file_format}.mp4 --continue=true --dir={download_dir}'
-                   ' --stream-piece-selector=inorder --min-split-size=5M --referer={referer} --check-certificate=false --user-agent={useragent}',
+                   ' --stream-piece-selector=inorder --min-split-size=5M --referer={referer} --check-certificate=false --user-agent={useragent} --max-overall-download-limit={speed_limit}',
         '{idm}'  : 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4'
     }
 
@@ -217,7 +261,8 @@ def format_command(cmd, episode, file_format, path):
         'file_format': file_format,
         'download_dir': os.path.abspath(path),
         'referer': episode.source().referer,
-        'useragent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36'
+        'useragent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36',
+        'speed_limit': speed_limit
     }
 
     if cmd == "{idm}":
@@ -350,12 +395,12 @@ def open_magnet(magnet):
                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
-def external_download(cmd, episode, file_format, path=''):
+def external_download(cmd, episode, file_format, speed_limit, path=''):
     logger.debug('cmd: ' + cmd)
     logger.debug('episode: {!r}'.format(episode))
     logger.debug('file format: ' + file_format)
 
-    cmd = format_command(cmd, episode, file_format, path=path)
+    cmd = format_command(cmd, episode, file_format, speed_limit, path=path)
 
     logger.debug('formatted cmd: ' + ' '.join(cmd))
 

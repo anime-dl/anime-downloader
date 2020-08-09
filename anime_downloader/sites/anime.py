@@ -383,7 +383,7 @@ class AnimeEpisode:
         logger.debug('Data : {}'.format(data))
 
         #Sorts the dicts by preferred server in config
-        sorted_by_server = sorted(data, key=lambda x: servers.index(x['server']))
+        sorted_by_server = sorted(data, key=lambda x: servers.index(x['server']) if x['server'] in servers else len(data))
 
         #Sorts the above by preferred language 
         #resulting in a list with the dicts sorted by language and server
@@ -453,13 +453,16 @@ class SearchResult:
         URL for the poster of the anime.
     meta: dict
         Additional metadata regarding the anime.
+    meta_info: dict
+        Metadata regarding the anime. Not shown in the results, used to match with MAL
     """
 
-    def __init__(self, title, url, poster='', meta=''):
+    def __init__(self, title, url, poster='', meta='', meta_info={}):
         self.title = title
         self.url = url
         self.poster = poster
         self.meta = meta
+        self.meta_info = meta_info
 
     def __repr__(self):
         return '<SearchResult Title: {} URL: {}>'.format(self.title, self.url)

@@ -2,6 +2,8 @@ from importlib import import_module
 
 ALL_ANIME_SITES = [
     # ('filename', 'sitename', 'classname')
+    ('_4anime','4anime','Anime4'),
+    ('animeonline','animeonline360','AnimeOnline'),
     ('gogoanime', 'gogoanime', 'GogoAnime'),
     ('kissanime', 'kissanime', 'KissAnime'),
     ('kisscartoon', 'kisscartoon', 'KissCartoon'),
@@ -11,7 +13,8 @@ ALL_ANIME_SITES = [
     ('itsaturday', 'itsaturday', 'Itsaturday'),
     ('animefreak', 'animefreak', 'AnimeFreak'),
     ('animeflix', 'animeflix', 'AnimeFlix'),
-    ('dubbedanime', 'dubbedanime', 'Dubbedanime'),
+    ('darkanime', 'darkanime', 'DarkAnime'),
+    ('animechameleon', 'gurminder', 'AnimeChameleon'),
     ('animeout', 'animeout', 'AnimeOut'),
     ('animerush','animerush','AnimeRush'),
     ('animesimple', 'animesimple', 'AnimeSimple'),
@@ -24,13 +27,18 @@ ALL_ANIME_SITES = [
     ('nyaa','nyaa','Nyaa'),
     ('animedaisuki','animedaisuki','Animedaisuki'),
     ('justdubs','justdubs','JustDubs'),
-    ('animevibe','animevibe','AnimeVibe'),
+    ('animevibe','animevibe','AnimeVibe'),  
+    ('animefree','animefree','AnimeFree'),
     ('yify','yify','Yify'),
     ('vostfree', 'vostfree', 'VostFree'),
     ('voiranime','voiranime','VoirAnime'),
-    ('dbanimes', 'dbanimes', 'DBAnimes')
+    ('dbanimes', 'dbanimes', 'DBAnimes'),
+    ('vidstream','vidstream','VidStream'),
+    ('animixplay','animixplay','AniMixPlay'),
+    ('horriblesubs', 'horriblesubs', 'HorribleSubs'),
+    ('animefrenzy','animefrenzy','AnimeFrenzy'),
+    ('nineanime','9anime','NineAnime'),
 ]
-
 
 def get_anime_class(url):
     """

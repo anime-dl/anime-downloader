@@ -55,7 +55,7 @@ class KissCartoon(KissAnime, sitename='kisscartoon'):
             'https://kisscartoon.is/Search/',
             params=dict(s=query),
             sel=True,
-        ))
+        ).text)
 
         ret = []
         for res in soup.select('.listing a'):
@@ -71,7 +71,7 @@ class KissCartoon(KissAnime, sitename='kisscartoon'):
 
 
     def _scrape_episodes(self):
-        soup = helpers.soupify(helpers.get(self.url, sel=True))
+        soup = helpers.soupify(helpers.get(self.url, sel=True).text)
         ret = [str(a['href'])
                for a in soup.select('.listing a')]
 
@@ -84,5 +84,5 @@ class KissCartoon(KissAnime, sitename='kisscartoon'):
 
 
     def _scrape_metadata(self):
-        soup = helpers.soupify(helpers.get(self.url, sel=True))
+        soup = helpers.soupify(helpers.get(self.url, sel=True).text)
         self.title = soup.select("a.bigChar")[0].text

@@ -1,4 +1,4 @@
-﻿from anime_downloader import config
+from anime_downloader import config
 from anime_downloader.sites import get_anime_class
 
 import os
@@ -21,37 +21,45 @@ class Watcher:
     WATCH_FILE = os.path.join(config.APP_DIR, 'watch.json')
 
     def __init__(self):
+        self.sorted = None
         pass
 
     def new(self, url):
         AnimeInfo = self._get_anime_info_class(url)
         anime = AnimeInfo(url, timestamp=time())
-
         self._append_to_watch_file(anime)
 
         logger.info('Added {:.50} to watch list.'.format(anime.title))
         return anime
 
-    def list(self):
+    def list(self, filt = None):
         animes = self._read_from_watch_file()
-
-        click.echo('{:>5} | {:^35} | {:^8} | {:^10}'.format(
-            'SlNo', 'Name', 'Eps', 'Type'
+        if filt in [None, 'all']:
+            animes = self._sorting_for_list(animes)
+            self.sorted = True
+        click.echo('{:>5} | {:^35} | {:^8} | {} | {:^10}'.format(
+            'SlNo', 'Name', 'Eps','Score', 'Status'
         ))
         click.echo('-'*65)
-        fmt_str = '{:5} | {:35.35} |  {:3}/{:<3} | {meta:10.10}'
+        fmt_str = '{:5} | {:35.35} |  {:3}/{:<3} | {:^5} | {}'
+        if not filt in [ None, 'all' ]:
+            animes = [ i for i in animes if i.watch_status == filt ]
 
         for idx, anime in enumerate(animes):
             meta = anime.meta
-            click.echo(fmt_str.format(idx+1, anime.title,
-                                      *anime.progress(),
-                                      meta=meta.get('Type', '')))
+            click.echo(click.style(fmt_str.format(idx+1,
+                                        anime.title,
+                                        *anime.progress(),
+                                     anime.score,
+                                     anime.watch_status),fg=anime.colours))
 
     def anime_list(self):
         return self._read_from_watch_file()
 
     def get(self, anime_name):
         animes = self._read_from_watch_file()
+        if self.sorted == True:
+            animes = self._sorting_for_list(animes)
 
         if isinstance(anime_name, int):
             return animes[anime_name]
@@ -67,6 +75,16 @@ class Watcher:
             return anime
 
     def update_anime(self, anime):
+        if not hasattr(anime,'colours'):
+            colours = {
+                'watching':'blue',
+                'completed':'green',
+                'dropped':'red',
+                'planned':'yellow',
+                'hold' : 'white'
+            }
+            anime.colours = colours.get(anime.watch_status,'yellow')
+
         if not hasattr(anime, 'meta') or not anime.meta.get('Status') or \
                 anime.meta['Status'].lower() == 'airing':
             logger.info('Updating anime {}'.format(anime.title))
@@ -105,10 +123,45 @@ class Watcher:
 
         self._write_to_watch_file(data)
 
-    def _write_to_watch_file(self, animes):
-        animes = [anime.__dict__ for anime in animes]
+    def _write_to_watch_file(self, animes, MAL_import = False):
+        if not MAL_import:
+            animes = [anime.__dict__ for anime in animes]
+
         with open(self.WATCH_FILE, 'w') as watch_file:
             json.dump(animes, watch_file)
+
+    def _import_from_MAL(self,PATH):
+        import xml.etree.ElementTree as ET #Standard Library import, conditional as it only needs to be imported for this line
+        root = ET.parse(PATH).getroot()
+        list_to_dict = []
+        values = { 'Plan to Watch' : { 'planned' : 'yellow' },
+                   'Completed' : { 'completed' : 'green' },
+                   'Watching' : { 'watching' : 'cyan' },
+                   'Dropped' : { 'dropped' : 'red' },
+                   'On-Hold' : { 'hold' : 'white' }
+                   }
+        for type_tag in root.findall('anime'):
+            mal_watched_episodes = type_tag.find('my_watched_episodes').text
+            mal_score = type_tag.find('my_score').text
+            mal_watch_status = type_tag.find('my_status').text
+            colour = str(list(values[mal_watch_status].values())[0])
+            mal_watch_status = str(list(values[mal_watch_status].keys())[0])
+            mal_title = type_tag.find('series_title').text
+            mal_episodes = type_tag.find('series_episodes').text
+            list_to_dict.append( {
+                "episodes_done": int(mal_watched_episodes),
+                "_timestamp": time(),
+                "score": int(mal_score),
+                "watch_status": mal_watch_status,
+                "colours": colour,
+                "url": "https://twist.moe/",
+                "_fallback_qualities": ["720p", "480p", "360p"],
+                "quality": "720p",
+                "title": mal_title,
+                "_episode_urls": [[1, "https://twist.moe/anime/"]],
+                "_len": int(mal_episodes)
+                })
+            self._write_to_watch_file(list_to_dict, MAL_import = True)
 
     def _read_from_watch_file(self):
         if not os.path.exists(self.WATCH_FILE):
@@ -131,6 +184,11 @@ class Watcher:
 
         return ret
 
+    def _sorting_for_list(self,animes):
+        status_index = ['watching','completed','dropped','planned','hold','all']
+        animes = sorted(animes, key=lambda x: status_index.index(x.watch_status))
+        return animes
+
     def _get_anime_info_class(self, url):
         cls = get_anime_class(url)
 
@@ -139,9 +197,10 @@ class Watcher:
             def __init__(self, *args, **kwargs):
                 self.episodes_done = kwargs.pop('episodes_done', 0)
                 self._timestamp = kwargs.pop('timestamp', 0)
-
+                self.score = 0
+                self.watch_status = 'watching'
+                self.colours = 'blue'
                 super(cls, self).__init__(*args, **kwargs)
-
             def progress(self):
                 return (self.episodes_done, len(self))
 
