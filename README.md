@@ -68,7 +68,6 @@ Yeah. Me too! That's why this tool exists.
 - Animerush
 - Animedaisuki
 - Animixplay
-- Animepahe - requires Node.js
 - Animevibe
 - Darkanime
 - DreamAnime
