@@ -150,6 +150,9 @@ DEFAULT_CONFIG = {
                 'gounlimited'
             ]
         },
+        'dbanimes': {
+            'servers':['mixdrop','gounlimited','vudeo','fembed', 'sendvid']
+        },
         'kissanime': {
             'version':'subbed'
         },

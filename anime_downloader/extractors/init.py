@@ -122,6 +122,12 @@ ALL_EXTRACTORS = [
         'class': 'Mixdrop'
     },
     {
+        'sitename': 'sendvid',
+        'modulename': 'sendvid',
+        'regex': 'sendvid',
+        'class': 'SendVid'
+    },
+    {
         'sitename': 'sibnet',
         'modulename': 'sibnet',
         'regex': 'sibnet',
@@ -132,6 +138,12 @@ ALL_EXTRACTORS = [
         'modulename': 'uqload',
         'regex': 'uqload',
         'class': 'Uqload'
+    },
+    {
+        'sitename': 'vudeo',
+        'modulename': 'vudeo',
+        'regex': 'vudeo',
+        'class': 'Vudeo'
     }
 ]
 
