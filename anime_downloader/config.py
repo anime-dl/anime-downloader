@@ -18,7 +18,7 @@ DEFAULT_CONFIG = {
         'force_download': False,
         'file_format': '{anime_title}/{anime_title}_{ep_no}',
         'provider': 'twist.moe',
-        'external_downloader': '',
+        'external_downloader': '{aria2}',
         'aria2c_for_torrents': False,
         'selescrape_browser': None,
         'selescrape_browser_executable_path' : None,
