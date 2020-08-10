@@ -69,6 +69,7 @@ Yeah. Me too! That's why this tool exists.
 - Animedaisuki
 - Animixplay
 - Animevibe
+- Dbanimes
 - Darkanime
 - DreamAnime
 - Erai-Raws
