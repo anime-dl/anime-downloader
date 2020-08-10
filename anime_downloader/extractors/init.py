@@ -138,6 +138,12 @@ ALL_EXTRACTORS = [
         'modulename': 'uqload',
         'regex': 'uqload',
         'class': 'Uqload'
+    },
+    {
+        'sitename': 'vudeo',
+        'modulename': 'vudeo',
+        'regex': 'vudeo',
+        'class': 'Vudeo'
     }
 ]
 
