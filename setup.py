@@ -38,6 +38,11 @@ setup(
             'httpretty'
         ],
     },
+    package_data={
+        # setuptools doesn't support recursive globbing so we need patterns
+        # for each depth
+        'anime_downloader': ['node_modules/**/*', 'node_modules/**/**/*']
+    },
     long_description=long_description,
     long_description_content_type='text/markdown',
     entry_points='''
