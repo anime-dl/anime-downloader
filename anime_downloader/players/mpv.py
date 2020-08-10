@@ -19,10 +19,14 @@ class mpv(BasePlayer):
 
     @property
     def args(self):
-        return ['--input-conf='+get_mpv_configfile(),
-                '--http-header-fields=referer: '+self.episode.source().referer,
-                self.episode.source().stream_url]
-
+        # Doesnt use the referer if it's none
+        if self.episode.source().referer:
+            return ['--input-conf='+get_mpv_configfile(),
+                    '--http-header-fields=referer: '+str(self.episode.source().referer),
+                    self.episode.source().stream_url]
+        else:
+            return ['--input-conf='+get_mpv_configfile(),
+                    self.episode.source().stream_url]
 
 def get_mpv_home():
     if 'MPV_HOME' in os.environ:
