@@ -62,12 +62,20 @@ class DBAnimesEpisode(AnimeEpisode, sitename='dbanimes'):
         if extractor == "mp4upload":
             return 'File was deleted' not in soup
 
+        # Default extractor always returns true
+        return True
+
     def _get_sources(self):
         soup = helpers.soupify(helpers.get(self.url))
         sources = [re.sub('^//', 'https://', helpers.soupify(x['data-url']).iframe['src']) for x in soup.select('li.streamer > div[data-url]')]
         domains = [re.search("(.*)\.", urlparse(x).netloc).group(1).replace('www.', '') for x in sources]
+
         servers = self.config['servers']
 
+        logger.debug('Sources: {}'.format(sources))
+        logger.debug('Domains: {}'.format(domains))
+
+        # Exceptions to domain -> extractor
         extractor_dict = {
             'fembed':'gcloud',
             'gounlimited':'mp4upload'
@@ -76,7 +84,6 @@ class DBAnimesEpisode(AnimeEpisode, sitename='dbanimes'):
         sources_list = []
         for i in range(len(sources)):
             if domains[i] in servers:
-                # fembed uses the gcloud extractor, should be fixed
                 extractor = extractor_dict.get(domains[i],domains[i])
                 if self.check_server(extractor, sources[i]):
                     sources_list.append({
