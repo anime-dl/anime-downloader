@@ -4,7 +4,7 @@ from anime_downloader.config import Config
 from anime_downloader import util
 from anime_downloader.sites.anime import AnimeEpisode
 import subprocess
-eel.init('web')
+import pathlib
 
 @eel.expose
 def populate_dropdown():
@@ -86,7 +86,8 @@ def load_vlc(start, end):
 def get_config():
     return Config._CONFIG
 
-
+path = str(pathlib.Path(__file__).parent.absolute())
+eel.init(path + '/web')
 eel.start('main.html', block=False)
 
 while True:
