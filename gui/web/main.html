@@ -1,241 +1,259 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>anime-dl</title>
 
     <!-- Include eel.js - note this file doesn't exist in the 'web' directory -->
     <script type="text/javascript" src="/eel.js"></script>
-    <link rel="stylesheet" href="yeet.css">
+    <link rel="stylesheet" href="main.css">
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
     <style>
-#title {
-  margin: 20px;
-}
-      #settings-button {
-        vertical-align: middle;
-      }
+        #title {
+            margin: 20px;
+        }
 
-      #anime-card {
-        margin-top: 100px;
-        margin-bottom: 20px;
-      }
+        #settings-button {
+            vertical-align: middle;
+        }
+
+        #anime-card {
+            margin-top: 100px;
+            margin-bottom: 20px;
+        }
     </style>
 
-  </head>
-  <body>
-	<div class="loadingItem"  id="ChangeItems" style="width:100%; margin-top:0px; height:2px; opacity:0;">
-      
+</head>
+<body>
+    <div class="loadingItem" id="ChangeItems" style="width:100%; margin-top:0px; height:2px; opacity:0;">
+
     </div>
     <div class="columns">
-	
-      <div class="column is-three-fifths is-offset-one-fifth">
-		
-        <h1 class="is-size-1" id="title">Anime downloader
-          <!--<button id = "settings-button" class="button is-info is-light is-rounded is-small" onclick="document.getElementById('settings-modal').classList.add('is-active');populate_settings();">
-            Settings
-          </button>-->
-        </h1>
 
-        <input id="query" class="SearchBar" type="text" style="" placeholder="Search Anime..." onchange="search_anime()" style="float:left; "></input>
-        <div class="select" style="float:right;">
-          <select id="provider" class="custom-select" style="float:right; height:35px; border-radius: 4px;"  onchange="search_anime()"  ></select>
+        <div class="column is-three-fifths is-offset-one-fifth">
+
+            <h1 class="is-size-1" id="title">
+                Anime downloader
+                <!--<button id = "settings-button" class="button is-info is-light is-rounded is-small" onclick="document.getElementById('settings-modal').classList.add('is-active');populate_settings();">
+                  Settings
+                </button>-->
+            </h1>
+
+            <input id="query" class="SearchBar" type="text" style="" placeholder="Search Anime..." onchange="search_anime()" style="float:left; "></input>
+            <div class="select" style="float:right;">
+                <select id="provider" class="custom-select" style="float:right; height:35px; border-radius: 4px;" onchange="search_anime()"></select>
+            </div>
+            <!--<button class="button" id="search" onclick="search_anime()">Search</button>-->
+
+            <div id="overlay">
+                <div id="anime-card" class="card">
+                    <div class="card-content">
+                        <div class="media" style="
+                             font-size: x-large;
+                             text-align: center;
+                             font-weight: bold;>
+                            <div class="media-content">
+                                <p class="title is-4" id="anime-title" style="display:inline">Test</p>
+                                <div id="anime-info" class="is-size-7" style="display:inline">eps: 69</div>
+                            </div>
+                        </div>
+
+                        <div class="field has-addons has-addons-right" style="justify-content: flex-start">
+                            <p class="control">
+                                <input class="SearchBar" id="firstEp" type="number" placeholder="First episode (Episode 1)">
+                            </p>
+                            <p class="control">
+                                <input class="SearchBar" id="lastEp" type="number" placeholder="Last episode">
+                            </p>
+                            <p class="control" style="text-align:center;">
+
+                                <a class="SearchBar" style="background-color:#181818; margin:5px;" onclick="js_download()">
+                                    Download
+                                </a>
+                                <a class="SearchBar" style="background-color:#181818; margin:5px;" onclick="js_load_vlc()">
+                                    Play MPV
+                                </a>
+                                <a class="SearchBar" style="background-color:#181818; margin:5px;" onclick="off()">
+                                    Cancel
+                                </a>
+
+                            </p>
+                        </div>
+
+
+                        <div class="content"></div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="search-results"></div>
+
+
+
         </div>
-        <!--<button class="button" id="search" onclick="search_anime()">Search</button>-->
-
-	<div id="overlay">
-		<div id="anime-card" class="card">
-          <div class="card-content">
-            <div class="media" style="    
-			font-size: x-large;
-			text-align: center;
-			font-weight: bold;>
-              <div class="media-content">
-                <p class="title is-4" id="anime-title" style="display:inline">Test</p>
-                <div id="anime-info" class="is-size-7" style="display:inline">eps: 69</div>
-              </div>
-            </div>
-
-            <div class="field has-addons has-addons-right" style="justify-content: flex-start">
-              <p class="control">
-                <input class="SearchBar"  id="firstEp" type="number" placeholder="First episode (Episode 1)">
-              </p>
-              <p class="control">
-                <input class="SearchBar" id="lastEp" type="number" placeholder="Last episode">
-              </p>
-              <p class="control" style="text-align:center;">
-			   
-                <a class="SearchBar" style="background-color:#181818; margin:5px; ">
-                  Download
-                </a>
-				<a class="SearchBar" style="background-color:#181818; margin:5px;" onclick="off()">
-                  Cancel
-                </a>
-              </p>
-            </div>
-
-
-            <div class="content"></div>
+    </div>
+    <!--
+        <div id="settings-modal" class="modal">
+          <div class="modal-background"></div>
+          <div class="modal-card">
+            <header class="modal-card-head">
+              <p class="modal-card-title">Settings</p>
+              <button class="delete" aria-label="close" onclick="close_modal()"></button>
+            </header>
+            <section class="modal-card-body">
+              <div id="settings-body"></div>
+            </section>
+            <footer class="modal-card-foot">
+              <button class="button is-success" onclick="save_settings">Save changes</button>
+              <button class="button" onclick="close_modal()">Cancel</button>
+            </footer>
           </div>
         </div>
-	</div>
+    -->
 
- 
-        <div id="search-results"></div>
-		
-		
-        
-      </div>
-    </div>
-<!--
-    <div id="settings-modal" class="modal">
-      <div class="modal-background"></div>
-      <div class="modal-card">
-        <header class="modal-card-head">
-          <p class="modal-card-title">Settings</p>
-          <button class="delete" aria-label="close" onclick="close_modal()"></button>
-        </header>
-        <section class="modal-card-body">
-          <div id="settings-body"></div>
-        </section>
-        <footer class="modal-card-foot">
-          <button class="button is-success" onclick="save_settings">Save changes</button>
-          <button class="button" onclick="close_modal()">Cancel</button>
-        </footer>
-      </div>
-    </div>
--->
-
-  </body>
-  <script type="text/javascript">
+</body>
+<script type="text/javascript">
 
     var select = document.getElementById("provider");
     var search_res = document.getElementById("search-results");
 
+    var lastEp = document.getElementById('lastEp');
+    var firstEp = document.getElementById('firstEp')
+
+    //var currentAnime;
     eel.populate_dropdown();
 
-    function populate_dropdown(options){
-      console.log('populaing');
-      for(var i = 0; i < options.length; i++) {
-        var opt = options[i];
-        var el = document.createElement("option");
-        el.textContent = opt;
-        el.value = opt;
-		el.setAttribute("class", "select-selected");
-        select.appendChild(el);
-      }
+    function populate_dropdown(options) {
+        console.log('populaing');
+        for (var i = 0; i < options.length; i++) {
+            var opt = options[i];
+            var el = document.createElement("option");
+            el.textContent = opt;
+            el.value = opt;
+            el.setAttribute("class", "select-selected");
+            select.appendChild(el);
+        }
     }
-	function clearResults() {
-	 search_res.innerHTML = '';
-	}
-	
-	
-	function on() {
-		document.getElementById("overlay").style.display = "block";
-	}
+    function clearResults() {
+        search_res.innerHTML = '';
+    }
 
-	function off() {
-		document.getElementById("overlay").style.display = "none";
-	}
 
-	function StartLoad() {
-		document.getElementById('ChangeItems').style = "width:100%; margin-top:0px; height:2px; opacity:1;";
-	}
-	
-	function StopLoad() {
-		document.getElementById('ChangeItems').style = "width:100%; margin-top:0px; height:2px; opacity:0;";
-	}
+    function on() {
+        document.getElementById("overlay").style.display = "block";
+    }
+
+    function off() {
+        document.getElementById("overlay").style.display = "none";
+    }
+
+    function StartLoad() {
+        document.getElementById('ChangeItems').style = "width:100%; margin-top:0px; height:2px; opacity:1;";
+    }
+
+    function StopLoad() {
+        document.getElementById('ChangeItems').style = "width:100%; margin-top:0px; height:2px; opacity:0;";
+    }
+    function js_load_vlc() {
+        eel.load_vlc(!firstEp.value ? "" : firstEp.value, !lastEp.value ? "" : lastEp.value);
+    }
+    function js_download() {
+        eel.download(!firstEp.value ? "" : firstEp.value, !lastEp.value ? "" : lastEp.value);
+    }
+
 
     async function populate_animeinfo(url) {
-	  StartLoad();
-      let info = await eel.get_animeinfo(url)();
-	  StopLoad();
-      console.log(info)
-	  on();
-      document.getElementById('anime-title').innerHTML = info.title;
-	  var epLen = info.length;
-      document.getElementById('anime-info').innerHTML = `- ${epLen} Episode${epLen == 1 ? '' : 's'} `;
-	   document.getElementById('lastEp').placeholder = `Last episode (Episode ${epLen}) `;
-	    document.getElementById('lastEp').style.opacity = epLen == 1 ? 0.1 : 1;
-	    document.getElementById('firstEp').style.opacity = epLen == 1 ? 0.1 : 1;
+        StartLoad();
+        let info = await eel.get_animeinfo(url)();
+        StopLoad();
+        console.log(info)
+        on();
+        document.getElementById('anime-title').innerHTML = info.title;
+        //  c = info.anime;
+        var epLen = info.length;
+        document.getElementById('anime-info').innerHTML = `- ${epLen} Episode${epLen == 1 ? '' : 's'} `;
+        document.getElementById('lastEp').placeholder = `Last episode (Episode ${epLen}) `;
+        lastEp.style.opacity = epLen == 1 ? 0.1 : 1;
+        firstEp.style.opacity = epLen == 1 ? 0.1 : 1;
     }
 
     function populate_search(results) {
-		StopLoad();
-      console.log(results)
-      search_res.innerHTML = '';
-	    for (i = 0; i < results.length; i++) {
-		    var res = results[i];
-			var ele = document.createElement("li");
-			ele.style = "margin-top:0px; list-style:none; border-bottom: 0px solid hsla(0,0%,100%,.05); padding-bottom:0px;"
-			ele.innerHTML = `<button class=\"searchRes\">${res.title}</button>`
-			ele.url = res.url
-			ele.addEventListener('click', function () {
-				var divs = search_res.getElementsByTagName('div');
-				for(var j = 0; j < divs.length; j++) {
-					divs[j].className = '';
-				}
-				this.classList.add('has-background-primary')
-				//this.classList.add('has-text-light')
-				console.log(this.url);
-				populate_animeinfo(this.url);
-			})
-			search_res.appendChild(ele);
-		}
-					
-     /* for(var i = 0; i < results.length; i++) {
-        var res = results[i];
-        var el = document.createElement("div");
-        el.textContent = res.title;
-        el.url = res.url
-		el.class = "searchRes";
-        el.addEventListener('click', function () {
-          var divs = search_res.getElementsByTagName('div');
-          for(var j = 0; j < divs.length; j++) {
-            divs[j].className = '';
-          }
-          this.classList.add('has-background-primary')
-          //this.classList.add('has-text-light')
-          console.log(this.url);
-          populate_animeinfo(this.url);
-        })
-        search_res.appendChild(el);
-      }*/
+        StopLoad();
+        console.log(results)
+        search_res.innerHTML = '';
+        for (i = 0; i < results.length; i++) {
+            var res = results[i];
+            var ele = document.createElement("li");
+            ele.style = "margin-top:0px; list-style:none; border-bottom: 0px solid hsla(0,0%,100%,.05); padding-bottom:0px;"
+            ele.innerHTML = `<button class=\"searchRes\">${res.title}</button>`
+            ele.url = res.url
+            ele.addEventListener('click', function () {
+                var divs = search_res.getElementsByTagName('div');
+                for (var j = 0; j < divs.length; j++) {
+                    divs[j].className = '';
+                }
+                this.classList.add('has-background-primary')
+                //this.classList.add('has-text-light')
+                console.log(this.url);
+                populate_animeinfo(this.url);
+            })
+            search_res.appendChild(ele);
+        }
+
+        /* for(var i = 0; i < results.length; i++) {
+           var res = results[i];
+           var el = document.createElement("div");
+           el.textContent = res.title;
+           el.url = res.url
+           el.class = "searchRes";
+           el.addEventListener('click', function () {
+             var divs = search_res.getElementsByTagName('div');
+             for(var j = 0; j < divs.length; j++) {
+               divs[j].className = '';
+             }
+             this.classList.add('has-background-primary')
+             //this.classList.add('has-text-light')
+             console.log(this.url);
+             populate_animeinfo(this.url);
+           })
+           search_res.appendChild(el);
+         }*/
     }
 
     function search_anime() {
-      StartLoad();	
-      var provider = document.getElementById('provider').value;
-      var query = document.getElementById('query').value;
-      eel.anime_search(query, provider);
+        StartLoad();
+        var provider = document.getElementById('provider').value;
+        var query = document.getElementById('query').value;
+        eel.anime_search(query, provider);
     }
 
     function close_modal() {
-      document.getElementById('settings-modal').classList.remove('is-active');
+        document.getElementById('settings-modal').classList.remove('is-active');
     }
 
     async function populate_settings() {
-      var settings_body = document.getElementById("settings-body");
-      settings_body.innerHTML = '';
-      let settings = await eel.get_config()();
-      console.log(settings)
-      let dl_s = settings.dl;
-      for (let j in dl_s) {
-        let el = document.createElement('div');
-        el.classList.add('field');
-        el.innerHTML = `<label class="label" for='${j}'>${j}</label><input type='text' class='input' value="${dl_s[j]}">`
-        settings_body.appendChild(el);
-      }
+        var settings_body = document.getElementById("settings-body");
+        settings_body.innerHTML = '';
+        let settings = await eel.get_config()();
+        console.log(settings)
+        let dl_s = settings.dl;
+        for (let j in dl_s) {
+            let el = document.createElement('div');
+            el.classList.add('field');
+            el.innerHTML = `<label class="label" for='${j}'>${j}</label><input type='text' class='input' value="${dl_s[j]}">`
+            settings_body.appendChild(el);
+        }
     }
-    
+
     var input = document.getElementById("query");
-    input.addEventListener("keyup", function(event) {
-      if (event.keyCode === 13) {
-        document.getElementById("search").click();
-      }
+    input.addEventListener("keyup", function (event) {
+        if (event.keyCode === 13) {
+            document.getElementById("search").click();
+        }
     })
 
     eel.expose(populate_dropdown)
     eel.expose(populate_search)
-  </script>
+</script>
 </html>
 
