@@ -1,0 +1,567 @@
+html, body {
+     background-color: #111111; /*#222222;*/
+    color: #e6e6e6;
+    font-family: Arial;
+    font-size: 1em;
+    height: 100%;
+}
+a {
+    color: #e6e6e6;
+    font-weight: 700;
+    font-size: 16px;
+}
+h1 {
+    text-align: center;
+    font-weight: 100;
+}
+#img-background {
+    background-color: #11131f; /*17181a;*/
+    border: solid;
+    border-color: transparent;
+    background-repeat: no-repeat;
+    background-size: cover;
+    transition: background 0.7s linear;
+    -webkit-transition: background 0.7s linear;
+    height: 100vh;
+    width: 100%;
+    border-radius: 5px;
+    background-color: transparent;
+}
+    #img-background:hover {
+        border-radius: 0px;
+        transition: border-color 0.05s linear;
+        border-color: #e6e6e6;
+    }
+
+    .bg {
+        /* The image used */
+        /*background-image: url("/img/mountBlur2.png");*/
+        background-color: #111111;
+        /* Full height */
+        height: 100%;
+        /* Center and scale the image nicely */
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+	
+.input.input {
+	    width: 50%;
+    /* position: fixed; */
+    align-items: center;
+    margin-left: 25%;
+
+}
+
+ 
+.SearchBar {
+
+    /*  backface-visibility: hidden;*/
+    /*background-color: #22222222;*/
+    /*background-color: #111111; */ /*#191919;*/
+    /*color: #e6e6e6;*/
+    background-color: #11111111;
+    align-self: center;
+    color: #e6e6e6;
+    border-color: blue;
+	height:35px;
+    /* border: solid;*/
+    border: solid;
+    border-color: #e6e6e620;
+    /*border-radius: 20px;*/
+    padding: 4px;
+    margin-bottom:2px;
+    font-size: 16px;
+    padding-left: 7px; /*35px;*/
+    width: 50%;
+    margin-left: 25%;
+    margin-right: 0%;
+    transition: border-radius 0.1s linear;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box; /* Firefox, other Gecko */
+    box-sizing: border-box; /* Opera/IE 8+ */
+}
+
+    .SearchBar:focus {
+        border-radius: 0px !important;
+        border-color: #e6e6e6 !important;
+        /*    border: #e6e6e6 solid 3px !important;*/
+        transition: border-color 0.1s linear !important;
+        /* transition: border-color 0.1s linear;
+        border-color: #303F9F ;*/ /*#829eff;*/
+    }
+    .SearchBar:hover {
+        border: solid;
+        border-color: #e6e6e6;
+        border-radius: 0px;
+    }
+   
+
+     
+/*
+
+
+    input:hover {
+        border: thick;
+        border-color:white;
+        border-radius: 20px;
+    }*/
+/* input:hover {
+         border-color: white;
+        border-radius: 20px;
+    }*/
+
+::placeholder {
+    color: gray;
+    opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: gray;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+    color: gray;
+}
+
+.custom-select {
+    backface-visibility: hidden;
+    background-color: transparent;
+    /*color: #e6e6e6;*/
+    align-self: center;
+    color: #e6e6e6;
+    border-color: blue;
+    background-color: #e6e6e611;
+    margin: 1px;
+    /* border: solid;*/
+    border: solid;
+    border-color: transparent;
+    /*border-radius: 20px;*/
+    width: auto;
+    text-align: start;
+    float:left;
+    height: 40px;
+    /*margin:0px;*/
+    font-size: 16px;
+    margin-right: 5px;
+    transition: border-color 0.05s linear;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box; /* Firefox, other Gecko */
+    box-sizing: border-box; /* Opera/IE 8+ */
+}
+
+    .custom-select:hover {
+        border-radius: 0px;
+        transition: border-color 0.05s linear;
+        border-color: #e6e6e6;
+        /* transition: border-color 0.05s linear;*/
+    }
+
+
+
+
+.custom-select select {
+  display: none; /*hide original SELECT element: */
+}
+
+.select-selected {
+  background-color: #222;
+}
+
+/* Style the arrow inside the select element: */
+.select-selected:after {
+  position: absolute;
+  content: "";
+  top: 14px;
+  right: 10px;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-color: #fff transparent transparent transparent;
+}
+
+/* Point the arrow upwards when the select box is open (active): */
+.select-selected.select-arrow-active:after {
+  border-color: transparent transparent #fff transparent;
+  top: 7px;
+}
+
+/* style the items (options), including the selected item: */
+.select-items div,.select-selected {
+  color: #ffffff;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+  cursor: pointer;
+}
+
+/* Style items (options): */
+.select-items {
+  position: absolute;
+  background-color: #111;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 99;
+}
+
+/* Hide the items when the select box is closed: */
+.select-hide {
+  display: none;
+}
+
+.select-items div:hover, .same-as-selected {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+
+
+
+
+.searchRes {
+    backface-visibility: hidden;
+    background-color:transparent;
+    /*color: #e6e6e6;*/
+    align-self: center;
+    color: #e6e6e6;
+    border-color: blue;
+    background-color:#e6e6e611;
+    margin:1px;
+    /* border: solid;*/
+    border: solid;
+    border-color: transparent;
+    /*border-radius: 20px;*/
+    width: 50%;
+    text-align: start;
+    height: 40px ;
+    /*margin:0px;*/
+    font-size: 16px;
+    margin-left:25%;
+      transition: border-color 0.05s linear;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box; /* Firefox, other Gecko */
+    box-sizing: border-box; /* Opera/IE 8+ */
+}
+
+    .searchRes:hover {
+        border-radius: 0px;
+        transition: border-color 0.05s linear;
+        border-color: #e6e6e6;
+        /* transition: border-color 0.05s linear;*/
+    }
+
+#gridtype {
+    display: grid;
+    grid-template-columns: 0fr 1fr;
+    list-style-type: none;
+    grid-gap: 0px;
+    position: relative;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#OverlayPage {
+    width: 70%;
+    margin-left:15%;
+    margin-right:15%;
+    margin-top:5%;
+    padding-left:30px;
+    height: 2000px;
+    border-style:solid;
+    border-width:1px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #121212;
+}
+
+.loadingBar {
+    box-sizing: border-box;
+    direction: ltr;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 1px 2px;
+    overflow: hidden;
+    margin-bottom: 30px;
+    background-color: #142f4c; /*#303F9F #829eff;*/
+    border-radius: 2px;
+}
+    .loadingBar::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 50%;
+        z-index: 1;
+        width: 500%;
+        margin-left: -250%;
+        -webkit-animation: phAnimation .8s linear infinite;
+        animation: phAnimation .8s linear infinite;
+        background: linear-gradient(90deg, hsla(0,0%,100%,0) 46%,#1976d3 50%,hsla(0,0%,100%,0) 54%) 50% 50%;
+    }
+
+.loadingItem {
+    box-sizing: border-box;
+    direction: ltr;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    /*padding: 3px 2px;*/
+    overflow: hidden;
+    
+    margin-bottom: 10px;
+    background-color: #222;
+    border-radius: 2px;
+}
+
+    
+    .loadingItem::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 50%;
+        z-index: 1;
+        width: 500%;
+        margin-left: -250%;
+        -webkit-animation: phAnimation .8s linear infinite;
+        animation: phAnimation .8s linear infinite;
+        background: linear-gradient(90deg, hsla(0,0%,100%,0) 46%,hsla(0,0%,100%,.35) 50%,hsla(0,0%,100%,0) 54%) 50% 50%;
+    }
+
+@-webkit-keyframes phAnimation {
+    0% {
+        transform: translate3d(-30%, 0, 0);
+    }
+
+    100% {
+        transform: translate3d(30%, 0, 0);
+    }
+}
+
+@keyframes phAnimation {
+    0% {
+        transform: translate3d(-30%, 0, 0);
+    }
+
+    100% {
+        transform: translate3d(30%, 0, 0);
+    }
+}
+::-webkit-scrollbar {
+    display: none;
+}
+
+/*VERY IMPORTANT OVERRIDES USER AGENT*/
+:focus {
+    outline-offset:0px;
+    outline: none;
+}
+#NameButton {
+    color: #fff;
+    background-color: #303F9F;
+    border-color: transparent;
+}
+
+    #NameButton:hover {
+        color: #fff;
+        background-color: #3c50d3;
+        border-color: #fff;
+    }
+
+
+
+
+
+
+
+
+
+.dropSel {
+    background-color: transparent;
+    /*color: #e6e6e6;*/
+    align-self: center;
+    color: #e6e6e6;
+    /*background-color: #e6e6e611;*/
+    /* border: solid;*/
+    border: solid;
+    border-color: transparent;
+    /*border-radius: 20px;*/
+    width: auto;
+    text-align: start;
+    height: 40px;
+    width: 105px;
+    /*margin:0px;*/
+    font-size: 16px;
+    margin-right: 5px;
+    border-radius: 4px;
+    transition: border-color 0.05s linear;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box; /* Firefox, other Gecko */
+    box-sizing: border-box; /* Opera/IE 8+ */
+}
+
+    .dropSel:hover {
+        transition: border-color 0.05s linear;
+        border-color: #e6e6e6;
+    }
+  
+
+.dropbtn {
+    background-color: transparent;
+    /*color: #e6e6e6;*/
+    align-self: center;
+    color: #e6e6e6;
+    background-color: #e6e6e611;
+    margin: 1px;
+    /* border: solid;*/
+    border: solid;
+    border-color: transparent;
+    /*border-radius: 20px;*/
+    width: auto;
+    text-align: start;
+    height: 40px;
+    /*margin:0px;*/
+    font-size: 16px;
+    margin-right: 5px;
+    transition: border-color 0.05s linear;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box; /* Firefox, other Gecko */
+    box-sizing: border-box; /* Opera/IE 8+ */
+}
+    .dropbtn:hover {
+        border-radius: 0px;
+        transition: border-color 0.05s linear;
+        border-color: #e6e6e6;
+    }
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: center;
+    align-self:center;
+    border-radius: 5px;
+    width: 105px;
+    background-color: #e6e6e611; /*background-color:#e6e6e611;*/
+    /*min-width: 110px;*/
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+    .dropdown-content a {
+        color: #e6e6e6;
+        background-color:transparent;
+        padding: 0px 0px;
+        text-decoration: none;
+        display: block;
+    }
+
+        .dropdown-content a:hover {
+            border-radius: 9px;
+            background-color: #222;
+        }
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+ 
+
+#overlay {
+  position: fixed;
+  display: none;
+  width: 100%;
+  /*
+  width: 50%;
+  margin-left:25%;
+  margin-right:25%;*/
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 2;
+  cursor: pointer;
+}
+
+
+
+
+#anime-card {
+	    width: 50%;
+    margin-right: 25%;
+    margin-left: 25%;
+    align-self: center;
+}
+
+
+
+
+
+:root {
+    --lightBlue: #829eff;
+    --darkBlue: #303F9F;
+    --mediumBlue: #3292f2;
+    --bgColor: #111111;
+    /*
+    --blue: #007bff;
+    --indigo: #6610f2;
+    --purple: #6f42c1;
+    --pink: #e83e8c;
+    --red: #dc3545;
+    --orange: #fd7e14;
+    --yellow: #ffc107;
+    --green: #28a745;
+    --teal: #20c997;
+    --cyan: #17a2b8;
+    --white: #fff;
+    --gray: #6c757d;
+    --gray-dark: #343a40;
+    --primary: #007bff;
+    --secondary: #6c757d;
+    --success: #28a745;
+    --info: #17a2b8;
+    --warning: #ffc107;
+    --danger: #dc3545;
+    --light: #f8f9fa;
+    --dark: #343a40;
+    --breakpoint-xs: 0;
+    --breakpoint-sm: 576px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 992px;
+    --breakpoint-xl: 1200px;
+    --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;*/
+}
+/*
+
+span {
+    color: #e0e0e0;
+    text-decoration: none;
+    outline: none;
+    transition: color .15s;
+}
+
+    span:hover, span:active {
+        color: #FFFFFF;
+    }
+
+.btn-primary {
+    color: #fff;
+    background-color: #303F9F;
+    border-color: transparent;
+}
+
+    .btn-primary:hover {
+        color: #fff;
+        background-color: #3c50d3;
+        border-color: #fff;
+    }*/
