@@ -346,7 +346,8 @@ def eval_in_node(js: str):
                     const js = Buffer.from('%s','base64').toString()
                     console.log(new VM().run(js))
                     """%js
-    output = subprocess.check_output(['node', '-e', sandboxedScript])
+    node_path = path.join(path.dirname(__file__), 'node_modules')
+    output = subprocess.check_output(['node', '-e', sandboxedScript], env={'NODE_PATH': node_path})
     return output.decode('utf-8')
 
 def open_magnet(magnet):
