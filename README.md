@@ -80,7 +80,6 @@ Yeah. Me too! That's why this tool exists.
 - Justdubs
 - Kickassanime
 - Kissanimefree
-- Kissanime - requires Selenium
 - Kisscartoon - requires Selenium
 - Nyaa.si
 - RyuAnime
