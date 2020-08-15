@@ -5,7 +5,6 @@ ALL_ANIME_SITES = [
     ('_4anime','4anime','Anime4'),
     ('animeonline','animeonline360','AnimeOnline'),
     ('gogoanime', 'gogoanime', 'GogoAnime'),
-    ('kissanime', 'kissanime', 'KissAnime'),
     ('kisscartoon', 'kisscartoon', 'KissCartoon'),
     ('twistmoe', 'twist.moe', 'TwistMoe'),
     ('animeflv', 'animeflv', 'Animeflv'),
