@@ -9,7 +9,7 @@ class KissAnimeX(Anime, sitename = 'kissanimex'):
         url = 'https://kissanimex.com/search?url=search'
         r = helpers.get(url, params={'q': query})
         soup = helpers.soupify(r.text)
-        items = soup.find_all('td')
+        items = soup.select('td > a')
         search_results = [
                 SearchResult(
                     title = x.find('a').text,
