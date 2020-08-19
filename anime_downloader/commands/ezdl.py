@@ -40,12 +40,22 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
 @click.option(
     '--url', '-u', type=bool, is_flag=True,
     help="If flag is set, prints the stream url instead of downloading")
+
+@click.option(
+    '--choice', '-c',type=int,
+    help='Choice to start downloading given anime number ',
+    default=None
+)
 @click.option("--skip-fillers", is_flag=True, help="Skip downloading of fillers.")
 
 @click.pass_context
 def command(ctx, anime_url, episode_range, player,
             force_download, provider,
-            skip_fillers, ratio, url):
+            skip_fillers, ratio, url, choice):
+    """
+    dl with fallback providers\n
+    Will use another provider even if the chosen one fails.\n
+    """
 
     # Borrows some config from the original dl command.
     # This can all be flags, but ezdl is made to be easy.
@@ -53,13 +63,13 @@ def command(ctx, anime_url, episode_range, player,
     download_dir = Config['dl']['download_dir']
     quality = Config['dl']['quality']
     url = Config['dl']['url'] if not url else url
-    external_downloader = Config['dl']['external_downloader']
     skip_download = Config['dl']['skip_download']
     chunk_size = Config['dl']['chunk_size']
     speed_limit = Config['dl']['speed_limit']
 
-    fallback_providers = Config['ezdl']['fallback_providers']
+    external_downloader = Config['dl']['external_downloader']
     file_format = Config['ezdl']['file_format']
+    fallback_providers = Config['ezdl']['fallback_providers']
 
     query = anime_url[:]
     util.print_info(__version__)
@@ -68,7 +78,8 @@ def command(ctx, anime_url, episode_range, player,
     # Eliminates duplicates while keeping order
     providers = sorted(set(fallback_providers),key=fallback_providers.index)  
 
-    info = animeinfo.search_anilist(query)
+    info = animeinfo.search_anilist(query, choice)
+    logger.info('Selected "{}" '.format(info.title))
     episode_count = info.episodes - 1
     # Interprets the episode range for use in a for loop.
     # 1:3 -> for _episode in range(1, 4):
