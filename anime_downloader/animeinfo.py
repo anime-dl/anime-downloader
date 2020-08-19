@@ -124,8 +124,9 @@ def search_mal(query):
     # Prompts the user for selection
     return primitive_search(season_info)
 
-
-def search_anilist(query):
+# Choice allows the user to preselect, used to download from a list overnight.
+# None prompts the user.
+def search_anilist(query, choice=None):
 
     def search(query):
         ani_query = """
@@ -166,8 +167,15 @@ def search_anilist(query):
         return search_results
 
     search_results = search(query)
-    # Prompts the user for selection
-    return primitive_search(search_results)
+
+    # This can also be fuzzied, but too many options.
+    if choice != None:
+        # Fixes too low or high to get a real value.
+        fixed_choice = ((choice-1)%len(search_results))
+        return search_results[fixed_choice]
+    else:
+        # Prompts the user for selection
+        return primitive_search(search_results)
 
 
 def fuzzy_match_metadata(seasons_info, search_results):
