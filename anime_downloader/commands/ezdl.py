@@ -3,7 +3,8 @@ import os
 
 import click
 import requests_cache
-
+import _thread
+import time
 from anime_downloader import session, util
 from anime_downloader.__version__ import __version__
 from anime_downloader.sites import get_anime_class, ALL_ANIME_SITES
@@ -62,6 +63,11 @@ def command(ctx, anime_url, episode_range, player,
 
     # Borrows some config from the original dl command.
     # This can all be flags, but ezdl is made to be easy.
+
+    # max_threads could be defined in config/flag or both? 
+    max_threads = 3
+    current_thread_no = 1
+
     fallback_qualities = Config['dl']['fallback_qualities']
     download_dir = Config['dl']['download_dir']
     quality = Config['dl']['quality']
@@ -186,9 +192,23 @@ def command(ctx, anime_url, episode_range, player,
                         logging.info('Downloading episode {} of {}'.format(
                             episode.ep_no, anime.title)
                         )
-                        util.external_download(external_downloader, episode,
-                                               fixed_file_format, path=download_dir, speed_limit=speed_limit)
+
+                        # Starts 2 threads and one regular. Continues to the next threads when the last one is completed.
+                        # This means it can theoretically go above the limit, but shouldn't go much above it.
+                        # I don't see an easy way of doing threading while never going above a limit.
+                        # subprocess may be able to catch aria2 finishing.
+                        if current_thread_no < max_threads and episode_range != int(episode_range_split[-1]):
+                            logger.info('Starting new thread no: {}'.format(current_thread_no))
+                            current_thread_no += 1
+                            time.sleep(1)
+                            _thread.start_new_thread(util.external_download, (external_downloader, episode,
+                                                   fixed_file_format, speed_limit, download_dir))
+                        else:
+                            util.external_download(external_downloader, episode,
+                                                   fixed_file_format, path=download_dir, speed_limit=speed_limit)
+                            current_thread_no = 1
                         continue
+
                     if chunk_size is not None:
                         chunk_size = int(chunk_size)
                         chunk_size *= 1e6
