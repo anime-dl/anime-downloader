@@ -163,7 +163,7 @@ def search_anilist(query, choice=None):
             raise NameError
 
         search_results = [AnimeInfo(url = 'https://anilist.co/anime/' + str(i['id']), title = i['title']['romaji'],
-                jp_title = i['title']['native'], episodes = int(i['episodes'])) for i in results if i['episodes'] != None]
+                jp_title = i['title']['native'], episodes=int(i['episodes']), metadata=i) for i in results if i['episodes'] != None]
         return search_results
 
     search_results = search(query)
