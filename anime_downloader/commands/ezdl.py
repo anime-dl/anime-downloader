@@ -46,12 +46,15 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     help='Choice to start downloading given anime number ',
     default=None
 )
+@click.option(
+    '--download-metadata', '-dm', is_flag=True,
+    help='Download additional metadata')
 @click.option("--skip-fillers", is_flag=True, help="Skip downloading of fillers.")
 
 @click.pass_context
 def command(ctx, anime_url, episode_range, player,
             force_download, provider,
-            skip_fillers, ratio, url, choice):
+            skip_fillers, ratio, url, choice, download_metadata):
     """
     dl with fallback providers\n
     Will use another provider even if the chosen one fails.\n
@@ -79,6 +82,7 @@ def command(ctx, anime_url, episode_range, player,
     providers = sorted(set(fallback_providers),key=fallback_providers.index)  
 
     info = animeinfo.search_anilist(query, choice)
+
     logger.info('Selected "{}" '.format(info.title))
     episode_count = info.episodes - 1
     # Interprets the episode range for use in a for loop.
@@ -116,7 +120,6 @@ def command(ctx, anime_url, episode_range, player,
                 'ep_no':'{ep_no}'
             }
             fixed_file_format = file_format.format(**rep_dict)
-
             # Keeping this as I don't know the impact of removing it.
             # It's False by default in normal dl.
             disable_ssl = False
@@ -168,7 +171,10 @@ def command(ctx, anime_url, episode_range, player,
                     if episode.ep_no in fillers:
                         logger.info("Skipping episode {} because it is a filler.".format(episode.ep_no))
                         continue
-                
+
+                if download_metadata:
+                    util.download_metadata(fixed_file_format, info.metadata, episode)
+
                 if url:
                     util.print_episodeurl(episode)
 
