@@ -6,6 +6,7 @@ import subprocess
 import platform
 import re
 import os
+import json
 import errno
 import time
 import ast
@@ -142,6 +143,23 @@ def primitive_search(search_results):
                          ' Please input a number less than {}'.format(
                              len(search_results), len(search_results)+1))
 
+
+def download_metadata(file_format, metdata, episode, filename='metdata.json'):
+    # turns '{animeinfo_anime_title}/{animeinfo_anime_title}_{provider}_{ep_no}'
+    # to '{animeinfo_anime_title}/'
+    location = ''.join(file_format.split('/')[:-1])
+    location = format_filename(location, episode)
+    location_metadata = location + '/' + filename
+    if os.path.isfile(location_metadata):
+        logger.debug('Metadata file already downloaded.')
+        return False
+
+    make_dir(location)
+
+    with open(location_metadata, 'w') as file:
+        json.dump(metdata, file, indent=4)
+    logger.debug('Downloaded metadata to "{}".'.format(location_metadata))
+    return location_metadata
 
 def split_anime(anime, episode_range):
     try:
