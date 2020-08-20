@@ -9,7 +9,10 @@ class AnimeOnline360(BaseExtractor):
             anime_type = soup['data-type']
             anime_id = soup['data-post']
             referrer = helpers.get(f"https://animeonline360.me/wp-json/dooplayer/v1/post/{anime_id}?type={anime_type}&source=1").json()['embed_url']
-            stream_url = urllib.parse.unquote(referrer.split('?source=')[1].split('&')[0])
+            #stream_url = urllib.parse.unquote(referrer.split('?source=')[1].split('&')[0])
+            jwplayer = helpers.soupify(helpers.get(referrer))
+            stream_url = jwplayer.select('source')[0]['src']
+
             return {
                 'stream_url': stream_url,
                 'referer': referrer
