@@ -29,7 +29,8 @@ DEFAULT_CONFIG = {
         'file_format':'{animeinfo_anime_title}/{animeinfo_anime_title}_{provider}_{ep_no}',
         'provider':'twist.moe',
         'ratio':50,
-        'fallback_providers':['9anime','vidstream','watchmovie']
+        'fallback_providers':['9anime','vidstream','watchmovie'],
+        'download_metadata':False,
     },
     'watch': {
         'quality': '1080p',
