@@ -129,4 +129,4 @@ See [development instructions](https://anime-downlader.readthedocs.io/en/latest/
 
 ---
 
-*Please don't judge me for not paying for anime. I want to support the anime industry, but being a college student, I can't.*
+*Please bear in mind the production of this repo is for educational/research purposes only with regards to webscraping for videos, we take no responsibility for people who decide to actually use this repository.*
