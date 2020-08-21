@@ -4,12 +4,13 @@ import re
 
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
-
+from anime_downloader.config import Config
 logger = logging.getLogger(__name__)
 
 class NineAnime(Anime, sitename='nineanime'):
         sitename = '9anime'
-        url = f'https://{sitename}.to/search'
+        extension = Config['siteconfig'][sitename]['domain_extension']
+        url = f'https://{sitename}.{extension}/search'
         @classmethod
         def search(cls, query):
             # Only uses the first page of search results, but it's sufficent.
@@ -28,11 +29,12 @@ class NineAnime(Anime, sitename='nineanime'):
 
 
         def _scrape_episodes(self):
+            self.extension = self.config['domain_extension']
             soup = helpers.soupify(helpers.get(self.url))
             # Assumptions can cause errors, but if this fails it's better to get issues on github.
             title_id = soup.select("div#player")[0]
             title_id = title_id.get('data-id')
-            episode_html = helpers.get(f"https://9anime.to/ajax/film/servers?id={title_id}").text
+            episode_html = helpers.get(f"https://9anime.{self.extension}/ajax/film/servers?id={title_id}").text
             # Only using streamtape, MyCloud can get added, but it uses m3u8.
             streamtape_regex = r'data-id=\\"40\\".*?(data-name|$)'
             streamtape_episodes = re.search(streamtape_regex, episode_html)
@@ -62,13 +64,14 @@ class NineAnime(Anime, sitename='nineanime'):
 
 class NineAnimeEpisode(AnimeEpisode, sitename='9anime'):
         def _get_sources(self):
+            self.extension = self.config['domain_extension']
             if not self.url:
                 return ''
 
             # Arbitrary timeout to prevent spamming the server which will result in an error.
             time.sleep(0.3)
             # Server 40 is streamtape, change this if you want to add other servers
-            episode_ajax = f"https://9anime.to/ajax/episode/info?id={self.url}&server=40"
+            episode_ajax = f"https://9anime.{self.extension}/ajax/episode/info?id={self.url}&server=40"
             target = helpers.get(episode_ajax).json().get('target','')
             logger.debug('Videolink: {}'.format(target))
             if not target:
