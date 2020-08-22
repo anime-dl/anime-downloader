@@ -1,5 +1,8 @@
 from anime_downloader.sites import helpers
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
+import logging
+
+logger = logging.getLogger(__name__)
 
 class KissAnimeX(Anime, sitename = 'kissanimex'):
     sitename = "kissanimex"
@@ -21,7 +24,15 @@ class KissAnimeX(Anime, sitename = 'kissanimex'):
 
     def _scrape_episodes(self):
         r = helpers.get(self.url).text
-        eps = helpers.soupify(r).find('div', id='episodes-sub').select('td > a')
+        soup = helpers.soupify(r)
+        if self.config['version'] == 'dubbed':
+            try:
+                eps = soup.find('div', id='episodes-dub').select('td > a')
+            except:
+                logger.info('You have dubbed in the config, but this anime doesnt have dub, choosing sub as a fallback.')
+                eps = soup.find('div', id='episodes-sub').select('td > a')
+        else:
+            eps = soup.find('div', id='episodes-sub').select('td > a')
         episodes = ['https://kissanimex.com' + x.get('href') for x in eps][::-1]
         return episodes
 
