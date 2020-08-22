@@ -20,5 +20,5 @@ class StreamX(BaseExtractor):
 
         return {
         'stream_url': file,
-        'referer': self.url
+        'referer': file
         }
