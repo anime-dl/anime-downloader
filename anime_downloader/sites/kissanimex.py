@@ -46,7 +46,10 @@ class KissAnimeXEpisode(AnimeEpisode, sitename='kissanimex'):
         sources = soup.find_all('a')
         sources = [x['data-video-link'] for x in sources]
         #TODO make this source rotate because there may be other sources
+        map_2_dict = {
+            'vidstream': 'vidstream'
+        }
         for a in sources:
-            if 'vidstreaming' in a:
-                source = a
-        return [('vidstream', a)]
+            for i in map_2_dict:
+                if i in a:
+                    return [(i, a)]
