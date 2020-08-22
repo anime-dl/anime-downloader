@@ -14,9 +14,9 @@ ALL_EXTRACTORS = [
         'class': 'AnimeVideo',
     },
     {
-        'sitename': 'no_extractor',
+        'sitename': 'custom',
         'modulename': 'custom',
-        'regex': 'no_extractor',
+        'regex': 'custom',
         'class': 'Custom',
     },
     {
