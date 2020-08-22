@@ -27,17 +27,17 @@ class KissAnimeX(Anime, sitename = 'kissanimex'):
         soup = helpers.soupify(r)
         if self.config['version'] == 'dubbed':
             try:
-                eps = soup.find('div', id='episodes-dub').select('td > a')
+                eps = soup.select_one('div#episodes-dub').select('td > a')
             except:
                 logger.info('You have dubbed in the config, but this anime doesnt have dub, choosing sub as a fallback.')
-                eps = soup.find('div', id='episodes-sub').select('td > a')
+                eps = soup.select_one('div#episodes-sub').select('td > a')
         else:
-            eps = soup.find('div', id='episodes-sub').select('td > a')
+            eps = soup.select_one('div#episodes-sub').select('td > a')
         episodes = ['https://kissanimex.com' + x.get('href') for x in eps][::-1]
         return episodes
 
     def _scrape_metadata(self):
-        self.title = helpers.soupify(helpers.get(self.url).text).find('a', class_='bigChar').text
+        self.title = helpers.soupify(helpers.get(self.url).text).select_one('a.bigChar').text
 
 class KissAnimeXEpisode(AnimeEpisode, sitename='kissanimex'):
     def _get_sources(self):
