@@ -12,8 +12,8 @@ class KissAnimeX(Anime, sitename = 'kissanimex'):
         items = soup.select('td > a')
         search_results = [
                 SearchResult(
-                    title = x.find('a').text,
-                    url = 'https://kissanimex.com' + x.find('a')['href']
+                    title = x.text,
+                    url = 'https://kissanimex.com' + x['href']
                     )
                 for x in items
                 ]
