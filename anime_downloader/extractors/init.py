@@ -14,6 +14,12 @@ ALL_EXTRACTORS = [
         'class': 'AnimeVideo',
     },
     {
+        'sitename': 'no_extractor',
+        'modulename': 'custom',
+        'regex': 'no_extractor',
+        'class': 'Custom',
+    },
+    {
         'sitename': 'animeonline360',
         'modulename': 'animeonline360',
         'regex': 'animeonline360',
