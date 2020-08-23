@@ -26,11 +26,8 @@ class KissAnimeX(Anime, sitename = 'kissanimex'):
         r = helpers.get(self.url).text
         soup = helpers.soupify(r)
         if self.config['version'] == 'dubbed':
-            try:
-                eps = soup.select_one('div#episodes-dub').select('td > a')
-                if len(eps) == 0:
-                    raise Exception
-            except:
+            eps = soup.select_one('div#episodes-dub').select('td > a')
+            if len(eps) == 0:
                 logger.info("Dub episodes not found.")
                 return []
         else:
