@@ -52,7 +52,7 @@ def remove_config():
     '--remove', 
     '-r',
     is_flag=True,
-    help='Delete the config file ig this flag is set'
+    help='Delete the config file if this flag is set'
 )
 def command(remove):
     """
