@@ -60,3 +60,4 @@ class KissAnimeXEpisode(AnimeEpisode, sitename='kissanimex'):
             for extractor in map_extractors:
                 if extractor in source:
                     return [(extractor, source)]
+        return ''
