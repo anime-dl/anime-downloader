@@ -47,7 +47,8 @@ class KissAnimeXEpisode(AnimeEpisode, sitename='kissanimex'):
         soup = helpers.soupify(r).find('div', class_='host', id='menu')
         sources = soup.find_all('a')
         sources = [x['data-video-link'] for x in sources]
-        #TODO make this source rotate because there may be other sources
+        
+        
         map_2_dict = {
             'vidstream': 'vidstream'
         }
