@@ -31,7 +31,7 @@ class KissAnimeX(Anime, sitename = 'kissanimex'):
                 if len(eps) == 0:
                     raise Exception
             except:
-                logger.info('You have dubbed in the config, but this anime doesnt have dub.')
+                logger.info("Dub episodes not found.")
                 return []
         else:
             eps = soup.select_one('div#episodes-sub').select('td > a')
