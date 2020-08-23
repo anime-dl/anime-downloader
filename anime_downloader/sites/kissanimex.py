@@ -31,7 +31,7 @@ class KissAnimeX(Anime, sitename = 'kissanimex'):
                 if len(eps) == 0:
                     raise Exception
             except:
-                logger.info('You have dubbed in the config, but this anime doesnt have a dub.')
+                logger.info('You have dubbed in the config, but this anime doesnt have dub.')
                 return []
         else:
             eps = soup.select_one('div#episodes-sub').select('td > a')
@@ -48,11 +48,10 @@ class KissAnimeXEpisode(AnimeEpisode, sitename='kissanimex'):
         sources = soup.find_all('a')
         sources = [x['data-video-link'] for x in sources]
         
-        
-        map_2_dict = {
+        map_extractors = {
             'vidstream': 'vidstream'
         }
-        for a in sources:
-            for i in map_2_dict:
-                if i in a:
-                    return [(i, a)]
+        for source in sources:
+            for extractor in map_extractors:
+                if extractor in source:
+                    return [(extractor, source)]
