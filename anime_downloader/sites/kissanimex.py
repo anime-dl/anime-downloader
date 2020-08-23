@@ -10,8 +10,7 @@ class KissAnimeX(Anime, sitename = 'kissanimex'):
     @classmethod
     def search(cls, query):
         url = 'https://kissanimex.com/search?url=search'
-        r = helpers.get(url, params={'q': query})
-        soup = helpers.soupify(r.text)
+        soup = helpers.soupify(helpers.get(url, params={'q': query}))
         items = soup.select('td > a')
         search_results = [
                 SearchResult(
@@ -25,13 +24,23 @@ class KissAnimeX(Anime, sitename = 'kissanimex'):
     def _scrape_episodes(self):
         r = helpers.get(self.url).text
         soup = helpers.soupify(r)
-        if self.config['version'] == 'dubbed':
-            eps = soup.select_one('div#episodes-dub').select('td > a')
-            if len(eps) == 0:
-                logger.info("Dub episodes not found.")
+
+        # Allows fallback from both dub -> sub and sub -> dub
+        # This makes it possible to download pokemon (for example) without having to change config.
+        subbed = self.config['version'] != 'dubbed'
+        subbed_converter = {
+            True:'div#episodes-sub',
+            False:'div#episodes-dub',
+        }
+
+        eps = soup.select_one(subbed_converter.get(subbed)).select('td > a')
+        if not eps:
+            logger.info('No episodes in selected language, falling back.')
+            eps = soup.select_one(subbed_converter.get(not subbed)).select('td > a')
+            if not eps:
+                logger.info('No episodes found.')
                 return []
-        else:
-            eps = soup.select_one('div#episodes-sub').select('td > a')
+
         episodes = ['https://kissanimex.com' + x.get('href') for x in eps][::-1]
         return episodes
 
@@ -41,10 +50,9 @@ class KissAnimeX(Anime, sitename = 'kissanimex'):
 class KissAnimeXEpisode(AnimeEpisode, sitename='kissanimex'):
     def _get_sources(self):
         r = helpers.get(self.url).text
-        soup = helpers.soupify(r).find('div', class_='host', id='menu')
-        sources = soup.find_all('a')
+        sources = helpers.soupify(r).select('div.host#menu > a')
         sources = [x['data-video-link'] for x in sources]
-        
+
         map_extractors = {
             'vidstream': 'vidstream'
         }
