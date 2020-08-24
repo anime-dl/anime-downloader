@@ -31,11 +31,15 @@ class Anime8(Anime, sitename = 'anime8'):
         soup = helpers.soupify(helpers.get(link).text)
         eps = soup.select('a[class*="btn-eps first-ep last-ep"]')
         eps = [x.get('href') for x in eps]
-        count = range(len(eps) - 1)
-        for a, b in zip(eps, count):
-            if '-Preview' in a:
-                eps.pop(b)
-        return eps
+        correct_eps = []
+        skip_eps = ['-Preview', '-Special', '-Sneak-Peak']
+        for episode in eps:
+            for skip in skip_eps:
+                if skip in episode:
+                    continue
+            else:
+                correct_eps.append(episode)
+        return correct_eps
 
 
     def _scrape_metadata(self):
