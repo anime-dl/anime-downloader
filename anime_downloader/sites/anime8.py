@@ -31,11 +31,31 @@ class Anime8(Anime, sitename = 'anime8'):
         soup = helpers.soupify(helpers.get(link).text)
         eps = soup.select('a[class*="btn-eps first-ep last-ep"]')
         eps = [x.get('href') for x in eps]
-        count = range(len(eps) - 1)
-        for a, b in zip(eps, count):
-            if '-Preview' in a:
-                eps.pop(b)
-        return eps
+
+        #Seperating normal episodes from the special episodes
+        correct_eps = []
+        special_eps = []
+        special_seperator = ['-Preview', '-Special']
+
+        for episode in eps:
+            ep_text = episode.split('/')[-1].split('?')[0] #Getting the episode type from the url
+
+            #Only "The God of High School" has a sneak peak episode and it is broken in the 1st 10 seconds
+            if '-Sneak-Peak' in ep_text:
+                continue 
+
+            # Here i add the special episodes to a seperate list
+            if ep_text in special_seperator:
+                special_eps.append(episode)
+
+            # Here i add the normal episodes to the correct_eps list
+            else:
+                correct_eps.append(episode)
+
+        # If configured to do so it will add all the special eps to the end of the list
+        if self.config['include_special_eps']:
+            correct_eps.extend(special_eps)
+        return correct_eps
 
 
     def _scrape_metadata(self):

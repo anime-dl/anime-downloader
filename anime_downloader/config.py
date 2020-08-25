@@ -59,7 +59,8 @@ DEFAULT_CONFIG = {
             'server': 'natsuki',
         },
         'anime8': {
-            'version':'subbed'
+            'version':'subbed',
+            'include_special_eps': False
         },
         'gogoanime': {
             'server': 'cdn',
