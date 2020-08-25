@@ -13,7 +13,8 @@ class AnimeSimple(Anime, sitename='animesimple'):
     url = f'https://{sitename}.com/search'
     @classmethod
     def search(cls, query):
-        search_results = helpers.soupify(helpers.get(cls.url, params={'q': query})).select('div.card-body > div > a')
+        # Be aware of CSS selectors changing.
+        search_results = helpers.soupify(helpers.get(cls.url, params={'q': query})).select('div.card > a')
         return [
             SearchResult(
                 title=i.get('title') if i.get('title') else i.select('img')[0].get('alt'),
