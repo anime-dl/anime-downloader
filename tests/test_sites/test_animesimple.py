@@ -12,7 +12,7 @@ configure_httpretty('animesimple')
 
 def test_search():
     ret = AnimeSimple.search('shingeki no kyojin')
-    assert len(ret) == 9
+    assert len(ret) == 10
     assert ret[0].title == 'Attack on Titan'
 
 
