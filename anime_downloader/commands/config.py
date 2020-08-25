@@ -1,6 +1,7 @@
 import click
+import os
 from tabulate import tabulate
-from anime_downloader.config import Config
+from anime_downloader.config import APP_DIR, Config
 
 data = Config._CONFIG
 
@@ -43,13 +44,25 @@ def traverse_json(data, previous=''):
 
         data[keys[val]] = newVal
 
+def remove_config():
+    os.remove(os.path.join(APP_DIR, 'config.json'))
+
 @click.command()
-def command():
+@click.option(
+    '--remove', 
+    '-r',
+    is_flag=True,
+    help='Delete the config file if this flag is set'
+)
+def command(remove):
     """
     Presents a list based on the keys in the dictionary.
     If the value of said key is not a dictionary, the user will be able to edit the value.
     """
-    traverse_json(data)
-    Config._CONFIG = data
-    Config.write()
-    exit()
+
+    if remove:
+        remove_config()
+    else:
+        traverse_json(data)
+        Config._CONFIG = data
+        Config.write()
