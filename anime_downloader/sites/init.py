@@ -37,7 +37,6 @@ ALL_ANIME_SITES = [
     ('animixplay','animixplay','AniMixPlay'),
     ('horriblesubs', 'horriblesubs', 'HorribleSubs'),
     ('animefrenzy','animefrenzy','AnimeFrenzy'),
-    ('nineanime','9anime','NineAnime'),
 ]
 
 def get_anime_class(url):
