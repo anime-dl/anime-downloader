@@ -37,7 +37,6 @@ class Anime8(Anime, sitename = 'anime8'):
         special_eps = []
         special_seperator = ['-Preview', '-Special']
 
-
         for episode in eps:
             ep_text = episode.split('/')[-1].split('?')[0] #Getting the episode type from the url
 
