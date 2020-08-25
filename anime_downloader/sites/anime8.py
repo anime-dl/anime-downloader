@@ -41,7 +41,7 @@ class Anime8(Anime, sitename = 'anime8'):
         for episode in eps:
             ep_text = episode.split('/')[-1].split('?')[0] #Getting the episode type from the url
 
-            #Only "The God of High School" has a sneak peak episode and it is broken in the 1st 10 eps
+            #Only "The God of High School" has a sneak peak episode and it is broken in the 1st 10 seconds
             if '-Sneak-Peak' in ep_text:
                 continue 
 
