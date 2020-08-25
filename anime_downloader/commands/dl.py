@@ -47,7 +47,7 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     metavar='FORMAT STRING'
 )
 @click.option(
-    '--provider',
+    '-p','--provider',
     help='The anime provider (website) for search.',
     type=click.Choice(sitenames)
 )
