@@ -32,13 +32,16 @@ class Anime8(Anime, sitename = 'anime8'):
         eps = soup.select('a[class*="btn-eps first-ep last-ep"]')
         eps = [x.get('href') for x in eps]
         correct_eps = []
-        skip_eps = ['-Preview', '-Special', '-Sneak-Peak']
+        special_eps = []
+        skip_eps = ['-Preview', '-Special']
         for episode in eps:
-            for skip in skip_eps:
-                if skip in episode:
-                    continue
+            ep_text = episode.split('/')[-1].split('?')[0]
+            if ep_text in skip_eps or '-Sneak-Peak' in ep_text:
+                if not '-Sneak-Peak' in ep_text:
+                    special_eps.append(episode)
             else:
                 correct_eps.append(episode)
+        correct_eps.extend(special_eps)
         return correct_eps
 
 
