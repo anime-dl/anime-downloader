@@ -3,7 +3,7 @@ from anime_downloader.sites.exceptions import NotFoundError
 
 
 class BaseExtractor:
-    def __init__(self, url, quality=None, headers=None):
+    def __init__(self, url, quality=None, headers={}):
         if not url.startswith('http'):
             url = 'https://' + url
         self.url = url
@@ -11,7 +11,7 @@ class BaseExtractor:
         # TODO: Maybe quality should be only delt with inside epiosde(?)
         self.quality = quality
 
-        if headers is not None:
+        if headers:
             self.headers = headers
         else:
             self.headers = desktop_headers
