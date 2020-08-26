@@ -274,13 +274,18 @@ def format_command(cmd, episode, file_format, speed_limit, path):
         '{idm}'  : 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4'
     }
 
+    # Allows for passing the user agent with self.headers in the site.
+    # Some sites block downloads using a different user agent.
+    useragent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36'
+    if episode.headers.get('user-agent')
+        useragent = episode.headers['user-agent']
 
     rep_dict = {
         'stream_url': episode.source().stream_url if not episode.url.startswith('magnet:?xt=urn:btih:') else episode.url,
         'file_format': file_format,
         'download_dir': os.path.abspath(path),
         'referer': episode.source().referer,
-        'useragent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36',
+        'useragent': f'"{useragent}"',
         'speed_limit': speed_limit
     }
 
