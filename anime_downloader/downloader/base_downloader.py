@@ -6,6 +6,8 @@ import sys
 from anime_downloader import util
 from anime_downloader import session
 
+import requests
+
 logger = logging.getLogger(__name__)
 
 
@@ -31,7 +33,9 @@ class BaseDownloader:
         }
         if self.source.referer:
             headers['referer'] = self.source.referer
-        r = session.get_session().get(
+
+        # using session downloads the whole file, essentially freezing the program.
+        r = requests.get(
             self.source.stream_url, headers=headers, stream=True)
 
         self._total_size = int(r.headers['Content-length'])
@@ -51,13 +55,11 @@ class BaseDownloader:
 
         # TODO: Use pathlib. Break into functions
         util.make_dir(self.path.rsplit('/', 1)[0])
-
         self.check_if_exists()
 
         self.start_time = time.time()
         self.downloaded = 0
         self._download()
-
         self.post_process()
 
     def _download(self):
