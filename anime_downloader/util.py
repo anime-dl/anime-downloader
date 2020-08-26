@@ -269,19 +269,20 @@ def format_command(cmd, episode, file_format, speed_limit, path):
 
     cmd_dict = {
         '{aria2}': 'aria2c {stream_url} -x 12 -s 12 -j 12 -k 10M -o '
-                   '{file_format}.mp4 --continue=true --dir={download_dir}'
+                   '{file_format}{file_ext} --continue=true --dir={download_dir}'
                    ' --stream-piece-selector=inorder --min-split-size=5M --referer={referer} --check-certificate=false --user-agent={useragent} --max-overall-download-limit={speed_limit}',
         '{idm}'  : 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4'
     }
 
-
+    file_name, file_ext = os.path.splitext(episode.source().stream_url)
     rep_dict = {
         'stream_url': episode.source().stream_url if not episode.url.startswith('magnet:?xt=urn:btih:') else episode.url,
         'file_format': file_format,
         'download_dir': os.path.abspath(path),
         'referer': episode.source().referer,
         'useragent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36',
-        'speed_limit': speed_limit
+        'speed_limit': speed_limit,
+        'file_ext': file_ext if not episode.url.startswith('magnet:?xt=urn:btih:') else '.mkv'
     }
 
     if cmd == "{idm}":
