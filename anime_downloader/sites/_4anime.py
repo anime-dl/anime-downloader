@@ -42,7 +42,7 @@ class Anime4(Anime, sitename = '4anime'):
 
 class Anime4Episode(AnimeEpisode, sitename='4anime'):
     def _get_sources(self):
-        self.headers = HEADERS[self.hash_url(self.url, len(HEADERS))]
+        self.headers = {'user-agent':HEADERS[self.hash_url(self.url, len(HEADERS))]}
         resp = helpers.get(self.url, headers=self.headers)
         stream_url = helpers.soupify(resp).find('div', class_='videojs-desktop').find('source')['src']
         return [('no_extractor', stream_url)]
