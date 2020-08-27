@@ -78,13 +78,21 @@ class BaseDownloader:
 
 
 def write_status(downloaded, total_size, start_time):
+
     elapsed_time = time.time()-start_time
     rate = (downloaded/1024)/elapsed_time if elapsed_time else 'x'
     downloaded = float(downloaded)/1048576
     total_size = float(total_size)/1048576
 
-    status = 'Downloaded: {0:.2f}MB/{1:.2f}MB, Rate: {2:.2f}KB/s'.format(
-        downloaded, total_size, rate)
+    eta = ((total_size-downloaded)*1024)/rate
+    minutes = '0' * (round((eta-(eta%60))/60) < 10) + str(round((eta-(eta%60))/60))
+    seconds = '0' * (round(eta%60) < 10) + str(round(eta%60))
+    eta = f'{minutes}:{seconds}'
+    if downloaded >= total_size:
+        eta = 'Done'
+
+    status = 'Downloaded: {0:.2f}MB/{1:.2f}MB, Rate: {2:.2f}KB/s, ETA: {3}'.format(
+        downloaded, total_size, rate, eta)
 
     sys.stdout.write("\r" + status + " "*5 + "\r")
     sys.stdout.flush()
