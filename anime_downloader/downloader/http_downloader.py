@@ -24,7 +24,6 @@ class HTTPDownloader(BaseDownloader):
 
     def _ranged_download(self):
         http_chunksize = self.range_size
-
         range_start = 0
         range_end = http_chunksize
 
@@ -48,6 +47,7 @@ class HTTPDownloader(BaseDownloader):
         # Creates an empty part file, this comes at the cost of not really knowing if a file is fully completed.
         # We could possibly add some end bytes on completion?
         part = int(self._total_size) / number_of_threads
+        #self.chunksize = part
         fp = open(self.path, "wb")
         fp.write(b'0' * self._total_size)
         fp.close()
@@ -59,7 +59,7 @@ class HTTPDownloader(BaseDownloader):
             end = start + part
 
             t = threading.Thread(target=self.thread_downloader,
-                kwargs={'url': url, 'start':start, 'end': end, 'headers':set_range(start, end, headers)})
+                kwargs={'url': url, 'start':start, 'end': end, 'headers':headers})
             t.setDaemon(True)
             t.start()
 
@@ -88,6 +88,7 @@ class HTTPDownloader(BaseDownloader):
 
 
     def thread_downloader(self, url, start, end, headers):
+        headers['Range'] = 'bytes=%d-%d' % (start, end) 
         # specify the starting and ending of the file
         # request the specified part and get into variable
         with requests.get(url, headers=headers, stream=True) as r:
