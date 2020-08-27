@@ -6,6 +6,7 @@ import subprocess
 import platform
 import re
 import os
+from os import path
 import json
 import errno
 import time
@@ -390,16 +391,20 @@ def get_hcaptcha_cookies(url):
         return pickle.load(open(COOKIE_FILE, 'rb'))
 
 def deobfuscate_packed_js(packedjs):
-    return eval_in_node('eval=console.log; ' + packedjs)
+    return eval_in_node(packedjs)
 
-def eval_in_node(js: str):
+def eval_in_node(js: str, sandbox: str = "{}"):
     js = base64.b64encode(js.encode('utf-8')).decode()
     sandboxedScript ="""
                     const {VM} = require('vm2');
-                    const js = Buffer.from('%s','base64').toString()
-                    console.log(new VM().run(js))
-                    """%js
-    node_path = path.join(path.dirname(__file__), 'node_modules')
+                    const js = Buffer.from('%s','base64').toString();
+                    const vm = new VM({
+                        sandbox: %s
+                    });
+                    const res = vm.run(js);
+                    console.log(res);
+                    """%(js,sandbox)
+    node_path = os.path.join(path.dirname(__file__), 'node_modules')
     output = subprocess.check_output(['node', '-e', sandboxedScript], env={'NODE_PATH': node_path})
     return output.decode('utf-8')
 

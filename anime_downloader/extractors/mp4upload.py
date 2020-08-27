@@ -14,15 +14,15 @@ class MP4Upload(BaseExtractor):
             logger.warning('File not found (Most likely deleted)')
             return {'stream_url':''}
 
-        regex = r">\s*(eval\(function[\W\w]*?)</script>"
-        script = re.search(regex,soup).group(1)
-        script = util.deobfuscate_packed_js(script)
-
-        url = ''
-        if re.search(r'player\.src\("([^"]*)',script):
-            url = re.search(r'player\.src\("([^"]*)',script).group(1)
-        elif re.search(r'src:"([^"]*)',script):
-            url = re.search(r'src:"([^"]*)',script).group(1)
+        regex = r"eval\(function[\W\w]*?</script>"
+        script = re.search(regex,soup).group().replace('</script>','')
+        script = script + "player.source.sources[0].src;"
+        sandbox = """{
+            player: {},
+            document: { getElementById: x => x },
+            $: () => ({ ready: x => x })
+        }"""
+        url = util.eval_in_node(script, sandbox=sandbox)
         return {
             'stream_url': url,
             'referer': self.url
