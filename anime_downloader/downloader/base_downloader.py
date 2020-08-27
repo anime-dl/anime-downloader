@@ -28,25 +28,24 @@ class BaseDownloader:
 
     def check_if_exists(self):
         # Added Referer Header as kwik needd it.
-        headers = {
-            'user-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101Firefox/56.0",
-        }
+        headers = self.source.headers
+        if 'user-agent' not in headers:
+            headers['user-agent'] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101Firefox/56.0",
+
         if self.source.referer:
             headers['referer'] = self.source.referer
 
         # using session downloads the whole file, essentially freezing the program.
-        r = requests.get(
-            self.source.stream_url, headers=headers, stream=True)
-
-        self._total_size = int(r.headers['Content-length'])
-        logger.debug('total size: ' + str(self._total_size))
-        if os.path.exists(self.path):
-            if abs(os.stat(self.path).st_size - self._total_size) < 10 \
-               and not self.force:
-                logger.warning('File already downloaded. Skipping download.')
-                return
-            else:
-                os.remove(self.path)
+        with requests.get(self.source.stream_url, headers=headers, stream=True) as r:
+            self._total_size = int(r.headers['Content-length'])
+            logger.debug('total size: ' + str(self._total_size))
+            if os.path.exists(self.path):
+                if abs(os.stat(self.path).st_size - self._total_size) < 10 \
+                   and not self.force:
+                    logger.warning('File already downloaded. Skipping download.')
+                    return True
+                else:
+                    os.remove(self.path)
 
     def download(self):
         # TODO: Clean this up
@@ -55,9 +54,11 @@ class BaseDownloader:
 
         # TODO: Use pathlib. Break into functions
         util.make_dir(self.path.rsplit('/', 1)[0])
-        self.check_if_exists()
 
-        self.start_time = time.time()
+        # Goes to the next episode if the file already exists.
+        if self.check_if_exists():
+            return
+
         self.downloaded = 0
         self._download()
         self.post_process()
