@@ -117,6 +117,6 @@ def decrypt(encrypted, passphrase):
 
 def get_cookie(soup):
     js = soup.select_one('script').text
-    js = "location = {'reload': ()=>true};document = {}; \n" + js + f"document.cookie"
+    js = "location = {'reload': ()=>true};document = {}; \n" + js + f"console.log(document.cookie)"
     cookie = eval_in_node(js).strip()
     return cookie
