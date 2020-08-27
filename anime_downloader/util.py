@@ -275,6 +275,7 @@ def format_command(cmd, episode, file_format, speed_limit, path):
     }
 
     file_name, file_ext = os.path.splitext(episode.source().stream_url)
+    file_ext = file_ext.split('?', 1)[0]
     rep_dict = {
         'stream_url': episode.source().stream_url if not episode.url.startswith('magnet:?xt=urn:btih:') else episode.url,
         'file_format': file_format,
