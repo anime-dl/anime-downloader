@@ -19,7 +19,7 @@ class Streamango(BaseExtractor):
             r'<script type="text/javascript">([^"]+)var srces', res.text)[0]
         src = re.findall(
             r'src:d\(([^"]+?)\)', res.text)[0]
-        js = "window = {}; \n" + js + f"window.d({src})"
+        js = "window = {}; \n" + js + f"console.log(window.d({src}))"
         logger.debug(f"Evaling: {js}")
         output = eval_in_node(js)
         stream = "https:" + output
