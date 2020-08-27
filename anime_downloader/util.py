@@ -289,7 +289,7 @@ def format_command(cmd, episode, file_format, speed_limit, path):
         'download_dir': os.path.abspath(path),
         'referer': episode.source().referer,
         'useragent': f'"{useragent}"',
-        'speed_limit': speed_limit
+        'speed_limit': speed_limit,
         'file_ext': file_ext if not episode.url.startswith('magnet:?xt=urn:btih:') else '.mkv'
     }
 
