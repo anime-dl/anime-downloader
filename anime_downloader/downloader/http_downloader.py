@@ -36,7 +36,26 @@ class HTTPDownloader(BaseDownloader):
 
         if self.source.referer:
             headers['Referer'] = self.source.referer
-        
+
+        # This whole block is just a very elaborate way of writing a file full of zeroes in a safe way.
+        # On 32-bit simply doing     fp.write(b'0' * self._total_size)    on a 3gb file throws errors.
+        # Doing it in chunks however works.
+        # sys.maxsize/10 is an arbitrary number I judged as safe. (even sys.maxsize/2 works)
+
+        # This error doesn't affect downloading the actual file as the writing is done in chunks.
+        maxsize = int(sys.maxsize/10)
+        with open(self.path, "wb") as fp:
+            logger.info('Preparing file.')
+            if self._total_size >= maxsize:
+                max_writes = int(math.ceil(self._total_size/maxsize))
+                for chunk in range(max_writes):
+                    if chunk + 1 == max_writes:
+                        fp.write(b'0' * int(self._total_size%((max_writes-1)*maxsize)))
+                    else:
+                        fp.write(b'0' * maxsize)
+            else:
+                fp.write(b'0' * self._total_size)
+
         logger.info('Testing threads.')
         # Default value.
         number_of_threads = 8
@@ -49,19 +68,8 @@ class HTTPDownloader(BaseDownloader):
         # Creates an empty part file, this comes at the cost of not really knowing if a file is fully completed.
         # We could possibly add some end bytes on completion?
         part = int(self._total_size) / number_of_threads
-        #self.chunksize = part
-        with open(self.path, "wb") as fp:
-            logger.info('Preparing file.')
-            if self._total_size >= sys.maxsize:
-                max_writes = int(math.ceil(self._total_size/sys.maxsize))
-                for chunk in range(max_writes):
-                    if chunk + 1 == max_writes:
-                        fp.write(b'0' * int(self._total_size%((max_writes-1)*sys.maxsize))+(max_writes-1)*10)
-                    else:
-                        fp.write(b'0' * sys.maxsize-10)
-            else:
-                fp.write(b'0' * self._total_size)
 
+        logger.info('Starting download.')
         self.start_time = time.time()
 
         for i in range(number_of_threads):
