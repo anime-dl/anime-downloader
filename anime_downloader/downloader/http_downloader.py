@@ -48,12 +48,12 @@ class HTTPDownloader(BaseDownloader):
         with open(self.path, "wb") as fp:
             logger.info('Preparing file.')
             if self._total_size >= maxsize:
-                max_writes = int(math.ceil(self._total_size/maxsize))
-                for chunk in range(max_writes):
-                    if chunk + 1 == max_writes:
-                        fp.write(b'0' * int(self._total_size%((max_writes-1)*maxsize)))
+                threads = math.floor(self._total_size/maxsize)
+                for i in range(threads):
+                    if i+1 == threads:
+                        fp.write(b'0'*(self._total_size-(maxsize*(i+1)-maxsize*i)*i))
                     else:
-                        fp.write(b'0' * maxsize)
+                        fp.write(b'0'*(maxsize*(i+1) - maxsize*i))
             else:
                 fp.write(b'0' * self._total_size)
 
