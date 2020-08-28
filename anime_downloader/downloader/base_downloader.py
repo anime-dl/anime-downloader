@@ -35,17 +35,28 @@ class BaseDownloader:
         if self.source.referer:
             headers['referer'] = self.source.referer
 
-        # using session downloads the whole file, essentially freezing the program.
-        with requests.get(self.source.stream_url, headers=headers, stream=True, verify=False) as r:
-            self._total_size = int(r.headers['Content-length'])
-            logger.debug('total size: ' + str(self._total_size))
-            if os.path.exists(self.path):
-                if abs(os.stat(self.path).st_size - self._total_size) < 10 \
-                   and not self.force:
-                    logger.warning('File already downloaded. Skipping download.')
-                    return True
-                else:
-                    os.remove(self.path)
+        for i in range(5):
+            with requests.get(self.source.stream_url, headers=headers, stream=True, verify=False) as r:
+                self._total_size = max(int(r.headers.get('Content-length', 0)), 
+                                        int(r.headers.get('Content-Length', 0)), 
+                                        int(r.headers.get('content-length', 0)))
+                if not self._total_size and not r.headers.get('Transfer-Encoding') == 'chunked':
+                    continue
+
+                logger.debug('Total size: ' + str(self._total_size))
+                if os.path.exists(self.path):
+                    if abs(os.stat(self.path).st_size - self._total_size) < 10 \
+                       and not self.force:
+                        logger.warning('File already downloaded. Skipping download.')
+                        return True
+                    else:
+                        os.remove(self.path)
+                return
+
+        if not self._total_size:
+            logger.error('Unable get the file.')
+            sys.exit(1)
+
 
     def download(self):
         # TODO: Clean this up
@@ -78,7 +89,6 @@ class BaseDownloader:
 
 
 def write_status(downloaded, total_size, start_time):
-
     elapsed_time = time.time()-start_time
     rate = (downloaded/1024)/elapsed_time if elapsed_time else 'x'
     downloaded = float(downloaded)/1048576
@@ -91,8 +101,13 @@ def write_status(downloaded, total_size, start_time):
     if downloaded >= total_size:
         eta = 'Done'
 
-    status = 'Downloaded: {0:.2f}MB/{1:.2f}MB, Rate: {2:.2f}KB/s, ETA: {3}'.format(
-        downloaded, total_size, rate, eta)
+    if total_size:
+        status = 'Downloaded: {0:.2f}MB/{1:.2f}MB, Rate: {2:.2f}KB/s, ETA: {3}'.format(
+            downloaded, total_size, rate, eta)
+
+    # Chunked transfer, unknown size?
+    else:
+        status = 'Downloaded: {0:.2f}MB, Rate: {1:.2f}KB/s'.format(downloaded, rate)
 
     sys.stdout.write("\r" + status + " "*5 + "\r")
     sys.stdout.flush()
