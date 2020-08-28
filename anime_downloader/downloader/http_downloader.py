@@ -124,7 +124,7 @@ class HTTPDownloader(BaseDownloader):
             sys.stdout.flush()
             r = requests.get(url, headers=headers, stream=True, verify=False)
             if not r.headers.get('content-length') or r.status_code not in [200, 206]:
-                return i
+                return 1 if not i else i
         return threads
 
 
