@@ -43,6 +43,7 @@ class HTTPDownloader(BaseDownloader):
         # sys.maxsize/10 is an arbitrary number I judged as safe. (even sys.maxsize/2 works)
 
         # This error doesn't affect downloading the actual file as the writing is done in chunks.
+
         maxsize = int(sys.maxsize/10)
         with open(self.path, "wb") as fp:
             logger.info('Preparing file.')
@@ -57,27 +58,33 @@ class HTTPDownloader(BaseDownloader):
                 fp.write(b'0' * self._total_size)
 
         number_of_threads = 8
+        
+        """
+        open(self.path, 'a').close()
+        for i in range(number_of_threads):
+            open(self.path+"_"+str(i), 'a').close()
+        """
         logger.info('Using {} thread{}.'.format(number_of_threads, (number_of_threads > 1) *'s'))
 
         # Creates an empty part file, this comes at the cost of not really knowing if a file is fully completed.
         # We could possibly add some end bytes on completion?
-        part = int(self._total_size) / number_of_threads
+        self.part = int(self._total_size) / number_of_threads
 
         logger.info('Starting download.')
         self.start_time = time.time()
-
         # To get reliable feedback from the threads it uses a dict containing all the info on the threads.
         # This allows maximum download and resumption if any of the threads fail halfway.
         self.thread_report = {}
         for i in range(number_of_threads):
             self.thread_report[i] = {}
-            start = math.ceil(part * i)
+            start = math.ceil(self.part * i)
 
             # Always downloads the whole thing
             if number_of_threads-1 == i:
                 end = self._total_size
             else:
-                end = math.floor(start + part)
+                end = math.floor(start + self.part)
+
             self.thread_report[i]['start'] = start
             self.thread_report[i]['end'] = end
             self.thread_report[i]['chunks'] = 0
@@ -103,6 +110,18 @@ class HTTPDownloader(BaseDownloader):
                 if t is main_thread:
                     continue
                 t.join()
+
+        """
+        # Collects all the files and places them in one.
+        with open(self.path, "wb") as file:
+            for i in range(number_of_threads):
+                with open(self.path+"_"+str(i), "rb") as part:
+                    part.seek(int(self.part*i))
+                    #var = part.tell()
+                    data = part.read()
+                    file.write(data)
+                #os.remove(self.path+"_"+str(i))
+        """
 
     def _non_range_download(self):
         url = self.source.stream_url
@@ -135,7 +154,7 @@ class HTTPDownloader(BaseDownloader):
             # into file.
             with open(self.path, "r+b") as fp:
                 fp.seek(start)
-                var = fp.tell()
+                #var = fp.tell()
                 for chunk in r.iter_content(chunk_size=self.chunksize):
                     if chunk:
                         fp.write(chunk)
