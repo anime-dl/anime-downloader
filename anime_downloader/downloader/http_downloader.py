@@ -57,7 +57,7 @@ class HTTPDownloader(BaseDownloader):
             else:
                 fp.write(b'0' * self._total_size)
 
-        number_of_threads = 8
+        number_of_threads = 8 if self._total_size else 1
         logger.info('Using {} thread{}.'.format(number_of_threads, (number_of_threads > 1) *'s'))
 
         # Creates an empty part file, this comes at the cost of not really knowing if a file is fully completed.
@@ -142,13 +142,16 @@ class HTTPDownloader(BaseDownloader):
 
 
     def thread_downloader(self, url, start, end, headers, number):
-        headers['Range'] = 'bytes=%d-%d' % (start, end) 
+        if end:
+            headers['Range'] = 'bytes=%d-%d' % (start, end)
+
         # specify the starting and ending of the file
         # request the specified part and get into variable
         with requests.get(url, headers=headers, stream=True, verify=False) as r:
-            if not (r.headers.get('content-length') or 
-                    r.headers.get('Content-length') or 
-                    r.headers.get('Content-Length')) or r.status_code not in [200, 206]:
+            if not (r.headers.get('content-length') or
+                    r.headers.get('Content-length') or
+                    r.headers.get('Content-Length') or
+                    r.headers.get('Transfer-Encoding') == 'chunked') or r.status_code not in [200, 206]:
                 return False
 
             with open(self.path, "r+b") as fp:
