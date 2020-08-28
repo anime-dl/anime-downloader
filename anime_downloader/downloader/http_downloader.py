@@ -99,7 +99,7 @@ class HTTPDownloader(BaseDownloader):
         # specify the starting and ending of the file
         # request the specified part and get into variable
 
-        with requests.get(url, headers=headers, stream=True) as r:
+        with requests.get(url, headers=headers, stream=True, verify=False) as r:
             # open the file and write the content of the html page
             # into file.
             with open(self.path, "r+b") as fp:
@@ -116,7 +116,7 @@ class HTTPDownloader(BaseDownloader):
             # Writes current thread to console.
             sys.stdout.write("\r" + f"Testing thread {i+1}." + " "*5 + "\r")
             sys.stdout.flush()
-            r = requests.get(url, headers=headers, stream=True, timeout=2)
+            r = requests.get(url, headers=headers, stream=True, verify=False)
             if not r.headers.get('content-length') or r.status_code not in [200, 206]:
                 return i
         return threads
