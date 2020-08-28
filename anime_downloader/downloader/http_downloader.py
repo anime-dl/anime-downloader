@@ -50,20 +50,17 @@ class HTTPDownloader(BaseDownloader):
         # We could possibly add some end bytes on completion?
         part = int(self._total_size) / number_of_threads
         #self.chunksize = part
-        fp = open(self.path, "wb")
-        logger.info('Preparing file.')
-        if self._total_size >= sys.maxsize:
-            max_writes = int(math.ceil(self._total_size/sys.maxsize))
-            for chunk in range(max_writes):
-                if chunk + 1 == max_writes:
-                    fp.write(b'0' * int(self._total_size%((max_writes-1)*sys.maxsize)))
-                else:
-                    fp.write(b'0' * sys.maxsize)
-        else:
-            fp.write(b'0' * self._total_size)
-
-        exit()
-        fp.close()
+        with open(self.path, "wb") as fp:
+            logger.info('Preparing file.')
+            if self._total_size >= sys.maxsize:
+                max_writes = int(math.ceil(self._total_size/sys.maxsize))
+                for chunk in range(max_writes):
+                    if chunk + 1 == max_writes:
+                        fp.write(b'0' * int(self._total_size%((max_writes-1)*sys.maxsize))+(max_writes-1)*10)
+                    else:
+                        fp.write(b'0' * sys.maxsize-10)
+            else:
+                fp.write(b'0' * self._total_size)
 
         self.start_time = time.time()
 
