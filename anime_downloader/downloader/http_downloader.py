@@ -58,45 +58,45 @@ class HTTPDownloader(BaseDownloader):
                 fp.write(b'0' * self._total_size)
 
         number_of_threads = 8
-        
-        """
-        open(self.path, 'a').close()
-        for i in range(number_of_threads):
-            open(self.path+"_"+str(i), 'a').close()
-        """
         logger.info('Using {} thread{}.'.format(number_of_threads, (number_of_threads > 1) *'s'))
 
         # Creates an empty part file, this comes at the cost of not really knowing if a file is fully completed.
         # We could possibly add some end bytes on completion?
-        self.part = int(self._total_size) / number_of_threads
+
+        self.part = math.floor(self._total_size / number_of_threads)
 
         logger.info('Starting download.')
         self.start_time = time.time()
         # To get reliable feedback from the threads it uses a dict containing all the info on the threads.
         # This allows maximum download and resumption if any of the threads fail halfway.
+
         self.thread_report = {}
+        # Prepares the threads with starting info.
         for i in range(number_of_threads):
             self.thread_report[i] = {}
-            start = math.ceil(self.part * i)
+            start = int(self.part*i)
 
-            # Always downloads the whole thing
-            if number_of_threads-1 == i:
+            # Ensures non-overlapping downloads.
+            if i + 1 == number_of_threads:
                 end = self._total_size
             else:
-                end = math.floor(start + self.part)
+                end = int(self.part*(i+1))-1
 
             self.thread_report[i]['start'] = start
             self.thread_report[i]['end'] = end
             self.thread_report[i]['chunks'] = 0
             self.thread_report[i]['done'] = False
 
-        # Arbitrary max tries.
-        for tries in range(number_of_threads*4):
+        # Arbitrary max tries, somewhat high number.
+        for attempt in range(number_of_threads*4):
             for i in range(number_of_threads):
+                # If the thread chunck is done it'll do nothing.
+                # May not be optimal, but better threading would be too complex.
                 if self.thread_report[i].get('done'):
                     continue
+
                 start = self.thread_report[i]['start']
-                # Start gets offset based on the previous thread downloaded chunks.
+                # Start gets offset based on the previous downloaded chunks.
                 start += (self.thread_report[i].get('chunks',0)*self.chunksize)
                 end = self.thread_report[i]['end']
 
@@ -113,6 +113,7 @@ class HTTPDownloader(BaseDownloader):
 
         """
         # Collects all the files and places them in one.
+        # Doesn't work correctly!!!
         with open(self.path, "wb") as file:
             for i in range(number_of_threads):
                 with open(self.path+"_"+str(i), "rb") as part:
@@ -150,11 +151,8 @@ class HTTPDownloader(BaseDownloader):
                     r.headers.get('Content-Length')) or r.status_code not in [200, 206]:
                 return False
 
-            # open the file and write the content of the html page
-            # into file.
             with open(self.path, "r+b") as fp:
                 fp.seek(start)
-                #var = fp.tell()
                 for chunk in r.iter_content(chunk_size=self.chunksize):
                     if chunk:
                         fp.write(chunk)
