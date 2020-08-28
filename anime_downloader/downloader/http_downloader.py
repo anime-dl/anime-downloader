@@ -3,6 +3,7 @@ import copy
 import logging
 import threading
 import time
+import sys
 
 from anime_downloader.downloader.base_downloader import BaseDownloader
 from anime_downloader import session
@@ -34,8 +35,9 @@ class HTTPDownloader(BaseDownloader):
 
         if self.source.referer:
             headers['Referer'] = self.source.referer
-        
-        logger.info('Testing threads.')
+
+        #logger.info('Testing threads.')
+
         # Default value.
         number_of_threads = 8
         # Just checks the site how many threads are allowed.
@@ -111,7 +113,10 @@ class HTTPDownloader(BaseDownloader):
 
     def test_download(self, url, headers, threads):
         for i in range(threads):
-            r = requests.get(url, headers=headers, stream=True)
+            # Writes current thread to console.
+            sys.stdout.write("\r" + f"Testing thread {i+1}." + " "*5 + "\r")
+            sys.stdout.flush()
+            r = requests.get(url, headers=headers, stream=True, timeout=2)
             if not r.headers.get('content-length') or r.status_code not in [200, 206]:
                 return i
         return threads
