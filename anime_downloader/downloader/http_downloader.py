@@ -47,7 +47,7 @@ class HTTPDownloader(BaseDownloader):
         # Creates an empty part file, this comes at the cost of not really knowing if a file is fully completed.
         # We could possibly add some end bytes on completion?
         part = int(self._total_size) / number_of_threads
-        #self.chunksize = part
+
         fp = open(self.path, "wb")
         fp.write(b'0' * self._total_size)
         fp.close()
@@ -56,7 +56,12 @@ class HTTPDownloader(BaseDownloader):
 
         for i in range(number_of_threads):
             start = int(part * i)
-            end = start + part
+
+            # Always downloads the whole thing
+            if number_of_threads-1 == i:
+                end = self._total_size
+            else:
+                end = int(start + part)
 
             t = threading.Thread(target=self.thread_downloader,
                 kwargs={'url': url, 'start':start, 'end': end, 'headers':headers})
@@ -91,6 +96,7 @@ class HTTPDownloader(BaseDownloader):
         headers['Range'] = 'bytes=%d-%d' % (start, end) 
         # specify the starting and ending of the file
         # request the specified part and get into variable
+
         with requests.get(url, headers=headers, stream=True) as r:
             # open the file and write the content of the html page
             # into file.
