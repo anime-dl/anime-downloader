@@ -65,6 +65,9 @@ class HTTPDownloader(BaseDownloader):
 
         self.part = math.floor(self._total_size / number_of_threads)
 
+        if not self._total_size:
+            logger.info('Unknown file size.')
+
         logger.info('Starting download.')
         self.start_time = time.time()
         # To get reliable feedback from the threads it uses a dict containing all the info on the threads.
