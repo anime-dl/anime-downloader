@@ -56,13 +56,7 @@ class HTTPDownloader(BaseDownloader):
             else:
                 fp.write(b'0' * self._total_size)
 
-        logger.info('Testing threads.')
-        # Default value.
         number_of_threads = 8
-        # Just checks the site how many threads are allowed.
-        # animeout only allows 1 max for example.
-        # This can probably be threaded too, but getting return values from threads isn't very easy.
-        number_of_threads = self.test_download(url, headers, number_of_threads)
         logger.info('Using {} thread{}.'.format(number_of_threads, (number_of_threads > 1) *'s'))
 
         # Creates an empty part file, this comes at the cost of not really knowing if a file is fully completed.
@@ -72,7 +66,11 @@ class HTTPDownloader(BaseDownloader):
         logger.info('Starting download.')
         self.start_time = time.time()
 
+        # To get reliable feedback from the threads it uses a dict containing all the info on the threads.
+        # This allows maximum download and resumption if any of the threads fail halfway.
+        self.thread_report = {}
         for i in range(number_of_threads):
+            self.thread_report[i] = {}
             start = math.ceil(part * i)
 
             # Always downloads the whole thing
@@ -80,18 +78,31 @@ class HTTPDownloader(BaseDownloader):
                 end = self._total_size
             else:
                 end = math.floor(start + part)
+            self.thread_report[i]['start'] = start
+            self.thread_report[i]['end'] = end
+            self.thread_report[i]['chunks'] = 0
+            self.thread_report[i]['done'] = False
 
-            t = threading.Thread(target=self.thread_downloader,
-                kwargs={'url': url, 'start':start, 'end': end, 'headers':headers})
-            t.setDaemon(True)
-            t.start()
+        # Arbitrary max tries.
+        for tries in range(number_of_threads*4):
+            for i in range(number_of_threads):
+                if self.thread_report[i].get('done'):
+                    continue
+                start = self.thread_report[i]['start']
+                # Start gets offset based on the previous thread downloaded chunks.
+                start += (self.thread_report[i].get('chunks',0)*self.chunksize)
+                end = self.thread_report[i]['end']
 
-        main_thread = threading.current_thread()
-        for t in threading.enumerate():
-            if t is main_thread:
-                continue
-            t.join()
+                t = threading.Thread(target=self.thread_downloader,
+                    kwargs={'url': url, 'start':start, 'end': end, 'headers':headers, 'number':i})
+                t.setDaemon(True)
+                t.start()
 
+            main_thread = threading.current_thread()
+            for t in threading.enumerate():
+                if t is main_thread:
+                    continue
+                t.join()
 
     def _non_range_download(self):
         url = self.source.stream_url
@@ -110,11 +121,16 @@ class HTTPDownloader(BaseDownloader):
                         self.report_chunk_downloaded()
 
 
-    def thread_downloader(self, url, start, end, headers):
+    def thread_downloader(self, url, start, end, headers, number):
         headers['Range'] = 'bytes=%d-%d' % (start, end) 
         # specify the starting and ending of the file
         # request the specified part and get into variable
         with requests.get(url, headers=headers, stream=True, verify=False) as r:
+            if not (r.headers.get('content-length') or 
+                    r.headers.get('Content-length') or 
+                    r.headers.get('Content-Length')) or r.status_code not in [200, 206]:
+                return False
+
             # open the file and write the content of the html page
             # into file.
             with open(self.path, "r+b") as fp:
@@ -123,17 +139,10 @@ class HTTPDownloader(BaseDownloader):
                 for chunk in r.iter_content(chunk_size=self.chunksize):
                     if chunk:
                         fp.write(chunk)
+                        self.thread_report[number]['chunks'] += 1
                         self.report_chunk_downloaded()
 
-
-    def test_download(self, url, headers, threads):
-        for i in range(threads):
-            sys.stdout.write("\r" + f"Testing thread {i+1}." + " "*5 + "\r")
-            sys.stdout.flush()
-            r = requests.get(url, headers=headers, stream=True, verify=False)
-            if not r.headers.get('content-length') or r.status_code not in [200, 206]:
-                return 1 if not i else i
-        return threads
+            self.thread_report[number]['done'] = True
 
 
 def set_range(start=0, end='', headers=None):
