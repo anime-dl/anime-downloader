@@ -3,6 +3,7 @@ import copy
 import logging
 import threading
 import time
+import math
 import sys
 
 from anime_downloader.downloader.base_downloader import BaseDownloader
@@ -35,9 +36,8 @@ class HTTPDownloader(BaseDownloader):
 
         if self.source.referer:
             headers['Referer'] = self.source.referer
-
-        #logger.info('Testing threads.')
-
+        
+        logger.info('Testing threads.')
         # Default value.
         number_of_threads = 8
         # Just checks the site how many threads are allowed.
@@ -49,21 +49,32 @@ class HTTPDownloader(BaseDownloader):
         # Creates an empty part file, this comes at the cost of not really knowing if a file is fully completed.
         # We could possibly add some end bytes on completion?
         part = int(self._total_size) / number_of_threads
-
+        #self.chunksize = part
         fp = open(self.path, "wb")
-        fp.write(b'0' * self._total_size)
+        logger.info('Preparing file.')
+        if self._total_size >= sys.maxsize:
+            max_writes = int(math.ceil(self._total_size/sys.maxsize))
+            for chunk in range(max_writes):
+                if chunk + 1 == max_writes:
+                    fp.write(b'0' * int(self._total_size%((max_writes-1)*sys.maxsize)))
+                else:
+                    fp.write(b'0' * sys.maxsize)
+        else:
+            fp.write(b'0' * self._total_size)
+
+        exit()
         fp.close()
 
         self.start_time = time.time()
 
         for i in range(number_of_threads):
-            start = int(part * i)
+            start = math.ceil(part * i)
 
             # Always downloads the whole thing
             if number_of_threads-1 == i:
                 end = self._total_size
             else:
-                end = int(start + part)
+                end = math.floor(start + part)
 
             t = threading.Thread(target=self.thread_downloader,
                 kwargs={'url': url, 'start':start, 'end': end, 'headers':headers})
@@ -98,7 +109,6 @@ class HTTPDownloader(BaseDownloader):
         headers['Range'] = 'bytes=%d-%d' % (start, end) 
         # specify the starting and ending of the file
         # request the specified part and get into variable
-
         with requests.get(url, headers=headers, stream=True, verify=False) as r:
             # open the file and write the content of the html page
             # into file.
@@ -113,7 +123,6 @@ class HTTPDownloader(BaseDownloader):
 
     def test_download(self, url, headers, threads):
         for i in range(threads):
-            # Writes current thread to console.
             sys.stdout.write("\r" + f"Testing thread {i+1}." + " "*5 + "\r")
             sys.stdout.flush()
             r = requests.get(url, headers=headers, stream=True, verify=False)
