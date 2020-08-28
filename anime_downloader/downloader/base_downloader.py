@@ -36,7 +36,7 @@ class BaseDownloader:
             headers['referer'] = self.source.referer
 
         # using session downloads the whole file, essentially freezing the program.
-        with requests.get(self.source.stream_url, headers=headers, stream=True) as r:
+        with requests.get(self.source.stream_url, headers=headers, stream=True, verify=False) as r:
             self._total_size = int(r.headers['Content-length'])
             logger.debug('total size: ' + str(self._total_size))
             if os.path.exists(self.path):
