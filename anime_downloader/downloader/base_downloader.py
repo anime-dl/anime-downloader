@@ -99,6 +99,7 @@ def write_status(downloaded, total_size, start_time):
     seconds = '0' * (round(eta%60) < 10) + str(round(eta%60))
     eta = f'{minutes}:{seconds}'
     if downloaded >= total_size:
+        downloaded = total_size
         eta = 'Done'
 
     if total_size:
