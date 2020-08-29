@@ -15,7 +15,6 @@ import coloredlogs
 import pickle
 import tempfile
 import requests
-import base64
 from tabulate import tabulate
 from uuid import uuid4
 from secrets import choice
@@ -274,13 +273,19 @@ def format_command(cmd, episode, file_format, speed_limit, path):
         '{idm}'  : 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4'
     }
 
+    # Allows for passing the user agent with self.headers in the site.
+    # Some sites block downloads using a different user agent.
+    if episode.headers.get('user-agent'):
+        useragent = episode.headers['user-agent']
+    else:
+        useragent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36'
 
     rep_dict = {
         'stream_url': episode.source().stream_url if not episode.url.startswith('magnet:?xt=urn:btih:') else episode.url,
         'file_format': file_format,
         'download_dir': os.path.abspath(path),
         'referer': episode.source().referer,
-        'useragent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36',
+        'useragent': f'"{useragent}"',
         'speed_limit': speed_limit
     }
 
@@ -392,15 +397,10 @@ def get_hcaptcha_cookies(url):
 def deobfuscate_packed_js(packedjs):
     return eval_in_node('eval=console.log; ' + packedjs)
 
+
 def eval_in_node(js: str):
-    js = base64.b64encode(js.encode('utf-8')).decode()
-    sandboxedScript ="""
-                    const {VM} = require('vm2');
-                    const js = Buffer.from('%s','base64').toString()
-                    console.log(new VM().run(js))
-                    """%js
-    node_path = path.join(path.dirname(__file__), 'node_modules')
-    output = subprocess.check_output(['node', '-e', sandboxedScript], env={'NODE_PATH': node_path})
+    # TODO: This should be in util
+    output = subprocess.check_output(['node', '-e', js])
     return output.decode('utf-8')
 
 def open_magnet(magnet):

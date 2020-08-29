@@ -16,7 +16,6 @@ session.stream = True
 session.verify = False
 logger = logging.getLogger(__name__)
 
-
 class HTTPDownloader(BaseDownloader):
     def _download(self):
         logger.warning('Using internal downloader which might be slow. Use aria2 for full bandwidth.')
