@@ -150,11 +150,16 @@ class HTTPDownloader(BaseDownloader):
         # specify the starting and ending of the file
         # request the specified part and get into variable
         with session.get(url, headers=headers) as r:
+            try:
+                r.raise_for_status()
+            except:
+                return
+
             if not (r.headers.get('content-length') or
                     r.headers.get('Content-length') or
                     r.headers.get('Content-Length') or
-                    r.headers.get('Transfer-Encoding') == 'chunked') or r.status_code not in [200, 206]:
-                return False
+                    r.headers.get('Transfer-Encoding') == 'chunked') or 'text/html' in r.headers.get('Content-Type',''):
+                return
 
             for chunk in r.iter_content(chunk_size=self.chunksize):
                 if chunk:
