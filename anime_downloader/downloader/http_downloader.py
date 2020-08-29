@@ -1,10 +1,10 @@
 import os
 import copy
 import logging
-import threading
 import time
 import math
 import sys
+import json
 
 from anime_downloader.downloader.base_downloader import BaseDownloader
 import requests
@@ -44,27 +44,8 @@ class HTTPDownloader(BaseDownloader):
         # sys.maxsize/10 is an arbitrary number I judged as safe. (even sys.maxsize/2 works)
 
         # This error doesn't affect downloading the actual file as the writing is done in chunks.
-        maxsize = int(sys.maxsize/10)
-        with open(self.path, "wb") as fp:
-            logger.info('Preparing file.')
-            if self._total_size >= maxsize:
-                threads = math.floor(self._total_size/maxsize)
-                for i in range(threads):
-                    if i+1 == threads:
-                        fp.write(b'0'*(self._total_size-(maxsize*(i+1)-maxsize*i)*i))
-                    else:
-                        fp.write(b'0'*(maxsize*(i+1) - maxsize*i))
-            else:
-                fp.write(b'0' * self._total_size)
 
-        number_of_threads = 8
-        number_of_threads = number_of_threads if self._total_size > self.chunksize*number_of_threads else 1
-        logger.info('Using {} thread{}.'.format(number_of_threads, (number_of_threads > 1) *'s'))
-
-        # Creates an empty part file, this comes at the cost of not really knowing if a file is fully completed.
-        # We could possibly add some end bytes on completion?
-
-        self.part = math.floor(self._total_size / number_of_threads)
+        self.number_of_threads = 8
 
         if not self._total_size:
             logger.info('Unknown file size.')
@@ -80,30 +61,75 @@ class HTTPDownloader(BaseDownloader):
         pool = mp.Pool(mp.cpu_count() + 2)
 
         self.thread_report = manager.dict()
+
+        self.number_of_threads = self.number_of_threads if self._total_size > self.chunksize*self.number_of_threads else 1
+
+        partfile = "".join(os.path.abspath(self.path).split('.')[:-1])+'.part'
+        if os.path.isfile(partfile):
+            logger.info('Resuming download.')
+            with open(partfile,"r") as metadata:
+                metadata = json.load(metadata)
+                self.number_of_threads = metadata.get('threads', self.number_of_threads)
+                self.chunksize = metadata.get('chunksize', self.chunksize)
+                for i in metadata:
+                    if i.isnumeric() and type(metadata[i]) is dict:
+                        if type(metadata[i].get('chunks')) is int:
+                            print(metadata[i].get('chunks'))
+                            self.thread_report[int(i)] = manager.dict()
+                            #self.thread_report[int(i)]['start'] = self.chunksize*metadata[i]['chunks']
+                            self.downloaded += self.chunksize*metadata[i]['chunks']
+                            self.thread_report[int(i)]['chunks'] = metadata[i]['chunks']
+
+
+        if not os.path.isfile(self.path):
+            print('CREATING FILE')
+            maxsize = int(sys.maxsize/10)
+            with open(self.path, "wb") as fp:
+                logger.info('Preparing file.')
+                if self._total_size >= maxsize:
+                    threads = math.floor(self._total_size/maxsize)
+                    for i in range(threads):
+                        if i+1 == threads:
+                            fp.write(b'0'*(self._total_size-(maxsize*(i+1)-maxsize*i)*i))
+                        else:
+                            fp.write(b'0'*(maxsize*(i+1) - maxsize*i))
+                else:
+                    fp.write(b'0' * self._total_size)
+
+        logger.info('Using {} thread{}.'.format(self.number_of_threads, (self.number_of_threads > 1) *'s'))
+        self.part = math.floor(self._total_size / self.number_of_threads)
+
         # Prepares the threads with starting info.
-        for i in range(number_of_threads):
-            self.thread_report[i] = manager.dict()
-            start = int(self.part*i)
+        for i in range(self.number_of_threads):
+            if not self.thread_report.get(i):
+                self.thread_report[i] = manager.dict()
+
+            if not self.thread_report[i].get('start'):
+                print('START')
+                start = int(self.part*i)
+                self.thread_report[i]['start'] = start
+            
+            if not self.thread_report[i].get('chunks'):
+                self.thread_report[i]['chunks'] = 0
 
             # Ensures non-overlapping downloads.
-            if i + 1 == number_of_threads:
+            if i + 1 == self.number_of_threads:
                 end = self._total_size
             else:
                 end = int(self.part*(i+1))-1
 
-            self.thread_report[i]['start'] = start
             self.thread_report[i]['end'] = end
-            self.thread_report[i]['chunks'] = 0
             self.thread_report[i]['done'] = False
 
+        print(self.thread_report[0])
 
         jobs = []
         # Starts a consumer which writes to the file.
         consumer = pool.apply_async(self.consumer, (q,))
 
         # Arbitrary max tries, somewhat high number.
-        for attempt in range(number_of_threads*2):
-            for i in range(number_of_threads):
+        for attempt in range(self.number_of_threads*2):
+            for i in range(self.number_of_threads):
                 # If the thread chunck is done it'll do nothing.
                 # May not be optimal, but better threading would be too complex.
                 if self.thread_report[i].get('done'):
@@ -120,7 +146,6 @@ class HTTPDownloader(BaseDownloader):
 
             for job in jobs:
                 job.get()
-
 
         # Kill the consumer
         q.put('kill')
@@ -171,25 +196,48 @@ class HTTPDownloader(BaseDownloader):
 
 
     def consumer(self, q):
+        # ANY ERRORS HERE ARE SILENT.
+
         """Listen to consumer queue and write file using offset
         :param q: Consumer queue
-        :param name: file name
         """
-        f = open(self.path, 'w+b')
-        
+        f = open(self.path, 'wb')
+        partfile = "".join(os.path.abspath(self.path).split('.')[:-1])+'.part'
+        metadata = open(partfile, "w+")
+        metadata.write('{}')
+
+        meta = {}
+        meta['threads'] = self.number_of_threads
+        meta['chunksize'] = self.chunksize
+
+        for i in range(self.number_of_threads):
+            meta[i] = {}
+            meta[i]['chunks'] = 0
+
         while 1:
             m = q.get()
             if m == 'kill':
                 break
+            start, chunk, number = m
+            offset = start+(self.thread_report[number]['chunks']*self.chunksize)
+            if offset == 0:
+                print('NO OFFSET!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
 
-            offset, chunk, number = m
-            f.seek(offset+(self.thread_report[number]['chunks']*self.chunksize))
+            f.seek(offset)
             f.write(chunk)
+
+            meta[number]['chunks'] += 1
+            metadata.seek(0)
+            json.dump(meta, metadata)
+            metadata.truncate()
+
             self.thread_report[number]['chunks'] += 1
             self.report_chunk_downloaded()
+
             f.flush()
 
         f.close()
+        #metadata.close()
         return self.thread_report
 
 
