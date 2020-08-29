@@ -113,6 +113,8 @@ class HTTPDownloader(BaseDownloader):
                 # Start gets offset based on the previous downloaded chunks.
                 start += (self.thread_report[i].get('chunks',0)*self.chunksize)
                 end = self.thread_report[i]['end']
+                # Just in case, creating tons of threads at once seems to cause issues.
+                time.sleep(0.2)
                 job = pool.apply_async(self.thread_downloader, (url, start, end, headers, i, q,))
                 jobs.append(job)
 
