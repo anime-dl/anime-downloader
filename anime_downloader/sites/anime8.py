@@ -27,6 +27,11 @@ class Anime8(Anime, sitename = 'anime8'):
 
 
     def _scrape_episodes(self):
+        """
+        Because of how the website is built, 
+        the only way to access the episodes is by going to the last episode available
+        thats why im making two requests here.
+        """
         link = helpers.soupify(helpers.get(self.url).text).select_one('div#mv-info > a')['href']
         soup = helpers.soupify(helpers.get(link).text)
         eps = soup.select('a[class*="btn-eps first-ep last-ep"]')
