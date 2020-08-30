@@ -74,15 +74,13 @@ class HTTPDownloader(BaseDownloader):
                 for i in metadata:
                     if i.isnumeric() and type(metadata[i]) is dict:
                         if type(metadata[i].get('chunks')) is int:
-                            print(metadata[i].get('chunks'))
                             self.thread_report[int(i)] = manager.dict()
                             #self.thread_report[int(i)]['start'] = self.chunksize*metadata[i]['chunks']
                             self.downloaded += self.chunksize*metadata[i]['chunks']
                             self.thread_report[int(i)]['chunks'] = metadata[i]['chunks']
-
+                            self.thread_report[int(i)]['len'] = metadata[i]['len']
 
         if not os.path.isfile(self.path):
-            print('CREATING FILE')
             maxsize = int(sys.maxsize/10)
             with open(self.path, "wb") as fp:
                 logger.info('Preparing file.')
@@ -105,7 +103,6 @@ class HTTPDownloader(BaseDownloader):
                 self.thread_report[i] = manager.dict()
 
             if not self.thread_report[i].get('start'):
-                print('START')
                 start = int(self.part*i)
                 self.thread_report[i]['start'] = start
             
@@ -117,11 +114,10 @@ class HTTPDownloader(BaseDownloader):
                 end = self._total_size
             else:
                 end = int(self.part*(i+1))-1
-
+            
+            self.thread_report[i]['len'] = 0
             self.thread_report[i]['end'] = end
             self.thread_report[i]['done'] = False
-
-        print(self.thread_report[0])
 
         jobs = []
         # Starts a consumer which writes to the file.
@@ -201,7 +197,7 @@ class HTTPDownloader(BaseDownloader):
         """Listen to consumer queue and write file using offset
         :param q: Consumer queue
         """
-        f = open(self.path, 'wb')
+        f = open(self.path, 'r+b')
         partfile = "".join(os.path.abspath(self.path).split('.')[:-1])+'.part'
         metadata = open(partfile, "w+")
         metadata.write('{}')
@@ -212,21 +208,22 @@ class HTTPDownloader(BaseDownloader):
 
         for i in range(self.number_of_threads):
             meta[i] = {}
-            meta[i]['chunks'] = 0
+            meta[i]['chunks'] = self.thread_report[i]['chunks']
+            meta[i]['len'] = 0
 
         while 1:
             m = q.get()
             if m == 'kill':
                 break
             start, chunk, number = m
-            offset = start+(self.thread_report[number]['chunks']*self.chunksize)
-            if offset == 0:
-                print('NO OFFSET!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+            offset = start+(meta[number]['len'])
 
-            f.seek(offset)
-            f.write(chunk)
-
-            meta[number]['chunks'] += 1
+            if chunk:
+                f.seek(offset)
+                f.write(chunk)
+                meta[number]['len'] += len(chunk)
+                self.thread_report[number]['len'] += len(chunk)
+                meta[number]['chunks'] += 1
             metadata.seek(0)
             json.dump(meta, metadata)
             metadata.truncate()
@@ -237,7 +234,7 @@ class HTTPDownloader(BaseDownloader):
             f.flush()
 
         f.close()
-        #metadata.close()
+        metadata.close()
         return self.thread_report
 
 
