@@ -26,144 +26,160 @@ class HTTPDownloader(BaseDownloader):
 
 
     def _ranged_download(self):
-        http_chunksize = self.range_size
-        range_start = 0
-        range_end = http_chunksize
-
         url = self.source.stream_url
         headers = self.source.headers
+
+        # Defaults headers if not specified.
         if 'user-agent' not in headers:
             headers['user-agent'] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101Firefox/56.0",
 
         if self.source.referer:
             headers['Referer'] = self.source.referer
 
-        # This whole block is just a very elaborate way of writing a file full of zeroes in a safe way.
-        # On 32-bit simply doing     fp.write(b'0' * self._total_size)    on a 3gb file throws errors.
-        # Doing it in chunks however works.
-        # sys.maxsize/10 is an arbitrary number I judged as safe. (even sys.maxsize/2 works)
-
-        # This error doesn't affect downloading the actual file as the writing is done in chunks.
-
+        # Can be defined in config.
+        # NOTE: Dont assume it'll always be this number.
+        # It'll revert to 1 thread under certain circumstances.
         self.number_of_threads = 8
 
+        # Some downloads can have an unknown size. 
+        # This makes the downloader use 1 thread for safety.
         if not self._total_size:
-            logger.info('Unknown file size.')
+            logger.info('Unknown file size. Using 1 thread.')
 
-        logger.info('Starting download.')
-        self.start_time = time.time()
-        # To get reliable feedback from the threads it uses a dict containing all the info on the threads.
-        # This allows maximum download and resumption if any of the threads fail halfway.
 
         # Init a process manager
         manager = mp.Manager()
         q = manager.Queue()
         pool = mp.Pool(mp.cpu_count() + 2)
 
-        self.thread_report = manager.dict()
-
+        self.thread_report = manager.list()
+        # This makes number_of_threads 1 if the file is small enough or unknown.
         self.number_of_threads = self.number_of_threads if self._total_size > self.chunksize*self.number_of_threads else 1
 
+        # If downloaded file is file.mp4 the partfile will be file.part
+        # NOTE: This may cause issues the the file path includes a "." and not the file.
         partfile = "".join(os.path.abspath(self.path).split('.')[:-1])+'.part'
+        # If there's already a partfile it tries to read it to continue the download.
+        # The amout of if statements is to make it safe even if the partfile is corrupted/from another program.
         if os.path.isfile(partfile):
-            logger.info('Resuming download.')
             with open(partfile,"r") as metadata:
-                metadata = json.load(metadata)
-                self.number_of_threads = metadata.get('threads', self.number_of_threads)
-                self.chunksize = metadata.get('chunksize', self.chunksize)
-                for i in metadata:
-                    if i.isnumeric() and type(metadata[i]) is dict:
-                        if type(metadata[i].get('chunks')) is int:
-                            self.thread_report[int(i)] = manager.dict()
-                            #self.thread_report[int(i)]['start'] = self.chunksize*metadata[i]['chunks']
-                            self.downloaded += self.chunksize*metadata[i]['chunks']
-                            self.thread_report[int(i)]['chunks'] = metadata[i]['chunks']
-                            self.thread_report[int(i)]['len'] = metadata[i]['len']
+                try:
+                    metadata = json.load(metadata)
+                    # Changes the number of threads according to the last download.
+                    # This may be unwanted behavior in some cases, but hard to fix.
+                    self.number_of_threads = metadata.get('threads', self.number_of_threads)
+                    # Chunksize is also changed to the last download.
+                    self.chunksize = metadata.get('chunksize', self.chunksize)
+                    for i in metadata:
+                        if i.isnumeric() and type(metadata[i]) is dict:
+                            if type(metadata[i].get('len')) is int:
+                                # Creates a "thread safe" dict.
+                                if not len(self.thread_report) > int(i):
+                                    self.thread_report.append(manager.dict())
 
+                                # Adds to the downloaded (to make the progress show up properly).
+                                self.downloaded += metadata[i]['len']
+                                self.thread_report[int(i)]['len'] = metadata[i]['len']
+                                #logger.info('Resuming download.')
+
+                except json.JSONDecodeError:
+                    logger.error('Failed reading from partfile.')
+
+        # Initializes a completely empty file for overwriting.
         if not os.path.isfile(self.path):
-            maxsize = int(sys.maxsize/10)
-            with open(self.path, "wb") as fp:
-                logger.info('Preparing file.')
-                if self._total_size >= maxsize:
-                    threads = math.floor(self._total_size/maxsize)
-                    for i in range(threads):
-                        if i+1 == threads:
-                            fp.write(b'0'*(self._total_size-(maxsize*(i+1)-maxsize*i)*i))
-                        else:
-                            fp.write(b'0'*(maxsize*(i+1) - maxsize*i))
-                else:
-                    fp.write(b'0' * self._total_size)
+            with open(self.path, "wb") as file:
+                # HACK!
+                # By seeking and then writing you write a file full of zeroes without any issues.
+                # On a 32 bit install doing self._total_size*b'0' can lead to overflowerrors.
+                file.seek(self._total_size-1)
+                file.write(b'0')
 
+        # By this time self.number_of_threads should not be changed.
         logger.info('Using {} thread{}.'.format(self.number_of_threads, (self.number_of_threads > 1) *'s'))
+        # Divides the download into parts, used for offset in writing the file.
         self.part = math.floor(self._total_size / self.number_of_threads)
 
+        # To get reliable feedback from the threads it uses a dict containing the thread states.
+        # This allows maximum download and resumption if any of the threads fail halfway.
         # Prepares the threads with starting info.
+
+        """
+        self.thread_report is a dict accesible from all threads used transfer info between them.
+        This CAN be removed in favor of reading from the partfile when necessary which can reduce code 
+        complexity at the cost of flexibility.
+
+        self.thread_report has a layout of:
+        [{'chunks': 676, 'len': 1687552, 'start': 0, 'end': 23609903, 'done': False},
+         {'chunks': 387, 'len': 671744, 'start': 23609904, 'end': 47219807, 'done': False}]
+
+        Where each element of the list is a dict containing info on the thread.
+        'chunks' is the downloaded chunks, used for resuming downloads.
+        'len' is the actual length of all the chunks combined used for offsets when writing.
+        NOTE: len != self.chunksize*chunks as a chunk can for example be 9 byes when the chunksize is 8.
+        This 'issue' is unavoidable as far as I know.
+        'start' is where the download should start, used for requests.
+        'end' is where the download should end, also used for requests.
+        'done' is a bool if the download is complete.
+        """
         for i in range(self.number_of_threads):
-            if not self.thread_report.get(i):
-                self.thread_report[i] = manager.dict()
+            if not len(self.thread_report) > i:
+                self.thread_report.append(manager.dict())
 
             if not self.thread_report[i].get('start'):
-                start = int(self.part*i)
-                self.thread_report[i]['start'] = start
-            
-            if not self.thread_report[i].get('chunks'):
-                self.thread_report[i]['chunks'] = 0
+                self.thread_report[i]['start'] = int(self.part*i)
+
+            if not self.thread_report[i].get('len'):
+                self.thread_report[i]['len'] = 0
 
             # Ensures non-overlapping downloads.
+            # If it's the last thread the end will always be self._total_size
             if i + 1 == self.number_of_threads:
                 end = self._total_size
             else:
                 end = int(self.part*(i+1))-1
-            
-            self.thread_report[i]['len'] = 0
+
             self.thread_report[i]['end'] = end
             self.thread_report[i]['done'] = False
 
         jobs = []
+
+        logger.info('Starting download.')
+        # NOTE: starting the time MUST be done before starting the consumer or else it'll error.
+        # The consumer uses the start time to print download progress and will (silently) error without it.
+        self.start_time = time.time()
+
         # Starts a consumer which writes to the file.
+        # Writing to the same file from multiple places isn't very reliable.
         consumer = pool.apply_async(self.consumer, (q,))
 
         # Arbitrary max tries, somewhat high number.
+        # This resumes the download if one of the threads fail (for example due to cap on connections).
         for attempt in range(self.number_of_threads*2):
             for i in range(self.number_of_threads):
-                # If the thread chunck is done it'll do nothing.
-                # May not be optimal, but better threading would be too complex.
+                # If the thread is done it'll do nothing.
+                # Eventually ending in only one thread downloading.
+                # Always having max threads downloading would be too complex.
                 if self.thread_report[i].get('done'):
                     continue
 
-                start = self.thread_report[i]['start']
                 # Start gets offset based on the previous downloaded chunks.
-                start += (self.thread_report[i].get('chunks',0)*self.chunksize)
+                start = self.thread_report[i]['start']
+                start += self.thread_report[i]['len']
+
                 end = self.thread_report[i]['end']
                 # Just in case, creating tons of threads at once seems to cause issues.
                 time.sleep(0.2)
+                # Starts the thread downloader.
                 job = pool.apply_async(self.thread_downloader, (url, start, end, headers, i, q,))
                 jobs.append(job)
 
             for job in jobs:
                 job.get()
 
-        # Kill the consumer
+        # Kill the consumer.
         q.put('kill')
         pool.close()
         pool.join()
-
-
-    def _non_range_download(self):
-        url = self.source.stream_url
-        headers = {
-            'user-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101Firefox/56.0",
-        }
-        if self.source.referer:
-            headers['Referer'] = self.source.referer
-        r = session.get(url, headers=headers)
-
-        if r.status_code == 200:
-            with open(self.path, 'wb') as f:
-                for chunk in r.iter_content(chunk_size=self.chunksize):
-                    if chunk:
-                        f.write(chunk)
-                        self.report_chunk_downloaded()
 
 
     def thread_downloader(self, url, start, end, headers, number, q):
@@ -171,13 +187,12 @@ class HTTPDownloader(BaseDownloader):
             headers['Range'] = 'bytes=%d-%d' % (start, end)
 
         # specify the starting and ending of the file
-        # request the specified part and get into variable
         with session.get(url, headers=headers) as r:
             try:
                 r.raise_for_status()
             except:
                 return
-
+            # The name of the content length is inconsistent.
             if not (r.headers.get('content-length') or
                     r.headers.get('Content-length') or
                     r.headers.get('Content-Length') or
@@ -186,8 +201,10 @@ class HTTPDownloader(BaseDownloader):
 
             for chunk in r.iter_content(chunk_size=self.chunksize):
                 if chunk:
+                    # Queues up chunk for writing.
                     q.put((start, chunk, number))
 
+            # Moving this to consumer will cause errors.
             self.thread_report[number]['done'] = True
 
 
@@ -208,34 +225,50 @@ class HTTPDownloader(BaseDownloader):
 
         for i in range(self.number_of_threads):
             meta[i] = {}
-            meta[i]['chunks'] = self.thread_report[i]['chunks']
             meta[i]['len'] = 0
-
-        while 1:
-            m = q.get()
-            if m == 'kill':
+        
+        while True:
+            message = q.get()
+            if message is 'kill':
                 break
-            start, chunk, number = m
-            offset = start+(meta[number]['len'])
 
+            # Unpacks the message from q.put()
+            start, chunk, number = message
             if chunk:
+                # Where to write in the file.
+                offset = start+(meta[number]['len'])
                 f.seek(offset)
                 f.write(chunk)
                 meta[number]['len'] += len(chunk)
                 self.thread_report[number]['len'] += len(chunk)
-                meta[number]['chunks'] += 1
-            metadata.seek(0)
-            json.dump(meta, metadata)
-            metadata.truncate()
+                metadata.seek(0)
+                json.dump(meta, metadata)
+                metadata.truncate()
+                self.report_chunk_downloaded(len(chunk))
+                
 
-            self.thread_report[number]['chunks'] += 1
-            self.report_chunk_downloaded()
-
-            f.flush()
+                f.flush()
 
         f.close()
         metadata.close()
         return self.thread_report
+
+
+    def _non_range_download(self):
+        url = self.source.stream_url
+        headers = {
+            'user-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101Firefox/56.0",
+        }
+        if self.source.referer:
+            headers['Referer'] = self.source.referer
+        r = session.get(url, headers=headers)
+
+        if r.status_code == 200:
+            with open(self.path, 'wb') as f:
+                for chunk in r.iter_content(chunk_size=self.chunksize):
+                    if chunk:
+                        f.write(chunk)
+                        self.report_chunk_downloaded(self.chunksize)
 
 
 def set_range(start=0, end='', headers=None):
