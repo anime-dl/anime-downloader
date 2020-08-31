@@ -189,7 +189,7 @@ class _Config:
         else:
             # Prevents reading the config from threads.
             # Reading the config from multiple threads at the same times can cause errors.
-            if current_process().name != 'MainProcess':
+            if current_process().name == 'MainProcess':
                 self._CONFIG = self._read_config()
             else:
                 self._CONFIG = {}
