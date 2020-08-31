@@ -4,6 +4,8 @@ import errno
 import json
 from anime_downloader import util
 
+from multiprocessing import current_process
+
 APP_NAME = 'anime downloader'
 APP_DIR = click.get_app_dir(APP_NAME)
 DEFAULT_CONFIG = {
@@ -185,8 +187,12 @@ class _Config:
             self._write_default_config()
             self._CONFIG = DEFAULT_CONFIG
         else:
-            self._CONFIG = self._read_config()
-
+            # Prevents reading the config from threads.
+            # Reading the config from multiple threads at the same times can cause errors.
+            if current_process().name != 'MainProcess':
+                self._CONFIG = self._read_config()
+            else:
+                self._CONFIG = {}
             def update(gkey, to_be, from_dict):
                 if gkey not in to_be:
                     to_be[gkey] = {}
