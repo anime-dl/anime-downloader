@@ -5,7 +5,7 @@ import time
 import math
 import sys
 import json
-
+import signal
 from anime_downloader.downloader.base_downloader import BaseDownloader
 import requests
 import requests_cache
@@ -147,41 +147,48 @@ class HTTPDownloader(BaseDownloader):
 
         # Starts a consumer which writes to the file.
         # Writing to the same file from multiple places isn't very reliable.
-        consumer = pool.apply_async(self.consumer, (q,))
+        try:
+            consumer = pool.apply_async(self.consumer, (q,))
 
-        # Arbitrary max tries, somewhat high number.
-        # This resumes the download if one of the threads fail (for example due to cap on connections).
-        for attempt in range(self.number_of_threads*2):
-            for i in range(self.number_of_threads):
-                # If the thread is done it'll do nothing.
-                # Eventually ending in only one thread downloading.
-                # Always having max threads downloading would be too complex.
-                if self.thread_report[i].get('done'):
-                    continue
+            # Arbitrary max tries, somewhat high number.
+            # This resumes the download if one of the threads fail (for example due to cap on connections).
+            for attempt in range(self.number_of_threads*2):
+                for i in range(self.number_of_threads):
+                    # If the thread is done it'll do nothing.
+                    # Eventually ending in only one thread downloading.
+                    # Always having max threads downloading would be too complex.
+                    if self.thread_report[i].get('done'):
+                        continue
 
-                # Start gets offset based on the previous downloaded chunks.
-                start = self.thread_report[i]['start']
-                start += self.thread_report[i]['len']
+                    # Start gets offset based on the previous downloaded chunks.
+                    start = self.thread_report[i]['start']
+                    start += self.thread_report[i]['len']
 
-                end = self.thread_report[i]['end']
-                # Just in case, creating tons of threads at once seems to cause issues.
-                time.sleep(0.2)
-                # Starts the thread downloader.
-                job = pool.apply_async(self.thread_downloader, (url, start, end, headers, i, q,))
-                jobs.append(job)
+                    end = self.thread_report[i]['end']
+                    # Just in case, creating tons of threads at once seems to cause issues.
+                    time.sleep(0.2)
+                    # Starts the thread downloader.
+                    job = pool.apply_async(self.thread_downloader, (url, start, end, headers, i, q,))
+                    jobs.append(job)
 
-            for job in jobs:
-                job.get()
+                for job in jobs:
+                    job.get()
 
-        # Kill the consumer.
-        q.put('kill')
-        pool.close()
-        pool.join()
-        # Cleans up the partfile on completed download.
-        if os.path.isfile(partfile):
-            os.remove(partfile)
+            # Kill the consumer.
+            q.put('kill')
+            pool.close()
+            pool.join()
+            # Cleans up the partfile on completed download.
+            if os.path.isfile(partfile):
+                os.remove(partfile)
+
+        except KeyboardInterrupt:
+            pool.terminate()
+            pool.join()
 
     def thread_downloader(self, url, start, end, headers, number, q):
+        # Ignores keyboardinterrupt, letting the main thread handle that.
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
         if end:
             headers['Range'] = 'bytes=%d-%d' % (start, end)
 
@@ -208,6 +215,8 @@ class HTTPDownloader(BaseDownloader):
 
 
     def consumer(self, q):
+        # Ignores keyboardinterrupt, letting the main thread handle that.
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
         # ANY ERRORS HERE ARE SILENT.
         # If there's an error in this function nothing will happen besides that the 
         # download progress won't go up.
