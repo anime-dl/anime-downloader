@@ -52,8 +52,10 @@ class BaseDownloader:
                         logger.warning('File already downloaded. Skipping download.')
                         return True
                     else:
+                        # NOTE: Cannot resume downloads with unknown size.
                         if not abs(os.stat(self.path).st_size - self._total_size) < 10:
-                            logger.error('Total size mismatch, the file already downloaded comes from a different source.')
+                            logger.error('Total size mismatch ({} and {}), the file already downloaded probably comes from a different source.'.format(
+                                        self._total_size, abs(os.stat(self.path).st_size)))
                             sys.exit(1)
 
 
