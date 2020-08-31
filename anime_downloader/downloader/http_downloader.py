@@ -62,7 +62,6 @@ class HTTPDownloader(BaseDownloader):
                     metadata = json.load(metadata)
                     for i in metadata:
                         if i.isnumeric() and type(metadata[i]) is int:
-                            # Creates a "thread safe" dict.
                             if not len(self.thread_report) > int(i):
                                 self.thread_report.append({})
 
@@ -78,7 +77,6 @@ class HTTPDownloader(BaseDownloader):
 
                 except json.JSONDecodeError:
                     logger.error('Failed reading from partfile.')
-
 
         # Initializes a completely empty file for overwriting.
         if not os.path.isfile(self.path):
@@ -166,17 +164,20 @@ class HTTPDownloader(BaseDownloader):
 
                     # Start gets offset based on the previous downloaded chunks.
                     start = self.thread_report[i]['start']
-                    start += self.thread_report[i]['len']
+                    # Passing the start and offset separate (instead of adding them) is a must to 
+                    # make the internal offset in the consumer consistent.
+                    offset = self.thread_report[i]['len']
 
                     end = self.thread_report[i]['end']
                     # Starts the thread downloader.
-                    job = pool.apply_async(self.thread_downloader, (url, start, end, headers, i, q,))
+                    job = pool.apply_async(self.thread_downloader, (url, start, end, offset, headers, i, q,))
                     jobs.append(job)
 
                 for job in jobs:
                     job.get()
 
             # Kill the consumer.
+            logger.info('Exiting')
             q.put('kill')
             pool.close()
             pool.join()
@@ -191,91 +192,83 @@ class HTTPDownloader(BaseDownloader):
             sys.exit()
 
 
-    def thread_downloader(self, url, start, end, headers, number, q):
-        try:
-            if end:
-                headers['Range'] = 'bytes=%d-%d' % (start, end)
+    def thread_downloader(self, url, start, end, offset, headers, number, q):
+        if end:
+            headers['Range'] = 'bytes=%d-%d' % (start+offset, end)
 
-            # specify the starting and ending of the file
-            with session.get(url, headers=headers) as r:
-                try:
-                    r.raise_for_status()
-                except:
-                    return
-                # The name of the content length is inconsistent.
-                if not (r.headers.get('content-length') or
-                        r.headers.get('Content-length') or
-                        r.headers.get('Content-Length') or
-                        r.headers.get('Transfer-Encoding') == 'chunked') or 'text/html' in r.headers.get('Content-Type',''):
-                    return
+        # specify the starting and ending of the file
+        with session.get(url, headers=headers) as r:
+            try:
+                r.raise_for_status()
+            except:
+                return
+            # The name of the content length is inconsistent.
+            if not (r.headers.get('content-length') or
+                    r.headers.get('Content-length') or
+                    r.headers.get('Content-Length') or
+                    r.headers.get('Transfer-Encoding') == 'chunked') or 'text/html' in r.headers.get('Content-Type',''):
+                return
 
-                for chunk in r.iter_content(chunk_size=self.chunksize):
-                    if chunk:
-                        # Queues up chunk for writing.
-                        q.put((start, chunk, number))
+            for chunk in r.iter_content(chunk_size=self.chunksize):
+                if chunk:
+                    # Queues up chunk for writing.
+                    q.put((start, chunk, number))
 
-                # Moving this to consumer will cause errors.
-                self.thread_report[number]['done'] = True
-        except KeyboardInterrupt:
-            pass
+            # Moving this to consumer will cause errors.
+            self.thread_report[number]['done'] = True
 
 
     def consumer(self, q):
-        try:
-            # ANY ERRORS HERE ARE SILENT.
-            # If there's an error in this function nothing will happen besides that the 
-            # download progress won't go up.
+        # ANY ERRORS HERE ARE SILENT.
+        # If there's an error in this function nothing will happen besides that the 
+        # download progress won't go up.
 
-            """Listen to consumer queue and write file using offset
-            :param q: Consumer queue
-            """
-            # Opening the file as r+b is absolutely essential to continuing downloads without corrupting them.
-            f = open(self.path, 'r+b')
+        """Listen to consumer queue and write file using offset
+        :param q: Consumer queue
+        """
+        
+        # Opening the file as r+b is absolutely essential to continuing downloads without corrupting them.
+        with open(self.path, 'r+b') as f:
             partfile = os.path.splitext(self.path)[0]+'.part'
-            metadata = open(partfile, "w+")
-            metadata.write('{}')
+            with open(partfile, "w+") as metadata:
+                metadata.write('{}')
 
-            # Meta is a duplicate of self.thread_report, but only includes len
-            # You might think that It'd be better to just write from self.thread_report
-            # but that causes a severe bottleneck (and errors it seems) compared to keeping an internal state.
-            meta = {}
-            # Meta looks like {0:1234, 1:100, 2:0}
-            # where the key is the thread number and the value is length written.
-            for i in range(self.number_of_threads):
-                meta[i] = self.thread_report[i]['len']
+                # Meta is a duplicate of self.thread_report, but only includes len
+                # You might think that It'd be better to just write from self.thread_report
+                # but that causes a severe bottleneck (and errors it seems) compared to keeping an internal state.
+                meta = {}
+                # Meta looks like {0:1234, 1:100, 2:0}
+                # where the key is the thread number and the value is length written.
+                for i in range(self.number_of_threads):
+                    meta[i] = self.thread_report[i]['len']
 
-            while True:
-                message = q.get()
-                if message == 'kill':
-                    break
+                while True:
+                    message = q.get()
+                    if message == 'kill':
+                        break
 
-                # Unpacks the message from q.put()
-                start, chunk, number = message
-                if chunk:
-                    # Where to write in the file.
-                    offset = start+(meta[number])
-                    f.seek(offset)
-                    f.write(chunk)
+                    # Unpacks the message from q.put()
+                    start, chunk, number = message
+                    if chunk:
+                        # Where to write in the file.
+                        offset = start+(meta[number])
+                        f.seek(offset)
+                        f.write(chunk)
 
-                    meta[number] += len(chunk)
-                    self.thread_report[number]['len'] += len(chunk)
+                        meta[number] += len(chunk)
+                        self.thread_report[number]['len'] += len(chunk)
 
-                    # Writes to partfile every single chunk.
-                    # Doesn't seem to slow down the downloader.
-                    metadata.seek(0)
-                    json.dump(meta, metadata)
-                    metadata.truncate()
-                    metadata.flush()
+                        # Writes to partfile every single chunk.
+                        # Doesn't seem to slow down the downloader.
+                        metadata.seek(0)
+                        json.dump(meta, metadata)
+                        metadata.truncate()
+                        metadata.flush()
 
-                    # Reports the the chunk is actually downloaded, causing an uptick in the progress bar.
-                    self.report_chunk_downloaded(len(chunk))
-                    # Makes sure the data is written directly.
-                    f.flush()
-            f.close()
-            metadata.close()
-        except KeyboardInterrupt:
-            f.close()
-            metadata.close()
+                        # Reports the the chunk is actually downloaded, causing an uptick in the progress bar.
+                        self.report_chunk_downloaded(len(chunk))
+                        # Makes sure the data is written directly.
+                        f.flush()
 
 
     def _non_range_download(self):
