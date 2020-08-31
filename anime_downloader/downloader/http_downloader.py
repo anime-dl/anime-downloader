@@ -46,7 +46,6 @@ class HTTPDownloader(BaseDownloader):
         if not self._total_size:
             logger.info('Unknown file size. Using 1 thread.')
 
-
         # Init a process manager
         manager = mp.Manager()
         q = manager.Queue()
@@ -65,22 +64,21 @@ class HTTPDownloader(BaseDownloader):
             with open(partfile,"r") as metadata:
                 try:
                     metadata = json.load(metadata)
+                    for i in metadata:
+                        if i.isnumeric() and type(metadata[i]) is int:
+                            # Creates a "thread safe" dict.
+                            if not len(self.thread_report) > int(i):
+                                self.thread_report.append(manager.dict())
+
+                            # Adds to the downloaded (to make the progress show up properly).
+                            self.downloaded += metadata[i]
+                            self.thread_report[int(i)]['len'] = metadata[i]
+
                     # Changes the number of threads according to the last download.
                     # This may be unwanted behavior in some cases, but hard to fix.
-                    self.number_of_threads = metadata.get('threads', self.number_of_threads)
-                    # Chunksize is also changed to the last download.
-                    self.chunksize = metadata.get('chunksize', self.chunksize)
-                    for i in metadata:
-                        if i.isnumeric() and type(metadata[i]) is dict:
-                            if type(metadata[i].get('len')) is int:
-                                # Creates a "thread safe" dict.
-                                if not len(self.thread_report) > int(i):
-                                    self.thread_report.append(manager.dict())
-
-                                # Adds to the downloaded (to make the progress show up properly).
-                                self.downloaded += metadata[i]['len']
-                                self.thread_report[int(i)]['len'] = metadata[i]['len']
-                                #logger.info('Resuming download.')
+                    if len(self.thread_report) > 0:
+                        logger.info('Resuming download.')
+                        self.number_of_threads = len(self.thread_report)
 
                 except json.JSONDecodeError:
                     logger.error('Failed reading from partfile.')
@@ -109,11 +107,10 @@ class HTTPDownloader(BaseDownloader):
         complexity at the cost of flexibility.
 
         self.thread_report has a layout of:
-        [{'chunks': 676, 'len': 1687552, 'start': 0, 'end': 23609903, 'done': False},
-         {'chunks': 387, 'len': 671744, 'start': 23609904, 'end': 47219807, 'done': False}]
+        [{'len': 1687552, 'start': 0, 'end': 23609903, 'done': False},
+         {'len': 671744, 'start': 23609904, 'end': 47219807, 'done': False}]
 
         Where each element of the list is a dict containing info on the thread.
-        'chunks' is the downloaded chunks, used for resuming downloads.
         'len' is the actual length of all the chunks combined used for offsets when writing.
         NOTE: len != self.chunksize*chunks as a chunk can for example be 9 byes when the chunksize is 8.
         This 'issue' is unavoidable as far as I know.
@@ -180,7 +177,9 @@ class HTTPDownloader(BaseDownloader):
         q.put('kill')
         pool.close()
         pool.join()
-
+        # Cleans up the partfile on completed download.
+        if os.path.isfile(partfile):
+            os.remove(partfile)
 
     def thread_downloader(self, url, start, end, headers, number, q):
         if end:
@@ -210,23 +209,27 @@ class HTTPDownloader(BaseDownloader):
 
     def consumer(self, q):
         # ANY ERRORS HERE ARE SILENT.
+        # If there's an error in this function nothing will happen besides that the 
+        # download progress won't go up.
 
         """Listen to consumer queue and write file using offset
         :param q: Consumer queue
         """
+        # Opening the file as r+b is absolutely essential to continuing downloads without corrupting them.
         f = open(self.path, 'r+b')
         partfile = "".join(os.path.abspath(self.path).split('.')[:-1])+'.part'
         metadata = open(partfile, "w+")
         metadata.write('{}')
 
+        # Meta is a duplicate of self.thread_report, but only includes len
+        # You might think that It'd be better to just write from self.thread_report
+        # but that causes a severe bottleneck (and errors it seems) compared to keeping an internal state.
         meta = {}
-        meta['threads'] = self.number_of_threads
-        meta['chunksize'] = self.chunksize
-
+        # Meta looks like {0:1234, 1:100, 2:0}
+        # where the key is the thread number and the value is length written.
         for i in range(self.number_of_threads):
-            meta[i] = {}
-            meta[i]['len'] = 0
-        
+            meta[i] = 0
+
         while True:
             message = q.get()
             if message is 'kill':
@@ -236,22 +239,23 @@ class HTTPDownloader(BaseDownloader):
             start, chunk, number = message
             if chunk:
                 # Where to write in the file.
-                offset = start+(meta[number]['len'])
+                offset = start+(meta[number])
                 f.seek(offset)
                 f.write(chunk)
-                meta[number]['len'] += len(chunk)
+                meta[number] += len(chunk)
                 self.thread_report[number]['len'] += len(chunk)
+                # Writes to partfile every single chunk.
+                # Doesn't seem to slow down the downloader.
                 metadata.seek(0)
                 json.dump(meta, metadata)
                 metadata.truncate()
+                # Reports the the chunk is actually downloaded, causing an uptick in the progress bar.
                 self.report_chunk_downloaded(len(chunk))
-                
-
+                # Makes sure the data is written directly.
                 f.flush()
 
         f.close()
         metadata.close()
-        return self.thread_report
 
 
     def _non_range_download(self):
@@ -268,7 +272,7 @@ class HTTPDownloader(BaseDownloader):
                 for chunk in r.iter_content(chunk_size=self.chunksize):
                     if chunk:
                         f.write(chunk)
-                        self.report_chunk_downloaded(self.chunksize)
+                        self.report_chunk_downloaded(len(chunk))
 
 
 def set_range(start=0, end='', headers=None):
