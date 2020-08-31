@@ -192,7 +192,7 @@ class _Config:
             if current_process().name == 'MainProcess':
                 self._CONFIG = self._read_config()
             else:
-                self._CONFIG = {}
+                self._CONFIG = DEFAULT_CONFIG
             def update(gkey, to_be, from_dict):
                 if gkey not in to_be:
                     to_be[gkey] = {}
@@ -220,7 +220,8 @@ class _Config:
         return self._CONFIG[attr]
 
     def write(self):
-        self._write_config(self._CONFIG)
+        if current_process().name == 'MainProcess':
+            self._write_config(self._CONFIG)
 
     def _write_config(self, config_dict):
         with open(self.CONFIG_FILE, 'w') as configfile:
