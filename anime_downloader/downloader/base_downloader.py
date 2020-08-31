@@ -15,7 +15,7 @@ class BaseDownloader:
         self._total_size = None
         self.source = source
         self.path = path
-
+        self.resumed = 0
         # these should be included in a options dict, maybe
         self.force = force
         self.range_size = range_size
@@ -43,7 +43,6 @@ class BaseDownloader:
                 if not self._total_size and not r.headers.get('Transfer-Encoding') == 'chunked':
                     continue
 
-                logger.debug('Total size: ' + str(self._total_size))
 
                 partfile = os.path.splitext(self.path)[0]+'.part'
                 if os.path.exists(self.path):
@@ -57,6 +56,7 @@ class BaseDownloader:
                             logger.error('Total size mismatch ({} and {}), the file already downloaded probably comes from a different source.'.format(
                                         self._total_size, abs(os.stat(self.path).st_size)))
                             sys.exit(1)
+        logger.debug('Total size: ' + str(self._total_size))
 
 
     def download(self):
@@ -86,13 +86,13 @@ class BaseDownloader:
 
     def report_chunk_downloaded(self, chunksize):
         self.downloaded += chunksize
-        self.callback(self.downloaded, self._total_size, self.start_time)
+        self.callback(self.downloaded, self._total_size, self.start_time, self.resumed)
 
 
-def write_status(downloaded, total_size, start_time):
+def write_status(downloaded, total_size, start_time, resumed):
     elapsed_time = time.time()-start_time
     rate = (downloaded/1024)/elapsed_time if elapsed_time else 'x'
-    downloaded = float(downloaded)/1048576
+    downloaded = float(downloaded+resumed)/1048576
     total_size = float(total_size)/1048576
 
     eta = ((total_size-downloaded)*1024)/rate
