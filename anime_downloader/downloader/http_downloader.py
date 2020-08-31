@@ -6,6 +6,7 @@ import math
 import sys
 import json
 import signal
+import re
 from anime_downloader.downloader.base_downloader import BaseDownloader
 import requests
 import requests_cache
@@ -46,17 +47,12 @@ class HTTPDownloader(BaseDownloader):
         if not self._total_size:
             logger.info('Unknown file size. Using 1 thread.')
 
-        # Init a process manager
-        manager = mp.Manager()
-        q = manager.Queue()
-        pool = mp.Pool(mp.cpu_count() + 2)
 
-        self.thread_report = manager.list()
         # This makes number_of_threads 1 if the file is small enough or unknown.
         self.number_of_threads = self.number_of_threads if self._total_size > self.chunksize*self.number_of_threads else 1
+        self.thread_report = []
 
         # If downloaded file is file.mp4 the partfile will be file.part
-        # NOTE: This may cause issues the the file path includes a "." and not the file.
         partfile = os.path.splitext(self.path)[0]+'.part'
         # If there's already a partfile it tries to read it to continue the download.
         # The amout of if statements is to make it safe even if the partfile is corrupted/from another program.
@@ -68,10 +64,10 @@ class HTTPDownloader(BaseDownloader):
                         if i.isnumeric() and type(metadata[i]) is int:
                             # Creates a "thread safe" dict.
                             if not len(self.thread_report) > int(i):
-                                self.thread_report.append(manager.dict())
+                                self.thread_report.append({})
 
                             # Adds to the downloaded (to make the progress show up properly).
-                            self.downloaded += metadata[i]
+                            self.resumed += metadata[i]
                             self.thread_report[int(i)]['len'] = metadata[i]
 
                     # Changes the number of threads according to the last download.
@@ -82,6 +78,7 @@ class HTTPDownloader(BaseDownloader):
 
                 except json.JSONDecodeError:
                     logger.error('Failed reading from partfile.')
+
 
         # Initializes a completely empty file for overwriting.
         if not os.path.isfile(self.path):
@@ -96,6 +93,13 @@ class HTTPDownloader(BaseDownloader):
         logger.info('Using {} thread{}.'.format(self.number_of_threads, (self.number_of_threads > 1) *'s'))
         # Divides the download into parts, used for offset in writing the file.
         self.part = math.floor(self._total_size / self.number_of_threads)
+
+        # Init a process manager
+        manager = mp.Manager()
+        q = manager.Queue()
+        pool = mp.Pool(self.number_of_threads + 2, init_worker)
+
+        self.thread_report = manager.list(self.thread_report)
 
         # To get reliable feedback from the threads it uses a dict containing the thread states.
         # This allows maximum download and resumption if any of the threads fail halfway.
@@ -121,6 +125,8 @@ class HTTPDownloader(BaseDownloader):
         for i in range(self.number_of_threads):
             if not len(self.thread_report) > i:
                 self.thread_report.append(manager.dict())
+            else:
+                self.thread_report[i] = manager.dict(self.thread_report[i])
 
             if not self.thread_report[i].get('start'):
                 self.thread_report[i]['start'] = int(self.part*i)
@@ -149,6 +155,7 @@ class HTTPDownloader(BaseDownloader):
         # Writing to the same file from multiple places isn't very reliable.
         try:
             consumer = pool.apply_async(self.consumer, (q,))
+            #time.sleep(3)
 
             # Arbitrary max tries, somewhat high number.
             # This resumes the download if one of the threads fail (for example due to cap on connections).
@@ -166,14 +173,12 @@ class HTTPDownloader(BaseDownloader):
 
                     end = self.thread_report[i]['end']
                     # Just in case, creating tons of threads at once seems to cause issues.
-                    time.sleep(0.2)
+                    #       time.sleep(3)
                     # Starts the thread downloader.
                     job = pool.apply_async(self.thread_downloader, (url, start, end, headers, i, q,))
                     jobs.append(job)
-
                 for job in jobs:
                     job.get()
-
             # Kill the consumer.
             q.put('kill')
             pool.close()
@@ -183,6 +188,7 @@ class HTTPDownloader(BaseDownloader):
                 os.remove(partfile)
 
         except KeyboardInterrupt:
+            print('')
             pool.terminate()
             pool.join()
             sys.exit()
@@ -190,7 +196,7 @@ class HTTPDownloader(BaseDownloader):
 
     def thread_downloader(self, url, start, end, headers, number, q):
         # Ignores keyboardinterrupt, letting the main thread handle that.
-        signal.signal(signal.SIGINT, signal.SIG_IGN)
+        #signal.signal(signal.SIGINT, signal.SIG_IGN)
         if end:
             headers['Range'] = 'bytes=%d-%d' % (start, end)
 
@@ -218,7 +224,7 @@ class HTTPDownloader(BaseDownloader):
 
     def consumer(self, q):
         # Ignores keyboardinterrupt, letting the main thread handle that.
-        signal.signal(signal.SIGINT, signal.SIG_IGN)
+        #signal.signal(signal.SIGINT, signal.SIG_IGN)
         # ANY ERRORS HERE ARE SILENT.
         # If there's an error in this function nothing will happen besides that the 
         # download progress won't go up.
@@ -239,7 +245,7 @@ class HTTPDownloader(BaseDownloader):
         # Meta looks like {0:1234, 1:100, 2:0}
         # where the key is the thread number and the value is length written.
         for i in range(self.number_of_threads):
-            meta[i] = 0
+            meta[i] = self.thread_report[i]['len']
 
         while True:
             message = q.get()
@@ -262,6 +268,7 @@ class HTTPDownloader(BaseDownloader):
                 metadata.seek(0)
                 json.dump(meta, metadata)
                 metadata.truncate()
+                metadata.flush()
 
                 # Reports the the chunk is actually downloaded, causing an uptick in the progress bar.
                 self.report_chunk_downloaded(len(chunk))
@@ -270,7 +277,6 @@ class HTTPDownloader(BaseDownloader):
 
         f.close()
         metadata.close()
-
 
     def _non_range_download(self):
         url = self.source.stream_url
@@ -296,3 +302,10 @@ def set_range(start=0, end='', headers=None):
 
     headers['Range'] = 'bytes={}-{}'.format(start, end)
     return headers
+
+
+def init_worker():
+    #worker_number = int(re.search(r'\d+', mp.current_process().name).group())
+    #time_between_worker = 1
+    #time.sleep(time_between_worker*worker_number)
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
