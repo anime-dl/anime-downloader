@@ -186,6 +186,7 @@ class HTTPDownloader(BaseDownloader):
             pool.terminate()
             pool.join()
 
+
     def thread_downloader(self, url, start, end, headers, number, q):
         # Ignores keyboardinterrupt, letting the main thread handle that.
         signal.signal(signal.SIGINT, signal.SIG_IGN)
