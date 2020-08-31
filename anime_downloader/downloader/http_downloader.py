@@ -57,7 +57,7 @@ class HTTPDownloader(BaseDownloader):
 
         # If downloaded file is file.mp4 the partfile will be file.part
         # NOTE: This may cause issues the the file path includes a "." and not the file.
-        partfile = "".join(os.path.abspath(self.path).split('.')[:-1])+'.part'
+        partfile = os.path.splitext(self.path)[0]+'.part'
         # If there's already a partfile it tries to read it to continue the download.
         # The amout of if statements is to make it safe even if the partfile is corrupted/from another program.
         if os.path.isfile(partfile):
@@ -217,7 +217,7 @@ class HTTPDownloader(BaseDownloader):
         """
         # Opening the file as r+b is absolutely essential to continuing downloads without corrupting them.
         f = open(self.path, 'r+b')
-        partfile = "".join(os.path.abspath(self.path).split('.')[:-1])+'.part'
+        partfile = os.path.splitext(self.path)[0]+'.part'
         metadata = open(partfile, "w+")
         metadata.write('{}')
 
@@ -232,7 +232,7 @@ class HTTPDownloader(BaseDownloader):
 
         while True:
             message = q.get()
-            if message is 'kill':
+            if message == 'kill':
                 break
 
             # Unpacks the message from q.put()
@@ -242,13 +242,16 @@ class HTTPDownloader(BaseDownloader):
                 offset = start+(meta[number])
                 f.seek(offset)
                 f.write(chunk)
+
                 meta[number] += len(chunk)
                 self.thread_report[number]['len'] += len(chunk)
+
                 # Writes to partfile every single chunk.
                 # Doesn't seem to slow down the downloader.
                 metadata.seek(0)
                 json.dump(meta, metadata)
                 metadata.truncate()
+
                 # Reports the the chunk is actually downloaded, causing an uptick in the progress bar.
                 self.report_chunk_downloaded(len(chunk))
                 # Makes sure the data is written directly.
