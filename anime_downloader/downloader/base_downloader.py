@@ -4,8 +4,6 @@ import logging
 import sys
 
 from anime_downloader import util
-from anime_downloader import session
-
 import requests
 
 logger = logging.getLogger(__name__)
@@ -35,6 +33,8 @@ class BaseDownloader:
         if self.source.referer:
             headers['referer'] = self.source.referer
 
+        # I couldn't figure out how to retry based on headers (comment below) with httpadapter.
+        # if not self._total_size and not r.headers.get('Transfer-Encoding') == 'chunked':
         for i in range(5):
             with requests.get(self.source.stream_url, headers=headers, stream=True, verify=False) as r:
                 self._total_size = max(int(r.headers.get('Content-length', 0)), 
@@ -44,19 +44,17 @@ class BaseDownloader:
                     continue
 
                 logger.debug('Total size: ' + str(self._total_size))
+
+                partfile = os.path.splitext(self.path)[0]+'.part'
                 if os.path.exists(self.path):
                     if abs(os.stat(self.path).st_size - self._total_size) < 10 \
-                       and not self.force:
+                       and not self.force and not os.path.isfile(partfile):
                         logger.warning('File already downloaded. Skipping download.')
-                        #return True
+                        return True
                     else:
-                        pass
-                        #os.remove(self.path)
-                return
-
-        if not self._total_size:
-            logger.error('Unable get the file.')
-            sys.exit(1)
+                        if not abs(os.stat(self.path).st_size - self._total_size) < 10:
+                            logger.error('Total size mismatch, the file already downloaded comes from a different source.')
+                            sys.exit(1)
 
 
     def download(self):
@@ -84,8 +82,8 @@ class BaseDownloader:
     def post_process(self):
         pass
 
-    def report_chunk_downloaded(self):
-        self.downloaded += self.chunksize
+    def report_chunk_downloaded(self, chunksize):
+        self.downloaded += chunksize
         self.callback(self.downloaded, self._total_size, self.start_time)
 
 
