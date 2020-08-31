@@ -6,7 +6,7 @@ import math
 import sys
 import json
 import signal
-import re
+
 from anime_downloader.downloader.base_downloader import BaseDownloader
 import requests
 import requests_cache
@@ -16,6 +16,7 @@ session = requests.Session()
 session.stream = True
 session.verify = False
 logger = logging.getLogger(__name__)
+
 
 class HTTPDownloader(BaseDownloader):
     def _download(self):
@@ -46,7 +47,6 @@ class HTTPDownloader(BaseDownloader):
         # This makes the downloader use 1 thread for safety.
         if not self._total_size:
             logger.info('Unknown file size. Using 1 thread.')
-
 
         # This makes number_of_threads 1 if the file is small enough or unknown.
         self.number_of_threads = self.number_of_threads if self._total_size > self.chunksize*self.number_of_threads else 1
@@ -144,8 +144,6 @@ class HTTPDownloader(BaseDownloader):
             self.thread_report[i]['end'] = end
             self.thread_report[i]['done'] = False
 
-        jobs = []
-
         logger.info('Starting download.')
         # NOTE: starting the time MUST be done before starting the consumer or else it'll error.
         # The consumer uses the start time to print download progress and will (silently) error without it.
@@ -155,11 +153,10 @@ class HTTPDownloader(BaseDownloader):
         # Writing to the same file from multiple places isn't very reliable.
         try:
             consumer = pool.apply_async(self.consumer, (q,))
-            #time.sleep(3)
-
             # Arbitrary max tries, somewhat high number.
             # This resumes the download if one of the threads fail (for example due to cap on connections).
             for attempt in range(self.number_of_threads*2):
+                jobs = []
                 for i in range(self.number_of_threads):
                     # If the thread is done it'll do nothing.
                     # Eventually ending in only one thread downloading.
@@ -172,13 +169,13 @@ class HTTPDownloader(BaseDownloader):
                     start += self.thread_report[i]['len']
 
                     end = self.thread_report[i]['end']
-                    # Just in case, creating tons of threads at once seems to cause issues.
-                    #       time.sleep(3)
                     # Starts the thread downloader.
                     job = pool.apply_async(self.thread_downloader, (url, start, end, headers, i, q,))
                     jobs.append(job)
+
                 for job in jobs:
                     job.get()
+
             # Kill the consumer.
             q.put('kill')
             pool.close()
@@ -195,8 +192,6 @@ class HTTPDownloader(BaseDownloader):
 
 
     def thread_downloader(self, url, start, end, headers, number, q):
-        # Ignores keyboardinterrupt, letting the main thread handle that.
-        #signal.signal(signal.SIGINT, signal.SIG_IGN)
         if end:
             headers['Range'] = 'bytes=%d-%d' % (start, end)
 
@@ -223,8 +218,6 @@ class HTTPDownloader(BaseDownloader):
 
 
     def consumer(self, q):
-        # Ignores keyboardinterrupt, letting the main thread handle that.
-        #signal.signal(signal.SIGINT, signal.SIG_IGN)
         # ANY ERRORS HERE ARE SILENT.
         # If there's an error in this function nothing will happen besides that the 
         # download progress won't go up.
@@ -278,6 +271,7 @@ class HTTPDownloader(BaseDownloader):
         f.close()
         metadata.close()
 
+
     def _non_range_download(self):
         url = self.source.stream_url
         headers = {
@@ -305,7 +299,5 @@ def set_range(start=0, end='', headers=None):
 
 
 def init_worker():
-    #worker_number = int(re.search(r'\d+', mp.current_process().name).group())
-    #time_between_worker = 1
-    #time.sleep(time_between_worker*worker_number)
+    # Ignores SIGINT and lets the main thread handle keyboardinterrupts.
     signal.signal(signal.SIGINT, signal.SIG_IGN)
