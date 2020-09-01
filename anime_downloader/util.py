@@ -275,6 +275,8 @@ def format_command(cmd, episode, file_format, speed_limit, path):
 
     file_name, file_ext = os.path.splitext(episode.source().stream_url)
     file_ext = file_ext.split('?', 1)[0]
+    if file_ext == "":
+        file_ext = ".mp4"
 
     # Allows for passing the user agent with self.headers in the site.
     # Some sites block downloads using a different user agent.
