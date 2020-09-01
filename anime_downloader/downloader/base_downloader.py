@@ -23,6 +23,7 @@ class BaseDownloader:
         if callback is None:
             callback = write_status
         self.callback = callback
+        self.thread_report = []
 
     def check_if_exists(self):
         # Added Referer Header as kwik needd it.
