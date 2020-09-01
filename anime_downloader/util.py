@@ -275,7 +275,7 @@ def format_command(cmd, episode, file_format, speed_limit, path):
 
     file_name, file_ext = os.path.splitext(episode.source().stream_url)
     file_ext = file_ext.split('?', 1)[0]
-    if file_ext == "":
+    if file_ext == ".php" or file_ext == "" or file_ext == "html":
         file_ext = ".mp4"
 
     # Allows for passing the user agent with self.headers in the site.
