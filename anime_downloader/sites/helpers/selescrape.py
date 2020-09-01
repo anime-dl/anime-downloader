@@ -247,6 +247,7 @@ def request(request_type, url, **kwargs): #Headers not yet supported , headers={
             driver.close()
             logger.error(f'There was a problem getting the page: {url}. \
             See the screenshot for more info:\t{get_data_dir()}/screenshot.png')
+            exit()
 
 
 
