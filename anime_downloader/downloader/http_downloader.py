@@ -85,6 +85,7 @@ class HTTPDownloader(BaseDownloader):
         'done' is a bool if the download is complete.
         """
         for i in range(self.number_of_threads):
+            # For communicating it's absolutely essential that the dicts in the lists are also managed.
             if not len(self.thread_report) > i:
                 self.thread_report.append(manager.dict())
             else:
@@ -156,29 +157,32 @@ class HTTPDownloader(BaseDownloader):
 
 
     def thread_downloader(self, url, start, end, offset, headers, number, q):
-        if end:
+        # This try/except is critical for ctrl + c to work on windows.
+        try:
             headers['Range'] = 'bytes=%d-%d' % (start+offset, end)
 
-        # specify the starting and ending of the file
-        with session.get(url, headers=headers) as r:
-            try:
-                r.raise_for_status()
-            except:
-                return
-            # The name of the content length is inconsistent.
-            if not (r.headers.get('content-length') or
-                    r.headers.get('Content-length') or
-                    r.headers.get('Content-Length') or
-                    r.headers.get('Transfer-Encoding') == 'chunked') or 'text/html' in r.headers.get('Content-Type',''):
-                return
+            # specify the starting and ending of the file
+            with session.get(url, headers=headers) as r:
+                try:
+                    r.raise_for_status()
+                except:
+                    return
+                # The name of the content length is inconsistent.
+                if not (r.headers.get('content-length') or
+                        r.headers.get('Content-length') or
+                        r.headers.get('Content-Length') or
+                        r.headers.get('Transfer-Encoding') == 'chunked') or 'text/html' in r.headers.get('Content-Type',''):
+                    return
 
-            for chunk in r.iter_content(chunk_size=self.chunksize):
-                if chunk:
-                    # Queues up chunk for writing.
-                    q.put((start, chunk, number))
+                for chunk in r.iter_content(chunk_size=self.chunksize):
+                    if chunk:
+                        # Queues up chunk for writing.
+                        q.put((start, chunk, number))
 
-            # Moving this to consumer will cause errors.
-            self.thread_report[number]['done'] = True
+                # Moving this to consumer will cause errors.
+                self.thread_report[number]['done'] = True
+        except KeyboardInterrupt:
+            pass
 
 
     def consumer(self, q):
@@ -221,7 +225,6 @@ class HTTPDownloader(BaseDownloader):
 
                         meta[number] += len(chunk)
                         self.thread_report[number]['len'] += len(chunk)
-
                         # Writes to partfile every single chunk.
                         # Doesn't seem to slow down the downloader.
                         metadata.seek(0)
