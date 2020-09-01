@@ -15,6 +15,7 @@ import logging
 import click
 import time
 import json
+
 serverLogger.setLevel(logging.ERROR)
 logger = logging.getLogger(__name__)
 
@@ -71,6 +72,49 @@ def get_driver_binary():
 
 def add_url_params(url, params):
     return url if not params else url + '?' + urlencode(params)
+
+
+
+def cache_request(url, request_type, response, cookies, user_agent):
+    timestamp = {
+            'year': time.localtime().tm_year, 
+            'month': time.localtime().tm_mon, 
+            'day': time.localtime().tm_mday, 
+            'hour': time.localtime().tm_hour, 
+            'minute': time.localtime().tm_min
+        }
+
+    tmp_cache = {}
+    tmp_cache[url] = {
+        'data': response, 
+        'time': timestamp,
+        'type': request_type,
+        'cookies': cookies,
+        'user_agent': user_agent
+        }
+
+    with open(os.path.join(get_data_dir(), 'cached_requests.json'), 'w') as f:
+        json.dump(tmp_cache, f, indent=4)
+
+def check_cache(url):
+    file = os.path.join(get_data_dir(), 'cached_requests.json')
+    if os.path.isfile(file):
+        with open(file, 'r') as f:
+            data = json.loads(f.read())
+        try:
+            cached_request = data[url]
+        except KeyError:
+            return None
+        timestamp = cached_request['time']
+        if (timestamp['year'] == time.localtime().tm_year and 
+            timestamp['month'] == time.localtime().tm_mon and 
+            timestamp['day'] == time.localtime().tm_mday and 
+            time.localtime().tm_hour - timestamp['hour'] <= 1):
+            return cached_request
+        else:
+            return None
+    else:
+        return None
 
 
 def driver_select(): #
@@ -177,21 +221,35 @@ def cloudflare_wait(driver):
 
 def request(request_type, url, **kwargs): #Headers not yet supported , headers={}
     params = kwargs.get('params', {})
-    new_url = add_url_params(url, params)
-    driver = driver_select()
-    status = status_select(driver, new_url, 'hide')
-    try:
-        cloudflare_wait(driver)
-        user_agent = driver.execute_script("return navigator.userAgent;") #dirty, but allows for all sorts of things above
-        cookies = driver.get_cookies()
-        text = driver.page_source
-        driver.close()
+    url = add_url_params(url, params)
+    if bool(check_cache(url)):
+        cached_data = check_cache(url)
+        text = cached_data['data']
+        user_agent = cached_data['user_agent']
+        request_type = cached_data['type']
+        cookies = cached_data['cookies']
         return SeleResponse(url, request_type, text, cookies, user_agent)
-    except:
-        driver.save_screenshot(f"{get_data_dir()}/screenshot.png");
-        driver.close()
-        logger.error(f'There was a problem getting the page: {new_url}. \
-        See the screenshot for more info:\n{get_data_dir()}/screenshot.png')
+
+    else:
+        
+        driver = driver_select()
+        status = status_select(driver, url, 'hide')
+
+        try:
+            cloudflare_wait(driver)
+            user_agent = driver.execute_script("return navigator.userAgent;") #dirty, but allows for all sorts of things above
+            cookies = driver.get_cookies()
+            text = driver.page_source
+            driver.close()
+            cache_request(url, request_type, text, cookies, user_agent)
+            return SeleResponse(url, request_type, text, cookies, user_agent)
+
+        except:
+            driver.save_screenshot(f"{get_data_dir()}/screenshot.png");
+            driver.close()
+            logger.error(f'There was a problem getting the page: {url}. \
+            See the screenshot for more info:\t{get_data_dir()}/screenshot.png')
+
 
 
 class SeleResponse:
