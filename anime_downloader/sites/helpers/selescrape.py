@@ -76,18 +76,16 @@ def add_url_params(url, params):
 
 
 def cache_request(url, request_type, response, cookies, user_agent):
-    timestamp = {
-            'year': time.localtime().tm_year, 
-            'month': time.localtime().tm_mon, 
-            'day': time.localtime().tm_mday, 
-            'hour': time.localtime().tm_hour, 
-            'minute': time.localtime().tm_min
-        }
+    """
+    This function saves the response from a Selenium request in a json.
+    It uses timestamps so that the rest of the code 
+    can know if its an old cache or a new one.
+    """
 
     tmp_cache = {}
     tmp_cache[url] = {
         'data': response, 
-        'time': timestamp,
+        'expiry': time.time(),
         'type': request_type,
         'cookies': cookies,
         'user_agent': user_agent
@@ -105,14 +103,11 @@ def check_cache(url):
             cached_request = data[url]
         except KeyError:
             return None
-        timestamp = cached_request['time']
-        if (timestamp['year'] == time.localtime().tm_year and 
-            timestamp['month'] == time.localtime().tm_mon and 
-            timestamp['day'] == time.localtime().tm_mday and 
-            time.localtime().tm_hour - timestamp['hour'] <= 1):
+        timestamp = cached_request['expiry']
+        if (time.time() - timestamp <= 3600):
             return cached_request
         else:
-            old_cache = cached_request.pop(url, None)
+            print(cached_request.pop(url, None))
             with open(file, 'w') as f:
                 json.dump(cached_request, f, indent=4)
             return None
