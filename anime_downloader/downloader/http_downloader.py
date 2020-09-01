@@ -10,24 +10,39 @@ import signal
 from anime_downloader.downloader.base_downloader import BaseDownloader
 import requests
 import requests_cache
-import multiprocessing as mp
+from multiprocessing import Manager, Pool
 
 session = requests.Session()
 session.stream = True
 session.verify = False
 logger = logging.getLogger(__name__)
 
+from anime_downloader.config import Config
 
 class HTTPDownloader(BaseDownloader):
     def _download(self):
         logger.warning('Using internal downloader which might be slow. Use aria2 for full bandwidth.')
-        if self.range_size is None:
-            self._non_range_download()
+        # NOTE: Dont assume it'll always be this number.
+        # It'll revert to 1 thread under certain circumstances.
+        # (Unknown file size and resuming of other downloads.)
+        self.number_of_threads = Config['dl']['internal_threads']
+        # This makes number_of_threads 1 if the file is small enough or unknown.
+        self.number_of_threads = self.number_of_threads if self._total_size > self.chunksize*self.number_of_threads else 1
+
+        if self.range_size is None or self.number_of_threads == 1:
+            self._non_thread_download()
         else:
-            self._ranged_download()
+            # Pool() doesn't work on mobile devices and gives ImportError.
+            # This allows fallback to _non_thread_download()
+            try:
+                Pool()
+                self._thread_download()
+            except ImportError:
+                logger.warning('Python theading is not supported on this platfrom, falling back to the non threaded downloader.')
+                self._non_thread_download()
 
 
-    def _ranged_download(self):
+    def _thread_download(self):
         url = self.source.stream_url
         headers = self.source.headers
 
@@ -38,54 +53,9 @@ class HTTPDownloader(BaseDownloader):
         if self.source.referer:
             headers['Referer'] = self.source.referer
 
-        # Can be defined in config.
-        # NOTE: Dont assume it'll always be this number.
-        # It'll revert to 1 thread under certain circumstances.
-        self.number_of_threads = 8
-
-        # Some downloads can have an unknown size. 
-        # This makes the downloader use 1 thread for safety.
-        if not self._total_size:
-            logger.info('Unknown file size. Using 1 thread.')
-
-        # This makes number_of_threads 1 if the file is small enough or unknown.
-        self.number_of_threads = self.number_of_threads if self._total_size > self.chunksize*self.number_of_threads else 1
-        self.thread_report = []
-
         # If downloaded file is file.mp4 the partfile will be file.part
-        partfile = os.path.splitext(self.path)[0]+'.part'
-        # If there's already a partfile it tries to read it to continue the download.
-        # The amout of if statements is to make it safe even if the partfile is corrupted/from another program.
-        if os.path.isfile(partfile):
-            with open(partfile,"r") as metadata:
-                try:
-                    metadata = json.load(metadata)
-                    for i in metadata:
-                        if i.isnumeric() and type(metadata[i]) is int:
-                            if not len(self.thread_report) > int(i):
-                                self.thread_report.append({})
-
-                            # Adds to the downloaded (to make the progress show up properly).
-                            self.resumed += metadata[i]
-                            self.thread_report[int(i)]['len'] = metadata[i]
-
-                    # Changes the number of threads according to the last download.
-                    # This may be unwanted behavior in some cases, but hard to fix.
-                    if len(self.thread_report) > 0:
-                        logger.info('Resuming download.')
-                        self.number_of_threads = len(self.thread_report)
-
-                except json.JSONDecodeError:
-                    logger.error('Failed reading from partfile.')
-
-        # Initializes a completely empty file for overwriting.
-        if not os.path.isfile(self.path):
-            with open(self.path, "wb") as file:
-                # HACK!
-                # By seeking and then writing you write a file full of zeroes without any issues.
-                # On a 32 bit install doing self._total_size*b'0' can lead to overflowerrors.
-                file.seek(self._total_size-1)
-                file.write(b'0')
+        self.read_partfile()
+        self.create_file()
 
         # By this time self.number_of_threads should not be changed.
         logger.info('Using {} thread{}.'.format(self.number_of_threads, (self.number_of_threads > 1) *'s'))
@@ -93,15 +63,11 @@ class HTTPDownloader(BaseDownloader):
         self.part = math.floor(self._total_size / self.number_of_threads)
 
         # Init a process manager
-        manager = mp.Manager()
+        manager = Manager()
         q = manager.Queue()
-        pool = mp.Pool(self.number_of_threads + 2)
+        pool = Pool(self.number_of_threads + 2)
 
         self.thread_report = manager.list(self.thread_report)
-
-        # To get reliable feedback from the threads it uses a dict containing the thread states.
-        # This allows maximum download and resumption if any of the threads fail halfway.
-        # Prepares the threads with starting info.
 
         """
         self.thread_report is a dict accesible from all threads used transfer info between them.
@@ -114,8 +80,6 @@ class HTTPDownloader(BaseDownloader):
 
         Where each element of the list is a dict containing info on the thread.
         'len' is the actual length of all the chunks combined used for offsets when writing.
-        NOTE: len != self.chunksize*chunks as a chunk can for example be 9 byes when the chunksize is 8.
-        This 'issue' is unavoidable as far as I know.
         'start' is where the download should start, used for requests.
         'end' is where the download should end, also used for requests.
         'done' is a bool if the download is complete.
@@ -177,13 +141,12 @@ class HTTPDownloader(BaseDownloader):
                     job.get()
 
             # Kill the consumer.
-            logger.info('Exiting')
             q.put('kill')
             pool.close()
             pool.join()
             # Cleans up the partfile on completed download.
-            if os.path.isfile(partfile):
-                os.remove(partfile)
+            if os.path.isfile(self.partfile):
+                os.remove(self.partfile)
 
         except KeyboardInterrupt:
             q.put('kill')
@@ -193,33 +156,30 @@ class HTTPDownloader(BaseDownloader):
 
 
     def thread_downloader(self, url, start, end, offset, headers, number, q):
-        # This try/except is critical for ctrl + c to work on windows.
-        try:
-            if end:
-                headers['Range'] = 'bytes=%d-%d' % (start+offset, end)
+        if end:
+            headers['Range'] = 'bytes=%d-%d' % (start+offset, end)
 
-            # specify the starting and ending of the file
-            with session.get(url, headers=headers) as r:
-                try:
-                    r.raise_for_status()
-                except:
-                    return
-                # The name of the content length is inconsistent.
-                if not (r.headers.get('content-length') or
-                        r.headers.get('Content-length') or
-                        r.headers.get('Content-Length') or
-                        r.headers.get('Transfer-Encoding') == 'chunked') or 'text/html' in r.headers.get('Content-Type',''):
-                    return
+        # specify the starting and ending of the file
+        with session.get(url, headers=headers) as r:
+            try:
+                r.raise_for_status()
+            except:
+                return
+            # The name of the content length is inconsistent.
+            if not (r.headers.get('content-length') or
+                    r.headers.get('Content-length') or
+                    r.headers.get('Content-Length') or
+                    r.headers.get('Transfer-Encoding') == 'chunked') or 'text/html' in r.headers.get('Content-Type',''):
+                return
 
-                for chunk in r.iter_content(chunk_size=self.chunksize):
-                    if chunk:
-                        # Queues up chunk for writing.
-                        q.put((start, chunk, number))
+            for chunk in r.iter_content(chunk_size=self.chunksize):
+                if chunk:
+                    # Queues up chunk for writing.
+                    q.put((start, chunk, number))
 
-                # Moving this to consumer will cause errors.
-                self.thread_report[number]['done'] = True
-        except KeyboardInterrupt:
-            pass
+            # Moving this to consumer will cause errors.
+            self.thread_report[number]['done'] = True
+
 
     def consumer(self, q):
         # ANY ERRORS HERE ARE SILENT.
@@ -232,8 +192,7 @@ class HTTPDownloader(BaseDownloader):
         
         # Opening the file as r+b is absolutely essential to continuing downloads without corrupting them.
         with open(self.path, 'r+b') as f:
-            partfile = os.path.splitext(self.path)[0]+'.part'
-            with open(partfile, "w+") as metadata:
+            with open(self.partfile, "w+") as metadata:
                 metadata.write('{}')
 
                 # Meta is a duplicate of self.thread_report, but only includes len
@@ -244,10 +203,12 @@ class HTTPDownloader(BaseDownloader):
                 # where the key is the thread number and the value is length written.
                 for i in range(self.number_of_threads):
                     meta[i] = self.thread_report[i]['len']
+                logger.debug('Meta: {}'.format(meta))
 
                 while True:
                     message = q.get()
                     if message == 'kill':
+                        logger.debug('Killed consumer.')
                         break
 
                     # Unpacks the message from q.put()
@@ -274,21 +235,109 @@ class HTTPDownloader(BaseDownloader):
                         f.flush()
 
 
-    def _non_range_download(self):
+    def _non_thread_download(self):
+        self.number_of_threads = 1
         url = self.source.stream_url
-        headers = {
-            'user-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101Firefox/56.0",
-        }
+        headers = self.source.headers
+
+        # Defaults headers if not specified.
+        if 'user-agent' not in headers:
+            headers['user-agent'] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101Firefox/56.0",
+
         if self.source.referer:
             headers['Referer'] = self.source.referer
-        r = session.get(url, headers=headers)
 
-        if r.status_code == 200:
-            with open(self.path, 'wb') as f:
-                for chunk in r.iter_content(chunk_size=self.chunksize):
-                    if chunk:
-                        f.write(chunk)
-                        self.report_chunk_downloaded(len(chunk))
+        self.read_partfile()
+        logger.info('Creating file')
+        self.create_file()
+        self.part = math.floor(self._total_size / self.number_of_threads)
+        # Allows resuming download, even from threaded.
+        self.start_time = time.time()
+        logger.info('Starting download.')
+        meta = {}
+        # Internal state to write to the partfile.
+        for i in range(self.number_of_threads):
+            if len(self.thread_report) > i:
+                offset = self.thread_report[i].get('len',0)
+            else:
+                offset = 0
+            meta[i] = offset
+        logger.debug('Meta: {}'.format(meta))
+
+        with open(self.path, 'r+b') as f:
+            with open(self.partfile, "w+") as metadata:
+                metadata.write('{}')
+                # This makes it possible to resume downloads regardless of partfile.
+                # It downloads in chunks, but not simultaneously.
+                # If there's no partfile it should do one chunk.
+                for i in range(self.number_of_threads):
+                    start = self.part*i
+                    if i + 1 == self.number_of_threads:
+                        end = self._total_size
+                    else:
+                        end = int(self.part*(i+1))-1
+
+                    if len(self.thread_report) > i:
+                        offset = self.thread_report[i].get('len',0)
+
+                    headers['Range'] = 'bytes=%d-%d' % (start+offset, end)
+
+                    with session.get(url, headers=headers, stream=True) as r:
+                        if r.status_code in [200, 206]:
+                            for chunk in r.iter_content(chunk_size=self.chunksize):
+                                if chunk:
+                                    f.seek(start+meta[i])
+                                    f.write(chunk)
+                                    f.flush()
+                                    meta[i] += len(chunk)
+                                    metadata.seek(0)
+                                    json.dump(meta, metadata)
+                                    metadata.truncate()
+                                    metadata.flush()
+                                    self.report_chunk_downloaded(len(chunk))
+
+        # Cleans up the partfile on completed download.
+        if os.path.isfile(self.partfile):
+            os.remove(self.partfile)
+
+
+    def read_partfile(self):
+        # If there's already a partfile it tries to read it to continue the download.
+        # The amout of if statements is to make it safe even if the partfile is corrupted/from another program.
+        self.partfile = os.path.splitext(self.path)[0]+'.part'
+        if os.path.isfile(self.partfile):
+            with open(self.partfile,"r") as data:
+                try:
+                    metadata = json.load(data)
+                    logger.debug('Partfile: {}'.format(metadata))
+                    for i in metadata:
+                        if i.isnumeric() and type(metadata[i]) is int:
+                            if not len(self.thread_report) > int(i):
+                                self.thread_report.append({})
+
+                            # Adds to the downloaded (to make the progress show up properly).
+                            self.resumed += metadata[i]
+                            self.thread_report[int(i)]['len'] = metadata[i]
+
+                    # Changes the number of threads according to the last download.
+                    # This may be unwanted behavior in some cases, but hard to fix.
+                    if len(self.thread_report) > 0:
+                        logger.info('Resuming download.')
+                        self.number_of_threads = len(self.thread_report)
+
+                except json.JSONDecodeError:
+                    logger.error('Failed reading from partfile.')
+
+
+    def create_file(self):
+        # Initializes a completely empty file for overwriting.
+        if not os.path.isfile(self.path):
+            with open(self.path, "wb") as file:
+                # HACK!
+                # By seeking and then writing you write a file full of zeroes without any issues.
+                # On a 32 bit install doing self._total_size*b'0' can lead to overflowerrors.
+                file.seek(self._total_size-1)
+                file.write(b'0')
 
 
 def set_range(start=0, end='', headers=None):
