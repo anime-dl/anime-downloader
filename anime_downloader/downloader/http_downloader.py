@@ -336,7 +336,11 @@ class HTTPDownloader(BaseDownloader):
                 # HACK!
                 # By seeking and then writing you write a file full of zeroes without any issues.
                 # On a 32 bit install doing self._total_size*b'0' can lead to overflowerrors.
-                file.seek(self._total_size-1)
+                try:
+                    file.seek(self._total_size-1)
+                except OSError:
+                    # Can happen on termux in some special directories.
+                    raise OSError(f'Unable to write to {self.path}')
                 file.write(b'0')
 
 
