@@ -112,6 +112,9 @@ def check_cache(url):
             time.localtime().tm_hour - timestamp['hour'] <= 1):
             return cached_request
         else:
+            old_cache = cached_request.pop(url, None)
+            with open(file, 'w') as f:
+                json.dump(cached_request, f, indent=4)
             return None
     else:
         return None
