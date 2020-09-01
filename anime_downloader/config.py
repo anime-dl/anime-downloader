@@ -26,6 +26,7 @@ DEFAULT_CONFIG = {
         'selescrape_browser_executable_path' : None,
         'selescrape_driver_binary_path' : None,
         'speed_limit' : 0,
+        'internal_threads': 8,
     },
     'ezdl': {
         'file_format':'{animeinfo_anime_title}/{animeinfo_anime_title}_{provider}_{ep_no}',
