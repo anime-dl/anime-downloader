@@ -193,30 +193,33 @@ class HTTPDownloader(BaseDownloader):
 
 
     def thread_downloader(self, url, start, end, offset, headers, number, q):
-        if end:
-            headers['Range'] = 'bytes=%d-%d' % (start+offset, end)
+        # This try/except is critical for ctrl + c to work on windows.
+        try:
+            if end:
+                headers['Range'] = 'bytes=%d-%d' % (start+offset, end)
 
-        # specify the starting and ending of the file
-        with session.get(url, headers=headers) as r:
-            try:
-                r.raise_for_status()
-            except:
-                return
-            # The name of the content length is inconsistent.
-            if not (r.headers.get('content-length') or
-                    r.headers.get('Content-length') or
-                    r.headers.get('Content-Length') or
-                    r.headers.get('Transfer-Encoding') == 'chunked') or 'text/html' in r.headers.get('Content-Type',''):
-                return
+            # specify the starting and ending of the file
+            with session.get(url, headers=headers) as r:
+                try:
+                    r.raise_for_status()
+                except:
+                    return
+                # The name of the content length is inconsistent.
+                if not (r.headers.get('content-length') or
+                        r.headers.get('Content-length') or
+                        r.headers.get('Content-Length') or
+                        r.headers.get('Transfer-Encoding') == 'chunked') or 'text/html' in r.headers.get('Content-Type',''):
+                    return
 
-            for chunk in r.iter_content(chunk_size=self.chunksize):
-                if chunk:
-                    # Queues up chunk for writing.
-                    q.put((start, chunk, number))
+                for chunk in r.iter_content(chunk_size=self.chunksize):
+                    if chunk:
+                        # Queues up chunk for writing.
+                        q.put((start, chunk, number))
 
-            # Moving this to consumer will cause errors.
-            self.thread_report[number]['done'] = True
-
+                # Moving this to consumer will cause errors.
+                self.thread_report[number]['done'] = True
+        except KeyboardInterrupt:
+            pass
 
     def consumer(self, q):
         # ANY ERRORS HERE ARE SILENT.
