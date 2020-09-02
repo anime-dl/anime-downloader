@@ -34,7 +34,6 @@ def open_config():
     from anime_downloader.config import Config
     return Config
 
-
 data = open_config()
 
 
@@ -71,30 +70,38 @@ def get_driver_binary():
     return binary_path
 
 
-def cache_request(url, request_type, response, cookies, user_agent):
+def cache_request(**kwargs):
     """
     This function saves the response from a Selenium request in a json.
-    It uses timestamps so that the rest of the code 
-    can know if its an old cache or a new one.
+    It uses timestamps so that the rest of the code can know if the cache has expired or not.
     """
+
     file = os.path.join(tempfile.gettempdir(), 'selenium_cached_requests.json')
     if os.path.isfile(file):
         with open(file, 'r') as f:
             tmp_cache = json.loads(f.read())
     else:
         tmp_cache = {}
-    tmp_cache[url] = {
-        'data': response, 
+    tmp_cache[kwargs.get('url')] = {
+        'data': kwargs.get('text'), 
         'expiry': time.time(),
-        'method': request_type,
-        'cookies': cookies,
-        'user_agent': user_agent
+        'method': kwargs.get('method'),
+        'cookies': kwargs.get('cookies'),
+        'user_agent': kwargs.get('user_agent')
         }
 
     with open(file, 'w') as f:
         json.dump(tmp_cache, f, indent=4)
 
 def check_cache(url):
+    """
+    This function checks if the cache file exists,
+    if it exists then it will read the file
+    And it will verify if the cache is less than or equal to 1 hour ago
+    If it is it will return it as it is.
+    If it isn't it will delete the expired cache from the file and return None
+    If the file doesn't exist at all it will return None
+    """
     file = os.path.join(tempfile.gettempdir(), 'selenium_cached_requests.json')
     if os.path.isfile(file):
         with open(file, 'r') as f:
@@ -127,16 +134,16 @@ def driver_select():
     driver_binary = get_driver_binary()
     binary = None if not driver_binary else driver_binary
     if browser == 'firefox':
-        fireFoxOptions = webdriver.FirefoxOptions()
-        fireFoxOptions.headless = True
-        fireFoxOptions.add_argument('--log fatal')
+        fireFox_Options = webdriver.FirefoxOptions()
+        fireFox_Options.headless = True
+        fireFox_Options.add_argument('--log fatal')
         if binary == None:  
-            driver = webdriver.Firefox(options=fireFoxOptions, service_log_path=os.path.devnull)
+            driver = webdriver.Firefox(options=fireFox_Options, service_log_path=os.path.devnull)
         else:
             try:
-                driver = webdriver.Firefox(options=fireFoxOptions, service_log_path=os.path.devnull)
+                driver = webdriver.Firefox(options=fireFox_Options, service_log_path=os.path.devnull)
             except:
-                driver = webdriver.Firefox(executable_path=binary, options=fireFoxOptions, service_log_path=os.path.devnull)
+                driver = webdriver.Firefox(executable_path=binary, options=fireFox_Options, service_log_path=os.path.devnull)
     elif browser == 'chrome':
         from selenium.webdriver.chrome.options import Options
         chrome_options = Options()
@@ -174,12 +181,12 @@ def cloudflare_wait(driver):
     The way it works is by getting the title of the page 
     and as long as it is "Just a moment..." it will keep waiting.
     This part of the code won't make the code execute slower 
-    if the target website has not a Cloudflare redirection.
+    if the target website has no Cloudflare redirection.
     At most it will sleep 1 second as a precaution. 
-    Also, i have made it time out after 30 seconds, useful if the target website is not responsive 
+    Also, i have made it time out after 50 seconds, useful if the target website is not responsive 
     and to stop it from running infinitely.
     '''
-    abort_after = 30
+    abort_after = 50
     start = time.time()
 
     title = driver.title  # title = "Just a moment..."
@@ -219,8 +226,9 @@ def request(request_type, url, **kwargs): #Headers not yet supported , headers={
             cookies = driver.get_cookies()
             text = driver.page_source
             driver.close()
-            cache_request(url, request_type, text, cookies, user_agent)
-            return SeleResponse(url, request_type, text, cookies, user_agent)
+            seleResponse = SeleResponse(url, request_type, text, cookies, user_agent)
+            cache_request(**seleResponse.__dict__)
+            return seleResponse
 
         except:
             driver.save_screenshot(f"{get_data_dir()}/screenshot.png");
