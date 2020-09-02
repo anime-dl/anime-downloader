@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 from logging import exception
 from sys import platform
 import requests
+import tempfile
 import os
 import logging
 import click
@@ -70,18 +71,13 @@ def get_driver_binary():
     return binary_path
 
 
-def add_url_params(url, params):
-    return url if not params else url + '?' + urlencode(params)
-
-
-
 def cache_request(url, request_type, response, cookies, user_agent):
     """
     This function saves the response from a Selenium request in a json.
     It uses timestamps so that the rest of the code 
     can know if its an old cache or a new one.
     """
-    file = os.path.join(get_data_dir(), 'cached_requests.json')
+    file = os.path.join(tempfile.gettempdir(), 'selenium_cached_requests.json')
     if os.path.isfile(file):
         with open(file, 'r') as f:
             tmp_cache = json.loads(f.read())
@@ -90,7 +86,7 @@ def cache_request(url, request_type, response, cookies, user_agent):
     tmp_cache[url] = {
         'data': response, 
         'expiry': time.time(),
-        'type': request_type,
+        'method': request_type,
         'cookies': cookies,
         'user_agent': user_agent
         }
@@ -99,7 +95,7 @@ def cache_request(url, request_type, response, cookies, user_agent):
         json.dump(tmp_cache, f, indent=4)
 
 def check_cache(url):
-    file = os.path.join(get_data_dir(), 'cached_requests.json')
+    file = os.path.join(tempfile.gettempdir(), 'selenium_cached_requests.json')
     if os.path.isfile(file):
         with open(file, 'r') as f:
             data = json.loads(f.read())
@@ -172,28 +168,6 @@ def driver_select():
     return driver
 
 
-def status_select(driver, url, status='hide'):
-    '''
-    For now it doesnt do what its name suggests, 
-    I have planned to add a status reporter of the http response code.
-    This part of the code is not removed because it is part of its core.
-    Treat it like it isnt here.
-    '''
-    try:
-        if status == 'hide':
-            driver.get(url)
-        elif status == 'show':
-            r = requests.head(url)
-            if r.status_code == 503:
-                raise RuntimeError("This website's sevice is unavailable or has cloudflare on.")
-            driver.get(url)
-            return r.status_code
-        else:
-            driver.get(url)
-    except requests.ConnectionError:
-        raise RuntimeError("Failed to establish a connection using the requests library.")
-
-
 def cloudflare_wait(driver):
     '''
     It waits until cloudflare has gone away before doing any further actions.
@@ -213,8 +187,9 @@ def cloudflare_wait(driver):
         time.sleep(0.25)
         delta = time.time() - start
         if delta >= abort_after:
-            logger.error(f'Timeout:\nCouldnt bypass cloudflare. \
-            See the screenshot for more info:\n{get_data_dir()}/screenshot.png')
+            logger.error(f'Timeout:\tCouldnt bypass cloudflare. \
+            See the screenshot for more info:\t{get_data_dir()}/screenshot.png')
+            break
         title = driver.title
         if not title == "Just a moment...":
             break
@@ -223,19 +198,20 @@ def cloudflare_wait(driver):
 
 def request(request_type, url, **kwargs): #Headers not yet supported , headers={}
     params = kwargs.get('params', {})
-    url = add_url_params(url, params)
+    url = url if not params else url + '?' + urlencode(params)
+
     if bool(check_cache(url)):
         cached_data = check_cache(url)
         text = cached_data['data']
         user_agent = cached_data['user_agent']
-        request_type = cached_data['type']
+        request_type = cached_data['method']
         cookies = cached_data['cookies']
         return SeleResponse(url, request_type, text, cookies, user_agent)
 
     else:
         
         driver = driver_select()
-        status = status_select(driver, url, 'hide')
+        driver.get(url)
 
         try:
             cloudflare_wait(driver)
