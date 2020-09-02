@@ -232,7 +232,7 @@ class HTTPDownloader(BaseDownloader):
                         metadata.truncate()
                         metadata.flush()
 
-                        # Reports the the chunk is actually downloaded, causing an uptick in the progress bar.
+                        # Reports that the chunk is actually downloaded, causing an uptick in the progress bar.
                         self.report_chunk_downloaded(len(chunk))
                         # Makes sure the data is written directly.
                         f.flush()
