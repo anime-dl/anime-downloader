@@ -20,7 +20,6 @@ import json
 serverLogger.setLevel(logging.ERROR)
 logger = logging.getLogger(__name__)
 
-
 def get_data_dir():
     '''
     Gets the folder directory selescrape will store data, 
@@ -116,9 +115,6 @@ def check_cache(url):
             data.pop(url, None)
             with open(file, 'w') as f:
                 json.dump(data, f, indent=4)
-            return
-    else:
-        return
 
 
 def driver_select():
