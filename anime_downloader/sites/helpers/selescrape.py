@@ -1,15 +1,8 @@
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.remote.remote_connection import LOGGER as serverLogger
-from selenium.webdriver.support.ui import WebDriverWait
 from anime_downloader.const import get_random_header
-from selenium.webdriver.common.by import By
 from urllib.parse import urlencode
-from urllib.parse import urlsplit
 from selenium import webdriver
-from bs4 import BeautifulSoup
-from logging import exception
 from sys import platform
-import requests
 import tempfile
 import os
 import logging
@@ -20,9 +13,10 @@ import json
 serverLogger.setLevel(logging.ERROR)
 logger = logging.getLogger(__name__)
 
+
 def get_data_dir():
     '''
-    Gets the folder directory selescrape will store data, 
+    Gets the folder directory selescrape will store data,
     such as cookies or browser extensions and logs.
     '''
     APP_NAME = 'anime downloader'
@@ -33,6 +27,7 @@ def open_config():
     from anime_downloader.config import Config
     return Config
 
+
 data = open_config()
 
 
@@ -40,20 +35,23 @@ def get_browser_config():
     '''
     Decides what browser selescrape will use.
     '''
-    os_browser = { #maps os to a browser
-    'linux':'firefox',
-    'darwin':'chrome',
-    'win32':'chrome'
+    os_browser = {  # maps os to a browser
+        'linux': 'firefox',
+        'darwin': 'chrome',
+        'win32': 'chrome'
     }
     for a in os_browser:
         if platform.startswith(a):
-            browser =  os_browser[a]
+            browser = os_browser[a]
         else:
             browser = 'chrome'
+
     value = data['dl']['selescrape_browser']
     value = value.lower() if value else value
+
     if value in ['chrome', 'firefox']:
         browser = value
+
     return browser
 
 
@@ -88,10 +86,11 @@ def cache_request(sele_response):
         'method': data['method'],
         'cookies': data['cookies'],
         'user_agent': data['user_agent']
-        }
+    }
 
     with open(file, 'w') as f:
         json.dump(tmp_cache, f, indent=4)
+
 
 def check_cache(url):
     """
@@ -119,8 +118,8 @@ def check_cache(url):
 
 def driver_select():
     '''
-    it configures what each browser should do 
-    and gives the driver variable that is used 
+    it configures what each browser should do
+    and gives the driver variable that is used
     to perform any actions below this function.
     '''
     browser = get_browser_config()
@@ -135,28 +134,29 @@ def driver_select():
         fireFox_Options.add_argument('--log fatal')
         fireFox_Profile = webdriver.FirefoxProfile()
         fireFox_Profile.set_preference("general.useragent.override", get_random_header()['user-agent'])
-        
-        if binary == None:  
+
+        if not binary:
             driver = webdriver.Firefox(fireFox_Profile, options=fireFox_Options, service_log_path=os.path.devnull)
         else:
             try:
                 driver = webdriver.Firefox(fireFox_Profile, options=fireFox_Options, service_log_path=os.path.devnull)
             except:
-                driver = webdriver.Firefox(fireFox_Profile, executable_path=binary, options=fireFox_Options, service_log_path=os.path.devnull)
+                driver = webdriver.Firefox(fireFox_Profile, executable_path=binary, options=fireFox_Options,
+                                           service_log_path=os.path.devnull)
 
     elif browser == 'chrome':
         from selenium.webdriver.chrome.options import Options
         chrome_options = Options()
-        ops = ["--headless", "--disable-gpu", '--log-level=OFF', f"--user-data-dir={profile_path}", 
-            "--no-sandbox", "--window-size=1920,1080", f"user-agent={get_random_header()['user-agent']}"]
+        ops = ["--headless", "--disable-gpu", '--log-level=OFF', f"--user-data-dir={profile_path}",
+               "--no-sandbox", "--window-size=1920,1080", f"user-agent={get_random_header()['user-agent']}"]
         for option in ops:
             chrome_options.add_argument(option)
 
         profile_path = os.path.join(data_dir, 'Selenium_chromium')
         log_path = os.path.join(data_dir, 'chromedriver.log')
 
-        if binary == None:
-            if executable == None:
+        if not binary:
+            if not executable:
                 driver = webdriver.Chrome(options=chrome_options)
             else:
                 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
@@ -164,25 +164,26 @@ def driver_select():
                 cap['binary_location'] = executable
                 driver = webdriver.Chrome(desired_capabilities=cap, options=chrome_options)
         else:
-            if executable == None:
+            if not executable:
                 driver = webdriver.Chrome(options=chrome_options)
             else:
                 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
                 cap = DesiredCapabilities.CHROME
                 cap['binary_location'] = executable
-                driver = webdriver.Chrome(executable_path=binary, desired_capabilities=cap, options=chrome_options, service_log_path=os.path.devnull)
+                driver = webdriver.Chrome(executable_path=binary, desired_capabilities=cap, options=chrome_options,
+                                          service_log_path=os.path.devnull)
     return driver
 
 
 def cloudflare_wait(driver):
     '''
     It waits until cloudflare has gone away before doing any further actions.
-    The way it works is by getting the title of the page 
+    The way it works is by getting the title of the page
     and as long as it is "Just a moment..." it will keep waiting.
-    This part of the code won't make the code execute slower 
+    This part of the code won't make the code execute slower
     if the target website has no Cloudflare redirection.
-    At most it will sleep 1 second as a precaution. 
-    Also, i have made it time out after 50 seconds, useful if the target website is not responsive 
+    At most it will sleep 1 second as a precaution.
+    Also, i have made it time out after 50 seconds, useful if the target website is not responsive
     and to stop it from running infinitely.
     '''
     abort_after = 50
@@ -199,10 +200,10 @@ def cloudflare_wait(driver):
         title = driver.title
         if not title == "Just a moment...":
             break
-    time.sleep(1) # This is necessary to make sure everything has loaded fine.
+    time.sleep(1)  # This is necessary to make sure everything has loaded fine.
 
 
-def request(request_type, url, **kwargs): #Headers not yet supported , headers={}
+def request(request_type, url, **kwargs):  # Headers not yet supported , headers={}
     params = kwargs.get('params', {})
     url = url if not params else url + '?' + urlencode(params)
 
@@ -222,11 +223,11 @@ def request(request_type, url, **kwargs): #Headers not yet supported , headers={
         try:
 
             cloudflare_wait(driver)
-            user_agent = driver.execute_script("return navigator.userAgent;") #dirty, but allows for all sorts of things above
+            user_agent = driver.execute_script("return navigator.userAgent;")
             cookies = driver.get_cookies()
             text = driver.page_source
             driver.close()
-            
+
             seleResponse = SeleResponse(url, request_type, text, cookies, user_agent)
             cache_request(seleResponse)
             return seleResponse
@@ -235,9 +236,8 @@ def request(request_type, url, **kwargs): #Headers not yet supported , headers={
             driver.save_screenshot(f"{get_data_dir()}/screenshot.png");
             driver.close()
             logger.error(f'There was a problem getting the page: {url}.' +
-            '\nSee the screenshot for more info:\t{get_data_dir()}/screenshot.png')
+                         '\nSee the screenshot for more info:\t{get_data_dir()}/screenshot.png')
             exit()
-
 
 
 class SeleResponse:
@@ -257,6 +257,7 @@ class SeleResponse:
     user_agent: string
         User agent used on the webpage
     """
+
     def __init__(self, url, method, text, cookies, user_agent):
         self.url = url
         self.method = method
