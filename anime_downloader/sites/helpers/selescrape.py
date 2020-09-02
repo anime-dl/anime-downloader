@@ -70,7 +70,7 @@ def get_driver_binary():
     return binary_path
 
 
-def cache_request(**kwargs):
+def cache_request(sele_response):
     """
     This function saves the response from a Selenium request in a json.
     It uses timestamps so that the rest of the code can know if the cache has expired or not.
@@ -79,15 +79,16 @@ def cache_request(**kwargs):
     file = os.path.join(tempfile.gettempdir(), 'selenium_cached_requests.json')
     if os.path.isfile(file):
         with open(file, 'r') as f:
-            tmp_cache = json.loads(f.read())
+            tmp_cache = json.load(f)
     else:
         tmp_cache = {}
-    tmp_cache[kwargs.get('url')] = {
-        'data': kwargs.get('text'), 
+    data = sele_response.__dict__
+    tmp_cache[data['url']] = {
+        'data': data['text'],
         'expiry': time.time(),
-        'method': kwargs.get('method'),
-        'cookies': kwargs.get('cookies'),
-        'user_agent': kwargs.get('user_agent')
+        'method': data['method'],
+        'cookies': data['cookies'],
+        'user_agent': data['user_agent']
         }
 
     with open(file, 'w') as f:
@@ -105,11 +106,9 @@ def check_cache(url):
     file = os.path.join(tempfile.gettempdir(), 'selenium_cached_requests.json')
     if os.path.isfile(file):
         with open(file, 'r') as f:
-            data = json.loads(f.read())
-        try:
-            data[url]
-        except KeyError:
-            return None
+            data = json.load(f)
+        if url not in data:
+            return
         timestamp = data[url]['expiry']
         if (time.time() - timestamp <= 3600):
             return data[url]
@@ -117,9 +116,9 @@ def check_cache(url):
             data.pop(url, None)
             with open(file, 'w') as f:
                 json.dump(data, f, indent=4)
-            return None
+            return
     else:
-        return None
+        return
 
 
 def driver_select():
@@ -135,15 +134,18 @@ def driver_select():
     binary = None if not driver_binary else driver_binary
     if browser == 'firefox':
         fireFox_Options = webdriver.FirefoxOptions()
+        fireFox_Profile = webdriver.FirefoxProfile()
+        fireFox_Profile.set_preference("general.useragent.override", get_random_header()['user-agent'])
         fireFox_Options.headless = True
         fireFox_Options.add_argument('--log fatal')
         if binary == None:  
-            driver = webdriver.Firefox(options=fireFox_Options, service_log_path=os.path.devnull)
+            driver = webdriver.Firefox(fireFox_Profile, options=fireFox_Options, service_log_path=os.path.devnull)
         else:
             try:
-                driver = webdriver.Firefox(options=fireFox_Options, service_log_path=os.path.devnull)
+                driver = webdriver.Firefox(fireFox_Profile, options=fireFox_Options, service_log_path=os.path.devnull)
             except:
-                driver = webdriver.Firefox(executable_path=binary, options=fireFox_Options, service_log_path=os.path.devnull)
+                driver = webdriver.Firefox(fireFox_Profile, executable_path=binary, options=fireFox_Options, service_log_path=os.path.devnull)
+
     elif browser == 'chrome':
         from selenium.webdriver.chrome.options import Options
         chrome_options = Options()
@@ -155,7 +157,7 @@ def driver_select():
         chrome_options.add_argument(f"--user-data-dir={profile_path}")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--window-size=1920,1080")
-        chrome_options.add_argument(f'user-agent={get_random_header()}')
+        chrome_options.add_argument(f"user-agent={get_random_header()['user-agent']}")
         if binary == None:
             if executable == None:
                 driver = webdriver.Chrome(options=chrome_options)
@@ -227,7 +229,7 @@ def request(request_type, url, **kwargs): #Headers not yet supported , headers={
             text = driver.page_source
             driver.close()
             seleResponse = SeleResponse(url, request_type, text, cookies, user_agent)
-            cache_request(**seleResponse.__dict__)
+            cache_request(seleResponse)
             return seleResponse
 
         except:
