@@ -98,8 +98,8 @@ def check_cache(url):
     This function checks if the cache file exists,
     if it exists then it will read the file
     And it will verify if the cache is less than or equal to 1 hour ago
-    If it is it will return it as it is.
-    If it isn't it will delete the expired cache from the file and return None
+    If it is, it will return it as it is.
+    If it isn't, it will delete the expired cache from the file and return None
     If the file doesn't exist at all it will return None
     """
     file = os.path.join(tempfile.gettempdir(), 'selenium_cached_requests.json')
