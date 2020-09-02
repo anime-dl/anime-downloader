@@ -81,8 +81,12 @@ def cache_request(url, request_type, response, cookies, user_agent):
     It uses timestamps so that the rest of the code 
     can know if its an old cache or a new one.
     """
-
-    tmp_cache = {}
+    file = os.path.join(get_data_dir(), 'cached_requests.json')
+    if os.path.isfile(file):
+        with open(file, 'r') as f:
+            tmp_cache = json.loads(f.read())
+    else:
+        tmp_cache = {}
     tmp_cache[url] = {
         'data': response, 
         'expiry': time.time(),
@@ -91,7 +95,7 @@ def cache_request(url, request_type, response, cookies, user_agent):
         'user_agent': user_agent
         }
 
-    with open(os.path.join(get_data_dir(), 'cached_requests.json'), 'w') as f:
+    with open(file, 'w') as f:
         json.dump(tmp_cache, f, indent=4)
 
 def check_cache(url):
@@ -100,22 +104,22 @@ def check_cache(url):
         with open(file, 'r') as f:
             data = json.loads(f.read())
         try:
-            cached_request = data[url]
+            data[url]
         except KeyError:
             return None
-        timestamp = cached_request['expiry']
+        timestamp = data[url]['expiry']
         if (time.time() - timestamp <= 3600):
-            return cached_request
+            return data[url]
         else:
-            print(cached_request.pop(url, None))
+            data.pop(url, None)
             with open(file, 'w') as f:
-                json.dump(cached_request, f, indent=4)
+                json.dump(data, f, indent=4)
             return None
     else:
         return None
 
 
-def driver_select(): #
+def driver_select():
     '''
     it configures what each browser should do 
     and gives the driver variable that is used 
