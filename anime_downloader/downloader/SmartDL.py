@@ -9,7 +9,7 @@ import sys, os
 session = session.get_session()
 
 
-class pySmartDL_Integrated(BaseDownloader):
+class pySmartDL(BaseDownloader):
     def _download(self):
         path = Path(self.path)
         headers = self.source.headers
