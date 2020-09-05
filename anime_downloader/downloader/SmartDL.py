@@ -4,7 +4,7 @@ from pySmartDL import SmartDL
 from pathlib import Path
 import time
 import sys, os
-# import subprocess
+
 
 session = session.get_session()
 
@@ -26,5 +26,3 @@ class pySmartDL_Integrated(BaseDownloader):
         dest = str(self.path) # str(path.parent.absolute())
         obj = SmartDL(url, dest, request_args=request_args, progress_bar=True)
         obj.start()
-        time.sleep(1)
-        sys.exit(0)
