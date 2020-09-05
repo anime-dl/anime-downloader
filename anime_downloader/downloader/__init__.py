@@ -11,6 +11,6 @@ def get_downloader(downloader):
         return HTTPDownloader
 
     elif downloader == 'pySmartDL':
-        return SmartDL
+        return pySmartDL
 
     return ExternalDownloader
