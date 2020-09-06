@@ -15,11 +15,8 @@ class Ezlink(BaseExtractor):
         sources = re.findall(source_regex, main)
         if sources:
             for i in sources:
-                print(i[2])
                 if 'Plyr.xyz' in i[2]:
-                    print('plr')
                     source = helpers.get('https://player.ezylink.co/' + i[1], referer=referer).text
-                    print(source)
                     quality_regex = r'"label":\s*?"' + self.quality.upper() + r'"[\W\w]*"file":\s*?"(http[^"]*?)"'
                     # Matches
 
@@ -32,7 +29,6 @@ class Ezlink(BaseExtractor):
                         return {'stream_url': match.group(1)}
 
                 if 'Server Main' in i[2] and self.quality == '360p':
-                    print('main')
                     source = helpers.get('https://player.ezylink.co/' + i[1], referer=referer).text
                     file = get_file(source)
                     return {'stream_url': file}
