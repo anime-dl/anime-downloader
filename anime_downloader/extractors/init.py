@@ -144,6 +144,12 @@ ALL_EXTRACTORS = [
         'modulename': 'vudeo',
         'regex': 'vudeo',
         'class': 'Vudeo'
+    },
+    {
+        'sitename': 'ezlink',
+        'modulename': 'ezlink',
+        'regex': 'ezlink',
+        'class': 'Ezlink'
     }
 ]
 
