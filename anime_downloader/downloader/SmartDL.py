@@ -1,12 +1,9 @@
 from anime_downloader.downloader.base_downloader import BaseDownloader
-from anime_downloader import session
 from pySmartDL import SmartDL
 from pathlib import Path
 import time
-import sys, os
-
-
-session = session.get_session()
+import sys
+import os
 
 
 class pySmartDL(BaseDownloader):
@@ -23,6 +20,6 @@ class pySmartDL(BaseDownloader):
         url = self.source.stream_url
         request_args = {'headers': headers}
 
-        dest = str(self.path) # str(path.parent.absolute())
+        dest = str(self.path)  # str(path.parent.absolute())
         obj = SmartDL(url, dest, request_args=request_args, progress_bar=True)
         obj.start()
