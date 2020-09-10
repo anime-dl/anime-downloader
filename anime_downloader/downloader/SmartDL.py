@@ -14,6 +14,10 @@ class pySmartDL(BaseDownloader):
         if 'user-agent' not in headers:
             headers['user-agent'] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101Firefox/56.0"
 
+        # This allows backwards compatible while also working with
+        # PySmartDl as it only passes user agent if spelled "User-Agent"
+        headers['User-Agent'] = headers.pop('user-agent')
+
         if self.source.referer:
             headers['Referer'] = self.source.referer
 
