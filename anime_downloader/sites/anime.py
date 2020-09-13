@@ -422,7 +422,7 @@ class AnimeEpisode:
         else:
             path = os.path.join(path, file_name)
 
-        Downloader = get_downloader('http')
+        Downloader = get_downloader('pySmartDL')
         downloader = Downloader(self.source(),
                                 path, force, range_size=range_size)
 
