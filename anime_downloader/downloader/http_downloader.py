@@ -47,7 +47,7 @@ class HTTPDownloader(BaseDownloader):
 
         # Defaults headers if not specified.
         if 'user-agent' not in headers:
-            headers['user-agent'] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101Firefox/56.0",
+            headers['user-agent'] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101Firefox/56.0"
 
         if self.source.referer:
             headers['Referer'] = self.source.referer
@@ -241,7 +241,7 @@ class HTTPDownloader(BaseDownloader):
 
         # Defaults headers if not specified.
         if 'user-agent' not in headers:
-            headers['user-agent'] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101Firefox/56.0",
+            headers['user-agent'] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101Firefox/56.0"
 
         if self.source.referer:
             headers['Referer'] = self.source.referer

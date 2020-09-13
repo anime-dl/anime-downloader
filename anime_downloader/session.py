@@ -16,6 +16,14 @@ cachefile = os.path.join(tempfile.gettempdir(), 'anime-cache')
 
 _session = requests_cache.CachedSession(cachefile, backend='sqlite', expire_after=3600)
 
+def cacheinfo_hook(response, *args, **kwargs):
+    if not getattr(response, 'from_cache', False):
+        logger.debug('uncached request')
+    else:
+        logger.debug('cached request')
+    return response
+_session.hooks = {'response': cacheinfo_hook}
+
 # _session = requests.Session()
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -25,9 +33,9 @@ def get_session(custom_session=None):
 
     if custom_session:
         custom_session.verify = _session.verify
-        _session = custom_session
-    # else:
-    #     _session = _session or requests.Session()
+        session = custom_session
+    else:
+        session = _session
 
     retry = Retry(
         total=10,
@@ -37,18 +45,10 @@ def get_session(custom_session=None):
         status_forcelist=(500, 502, 504,)
     )
     adapter = HTTPAdapter(max_retries=retry)
-    _session.mount('http://', adapter)
-    _session.mount('https://', adapter)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
 
-    def hook(response, *args, **kwargs):
-        if not getattr(response, 'from_cache', False):
-            logger.debug('uncached request')
-        else:
-            logger.debug('cached request')
-        return response
-    _session.hooks = {'response': hook}
-
-    return _session
+    return session
 
 
 class DownloaderSession:

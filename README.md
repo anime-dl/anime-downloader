@@ -56,22 +56,20 @@ Yeah. Me too! That's why this tool exists.
 
 - 4Anime
 - a2zanime
-- Anistream
-- AnimeOnline360
-- Animeflix
-- Animefreak
-- animeout
-- Animeflv
-- AnimeKisa
-- Animesimple
-- Animerush
 - Animedaisuki
-- Animixplay
+- Animeflix
+- Animeflv
+- Animefreak
+- AnimeKisa
+- AnimeOnline360
+- animeout
+- Animerush
+- Animesimple
 - Animevibe
-- Dbanimes
+- Animixplay
+- Anistream
 - Darkanime
-- DreamAnime
-- Erai-Raws
+- Dbanimes
 - Gogoanime
 - GurminderBoparai (AnimeChameleon)
 - HorribleSubs
@@ -84,11 +82,9 @@ Yeah. Me too! That's why this tool exists.
 - Nyaa.si
 - RyuAnime
 - twist.moe - requires Node.js
-- Watchmovie
-- Yify
-- Vostfree
-- Voiranime
 - Vidstream
+- Voiranime
+- Vostfree
 
 Sites that require Selenium **DO NOT** and **WILL NOT** work on mobile operating systems
 

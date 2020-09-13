@@ -1,6 +1,7 @@
 from anime_downloader.sites import helpers
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 
+
 class AnimeChameleon(Anime, sitename = 'gurminder'):
     sitename = "gurminder"
     @classmethod
@@ -14,7 +15,7 @@ class AnimeChameleon(Anime, sitename = 'gurminder'):
             for x in soup
             ]
         return search_results
-
+    
     def _scrape_episodes(self):
         soup = helpers.soupify(helpers.get(self.url).text).find('ul', id='episodes-list').find_all('li')
         eps = [x.a['href'] for x in soup]
@@ -23,6 +24,7 @@ class AnimeChameleon(Anime, sitename = 'gurminder'):
 
     def _scrape_metadata(self):
         self.title = helpers.soupify(helpers.get(self.url).text).find('h3', class_='panel-title').text
+
 
 class AnimeChameleonEpisode(AnimeEpisode, sitename='gurminder'):
     def _get_sources(self):

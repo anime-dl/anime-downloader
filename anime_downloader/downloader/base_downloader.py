@@ -29,7 +29,7 @@ class BaseDownloader:
         # Added Referer Header as kwik needd it.
         headers = self.source.headers
         if 'user-agent' not in headers:
-            headers['user-agent'] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101Firefox/56.0",
+            headers['user-agent'] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101Firefox/56.0"
 
         if self.source.referer:
             headers['referer'] = self.source.referer
