@@ -285,7 +285,7 @@ def format_command(cmd, episode, file_format, speed_limit, path):
         'file_format': file_format,
         'download_dir': os.path.abspath(path),
         'referer': episode.source().referer,
-        'useragent': f'{useragent}',
+        'useragent': useragent,
         'speed_limit': speed_limit
     }
 
