@@ -69,7 +69,8 @@ Yeah. Me too! That's why this tool exists.
 - Animixplay
 - Anistream
 - Darkanime
-- Dbanimes
+- Dbanimes 
+- FastAni
 - Gogoanime
 - GurminderBoparai (AnimeChameleon)
 - HorribleSubs
