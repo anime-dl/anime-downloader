@@ -43,6 +43,9 @@ DEFAULT_CONFIG = {
         'animefrenzy': {
             'version': 'subbed'
         },
+        'animebinge': {
+            'version': 'subbed'
+        },
         'animixplay': {
             'server': 'vidstream',
             'version': 'subbed'
