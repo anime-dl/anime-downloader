@@ -44,7 +44,12 @@ DEFAULT_CONFIG = {
             'version': 'subbed'
         },
         'animebinge': {
-            'version': 'subbed'
+            'version': 'subbed',
+            'servers': [
+                'mp4upload',
+                'xstreamcdn',
+                'trollvid'
+            ]
         },
         'animixplay': {
             'server': 'vidstream',
