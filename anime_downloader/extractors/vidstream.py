@@ -66,7 +66,7 @@ class VidStream(BaseExtractor):
         soup_title = soup.select('input#title')[0]['value']
         soup_typesub = soup.select('input#typesub')[0].get('value', 'SUB')
 
-        sources_json = helpers.get(f'https://gogo-stream.com.com/ajax.php', params={
+        sources_json = helpers.get(f'https://gogo-stream.com/ajax.php', params={
             'id': soup_id,
             'typesub': soup_typesub,
             'title': soup_title,
@@ -102,8 +102,9 @@ class VidStream(BaseExtractor):
         return {'stream_url': ''}
 
 
-class Extractor: 
+class Extractor:
     """dummy class to prevent changing self"""
+
     def __init__(self, dictionary):
         for k, v in dictionary.items():
             setattr(self, k, v)
