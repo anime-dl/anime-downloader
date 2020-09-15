@@ -22,7 +22,7 @@ class TenshiMoe(Anime, sitename = 'tenshi.moe'):
             ]
 
     def _scrape_episodes(self):
-        soup = helpers.soupify(helpers.get(self.url).text).find_all('ul', class_="loop episode-loop list")
+        soup = helpers.soupify(helpers.get(self.url).text).find('ul', class_="loop episode-loop list")
         eps = [x.a['href'] for x in soup]
         return eps
 
