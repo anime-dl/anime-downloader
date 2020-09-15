@@ -48,7 +48,6 @@ class AnimeBingeEpisode(AnimeEpisode, sitename='animebinge'):
 
         source = re.search(episode_regex, str(html))
         if source:
-            print(source.group(1))
             source_json = json.loads(source.group(1))['videos']
         else:
             return ''
