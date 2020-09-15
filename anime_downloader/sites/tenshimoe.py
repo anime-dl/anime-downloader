@@ -20,8 +20,9 @@ class TenshiMoe(Anime, sitename = 'tenshi.moe'):
             ]
 
     def _scrape_episodes(self):
-        soup = helpers.soupify(helpers.get(self.url).text).find('ul', class_="loop episode-loop list").select('li')
-        eps = [x.a['href'] for x in soup]
+        soup = helpers.soupify(helpers.get(self.url).text)
+        eps = soup.find_all("li", class_=lambda x: x and x.startswith('episode'))
+        eps = [x.a['href'] for x in eps]
         return eps
 
     def _scrape_metadata(self):
