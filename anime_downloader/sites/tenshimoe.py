@@ -11,7 +11,7 @@ class TenshiMoe(Anime, sitename='tenshi.moe'):
         soup = helpers.soupify(
             helpers.get('https://tenshi.moe/anime', params={'q': query}).text
             )
-        soup = soup.find('ul', class_="loop anime-loop list")
+        soup = soup.select_one('ul.loop.anime-loop.list')
         results = soup.select('li')
 
         return [
