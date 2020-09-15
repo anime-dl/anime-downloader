@@ -12,11 +12,11 @@ class TenshiMoe(Anime, sitename = 'tenshi.moe'):
         soup = helpers.soupify(helpers.get('https://tenshi.moe/anime', params={'q': query}).text)
         soup = soup.find('ul', class_="loop anime-loop list")
         results = soup.select('li')
-        results = [[x.a['title'], x.a['href']] for x in results]
+
         return [
             SearchResult(
-                title=x[0],
-                url=x[1],
+                title=x.a['title'],
+                url=x.a['href'],
                 )
             for x in results
             ]
