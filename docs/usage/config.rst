@@ -48,8 +48,7 @@ If you select 1 (one) then it will bring all the sub-keys for that selected choi
 
 
 Selecting a setting that has no sub-keys will get you to the value input mode.
-.. code:: python
-    """
+.. code::
     +--------+------------------------------------+
     |     16 | url                                |
     |     15 | speed_limit                        |
@@ -73,7 +72,6 @@ Selecting a setting that has no sub-keys will get you to the value input mode.
     Select Option [1]:
     Current value: False
     Input new value for aria2c_for_torrents: True
-    """
 
 If you want you can directly edit the config.json.
 It can be found under:
