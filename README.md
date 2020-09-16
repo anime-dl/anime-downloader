@@ -82,6 +82,7 @@ Yeah. Me too! That's why this tool exists.
 - Nyaa.si
 - RyuAnime
 - twist.moe - requires Node.js
+- tenshi.moe
 - Vidstream
 - Voiranime
 - Vostfree
