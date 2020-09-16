@@ -13,6 +13,7 @@ ALL_ANIME_SITES = [
     ('animefree','animefree','AnimeFree'),
     ('animefrenzy','animefrenzy','AnimeFrenzy'),
     ('animekisa','animekisa','AnimeKisa'),
+    ('animetake','animetake','AnimeTake'),
     ('animeonline','animeonline360','AnimeOnline'),
     ('animeout', 'animeout', 'AnimeOut'),
     ('animerush','animerush','AnimeRush'),
