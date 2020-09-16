@@ -40,14 +40,14 @@ def get_browser_config():
     '''
     Decides what browser selescrape will use.
     '''
-    os_browser = { #maps os to a browser
-    'linux':'firefox',
-    'darwin':'chrome',
-    'win32':'chrome'
+    os_browser = {  # maps os to a browser
+        'linux': 'firefox',
+        'darwin': 'chrome',
+        'win32': 'chrome'
     }
     for a in os_browser:
         if platform.startswith(a):
-            browser =  os_browser[a]
+            browser = os_browser[a]
         else:
             browser = 'chrome'
     value = data['dl']['selescrape_browser']
@@ -73,7 +73,7 @@ def add_url_params(url, params):
     return url if not params else url + '?' + urlencode(params)
 
 
-def driver_select(): #
+def driver_select():
     '''
     it configures what each browser should do 
     and gives the driver variable that is used 
@@ -88,7 +88,7 @@ def driver_select(): #
         fireFoxOptions = webdriver.FirefoxOptions()
         fireFoxOptions.headless = True
         fireFoxOptions.add_argument('--log fatal')
-        if binary == None:  
+        if binary == None:
             driver = webdriver.Firefox(options=fireFoxOptions, service_log_path=os.path.devnull)
         else:
             try:
@@ -172,23 +172,23 @@ def cloudflare_wait(driver):
         title = driver.title
         if not title == "Just a moment...":
             break
-    time.sleep(1) # This is necessary to make sure everything has loaded fine.
+    time.sleep(1)  # This is necessary to make sure everything has loaded fine.
 
 
-def request(request_type, url, **kwargs): #Headers not yet supported , headers={}
+def request(request_type, url, **kwargs):  # Headers not yet supported , headers={}
     params = kwargs.get('params', {})
     new_url = add_url_params(url, params)
     driver = driver_select()
     status = status_select(driver, new_url, 'hide')
     try:
         cloudflare_wait(driver)
-        user_agent = driver.execute_script("return navigator.userAgent;") #dirty, but allows for all sorts of things above
+        user_agent = driver.execute_script("return navigator.userAgent;")  # dirty, but allows for all sorts of things above
         cookies = driver.get_cookies()
         text = driver.page_source
         driver.close()
         return SeleResponse(url, request_type, text, cookies, user_agent)
     except:
-        driver.save_screenshot(f"{get_data_dir()}/screenshot.png");
+        driver.save_screenshot(f"{get_data_dir()}/screenshot.png")
         driver.close()
         logger.error(f'There was a problem getting the page: {new_url}. \
         See the screenshot for more info:\n{get_data_dir()}/screenshot.png')
@@ -211,6 +211,7 @@ class SeleResponse:
     user_agent: string
         User agent used on the webpage
     """
+
     def __init__(self, url, method, text, cookies, user_agent):
         self.url = url
         self.method = method

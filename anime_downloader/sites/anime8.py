@@ -5,7 +5,8 @@ from anime_downloader.sites import helpers
 
 logger = logging.getLogger(__name__)
 
-class Anime8(Anime, sitename = 'anime8'):
+
+class Anime8(Anime, sitename='anime8'):
     sitename = 'anime8'
 
     @classmethod
@@ -15,16 +16,15 @@ class Anime8(Anime, sitename = 'anime8'):
 
         search_results = [
             SearchResult(
-                title = i.find('h2').text,
-                url = i['href'],
-                meta_info = {
-                    'version_key_subbed':'(Sub)',
-                    'version_key_dubbed':'(Dub)'
+                title=i.find('h2').text,
+                url=i['href'],
+                meta_info={
+                    'version_key_subbed': '(Sub)',
+                    'version_key_dubbed': '(Dub)'
                 })
             for i in results
-            ]
+        ]
         return search_results
-
 
     def _scrape_episodes(self):
         """
@@ -37,17 +37,17 @@ class Anime8(Anime, sitename = 'anime8'):
         eps = soup.select('a[class*="btn-eps first-ep last-ep"]')
         eps = [x.get('href') for x in eps]
 
-        #Seperating normal episodes from the special episodes
+        # Seperating normal episodes from the special episodes
         correct_eps = []
         special_eps = []
         special_seperator = ['-Preview', '-Special']
 
         for episode in eps:
-            ep_text = episode.split('/')[-1].split('?')[0] #Getting the episode type from the url
+            ep_text = episode.split('/')[-1].split('?')[0]  # Getting the episode type from the url
 
-            #Only "The God of High School" has a sneak peak episode and it is broken in the 1st 10 seconds
+            # Only "The God of High School" has a sneak peak episode and it is broken in the 1st 10 seconds
             if '-Sneak-Peak' in ep_text:
-                continue 
+                continue
 
             # Here i add the special episodes to a seperate list
             if ep_text in special_seperator:
@@ -61,7 +61,6 @@ class Anime8(Anime, sitename = 'anime8'):
         if self.config['include_special_eps']:
             correct_eps.extend(special_eps)
         return correct_eps
-
 
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url))
@@ -78,13 +77,13 @@ class Anime8Episode(AnimeEpisode, sitename='anime8'):
         logger.info('ctk: {}'.format(ctk))
         logger.info('id: {}'.format(_id))
 
-        # The post request returns an embed. 
-        resp = helpers.post("https://anime8.ru/ajax/anime/load_episodes_v2?s=fserver", data = {"episode_id": _id, "ctk": ctk})
+        # The post request returns an embed.
+        resp = helpers.post("https://anime8.ru/ajax/anime/load_episodes_v2?s=fserver", data={"episode_id": _id, "ctk": ctk})
         # Gets the real embed url. Json could be used on the post request, but this is probably more reliable.
 
         # Skips if no episode found.
         if not resp.json().get('status'):
             return ''
 
-        embed = re.search(r"iframe\s*src.*?\"([^\"]*)", resp.text).group(1).replace('\\','')
+        embed = re.search(r"iframe\s*src.*?\"([^\"]*)", resp.text).group(1).replace('\\', '')
         return [('streamx', embed)]

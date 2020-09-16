@@ -7,25 +7,24 @@ import re
 
 logger = logging.getLogger(__name__)
 
+
 class DBAnimes(Anime, sitename='dbanimes'):
     sitename = 'dbanimes'
 
     @classmethod
     def search(cls, query):
-        soup = helpers.soupify(helpers.get("https://dbanimes.com", params = {'s': query, 'post_type': 'anime'}))
+        soup = helpers.soupify(helpers.get("https://dbanimes.com", params={'s': query, 'post_type': 'anime'}))
         return [
             SearchResult(
-                title = x['title'].strip(),
-                url = x['href']
+                title=x['title'].strip(),
+                url=x['href']
             )
             for x in soup.select('h6.fet > a')
         ]
 
-
     def _scrape_episodes(self):
         soup = helpers.soupify(helpers.get(self.url))
         return [x['href'] for x in soup.select('a.btn.btn-default.mb-2')]
-
 
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url))
@@ -34,16 +33,16 @@ class DBAnimes(Anime, sitename='dbanimes'):
 
 class DBAnimesEpisode(AnimeEpisode, sitename='dbanimes'):
     def check_server(self, extractor, url):
-        #Sendvid returns 404
+        # Sendvid returns 404
         try:
-            soup = helpers.soupify(helpers.get(url,allow_redirects=True))
+            soup = helpers.soupify(helpers.get(url, allow_redirects=True))
         except HTTPError:
             return False
 
         if extractor == 'mixdrop':
             # Checks redirects in mixdrop.
             redirect_regex = r"\s*window\.location\s*=\s*('|\")(.*?)('|\")"
-            redirect = re.search(redirect_regex,str(soup))
+            redirect = re.search(redirect_regex, str(soup))
             if redirect:
                 url = 'https://mixdrop.to' + redirect.group(2)
                 soup = helpers.soupify(helpers.get(url))
@@ -77,20 +76,20 @@ class DBAnimesEpisode(AnimeEpisode, sitename='dbanimes'):
 
         # Exceptions to domain -> extractor
         extractor_dict = {
-            'fembed':'gcloud',
-            'gounlimited':'mp4upload'
+            'fembed': 'gcloud',
+            'gounlimited': 'mp4upload'
         }
 
         sources_list = []
         for i in range(len(sources)):
             if domains[i] in servers:
-                extractor = extractor_dict.get(domains[i],domains[i])
+                extractor = extractor_dict.get(domains[i], domains[i])
                 if self.check_server(extractor, sources[i]):
                     sources_list.append({
-                    'extractor':extractor,
-                    'url':sources[i],
-                    'server':domains[i],
-                    'version':'subbed'
+                        'extractor': extractor,
+                        'url': sources[i],
+                        'server': domains[i],
+                        'version': 'subbed'
                     })
 
         return self.sort_sources(sources_list)

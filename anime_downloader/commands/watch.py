@@ -14,13 +14,14 @@ logger = logging.Logger(__name__)
 echo = click.echo
 sitenames = [v[1] for v in ALL_ANIME_SITES]
 
+
 @click.command()
 @click.argument('anime_name', required=False)
 @click.option(
     '--new', '-n', type=bool, is_flag=True,
     help="Create a new anime to watch")
 @click.option(
-    '--list', '-l', '_list', type=click.Choice(['all','watching','completed','planned','dropped']), help="List all animes in watch list")
+    '--list', '-l', '_list', type=click.Choice(['all', 'watching', 'completed', 'planned', 'dropped']), help="List all animes in watch list")
 @click.option(
     '--remove', '-r', 'remove', type=bool, is_flag=True,
     help="Remove the specified anime")
@@ -41,12 +42,11 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
 @click.option(
     '--mal-import',
     help='Import xml file from MAL export.',
-    type = bool,
-    is_flag = True
-    )
-
+    type=bool,
+    is_flag=True
+)
 def command(anime_name, new, update_all, _list, quality, remove,
-            download_dir,mal_import,  provider):
+            download_dir, mal_import, provider):
     """
     With watch you can keep track of any anime you watch.
     Available Commands after selection of an anime:\n
@@ -90,7 +90,7 @@ def command(anime_name, new, update_all, _list, quality, remove,
             watcher.update_anime(anime)
 
     if mal_import:
-        PATH = anime_name # Hack, but needed to prompt the user. Uses the anime name as parameter.
+        PATH = anime_name  # Hack, but needed to prompt the user. Uses the anime name as parameter.
         if PATH:
             query = PATH
         else:
@@ -102,14 +102,14 @@ def command(anime_name, new, update_all, _list, quality, remove,
         else:
             logging.error("Either the file selected was not an .xml or no file was selected.")
             sys.exit(1)
-            
+
     # Defaults the command to anime watch -l all.
     # It's a bit of a hack to use sys.argv, but doesn't break
     # if new commands are added (provided you used a bunch of and statements)
     _list = 'all' if sys.argv[-1] == 'watch' else _list
     if _list:
         filt = _list
-        list_animes(watcher, quality, download_dir, None, _filter = filt)
+        list_animes(watcher, quality, download_dir, None, _filter=filt)
         sys.exit(0)
 
     if anime_name:
@@ -123,7 +123,8 @@ def command(anime_name, new, update_all, _list, quality, remove,
         anime.quality = quality
 
         logger.info('Found {}'.format(anime.title))
-        watch_anime(watcher, anime,quality,download_dir)
+        watch_anime(watcher, anime, quality, download_dir)
+
 
 def command_parser(command):
     # Returns<kUp> a list of the commands
@@ -132,14 +133,15 @@ def command_parser(command):
     # Better than split(' ') because it accounts for quoutes.
     # Group 3 for qouted command
     command_regex = r'(("|\')(.*?)("|\')|.*?\s)'
-    matches = re.findall(command_regex,command + " ")
+    matches = re.findall(command_regex, command + " ")
     commands = [i[0].strip('"').strip("'").strip() for i in matches if i[0].strip()]
     return commands
 
-def list_animes(watcher, quality, download_dir, imp = None, _filter = None):
+
+def list_animes(watcher, quality, download_dir, imp=None, _filter=None):
 
     click.echo('Available Commands: swap, new')
-    watcher.list(filt= _filter)
+    watcher.list(filt=_filter)
     inp = click.prompt('Select an anime', default="1") if not imp else imp
     provider = Config['watch']['provider']
     # Not a number as input and command
@@ -157,7 +159,7 @@ def list_animes(watcher, quality, download_dir, imp = None, _filter = None):
                 watcher.new(url)
 
             if key == 'swap':
-                if vals[0] in ['all','watching','completed','planned','dropped','hold']:
+                if vals[0] in ['all', 'watching', 'completed', 'planned', 'dropped', 'hold']:
                     return list_animes(watcher, quality, download_dir, imp=imp, _filter=vals[0])
 
             return list_animes(watcher, quality, download_dir, imp=imp)
@@ -166,7 +168,7 @@ def list_animes(watcher, quality, download_dir, imp = None, _filter = None):
             sys.exit(0)
 
     try:
-        anime = watcher.get(int(inp)-1)
+        anime = watcher.get(int(inp) - 1)
     except IndexError:
         sys.exit(0)
 
@@ -205,7 +207,7 @@ def list_animes(watcher, quality, download_dir, imp = None, _filter = None):
             watcher.update_anime(anime)
         elif inp == 'watch':
             anime.quality = quality
-            watch_anime(watcher, anime,quality, download_dir)
+            watch_anime(watcher, anime, quality, download_dir)
 
         elif inp.startswith('download'):
             # You can use download 3:10 for selected episodes
@@ -242,7 +244,7 @@ def list_animes(watcher, quality, download_dir, imp = None, _filter = None):
                 if not val.isnumeric():
                     # Uncomment this if you want to let the user know.
                     #logger.error("Invalid integer")
-                    #input()
+                    # input()
                     continue
                 # Prevents setting length above max amount of episodes.
                 val = val if int(val) <= len(anime) else len(anime)
@@ -270,16 +272,16 @@ def list_animes(watcher, quality, download_dir, imp = None, _filter = None):
                 watcher.update(anime)
 
             elif key == 'watch_status':
-                if val in ['watching','completed','dropped','planned','all']:
+                if val in ['watching', 'completed', 'dropped', 'planned', 'all']:
                     colours = {
-                        'watching':'cyan',
-                        'completed':'green',
-                        'dropped':'red',
-                        'planned':'yellow',
-                        'hold':'white'
+                        'watching': 'cyan',
+                        'completed': 'green',
+                        'dropped': 'red',
+                        'planned': 'yellow',
+                        'hold': 'white'
                     }
                     anime.watch_status = val
-                    anime.colours = colours.get(anime.watch_status,'yellow')
+                    anime.colours = colours.get(anime.watch_status, 'yellow')
                     watcher.update(anime)
 
 
@@ -311,7 +313,7 @@ def watch_anime(watcher, anime, quality, download_dir):
 
             elif returncode == player.CONNECT_ERR:
                 logger.warning("Couldn't connect. Retrying. "
-                                "Attempt #{}".format(tries+1))
+                               "Attempt #{}".format(tries + 1))
                 continue
 
             elif returncode == player.PREV:
