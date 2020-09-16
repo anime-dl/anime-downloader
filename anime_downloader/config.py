@@ -58,6 +58,7 @@ DEFAULT_CONFIG = {
         '9anime': {
             'server': 'mp4upload',
             'version':'subbed',
+            'domain_extension':'to'
         },
         'anistream.xyz': {
             'version': 'subbed',
