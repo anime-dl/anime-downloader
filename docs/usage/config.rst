@@ -3,8 +3,11 @@ Config
 
 You can configure the tool to suit your needs by using ``anime config`` or by editing the config.json.
 
+
 anime config
 ------
+
+
 
 This command lets you change the configuration for anime dl from within your terminal.
 example:
@@ -73,8 +76,11 @@ Selecting a setting that has no sub-keys will get you to the value input mode.
     Current value: False
     Input new value for aria2c_for_torrents: True
 
+
 config.json
 ------
+
+
 If you want you can directly edit the config.json.
 It can be found under:
 
