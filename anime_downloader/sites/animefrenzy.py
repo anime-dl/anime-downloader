@@ -1,8 +1,8 @@
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
+from anime_downloader.extractors import get_extractor
 import json
 import re
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -12,47 +12,61 @@ class AnimeFrenzy(Anime, sitename='animefrenzy'):
 
     @classmethod
     def search(cls, query):
-        r = helpers.get("https://animefrenzy.net/search", params={"q": query})
+        r = helpers.get("https://old.animefrenzy.org/search", params = {"term": query})
         soup = helpers.soupify(r)
-        titleName = soup.select("div.conm > a.cona")
+        results = soup.find_all("a", href=lambda x: x and 'https://old.animefrenzy.org/anime/' in x)
+        filter_out_results = {}
+
+        for i in results:
+            filter_out_results[i['href']] = i.text
+        del filter_out_results[results[0]['href']]
+
         search_results = [
             SearchResult(
-                title=a.text,
-                url='https://animefrenzy.net/' + a.get('href')
+                title=value,
+                url=key
             )
-            for a in titleName
+            for key, value in filter_out_results.items()
         ]
-        return(search_results)
+        return search_results
 
     def _scrape_episodes(self):
         soup = helpers.soupify(helpers.get(self.url))
-        lang = self.config.get("version")
-        if lang == "subbed":
-            ep_list = [x for x in soup.select("div.sub1 > a")]
-        elif lang == "dubbed":
-            ep_list = [x for x in soup.select("div.dub1 > a")]
-        else:
-            logger.warning("Wrong Language Setting, Defaulting to Subbed")
-            ep_list = [x for x in soup.select("div.sub1 > a")]
+        eps = [x['href'] for x in soup.select('div.ani-epi > a')]
 
-        episodes = ["https://animefrenzy.net" + x.get("href") for x in ep_list]
-
-        if len(episodes) == 0:
-            logger.warning("No Episodes available, if lang is \"dubbed\" try switching to subbed")
-
-        return episodes[::-1]
-#        raise NotImplementedError
+        return eps[::-1]
 
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url))
-        self.title = soup.select_one("div.infodes > h1").text
+        self.title = soup.title.text.split('- Watch Anime')[0].strip()
 
 
 class AnimeFrenzyEpisode(AnimeEpisode, sitename='animefrenzy'):
     def _get_sources(self):
-        logger.debug(self.url)
+
+        mappings = {
+            'mp4upload': 'https://www.mp4upload.com/embed-{}.html',
+            'trollvid': 'https://trollvid.net/embed/{}',
+            'xstreamcdn': 'https://xstreamcdn.com/v/{}'
+        }
+
         soup = helpers.soupify(helpers.get(self.url))
-        link = soup.select_one("div.host > a.btn-video")
-        logger.debug(link)
-        return [("vidstreaming", link.get("data-video-link"))]
-#        raise NotImplementedError
+        scripts = soup.select('script')
+
+        for i in scripts:
+
+            if 'var episode_videos' in str(i):
+                sources = json.loads(re.search("\[.*host.*id.*?\]", str(i)).group())
+
+        sources_list = []
+        for i in sources:
+            if mappings.get(i.get('host')):
+                extractor = 'no_extractor' if not get_extractor(i['host']) else i['host']
+                sources_list.append({
+                    'extractor': extractor,
+                    'url': mappings[i['host']].format(i['id']),
+                    'server': i['host'],
+                    'version': i.get('type', 'subbed')
+                })
+
+        return self.sort_sources(sources_list)
