@@ -5,7 +5,7 @@ You can configure the tool to suit your needs by using ``anime config``.
 
 This command lets you change the configuration for anime dl from within your terminal.
 example:
-.. code-block:: python
+.. code:: python
     """
     +--------+------------+
     |      4 | watch      |
@@ -21,7 +21,7 @@ example:
 
 It lists all options in the config, and lets you change their values by entering them.
 If you select 1 (one) then it will bring all the sub-keys for that selected choice
-.. code-block:: python
+.. code:: python
     """
     +--------+------------------------------------+
     |     16 | url                                |
@@ -48,7 +48,7 @@ If you select 1 (one) then it will bring all the sub-keys for that selected choi
 ..
 
 Selecting a setting that has no sub-keys will get you to the value input mode.
-.. code-block:: python
+.. code:: python
     """
     +--------+------------------------------------+
     |     16 | url                                |
