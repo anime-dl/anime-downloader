@@ -3,6 +3,9 @@ Config
 
 You can configure the tool to suit your needs by using ``anime config`` or by editing the config.json.
 
+anime config
+------
+
 This command lets you change the configuration for anime dl from within your terminal.
 example:
 .. code::
