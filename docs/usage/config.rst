@@ -10,8 +10,9 @@ anime config
 
 
 This command lets you change the configuration for anime dl from within your terminal.
-Example\:
 
+Demonstration:
+----
 .. code::
     +--------+------------+
     |      4 | watch      |
