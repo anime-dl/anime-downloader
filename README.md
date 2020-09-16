@@ -108,7 +108,7 @@ Anime Downloader has three sub-commands, `dl` and `watch`.
 
 - [dl](https://anime-downlader.readthedocs.io/en/latest/usage/dl.html): `dl` can download anime.
 - [watch](https://anime-downlader.readthedocs.io/en/latest/usage/watch.html): `watch` can manage your anime watch list. Needs [mpv](https://mpv.io).
-- [config](#): can manage the configuration for anime dl.
+- [config](#config): can manage the configuration for anime dl.
 
 **To use `anime_downloader` in your package:**
 
