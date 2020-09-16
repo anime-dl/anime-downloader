@@ -5,7 +5,8 @@ You can configure the tool to suit your needs by using ``anime config``.
 
 This command lets you change the configuration for anime dl from within your terminal.
 example:
-.. code::
+.. code:: python
+"""
 +--------+------------+
 |      4 | watch      |
 |      3 | siteconfig |
@@ -15,11 +16,13 @@ example:
 |   SlNo | settings   |
 +--------+------------+
 Select Option [1]:
+"""
 ..
 
 It lists all options in the config, and lets you change their values by entering them.
 If you select 1 (one) then it will bring all the sub-keys for that selected choice
-.. code::
+.. code:: python
+"""
 +--------+------------------------------------+
 |     16 | url                                |
 |     15 | speed_limit                        |
@@ -41,10 +44,12 @@ If you select 1 (one) then it will bring all the sub-keys for that selected choi
 |   SlNo | dl settings                        |
 +--------+------------------------------------+
 Select Option [1]:
+"""
 ..
 
 Selecting a setting that has no sub-keys will get you to the value input mode.
-.. code::
+.. code:: python
+"""
 +--------+------------------------------------+
 |     16 | url                                |
 |     15 | speed_limit                        |
@@ -68,6 +73,7 @@ Selecting a setting that has no sub-keys will get you to the value input mode.
 Select Option [1]:
 Current value: False
 Input new value for aria2c_for_torrents: True
+"""
 ..
 If you want you can directly edit the config.json.
 It can be found under:
