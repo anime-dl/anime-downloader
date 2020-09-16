@@ -56,6 +56,7 @@ Yeah. Me too! That's why this tool exists.
 
 - 4Anime
 - a2zanime
+- AnimeBinge
 - Animedaisuki
 - Animeflix
 - Animeflv
