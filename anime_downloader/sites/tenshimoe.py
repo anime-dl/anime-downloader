@@ -9,25 +9,23 @@ class TenshiMoe(Anime, sitename='tenshi.moe'):
     @classmethod
     def search(cls, query):
         soup = helpers.soupify(
-            helpers.get('https://tenshi.moe/anime', params={'q': query}).text
-            )
-        soup = soup.select_one('ul.loop.anime-loop.list')
-        results = soup.select('li')
+            helpers.get('https://tenshi.moe/anime', params={'q': query}))
+        results = soup.select('ul.loop.anime-loop.list > li > a')
 
         return [
             SearchResult(
-                title=x.a['title'],
-                url=x.a['href'],
-                )
+                title=x['title'],
+                url=x['href'],
+            )
             for x in results
-            ]
+        ]
 
     def _scrape_episodes(self):
-        soup = helpers.soupify(helpers.get(self.url).text)
-        eps = soup.find_all(
-            "li", class_=lambda x: x and x.startswith('episode')
-            )
-        eps = [x.a['href'] for x in eps]
+        soup = helpers.soupify(helpers.get(self.url))
+        eps = soup.select(
+            'li[class^=episode] > a'
+        )
+        eps = [x['href'] for x in eps]
         return eps
 
     def _scrape_metadata(self):
@@ -37,6 +35,7 @@ class TenshiMoe(Anime, sitename='tenshi.moe'):
 
 class TenshiMoeEpisode(AnimeEpisode, sitename='tenshi.moe'):
     def _get_sources(self):
-        soup = helpers.soupify(helpers.get(self.url).text)
+        soup = helpers.soupify(helpers.get(self.url))
+        # Might break with something other than mp4!
         link = soup.find_all('source', type="video/mp4")[-1]['src']
         return [('no_extractor', link)]
