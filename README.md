@@ -115,6 +115,11 @@ Anime Downloader has three sub-commands, `dl` and `watch`.
 This tool can be used as a library. This means you can import it into your own applications and search for anime and do many other wonderful things.
 See [documentation](https://anime-downlader.readthedocs.io/en/latest/usage/api.html).
 
+
+**Development Instructions:**
+
+See [development instructions](https://anime-downlader.readthedocs.io/en/latest/advanced/custom_site.html).
+
 ## Config:
 
 This command lets you change the configuration for anime dl from within your terminal.
@@ -183,10 +188,6 @@ Select Option [1]:
 Current value: False
 Input new value for aria2c_for_torrents: True
 ```
-
-**Development Instructions:**
-
-See [development instructions](https://anime-downlader.readthedocs.io/en/latest/advanced/custom_site.html).
 
 ## Related Projects
 
