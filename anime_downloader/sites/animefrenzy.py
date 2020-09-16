@@ -4,8 +4,6 @@ from anime_downloader.extractors import get_extractor
 import json
 import re
 
-logger = logging.getLogger(__name__)
-
 
 class AnimeFrenzy(Anime, sitename='animefrenzy'):
     sitename = 'animefrenzy'
