@@ -43,6 +43,14 @@ DEFAULT_CONFIG = {
         'animefrenzy': {
             'version': 'subbed'
         },
+        'animebinge': {
+            'version': 'subbed',
+            'servers': [
+                'mp4upload',
+                'xstreamcdn',
+                'trollvid'
+            ]
+        },
         'animixplay': {
             'server': 'vidstream',
             'version': 'subbed'
