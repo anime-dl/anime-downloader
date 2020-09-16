@@ -148,7 +148,7 @@ The default config file is given below.
 .. note::
     - For the key ``file_format``, you can set ``anime_title``\ (which refers to the title of the anime) and ``ep_no`` which is the number of the epiosde.
     - If you set ``player`` in ``dl``, the tool will never download, only play in the set player.
-    - If you set ``force_download``, it will redownload even if the epiosde has already been downloaded.
+    - If you set ``force_download``, it will redownload even if the episode has already been downloaded.
 Choosing preferred server 
 ########
 ``server`` contains the preferred server. 
