@@ -17,7 +17,7 @@ example:
     +--------+------------+
     Select Option [1]:
     """
-..
+
 
 It lists all options in the config, and lets you change their values by entering them.
 If you select 1 (one) then it will bring all the sub-keys for that selected choice
@@ -45,7 +45,7 @@ If you select 1 (one) then it will bring all the sub-keys for that selected choi
     +--------+------------------------------------+
     Select Option [1]:
     """
-..
+
 
 Selecting a setting that has no sub-keys will get you to the value input mode.
 .. code:: python
@@ -74,7 +74,7 @@ Selecting a setting that has no sub-keys will get you to the value input mode.
     Current value: False
     Input new value for aria2c_for_torrents: True
     """
-..
+
 If you want you can directly edit the config.json.
 It can be found under:
 
