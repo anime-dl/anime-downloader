@@ -7,7 +7,7 @@ This can be found under:
 
 -  ``~/.config/anime-downloader`` on Linux
 
--  ``C:\Users\[Username]\AppData\Roaming\anime downloader`` on Windows
+-  ``%appdata%\anime downloader`` on Windows
 
 - ``~/Library/Application Support/anime downloader`` on MacOS
 
