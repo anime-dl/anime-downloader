@@ -297,7 +297,8 @@ def format_command(cmd, episode, file_format, speed_limit, path):
                                'Referer': rep_dict['referer']
                                },
                       stream=True,
-                      allow_redirects=True
+                      allow_redirects=True,
+                      verify=False
                       ) as r:
         extension = urlparse(r.url).path.split('.')[-1]
 
