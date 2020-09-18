@@ -264,13 +264,14 @@ def format_filename(filename, episode):
 def format_command(cmd, episode, file_format, speed_limit, path):
     from anime_downloader.config import Config
     if not Config._CONFIG['dl']['aria2c_for_torrents'] and episode.url.startswith('magnet:?xt=urn:btih:'):
-        return ['open',episode.url]
+        return ['open', episode.url]
 
     cmd_dict = {
         '{aria2}': 'aria2c {stream_url} -x 12 -s 12 -j 12 -k 10M -o '
                    '{file_format}.mp4 --continue=true --dir={download_dir}'
                    ' --stream-piece-selector=inorder --min-split-size=5M --referer={referer} --check-certificate=false --user-agent={useragent} --max-overall-download-limit={speed_limit}',
-        '{idm}'  : 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4'
+        '{idm}': 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4',
+        '{m3u8_dl}': 'm3u8-dl -r {referer} --insecure -t 8 {stream_url} {download_dir}/{file_format}.mp4'
     }
 
     # Allows for passing the user agent with self.headers in the site.
@@ -289,8 +290,26 @@ def format_command(cmd, episode, file_format, speed_limit, path):
         'speed_limit': speed_limit
     }
 
+    # This checks the last redirect url for the file extension.
+    # If it's m3u8 it uses m3u8_dl.
+    with requests.get(rep_dict['stream_url'],
+                      headers={'user-agent': rep_dict['useragent'],
+                               'Referer': rep_dict['referer']
+                               },
+                      stream=True,
+                      allow_redirects=True
+                      ) as r:
+        extension = urlparse(r.url).path.split('.')[-1]
+
+    if extension.startswith('m3u'):
+        filename = format_filename(rep_dict['file_format'], episode)
+        # m3u8_dl doesn't make the directories itself, hence why this needs to be done.
+        download_dir = rep_dict['download_dir'] + '/' + '/'.join(filename.split('/')[:-1])
+        make_dir(download_dir)
+        cmd = "{m3u8_dl}"
+
     if cmd == "{idm}":
-        rep_dict['file_format'] = rep_dict['file_format'].replace('/','\\')
+        rep_dict['file_format'] = rep_dict['file_format'].replace('/', '\\')
 
     if cmd in cmd_dict:
         cmd = cmd_dict[cmd]
