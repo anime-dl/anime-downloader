@@ -271,7 +271,7 @@ def format_command(cmd, episode, file_format, speed_limit, path):
                    '{file_format}.mp4 --continue=true --dir={download_dir}'
                    ' --stream-piece-selector=inorder --min-split-size=5M --referer={referer} --check-certificate=false --user-agent={useragent} --max-overall-download-limit={speed_limit}',
         '{idm}': 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4',
-        '{m3u8_dl}': 'm3u8-dl -r {referer} --insecure -t 8 {stream_url} {download_dir}/{file_format}.mp4'
+        '{m3u8_dl}': 'm3u8-dl -r {referer} --restore --insecure -t 16 {stream_url} {download_dir}/{file_format}.mp4'
     }
 
     # Allows for passing the user agent with self.headers in the site.
