@@ -308,8 +308,19 @@ def format_command(cmd, episode, file_format, speed_limit, path):
         download_dir = rep_dict['download_dir'] + '/' + '/'.join(filename.split('/')[:-1])
         make_dir(download_dir)
 
+        # Checks if it can resume.
         if os.path.isfile(rep_dict['download_dir'] + '/m3u8_dl.restore'):
-            cmd_dict['{m3u8_dl}'] = cmd_dict['{m3u8_dl}'] + ' --restore'
+            with open(rep_dict['download_dir'] + '/m3u8_dl.restore') as f:
+                # Checks if the file downloaded is the same as expected.
+                # Without this it'll resume the previous download regardless
+                # of what the user chooses does.
+                restore_json = json.load(f)
+                # Be aware that '.mp4' here needs to be changed if cmd_dict is changed.
+                expected_file = rep_dict['download_dir'] + '/' + filename + '.mp4'
+                if restore_json['user_options'].get('output_file') == expected_file:
+                    # Only restores if it can AND the expected file location is the same.
+                    # NOTE: only the most recent download can be resumed!
+                    cmd_dict['{m3u8_dl}'] = cmd_dict['{m3u8_dl}'] + ' --restore'
 
         cmd = "{m3u8_dl}"
 
