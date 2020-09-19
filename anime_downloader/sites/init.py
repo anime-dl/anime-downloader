@@ -23,7 +23,6 @@ ALL_ANIME_SITES = [
     ('dbanimes', 'dbanimes', 'DBAnimes'),
     # ('erairaws', 'erai-raws', 'EraiRaws'),
     ('fastani', 'fastani', 'FastAni'),
-    ('gogoanime', 'gogoanime', 'GogoAnime'),
     ('horriblesubs', 'horriblesubs', 'HorribleSubs'),
     ('itsaturday', 'itsaturday', 'Itsaturday'),
     ('justdubs','justdubs','JustDubs'),

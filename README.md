@@ -72,7 +72,6 @@ Yeah. Me too! That's why this tool exists.
 - Darkanime
 - Dbanimes 
 - FastAni
-- Gogoanime
 - GurminderBoparai (AnimeChameleon)
 - HorribleSubs
 - itsaturday
