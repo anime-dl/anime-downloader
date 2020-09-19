@@ -232,7 +232,7 @@ class _Config:
     def _read_config(self):
         with open(self.CONFIG_FILE, 'r') as configfile:
             try:
-                conf = json.load(configfile)
+                conf = eval(configfile.read().replace("true", "True").replace("false", "False").replace("null", "None"))
             except:
                 raise SyntaxWarning('The config file is not correctly formatted')
         return conf
