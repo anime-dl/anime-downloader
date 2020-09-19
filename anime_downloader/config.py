@@ -43,6 +43,14 @@ DEFAULT_CONFIG = {
         'animefrenzy': {
             'version': 'subbed'
         },
+        'animebinge': {
+            'version': 'subbed',
+            'servers': [
+                'mp4upload',
+                'xstreamcdn',
+                'trollvid'
+            ]
+        },
         'animixplay': {
             'server': 'vidstream',
             'version': 'subbed'
@@ -50,6 +58,7 @@ DEFAULT_CONFIG = {
         '9anime': {
             'server': 'mp4upload',
             'version': 'subbed',
+            'domain_extension': 'to'
         },
         'anistream.xyz': {
             'version': 'subbed',
@@ -60,6 +69,7 @@ DEFAULT_CONFIG = {
         },
         'anime8': {
             'version': 'subbed',
+            'servers': ['fserver', 'fdserver', 'oserver'],
             'include_special_eps': False
         },
         'gogoanime': {

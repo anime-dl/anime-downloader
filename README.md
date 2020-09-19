@@ -56,6 +56,7 @@ Yeah. Me too! That's why this tool exists.
 
 - 4Anime
 - a2zanime
+- AnimeBinge
 - Animedaisuki
 - Animeflix
 - Animeflv
@@ -69,8 +70,8 @@ Yeah. Me too! That's why this tool exists.
 - Animixplay
 - Anistream
 - Darkanime
-- Dbanimes
-- Gogoanime
+- Dbanimes 
+- FastAni
 - GurminderBoparai (AnimeChameleon)
 - HorribleSubs
 - itsaturday
@@ -82,6 +83,7 @@ Yeah. Me too! That's why this tool exists.
 - Nyaa.si
 - RyuAnime
 - twist.moe - requires Node.js
+- tenshi.moe
 - Vidstream
 - Voiranime
 - Vostfree

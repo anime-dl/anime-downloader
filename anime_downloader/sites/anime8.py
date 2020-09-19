@@ -77,13 +77,15 @@ class Anime8Episode(AnimeEpisode, sitename='anime8'):
         logger.info('ctk: {}'.format(ctk))
         logger.info('id: {}'.format(_id))
 
-        # The post request returns an embed.
-        resp = helpers.post("https://anime8.ru/ajax/anime/load_episodes_v2?s=fserver", data={"episode_id": _id, "ctk": ctk})
-        # Gets the real embed url. Json could be used on the post request, but this is probably more reliable.
-
-        # Skips if no episode found.
-        if not resp.json().get('status'):
-            return ''
-
-        embed = re.search(r"iframe\s*src.*?\"([^\"]*)", resp.text).group(1).replace('\\', '')
-        return [('streamx', embed)]
+        for server in self.config['servers']:
+            # The post request returns an embed.
+            logger.info('server: {}'.format(server))
+            resp = helpers.post("https://anime8.ru/ajax/anime/load_episodes_v2?s={}".format(server),
+                                data={"episode_id": _id, "ctk": ctk})
+            # Gets the real embed url. Json could be used on the post request, but this is probably more reliable.
+            # Skips if no episode found.
+            if not resp.json().get('status'):
+                continue
+            embed = re.search(r"iframe\s*src.*?\"([^\"]*)", resp.text).group(1).replace('\\', '')
+            return [('streamx', embed)]
+        return ''
