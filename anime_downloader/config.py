@@ -69,6 +69,7 @@ DEFAULT_CONFIG = {
         },
         'anime8': {
             'version':'subbed',
+            'servers': ['fserver', 'fdserver', 'oserver'],
             'include_special_eps': False
         },
         'gogoanime': {
