@@ -36,8 +36,6 @@ ALL_ANIME_SITES = [
     ('tenshimoe', 'tenshi.moe', 'TenshiMoe'),
     ('vidstream', 'vidstream', 'VidStream'),
     ('voiranime', 'voiranime', 'VoirAnime'),
-    ('vidstream', 'vidstream', 'VidStream'),
-    ('voiranime', 'voiranime', 'VoirAnime'),
     ('vostfree', 'vostfree', 'VostFree'),
 ]
 
