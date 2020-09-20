@@ -1,5 +1,6 @@
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
+
 import re
 import json
 
@@ -23,11 +24,11 @@ class AnimeSuge(Anime, sitename="animesuge"):
 
     def _scrape_episodes(self):
         ep_url = "https://animesuge.io/ajax/anime/servers"
-        _id = re.search(r".+-(.*)", self.url).group(1)
+        _id = re.search(r".*-(.*)", self.url).group(1)
 
         soup = helpers.soupify(helpers.get(ep_url, params={'id': _id}))
 
-        return ['https://animesuge.io' + x.get('href') for x in soup.select('a')]
+        return ['https://animesuge.io' + x.get('href') for x in soup.select('a:not(.more)')]
 
     def _scrape_metadata(self):
         self.title = helpers.soupify(helpers.get(self.url)).find("h1").text
@@ -36,7 +37,7 @@ class AnimeSuge(Anime, sitename="animesuge"):
 class AnimeSugeEpisode(AnimeEpisode, sitename='animesuge'):
     def _get_sources(self):
         # Get id and ep no. from url, e.g: https://animesuge.io/anime/naruto-xx8z/ep-190 -> xx8z, 190
-        _id, ep_no = re.search(r".*\/anime\/.*?-(.*?)\/.*-(\d+)$", self.url).group(1, 2)
+        _id, ep_no = re.search(r".*\/anime\/.*-(.*?)\/.*-(\d+)$", self.url).group(1, 2)
 
         # Get sources json from html, e.g:
         """
