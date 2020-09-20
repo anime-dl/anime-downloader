@@ -60,8 +60,8 @@ def setup(func):
             except ImportError:
                 sess = cf_session
                 logger.warning("This provider may not work correctly because it requires selenium to work.\nIf you want to install it then run:  'pip install selenium' .")
-        else: 
-            sess = req_session 
+        else:
+            sess = req_session
 
         if headers:
             default_headers.update(headers)
@@ -79,7 +79,7 @@ def setup(func):
                            headers=default_headers,
                            **kwargs)
 
-        if sess != selescrape: #TODO fix this for selescrape too
+        if sess != selescrape:  # TODO fix this for selescrape too
             res.raise_for_status()
             logger.debug(res.url)
             # logger.debug(res.text)

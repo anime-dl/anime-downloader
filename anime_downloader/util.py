@@ -72,7 +72,7 @@ def format_search_results(search_results):
         'Title',
         'Meta',
     ]
-    table = [(i+1, v.title, v.pretty_metadata)
+    table = [(i + 1, v.title, v.pretty_metadata)
              for i, v in enumerate(search_results)]
     table = tabulate(table, headers, tablefmt='psql')
     table = '\n'.join(table.split('\n')[::-1])
@@ -105,15 +105,15 @@ def search(query, provider, val=None, season_info=None, ratio=50):
     # Makes it harder to unintentionally exit the anime command if it's automated
     while True:
         if val == None:
-            val = click.prompt('Enter the anime no{}:'. format(' (0 to switch provider)'*(season_info != None)),
-                type=int, default=1, err=True)
+            val = click.prompt('Enter the anime no{}:'. format(' (0 to switch provider)' * (season_info != None)),
+                               type=int, default=1, err=True)
         try:
-            url = search_results[val-1].url
-            title = search_results[val-1].title
+            url = search_results[val - 1].url
+            title = search_results[val - 1].title
         except IndexError:
             logger.error('Only maximum of {} search results are allowed.'
                          ' Please input a number less than {}'.format(
-                             len(search_results), len(search_results)+1))
+                             len(search_results), len(search_results) + 1))
             val = False
             continue
         break
@@ -128,7 +128,7 @@ def primitive_search(search_results):
         'SlNo',
         'Title',
     ]
-    table = [(i+1, v.title)
+    table = [(i + 1, v.title)
              for i, v in enumerate(search_results)]
     table = tabulate(table, headers, tablefmt='psql')
     table = '\n'.join(table.split('\n')[::-1])
@@ -137,11 +137,11 @@ def primitive_search(search_results):
     while True:
         val = click.prompt('Enter the anime no: ', type=int, default=1, err=True)
         try:
-            return search_results[val-1]
+            return search_results[val - 1]
         except IndexError:
             logger.error('Only maximum of {} search results are allowed.'
                          ' Please input a number less than {}'.format(
-                             len(search_results), len(search_results)+1))
+                             len(search_results), len(search_results) + 1))
 
 
 def download_metadata(file_format, metdata, episode, filename='metdata.json'):
@@ -161,14 +161,15 @@ def download_metadata(file_format, metdata, episode, filename='metdata.json'):
     logger.debug('Downloaded metadata to "{}".'.format(location_metadata))
     return location_metadata
 
+
 def split_anime(anime, episode_range):
     try:
         start, end = [int(x) for x in episode_range.split(':')]
-        anime = anime[start-1:end-1]
+        anime = anime[start - 1:end - 1]
     except ValueError:
         # Only one episode specified
         episode = int(episode_range)
-        anime = anime[episode-1:episode]
+        anime = anime[episode - 1:episode]
 
     return anime
 
@@ -220,10 +221,10 @@ def play_episode(episode, *, player, title):
             '--title={}'.format(title),
             '--referrer="{}"'.format(episode.source().referer),
             episode.source().stream_url
-            ])
+        ])
     else:
-        p = subprocess.Popen([ player, episode.source().stream_url
-            ])
+        p = subprocess.Popen([player, episode.source().stream_url
+                              ])
     p.wait()
 
 
@@ -264,13 +265,13 @@ def format_filename(filename, episode):
 def format_command(cmd, episode, file_format, speed_limit, path):
     from anime_downloader.config import Config
     if not Config._CONFIG['dl']['aria2c_for_torrents'] and episode.url.startswith('magnet:?xt=urn:btih:'):
-        return ['open',episode.url]
+        return ['open', episode.url]
 
     cmd_dict = {
         '{aria2}': 'aria2c {stream_url} -x 12 -s 12 -j 12 -k 10M -o '
                    '{file_format}.mp4 --continue=true --dir={download_dir}'
                    ' --stream-piece-selector=inorder --min-split-size=5M --referer={referer} --check-certificate=false --user-agent={useragent} --max-overall-download-limit={speed_limit}',
-        '{idm}'  : 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4'
+        '{idm}': 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4'
     }
 
     # Allows for passing the user agent with self.headers in the site.
@@ -290,7 +291,7 @@ def format_command(cmd, episode, file_format, speed_limit, path):
     }
 
     if cmd == "{idm}":
-        rep_dict['file_format'] = rep_dict['file_format'].replace('/','\\')
+        rep_dict['file_format'] = rep_dict['file_format'].replace('/', '\\')
 
     if cmd in cmd_dict:
         cmd = cmd_dict[cmd]
@@ -301,7 +302,7 @@ def format_command(cmd, episode, file_format, speed_limit, path):
     return cmd
 
 
-#Credits to: https://github.com/Futei/SineCaptcha
+# Credits to: https://github.com/Futei/SineCaptcha
 def bypass_hcaptcha(url):
     """
     :param url: url to page which gives hcaptcha
@@ -317,18 +318,18 @@ def bypass_hcaptcha(url):
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/605.1.15 (KHTML, like Gecko)',
             'Mozilla/5.0 (iPad; CPU OS 9_3_5 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13G36',
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'
-            ))
-        }
+        ))
+    }
 
     logger.info("Bypassing captcha...")
 
-    #Retry until success
+    # Retry until success
     while not bypassed:
         site_key = str(uuid4())
-        response = session.post('https://hcaptcha.com/getcaptcha', headers = headers, data = {
+        response = session.post('https://hcaptcha.com/getcaptcha', headers=headers, data={
             'sitekey': site_key,
             'host': host
-            }).json()
+        }).json()
 
         try:
             key = response['key']
@@ -353,10 +354,10 @@ def bypass_hcaptcha(url):
                     'st': timestamp,
                     'dct': timestamp,
                     'mm': mouse_movements
-                    }
                 }
+            }
 
-            response = session.post(f'https://hcaptcha.com/checkcaptcha/{key}', json = json)
+            response = session.post(f'https://hcaptcha.com/checkcaptcha/{key}', json=json)
 
             response = response.json()
             bypassed = response['pass']
@@ -372,12 +373,12 @@ def bypass_hcaptcha(url):
             data = dict((x.get('name'), x.get('value')) for x in resp.select('form > input'))
             data.update({'id': resp.strong.text, 'g-recaptcha-response': token, 'h-captcha-response': token})
 
-            resp = session.post(bypass_url, data = data)
+            resp = session.post(bypass_url, data=data)
 
             if resp.status_code == 200:
                 pickle.dump(resp.cookies, open(f'{tempfile.gettempdir()}/{host}', 'wb'))
                 logger.info("Succesfully bypassed captcha!")
-                
+
                 return resp
             else:
                 bypassed = False
@@ -394,6 +395,7 @@ def get_hcaptcha_cookies(url):
     if os.path.isfile(COOKIE_FILE):
         return pickle.load(open(COOKIE_FILE, 'rb'))
 
+
 def deobfuscate_packed_js(packedjs):
     return eval_in_node('eval=console.log; ' + packedjs)
 
@@ -403,13 +405,9 @@ def eval_in_node(js: str):
     output = subprocess.check_output(['node', '-e', js])
     return output.decode('utf-8')
 
+
 def open_magnet(magnet):
-    if sys.platform.startswith('linux'):
-        subprocess.Popen(['xdg-open', magnet],
-                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    elif sys.platform.startswith('win32'):
-        os.startfile(magnet)
-    elif sys.platform.startswith('cygwin'):
+    if sys.platform.startswith('win32') or sys.platform.startswith('cygwin'):
         os.startfile(magnet)
     elif sys.platform.startswith('darwin'):
         subprocess.Popen(['open', magnet],
@@ -428,7 +426,7 @@ def external_download(cmd, episode, file_format, speed_limit, path=''):
 
     logger.debug('formatted cmd: ' + ' '.join(cmd))
 
-    if cmd[0] == 'open': #for torrents
+    if cmd[0] == 'open':  # for torrents
         open_magnet(cmd[1])
     else:
         p = subprocess.Popen(cmd)
@@ -449,9 +447,9 @@ def make_dir(path):
 
 
 def get_filler_episodes(query):
-    def search_filler_episodes(query,page):
+    def search_filler_episodes(query, page):
         url = 'https://animefillerlist.com/search/node/'
-        search_results = helpers.soupify(helpers.get(url+query, params={'page': page})).select('h3.title > a')
+        search_results = helpers.soupify(helpers.get(url + query, params={'page': page})).select('h3.title > a')
         urls = [a.get('href') for a in search_results if a.get('href').split('/')[-2] == 'shows']
         search_results = [
             [
@@ -460,13 +458,12 @@ def get_filler_episodes(query):
         ]
         return search_results, urls
 
-
-    results_list, urls_list = [],[]
+    results_list, urls_list = [], []
     prev = ['']
 
-    for a in range(5): #Max 5 pages, could be done using the pager element
-        search_results, urls = search_filler_episodes(query,a)
-        if urls == prev and not (len(urls) == 0 or a == 0): #stops the loop if the same site is visited twice
+    for a in range(5):  # Max 5 pages, could be done using the pager element
+        search_results, urls = search_filler_episodes(query, a)
+        if urls == prev and not (len(urls) == 0 or a == 0):  # stops the loop if the same site is visited twice
             break
         prev = urls[:]
 
@@ -474,19 +471,19 @@ def get_filler_episodes(query):
             results_list.append(b)
         for c in urls:
             urls_list.append(c)
-    
-    [results_list[a].insert(0,a+1)for a in range(len(results_list))] #inserts numbers
-    
+
+    [results_list[a].insert(0, a + 1)for a in range(len(results_list))]  # inserts numbers
+
     headers = ["SlNo", "Title"]
     table = tabulate(results_list, headers, tablefmt='psql')
     table = '\n'.join(table.split('\n')[::-1])
-    
+
     click.echo(table)
     val = click.prompt('Enter the filler-anime no (0 to cancel): ', type=int, default=1, err=True)
     if val == 0:
         return False
 
-    url = urls_list[val-1]
+    url = urls_list[val - 1]
 
     try:
         logger.info("Fetching filler episodes...")
@@ -500,14 +497,14 @@ def get_filler_episodes(query):
             txt = filler_episode.text.strip()
             if '-' in txt:
                 split = txt.split('-')
-                for a in range(int(split[0]),int(split[1])+1):
+                for a in range(int(split[0]), int(split[1]) + 1):
                     episodes.append(a)
             else:
                 episodes.append(int(txt))
-    
+
         logger.debug("Found {} filler episodes.".format(len(episodes)))
         return episodes
-    
+
     except:
         logger.warn("Can't get filler episodes. Will download all specified episodes.")
         return False
