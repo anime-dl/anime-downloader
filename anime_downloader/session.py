@@ -16,12 +16,15 @@ cachefile = os.path.join(tempfile.gettempdir(), 'anime-cache')
 
 _session = requests_cache.CachedSession(cachefile, backend='sqlite', expire_after=3600)
 
+
 def cacheinfo_hook(response, *args, **kwargs):
     if not getattr(response, 'from_cache', False):
         logger.debug('uncached request')
     else:
         logger.debug('cached request')
     return response
+
+
 _session.hooks = {'response': cacheinfo_hook}
 
 # _session = requests.Session()
