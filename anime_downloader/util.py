@@ -305,6 +305,13 @@ def format_command(cmd, episode, file_format, speed_limit, path):
 
     if extension.startswith('m3u'):
         filename = format_filename(rep_dict['file_format'], episode)
+        expected_file = rep_dict['download_dir'] + '/' + filename + '.mp4'
+        # As the m3u8 downloader only creates the mp4 file when complete just
+        # checking that is exists is sufficent.
+        if os.path.isfile(expected_file):
+            logger.info(f'{expected_file} already downloaded.')
+            return
+
         # m3u8_dl doesn't make the directories itself, hence why this needs to be done.
         download_dir = rep_dict['download_dir'] + '/' + '/'.join(filename.split('/')[:-1])
         make_dir(download_dir)
@@ -317,7 +324,6 @@ def format_command(cmd, episode, file_format, speed_limit, path):
                 # of what the user chooses does.
                 restore_json = json.load(f)
                 # Be aware that '.mp4' here needs to be changed if cmd_dict is changed.
-                expected_file = rep_dict['download_dir'] + '/' + filename + '.mp4'
                 if restore_json['user_options'].get('output_file') == expected_file:
                     # Only restores if it can AND the expected file location is the same.
                     # NOTE: only the most recent download can be resumed!
@@ -459,9 +465,11 @@ def external_download(cmd, episode, file_format, speed_limit, path=''):
 
     cmd = format_command(cmd, episode, file_format, speed_limit, path=path)
 
-    logger.debug('formatted cmd: ' + ' '.join(cmd))
+    logger.debug('formatted cmd: ' + ' '.join(str(cmd)))
 
-    if cmd[0] == 'open':  # for torrents
+    if not cmd:  # Allows format_command() to skip episodes.
+        return
+    elif cmd[0] == 'open':  # for torrents
         open_magnet(cmd[1])
     else:
         p = subprocess.Popen(cmd)
