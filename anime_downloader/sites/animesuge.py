@@ -53,8 +53,17 @@ class AnimeSugeEpisode(AnimeEpisode, sitename='animesuge'):
         for key in id_source_map:
             if key in data_sources.keys():
                 _id = data_sources[key]
-                link = helpers.get("https://animesuge.io/ajax/anime/episode",
-                                   params={"id": _id}).json()['url']
+
+                for _ in range(3):
+                    try:
+                        link = helpers.get("https://animesuge.io/ajax/anime/episode",
+                                           params={"id": _id}).json()['url']
+                        break
+                    # Makes it more consistent.
+                    except HTTPError:
+                        time.sleep(5)
+                        continue
+
                 server = id_source_map[key]
                 sources_list.append({
                     'extractor': server,
