@@ -176,6 +176,13 @@ DEFAULT_CONFIG = {
         },
         'animeonline360': {
             'version': 'subbed'
+        },
+        'animesuge': {
+            'version': 'subbed',
+            'servers': [
+                'mp4upload',
+                'streamtape'
+            ]
         }
     }
 }
