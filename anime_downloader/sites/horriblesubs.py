@@ -6,18 +6,19 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class HorribleSubs(Anime, sitename='horriblesubs'):
     sitename = 'horriblesubs'
 
     @classmethod
     def search(cls, query):
-        soup = helpers.soupify(helpers.get("https://horriblesubs.info/api.php", params = {"method": "search", "value": query}))
-        titlesDict = dict([(re.search('(.*)-', x.find(text = True, recursive = False)).group(1).strip(), x['href']) for x in soup.select('li > a')])
+        soup = helpers.soupify(helpers.get("https://horriblesubs.info/api.php", params={"method": "search", "value": query}))
+        titlesDict = dict([(re.search('(.*)-', x.find(text=True, recursive=False)).group(1).strip(), x['href']) for x in soup.select('li > a')])
 
         return [
             SearchResult(
-                title = x[0],
-                url = 'https://horriblesubs.info' + x[1]
+                title=x[0],
+                url='https://horriblesubs.info' + x[1]
             )
             for x in titlesDict.items()
         ]
@@ -29,11 +30,11 @@ class HorribleSubs(Anime, sitename='horriblesubs'):
         episodes = []
 
         while True:
-            resp = helpers.get('https://horriblesubs.info/api.php', params = {'method': 'getshows', 'type': 'show', 'showid': show_id, 'nextid': next_id})
+            resp = helpers.get('https://horriblesubs.info/api.php', params={'method': 'getshows', 'type': 'show', 'showid': show_id, 'nextid': next_id})
 
             if resp.text == "DONE":
                 if next_id == 1:
-                    resp = helpers.get('https://horriblesubs.info/api.php', params = {'method': 'getshows', 'type': 'show', 'showid': show_id})
+                    resp = helpers.get('https://horriblesubs.info/api.php', params={'method': 'getshows', 'type': 'show', 'showid': show_id})
                 else:
                     break
 
@@ -46,6 +47,7 @@ class HorribleSubs(Anime, sitename='horriblesubs'):
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url))
         self.title = soup.h1.text
+
 
 class HorribleSubsEpisode(AnimeEpisode, sitename='horriblesubs'):
     def _get_sources(self):

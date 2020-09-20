@@ -21,7 +21,7 @@ class AnimeOut(Anime, sitename='animeout'):
             SearchResult(
                 title=i.text,
                 url=i.get('href'),
-                meta_info = {
+                meta_info={
                     'title_cleaned': re.sub(clean_title_regex, "", i.text).strip()
                 })
             for i in search_results
