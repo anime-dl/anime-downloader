@@ -5,6 +5,7 @@ import sys
 
 from anime_downloader import util
 from anime_downloader import session
+from urllib.parse import urlparse
 
 import requests
 
@@ -37,16 +38,24 @@ class BaseDownloader:
 
         # I couldn't figure out how to retry based on headers with httpadapter.
         for i in range(5):
-            with requests.get(self.source.stream_url, headers=headers, stream=True, verify=False) as r:
+            with requests.get(self.source.stream_url,
+                              headers=headers,
+                              stream=True,
+                              verify=False,
+                              allow_redirects=True) as r:
+
                 self._total_size = max(int(r.headers.get('Content-length', 0)),
                                        int(r.headers.get('Content-Length', 0)),
                                        int(r.headers.get('content-length', 0)))
                 if not self._total_size and not r.headers.get('Transfer-Encoding') == 'chunked':
                     continue
 
+                # For m3u8 checking.
+                extension = urlparse(r.url).path.split('.')[-1]
+
                 if os.path.exists(self.path):
                     if abs(os.stat(self.path).st_size - self._total_size) < 10 \
-                       and not self.force:
+                       and not self.force and not extension.startswith('m3u'):
                         logger.warning('File already downloaded. Skipping download.')
                         return True
                     else:
