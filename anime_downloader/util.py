@@ -35,7 +35,6 @@ __all__ = [
     'parse_episode_range',
     'parse_ep_str',
     'print_episodeurl',
-    'download_episode',
     'play_episode',
     'print_info',
 ]
@@ -207,12 +206,6 @@ def print_episodeurl(episode):
     # else:
     # Currently I don't know of a way to specify referer in url itself so leaving it here.
     print(episode.source().stream_url)
-
-
-def download_episode(episode, **kwargs):
-    episode.download(**kwargs)
-    print()
-
 
 def play_episode(episode, *, player, title):
     if player == 'mpv':
