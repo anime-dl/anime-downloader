@@ -467,7 +467,8 @@ def external_download(cmd, episode, file_format, speed_limit, path=''):
 
     cmd = format_command(cmd, episode, file_format, speed_limit, path=path)
 
-    logger.debug('formatted cmd: ' + ' '.join(str(cmd)))
+    if cmd:
+        logger.debug('formatted cmd: ' + ' '.join(cmd))
 
     if not cmd:  # Allows format_command() to skip episodes.
         return
