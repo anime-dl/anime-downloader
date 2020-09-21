@@ -271,7 +271,8 @@ def format_command(cmd, episode, file_format, speed_limit, path):
         '{aria2}': 'aria2c {stream_url} -x 12 -s 12 -j 12 -k 10M -o '
                    '{file_format}.mp4 --continue=true --dir={download_dir}'
                    ' --stream-piece-selector=inorder --min-split-size=5M --referer={referer} --check-certificate=false --user-agent={useragent} --max-overall-download-limit={speed_limit}',
-        '{idm}': 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4'
+        '{idm}': 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4',
+        '{m3u8_dl}': 'm3u8-dl -r {referer} --insecure -t 16 {stream_url} {download_dir}/{file_format}.mp4'
     }
 
     # Allows for passing the user agent with self.headers in the site.
@@ -290,15 +291,63 @@ def format_command(cmd, episode, file_format, speed_limit, path):
         'speed_limit': speed_limit
     }
 
+    # This checks the last redirect url for the file extension.
+    # If it's m3u8 it uses m3u8_dl.
+    with requests.get(rep_dict['stream_url'],
+                      headers={'user-agent': rep_dict['useragent'],
+                               'Referer': rep_dict['referer']
+                               },
+                      stream=True,
+                      allow_redirects=True,
+                      verify=False
+                      ) as r:
+
+        logger.debug(f'Real download url: {r.url}')
+        extension = urlparse(r.url).path.split('.')[-1]
+
+    if extension.startswith('m3u'):
+        filename = format_filename(rep_dict['file_format'], episode)
+        expected_file = rep_dict['download_dir'] + '/' + filename + '.mp4'
+        cmd_dict['{m3u8_dl}'] = get_m3u8_command(cmd_dict['{m3u8_dl}'], expected_file)
+        cmd = "{m3u8_dl}"
+
     if cmd == "{idm}":
         rep_dict['file_format'] = rep_dict['file_format'].replace('/', '\\')
 
     if cmd in cmd_dict:
         cmd = cmd_dict[cmd]
 
-    cmd = cmd.split(' ')
-    cmd = [c.format(**rep_dict) for c in cmd]
-    cmd = [format_filename(c, episode) for c in cmd]
+    if cmd:
+        cmd = cmd.split(' ')
+        cmd = [c.format(**rep_dict) for c in cmd]
+        cmd = [format_filename(c, episode) for c in cmd]
+    return cmd
+
+
+def get_m3u8_command(cmd, expected_file):
+    # As the m3u8 downloader only creates the mp4 file when complete just
+    # checking that is exists is sufficent.
+    if os.path.isfile(expected_file):
+        logger.info(f'{expected_file} already downloaded.')
+        return
+
+    # m3u8_dl doesn't make the directories itself, hence why this needs to be done.
+    file_dir = '/'.join(expected_file.split('/')[:-1])
+    make_dir(file_dir)
+
+    # Checks if it can resume.
+    if os.path.isfile(os.getcwd() + '/m3u8_dl.restore'):
+        with open(os.getcwd() + '/m3u8_dl.restore') as f:
+            # Checks if the file downloaded is the same as expected.
+            # Without this it'll resume the previous download regardless
+            # of what the user chooses does.
+            restore_json = json.load(f)
+            # Be aware that '.mp4' here needs to be changed if cmd_dict is changed.
+            if restore_json['user_options'].get('output_file') == expected_file:
+                # Only restores if it can AND the expected file location is the same.
+                # NOTE: only the most recent download can be resumed!
+                cmd = cmd + ' --restore'
+
     return cmd
 
 
@@ -424,18 +473,19 @@ def external_download(cmd, episode, file_format, speed_limit, path=''):
 
     cmd = format_command(cmd, episode, file_format, speed_limit, path=path)
 
-    logger.debug('formatted cmd: ' + ' '.join(cmd))
+    if cmd:
+        logger.debug('formatted cmd: ' + ' '.join(cmd))
 
-    if cmd[0] == 'open':  # for torrents
-        open_magnet(cmd[1])
-    else:
-        p = subprocess.Popen(cmd)
-        return_code = p.wait()
+        if cmd[0] == 'open':  # for torrents
+            open_magnet(cmd[1])
+        else:
+            p = subprocess.Popen(cmd)
+            return_code = p.wait()
 
-        if return_code != 0:
-            # Sleep for a while to make sure downloader exits correctly
-            time.sleep(2)
-            sys.exit(1)
+            if return_code != 0:
+                # Sleep for a while to make sure downloader exits correctly
+                time.sleep(2)
+                sys.exit(1)
 
 
 def make_dir(path):
