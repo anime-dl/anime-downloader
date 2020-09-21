@@ -301,6 +301,8 @@ def format_command(cmd, episode, file_format, speed_limit, path):
                       allow_redirects=True,
                       verify=False
                       ) as r:
+
+        logger.debug(f'Real download url: {r.url}')
         extension = urlparse(r.url).path.split('.')[-1]
 
     if extension.startswith('m3u'):
