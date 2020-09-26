@@ -9,7 +9,7 @@ APP_DIR = click.get_app_dir(APP_NAME)
 DEFAULT_CONFIG = {
     'dl': {
         'url': False,
-        'player': None,
+        'player': 'mpv',
         'skip_download': False,
         'download_dir': '.',
         'quality': '1080p',
