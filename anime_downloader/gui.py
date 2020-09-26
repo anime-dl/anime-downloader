@@ -131,7 +131,7 @@ class Window(QtWidgets.QMainWindow):
         download_directory = self.downloadDirectory.text()
         provider = self.providers.currentText()
         
-        anime_url = util.search(anime, provider, choice)
+        anime_url, _ = util.search(anime, provider, choice)
         
         cls = get_anime_class(anime_url)
         
