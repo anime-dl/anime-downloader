@@ -5,6 +5,7 @@ from anime_downloader import session, util
 from anime_downloader.commands import dl
 from anime_downloader.config import Config
 from anime_downloader.sites import get_anime_class, ALL_ANIME_SITES, exceptions
+import os
 
 
 class Worker(QtCore.QThread):
@@ -140,8 +141,8 @@ class Window(QtWidgets.QMainWindow):
         animes, anime_title = self.get_animes()
         self.progressBar.setMaximum(len(animes))
         i = 1
-
-        self.updateProgress = Worker(animes, download_directory)
+        download_dir = self.get_download_dir()
+        self.updateProgress = Worker(animes, download_dir)
         self.updateProgress.signal.connect(self.onCountChanged)
         self.updateProgress.start()
 
@@ -161,7 +162,6 @@ class Window(QtWidgets.QMainWindow):
             f'{self.animeEpisodeStart.text()}:{self.animeEpisodeEnd.text()}'
 
         anime = self.animeName.text()
-        download_directory = self.downloadDirectory.text()
         provider = self.providers.currentText()
 
         anime_url, _ = util.search(anime, provider, choice)
@@ -173,6 +173,14 @@ class Window(QtWidgets.QMainWindow):
         anime_title = anime.title
         # maybe make animes/anime_title self.animes?
         return animes, anime_title
+
+    def get_download_dir(self):
+        # Reads the input download dir and if it's empty it uses default.
+        download_dir = self.downloadDirectory.text()
+        if not download_dir:
+            download_dir = Config["dl"]["download_dir"]
+        download_dir = os.path.abspath(download_dir)
+        return download_dir
 
 
 application = QtWidgets.QApplication(sys.argv)
