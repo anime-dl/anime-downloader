@@ -149,7 +149,13 @@ class Window(QtWidgets.QMainWindow):
         p.wait()
 
     def get_animes(self):
-        choice = self.searchOutput.currentRow() + 1
+        # if nothing is selected it returns -1
+        # this makes the choice the first one if nothing is selected from search.
+        if self.searchOutput.currentRow() != -1:
+            choice = self.searchOutput.currentRow() + 1
+        else:
+            choice = 1
+
         start = self.animeEpisodeStart.text() if self.animeEpisodeStart.text().isnumeric() else 1
         end = int(self.animeEpisodeEnd.text()) + 1 if self.animeEpisodeEnd.text().isnumeric() else ''
         episode_range = f'{start}:{end}'
