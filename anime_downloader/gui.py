@@ -6,6 +6,8 @@ from anime_downloader.commands import dl
 from anime_downloader.config import Config
 from anime_downloader.sites import get_anime_class, ALL_ANIME_SITES, exceptions
 import os
+import tempfile
+import subprocess
 
 
 class Worker(QtCore.QThread):
@@ -152,9 +154,9 @@ class Window(QtWidgets.QMainWindow):
 
     def play(self):
         animes, anime_title = self.get_animes()
-        for episode in animes:
-            util.play_episode(episode, player=Config["dl"]["player"],
-                              title=f'{anime_title} - Episode {episode.ep_no}')
+        file = self.generate_m3u8(animes)
+        p = subprocess.Popen([Config["dl"]["player"], file])
+        p.wait()
 
     def get_animes(self):
         choice = self.searchOutput.currentRow() + 1
@@ -181,6 +183,18 @@ class Window(QtWidgets.QMainWindow):
             download_dir = Config["dl"]["download_dir"]
         download_dir = os.path.abspath(download_dir)
         return download_dir
+
+    def generate_m3u8(self, animes):
+        filepath = tempfile.gettempdir() + '/MirrorList.m3u8'
+        text = "#EXTM3U\n"
+        for i in animes:
+            text += f"#EXTINF:,Episode {(i.ep_no)}\n"
+            text += i.source().stream_url + "\n"
+
+        with open(filepath, "w") as f:
+            f.write(text)
+
+        return filepath
 
 
 application = QtWidgets.QApplication(sys.argv)
