@@ -150,11 +150,9 @@ class Window(QtWidgets.QMainWindow):
 
     def get_animes(self):
         choice = self.searchOutput.currentRow() + 1
-        print(choice)
-        # WILL CRASH WITH LETTERS
+        start = self.animeEpisodeStart.text() if self.animeEpisodeStart.text().isnumeric() else 1
         end = int(self.animeEpisodeEnd.text()) + 1 if self.animeEpisodeEnd.text().isnumeric() else ''
-        episode_range = \
-            f'{self.animeEpisodeStart.text()}:{end}'
+        episode_range = f'{start}:{end}'
 
         anime = self.animeName.text()
         provider = self.providers.currentText()
