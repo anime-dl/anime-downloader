@@ -13,37 +13,15 @@ import subprocess
 class Worker(QtCore.QThread):
     signal = QtCore.pyqtSignal(int)
 
-    def __init__(self, animes, download_directory):
+    def __init__(self, fn, *args, **kwargs):
         QtCore.QThread.__init__(self)
-        self.animes = animes
-        self.download_directory = download_directory
+        self.fn = fn
+        self.args = args
+        self.kwargs = kwargs
 
     @QtCore.pyqtSlot()
     def run(self):
-        i = 0
-        for episode in self.animes:
-
-            ep_no = episode.ep_no
-            external = Config["dl"]["external_downloader"]
-
-            if external:
-                util.external_download(
-                    Config["dl"]["external_downloader"],
-                    episode,
-                    Config["dl"]["file_format"],
-                    Config["dl"]["speed_limit"],
-                    path=self.download_directory
-                )
-
-            else:
-                episode.download(force=Config["dl"]["force_download"],
-                                 path=self.download_directory,
-                                 format=Config["dl"]["file_format"],
-                                 range_size=Config["dl"]["chunk_size"]
-                                 )
-            i += 1
-            self.signal.emit(i)
-            time.sleep(1)
+        self.fn(*self.args, **self.kwargs, signal=self.signal)
 
 
 class Window(QtWidgets.QMainWindow):
@@ -140,11 +118,8 @@ class Window(QtWidgets.QMainWindow):
             self.providers.addItem(site)
 
     def download(self):
-        animes, anime_title = self.get_animes()
-        self.progressBar.setMaximum(len(animes))
-        i = 1
-        download_dir = self.get_download_dir()
-        self.updateProgress = Worker(animes, download_dir)
+        self.progressBar.setValue(0)
+        self.updateProgress = Worker(self.download_episodes)
         self.updateProgress.signal.connect(self.onCountChanged)
         self.updateProgress.start()
 
@@ -153,25 +128,38 @@ class Window(QtWidgets.QMainWindow):
         self.progressBar.setValue(value)
 
     def play(self):
+        self.progressBar.setValue(0)
+        self.updateProgress = Worker(self.play_episodes)
+        self.updateProgress.signal.connect(self.onCountChanged)
+        self.updateProgress.start()
+
+    def play_episodes(self, signal):
+        self.signal = signal
         animes, anime_title = self.get_animes()
+
+        self.progressBar.setMaximum(len(animes._episode_urls))
         file = self.generate_m3u8(animes)
         p = subprocess.Popen([Config["dl"]["player"], file])
         p.wait()
 
     def get_animes(self):
         choice = self.searchOutput.currentRow() + 1
+        print(choice)
+        # WILL CRASH WITH LETTERS
+        end = int(self.animeEpisodeEnd.text()) + 1 if self.animeEpisodeEnd.text().isnumeric() else ''
         episode_range = \
-            f'{self.animeEpisodeStart.text()}:{self.animeEpisodeEnd.text()}'
+            f'{self.animeEpisodeStart.text()}:{end}'
 
         anime = self.animeName.text()
         provider = self.providers.currentText()
-
+        print(anime, provider, choice)
         anime_url, _ = util.search(anime, provider, choice)
 
         cls = get_anime_class(anime_url)
-
         anime = cls(anime_url)
-        animes = util.parse_ep_str(anime, episode_range)
+        ep_range = util.parse_episode_range(len(anime), episode_range)
+        animes = util.split_anime(anime, ep_range)
+        # animes = util.parse_ep_str(anime, episode_range)
         anime_title = anime.title
         # maybe make animes/anime_title self.animes?
         return animes, anime_title
@@ -187,14 +175,46 @@ class Window(QtWidgets.QMainWindow):
     def generate_m3u8(self, animes):
         filepath = tempfile.gettempdir() + '/MirrorList.m3u8'
         text = "#EXTM3U\n"
-        for i in animes:
-            text += f"#EXTINF:,Episode {(i.ep_no)}\n"
-            text += i.source().stream_url + "\n"
+        for count, episode in enumerate(animes, 1):
+            print(count)
+            text += f"#EXTINF:,Episode {(episode.ep_no)}\n"
+            text += episode.source().stream_url + "\n"
+            self.signal.emit(count)
 
         with open(filepath, "w") as f:
             f.write(text)
 
         return filepath
+
+    def download_episodes(self, signal):
+        self.signal = signal
+        animes, anime_title = self.get_animes()
+        self.progressBar.setMaximum(len(animes._episode_urls))
+        download_dir = self.get_download_dir()
+
+        for count, episode in enumerate(animes, 1):
+
+            ep_no = episode.ep_no
+            external = Config["dl"]["external_downloader"]
+
+            if external:
+                util.external_download(
+                    Config["dl"]["external_downloader"],
+                    episode,
+                    Config["dl"]["file_format"],
+                    Config["dl"]["speed_limit"],
+                    path=download_dir
+                )
+
+            else:
+                episode.download(force=Config["dl"]["force_download"],
+                                 path=download_dir,
+                                 format=Config["dl"]["file_format"],
+                                 range_size=Config["dl"]["chunk_size"]
+                                 )
+
+            self.signal.emit(count)
+            time.sleep(1)
 
 
 application = QtWidgets.QApplication(sys.argv)
