@@ -19,6 +19,7 @@ class Worker(QtCore.QThread):
     @QtCore.pyqtSlot()
     def run(self):
         i = 0
+
         for episode in self.animes:
 
             ep_no = episode.ep_no
@@ -77,7 +78,7 @@ class Window(QtWidgets.QMainWindow):
         self.animeEpisodeEnd = QtWidgets.QLineEdit()
         self.searchButton = QtWidgets.QPushButton('Search')
         self.downloadDirectory = QtWidgets.QLineEdit()
-        self.file = QtWidgets.QPushButton('Pick file directory')
+        self.file = QtWidgets.QPushButton('Browse')
         self.providers = QtWidgets.QComboBox()
         self.searchOutput = QtWidgets.QListWidget()
         self.progressBar = QtWidgets.QProgressBar()
@@ -101,10 +102,16 @@ class Window(QtWidgets.QMainWindow):
         layout.addWidget(self.providers)
         layout.addWidget(self.searchButton)
         layout.addWidget(self.searchOutput)
-        layout.addWidget(self.downloadDirectory)
-        layout.addWidget(self.file)
-        layout.addWidget(self.downloadPrompt)
-        layout.addWidget(self.playPrompt)
+
+        horizontalLayout = QtWidgets.QHBoxLayout()
+        horizontalLayout.addWidget(self.downloadDirectory)
+        horizontalLayout.addWidget(self.file)
+        layout.addLayout(horizontalLayout)
+
+        horizontalLayout = QtWidgets.QHBoxLayout()
+        horizontalLayout.addWidget(self.downloadPrompt)
+        horizontalLayout.addWidget(self.playPrompt)
+        layout.addLayout(horizontalLayout)
         layout.addWidget(self.progressBar)
 
         self.setCentralWidget(central_widget)
