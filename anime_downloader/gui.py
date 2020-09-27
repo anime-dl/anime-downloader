@@ -150,7 +150,7 @@ class Window(QtWidgets.QMainWindow):
 
         self.progressBar.setMaximum(len(animes._episode_urls))
         file = self.generate_m3u8(animes)
-        p = subprocess.Popen([Config["dl"]["player"], file])
+        p = subprocess.Popen([Config["gui"]["player"], file])
         p.wait()
 
     def get_animes(self):

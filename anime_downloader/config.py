@@ -9,7 +9,7 @@ APP_DIR = click.get_app_dir(APP_NAME)
 DEFAULT_CONFIG = {
     'dl': {
         'url': False,
-        'player': 'mpv',
+        'player': None,
         'skip_download': False,
         'download_dir': '.',
         'quality': '1080p',
@@ -38,6 +38,9 @@ DEFAULT_CONFIG = {
         'log_level': 'INFO',
         'provider': 'twist.moe',
         'autoplay_next': True
+    },
+    'gui': {
+        'player': 'mpv'
     },
     'siteconfig': {
         'animefrenzy': {
