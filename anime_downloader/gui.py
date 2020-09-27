@@ -29,15 +29,20 @@ class Window(QtWidgets.QMainWindow):
     def __init__(self):
 
         super().__init__()
+        self.defaultStyleSheet = self.setStyleSheet("")
         self.setGeometry(50, 50, 400, 400)
         self.setWindowTitle("Anime Downloader")
+        self.setWindowIcon(QtGui.QIcon('placeholder.png'))
 
         vnTheme = QtWidgets.QAction('&vn-ki Theme', self)
         iggyTheme = QtWidgets.QAction('&Iggy Theme', self)
+        iggyTheme.triggered.connect(self.__iggyTheme)
         redTheme = QtWidgets.QAction('&Red Theme', self)
         arjixTheme = QtWidgets.QAction('&Arjix Theme', self)
         lagradTheme = QtWidgets.QAction('&Lagrad Theme', self)
+        lagradTheme.triggered.connect(self.__laggyTheme)
         defaultTheme = QtWidgets.QAction('&Default Theme', self)
+        defaultTheme.triggered.connect(self.__defaultTheme)
         self.statusBar()
         menubar = self.menuBar()
         themeMenu = menubar.addMenu('&Themes')
@@ -226,6 +231,85 @@ class Window(QtWidgets.QMainWindow):
             self.signal.emit(count)
             time.sleep(1)
 
+    def __iggyTheme(self):
+        self.setStyleSheet("""
+    QMainWindow,
+    QAbstractItemView,
+    QTabBar::tab
+    {
+        color: #90EE90;
+        background: #000000;
+    }
+    QPushButton {
+        color: #90EE90;
+        background-color: #e0558b;
+        border-style: double;
+        border-color: #323C72;
+        border-radius: 2px;
+        padding: 5px;
+    }
+    QPushButton:hover {
+        background-color: #a88ca2;
+    }
+    QPushButton:pressed {
+        background-color: #838FD0;
+        }
+    QLineEdit {
+        background: #8B008B;
+        background-color: #8B008B;
+        border-radius: 2px;
+        padding: 5px;
+        color: #90EE90;
+    }
+    QComboBox {
+        background: #8B008B;
+        background-color: #8B008B;
+        color: #90EE90;
+    }
+
+    QProgressBar{
+        color: #90EE90;
+    }
+    
+    */
+    """)
+
+    def __laggyTheme(self):
+        self.setStyleSheet("""
+    QMainWindow,
+    QAbstractItemView,
+    QTabBar::tab
+    {
+        color: #1a2035;
+        background: #1a2035;
+    }
+    QPushButton {
+        color: white;
+        background-color: #5465bf;
+        border-style: double;
+        border-color: #323C72;
+        border-radius: 2px;
+        padding: 5px;
+    }
+    QPushButton:hover {
+        background-color: #6574C5;
+    }
+    QPushButton:pressed {
+        background-color: #838FD0;
+        }
+    QLineEdit {
+        background: #5A628E;
+        background-color: #5A628E;
+        border-radius: 2px;
+        padding: 5px;
+        color: white;
+    }
+    
+    */
+    """)
+    def __defaultTheme(self):
+        self.setStyleSheet("")
+        
 
 application = QtWidgets.QApplication(sys.argv)
 GUI = Window()
