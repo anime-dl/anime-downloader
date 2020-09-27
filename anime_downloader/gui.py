@@ -56,7 +56,6 @@ class Window(QtWidgets.QMainWindow):
         self.downloadPage()
 
     def downloadPage(self):
-
         self.animeName = QtWidgets.QLineEdit()
         self.animeEpisodeStart = QtWidgets.QLineEdit()
         self.animeEpisodeEnd = QtWidgets.QLineEdit()
@@ -270,7 +269,7 @@ class Window(QtWidgets.QMainWindow):
     QProgressBar{
         color: #90EE90;
     }
-    
+
     */
     """)
 
@@ -296,20 +295,41 @@ class Window(QtWidgets.QMainWindow):
     }
     QPushButton:pressed {
         background-color: #838FD0;
-        }
+    }
     QLineEdit {
         background: #5A628E;
-        background-color: #5A628E;
-        border-radius: 2px;
-        padding: 5px;
         color: white;
     }
-    
+    QLineEdit:hover {
+        background: #6A7199;
+    }
+    QComboBox {
+        color: white;
+        background: #5465bf;
+        border: 1px solid #323C72;
+        border-radius: 3px;
+        padding: 4px 5px;
+    }
+    QComboBox:hover {
+        background-color: #6574C5;
+    }
+    QProgressBar {
+        text-align: center;
+        color: black;
+        border: 2px solid #6574C5;
+        border-radius: 3px;
+        background: #5A628E;
+    }
+    QProgressBar::chunk {
+        background-color: white;
+        width: 20px;
+    }
     */
     """)
+
     def __defaultTheme(self):
         self.setStyleSheet("")
-        
+
 
 application = QtWidgets.QApplication(sys.argv)
 GUI = Window()
