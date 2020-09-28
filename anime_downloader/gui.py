@@ -40,6 +40,7 @@ class Window(QtWidgets.QMainWindow):
         redTheme = QtWidgets.QAction('&Red Theme', self)
         redTheme.triggered.connect(self.__redTheme)
         arjixTheme = QtWidgets.QAction('&Arjix Theme', self)
+        arjixTheme.triggered.connect(self.__arjixTheme)
         lagradTheme = QtWidgets.QAction('&Lagrad Theme', self)
         lagradTheme.triggered.connect(self.__laggyTheme)
         defaultTheme = QtWidgets.QAction('&Default Theme', self)
@@ -381,6 +382,59 @@ class Window(QtWidgets.QMainWindow):
     }
     QProgressBar::chunk {
         background-color: #000000;
+        width: 20px;
+    }
+    */
+    """)
+    def __arjixTheme(self):
+        self.setStyleSheet("""
+    QMainWindow,
+    QAbstractItemView,
+    QTabBar::tab
+    {
+        color: #697041;
+        background: #3a192e;
+    }
+    QPushButton {
+        color: #0e1a63;
+        background-color: #88d353;
+        border-style: double;
+        border-color: #320000;
+        border-radius: 2px;
+        padding: 5px;
+    }
+    QPushButton:hover {
+        background-color: #88d353;
+    }
+    QPushButton:pressed {
+        background-color: #88d353;
+    }
+    QLineEdit {
+        background: #88d353;
+        color: #0e1a63;
+    }
+    QLineEdit:hover {
+        background: #88d353;
+    }
+    QComboBox {
+        color: #0e1a63;
+        background: #88d353;
+        border: 1px solid #323C72;
+        border-radius: 3px;
+        padding: 4px 5px;
+    }
+    QComboBox:hover {
+        background-color: #88d353;
+    }
+    QProgressBar {
+        text-align: center;
+        color: #88d353;
+        border: 2px solid #0e1a63;
+        border-radius: 3px;
+        background: #88d353;
+    }
+    QProgressBar::chunk {
+        background-color: #88d353;
         width: 20px;
     }
     */
