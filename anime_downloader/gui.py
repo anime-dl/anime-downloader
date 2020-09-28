@@ -29,6 +29,7 @@ class Window(QtWidgets.QMainWindow):
     def __init__(self):
 
         super().__init__()
+        self.updateProgress = None
         self.defaultStyleSheet = self.setStyleSheet("")
         self.setGeometry(50, 50, 400, 400)
         self.setWindowTitle("Anime Downloader")
@@ -69,6 +70,7 @@ class Window(QtWidgets.QMainWindow):
         self.progressBar = QtWidgets.QProgressBar()
         self.playPrompt = QtWidgets.QPushButton('Play')
         self.downloadPrompt = QtWidgets.QPushButton('Download')
+        self.cancelButton = QtWidgets.QPushButton('Cancel')
 
         self.PopulateProviders()
 
@@ -98,6 +100,7 @@ class Window(QtWidgets.QMainWindow):
         horizontalLayout.addWidget(self.playPrompt)
         layout.addLayout(horizontalLayout)
         layout.addWidget(self.progressBar)
+        layout.addWidget(self.cancelButton)
 
         self.setCentralWidget(central_widget)
 
@@ -105,6 +108,7 @@ class Window(QtWidgets.QMainWindow):
         self.file.clicked.connect(self.openFileDialog)
         self.downloadPrompt.clicked.connect(self.download)
         self.playPrompt.clicked.connect(self.play)
+        self.cancelButton.clicked.connect(self.cancel)
 
         self.show()
 
@@ -232,6 +236,14 @@ class Window(QtWidgets.QMainWindow):
             self.signal.emit(count)
             time.sleep(1)
 
+    def cancel(self):
+        if self.updateProgress:
+            self.progressBar.setValue(0)
+            self.updateProgress.exit()
+            print("Process has ended")
+            self.updateProgress = None
+        else:
+            return None
     def __iggyTheme(self):
         self.setStyleSheet("""
     QMainWindow,
@@ -267,11 +279,9 @@ class Window(QtWidgets.QMainWindow):
         background-color: #8B008B;
         color: #90EE90;
     }
-
     QProgressBar{
         color: #90EE90;
     }
-
     */
     """)
 
