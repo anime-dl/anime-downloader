@@ -18,7 +18,6 @@ __all__ = [
 
 logger = logging.getLogger(__name__)
 
-req_session = session.get_session()
 cf_session = cfscrape.create_scraper()
 default_headers = get_random_header()
 temp_dir = tempfile.mkdtemp(prefix='animedl')
@@ -34,6 +33,7 @@ def setup(func):
                    cf: bool = False,
                    sel: bool = False,
                    referer: str = None,
+                   cache: bool = True,
                    headers=None,
                    **kwargs):
         '''
@@ -60,8 +60,8 @@ def setup(func):
             except ImportError:
                 sess = cf_session
                 logger.warning("This provider may not work correctly because it requires selenium to work.\nIf you want to install it then run:  'pip install selenium' .")
-        else: 
-            sess = req_session 
+        else:
+            sess = session.get_session(cache=cache)
 
         if headers:
             default_headers.update(headers)
@@ -79,7 +79,7 @@ def setup(func):
                            headers=default_headers,
                            **kwargs)
 
-        if sess != selescrape: #TODO fix this for selescrape too
+        if sess != selescrape:  # TODO fix this for selescrape too
             res.raise_for_status()
             logger.debug(res.url)
             # logger.debug(res.text)
