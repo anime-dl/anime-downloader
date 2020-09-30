@@ -55,6 +55,8 @@ class VidStream(BaseExtractor):
                     """Gives away the link to another extractor"""
                     return extractors.get_extractor(i)._get_data(_self)
 
+        return {'stream_url': ''}
+
     def _get_link(self, soup):
 
         # Gets:
@@ -108,3 +110,4 @@ class Extractor:
     def __init__(self, dictionary):
         for k, v in dictionary.items():
             setattr(self, k, v)
+
