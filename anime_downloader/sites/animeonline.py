@@ -31,6 +31,9 @@ class AnimeOnline(Anime, sitename='animeonline360'):
             return ""
 
     def _scrape_episodes(self):
+        if '/movies/' in self.url:
+            return [self.url]
+
         data = helpers.soupify(helpers.get(self.url)).select('div.episodiotitle > a')
         return [i.get('href') for i in data[::-1]]
 
@@ -41,3 +44,4 @@ class AnimeOnline(Anime, sitename='animeonline360'):
 class AnimeOnlineEpisode(AnimeEpisode, sitename='animeonline360'):
     def _get_sources(self):
         return [('animeonline360', self.url)]
+
