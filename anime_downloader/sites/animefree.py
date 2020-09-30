@@ -3,10 +3,12 @@ import re
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 
+logger = logging.getLogger(__name__)
+
 
 class AnimeFree(Anime, sitename='animefree'):
     sitename = 'kissanimefree'
-    url = f'https://{sitename}.xyz/'
+    url = f'https://{sitename}.net/'
 
     @classmethod
     def search(cls, query):
@@ -31,11 +33,8 @@ class AnimeFree(Anime, sitename='animefree'):
         _referer = self.url.replace("_anime", "kissanime")
         _id = helpers.soupify(helpers.get(_referer)).select("li.addto-later")[0].get("data-id")
 
-        #data = self.url.split(",")
-        #_id = data[1]
-        #_referer = data[0].replace("_anime", "kissanime")
         for i in range(1, 100):
-            d = helpers.get("https://kissanimefree.xyz/load-list-episode/", params={"pstart": i, "id": _id, "ide": ""})
+            d = helpers.get("https://kissanimefree.net/load-list-episode/", params={"pstart": i, "id": _id, "ide": ""})
             if not d.text:  # MOVIES
                 maxEp = 1
                 break
@@ -58,20 +57,20 @@ class AnimeFreeEpisode(AnimeEpisode, sitename='kissanimefree'):
         realId = int(ids[0]) + int(ids[1]) + 2
         _referer = ids[2]
 
-        realUrl = helpers.post("https://kissanimefree.xyz/wp-admin/admin-ajax.php",
-                               referer=f"https://kissanimefree.xyz/episode/{_referer}-episode-{realId}/",
+        realUrl = helpers.post("https://kissanimefree.net/wp-admin/admin-ajax.php",
+                               referer=f"https://kissanimefree.net/episode/{_referer}-episode-{realId}/",
                                data={"action": "kiss_player_ajax", "server": "vidcdn", "filmId": realId}).text
 
         realUrl = realUrl if realUrl.startswith('http') else "https:" + realUrl
 
         txt = helpers.get(realUrl).text
-        # Group 2 and/or 3 is the vidstreaming links without https://
-        # Not used because I've yet to test if goto always leads to mp4
-        # vidstream_regex = r"window\.location\s=\s(\"|').*?(vidstreaming\.io/[^(\"|')]*?)\"|(vidstreaming\.io/goto\.php[^(\"|')]*?)(\"|')"
-
-        vidstream_regex = r"window\.location\s=\s(\"|').*?(vidstreaming\.io/[^(\"|')]*?)\""
+        # gets src="//vidstreaming.io/loadserver.php?id=MTIyNjM4&title=Naruto"></iframe>
+        vidstream_regex = r'src=[^\s]*(((vidstreaming\.io)|(gogo-stream\.com))[^"\']*)'
         surl = re.search(vidstream_regex, txt)
         if surl:
-            if surl.group(2):
-                return [('vidstreaming', surl.group(2),)]
+            if surl.group(1):
+                return [('vidstream', surl.group(1))]
+
+        logger.debug('Failed vidstream text: {}'.format(txt))
         return ''
+
