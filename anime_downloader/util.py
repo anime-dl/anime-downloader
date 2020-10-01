@@ -242,12 +242,13 @@ def get_json(url, params=None):
 
 def slugify(file_name):
     file_name = str(file_name).strip().replace(' ', '_')
-    return re.sub(r'(?u)[^-\w.]', '', file_name)
+    # First group removes filenames starting with a dot making them hidden.
+    # Second group removes anything not in it, for example '"/\|
+    return re.sub(r'(^\.)|([^-\w.!+-])', '', file_name)
 
 
 def format_filename(filename, episode):
     zerosTofill = math.ceil(math.log10(episode._parent._len))
-
     rep_dict = {
         'anime_title': slugify(episode._parent.title),
         'ep_no': str(episode.ep_no).zfill(zerosTofill),
@@ -421,3 +422,4 @@ class ClickListOption(click.Option):
             return ast.literal_eval(value)
         except:
             raise click.BadParameter(value)
+
