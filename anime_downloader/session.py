@@ -26,13 +26,15 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 def get_session(custom_session=None, cache=False):
     global _session
     if cache:
-        cachefile = os.path.join(tempfile.gettempdir(), 'anime-cache')
-        # requests_cache.install_cache(cachefile, backend='sqlite', expire_after=3600)
-
-        _session = requests_cache.CachedSession(cachefile, backend='sqlite', expire_after=3600)
+        cachefilename = 'anime-cache'
+        expire_time = 3600
     else:
-        _session = requests.Session()
+        cachefilename = 'anime-cache-temp'
+        expire_time = 10
 
+    cachefile = os.path.join(tempfile.gettempdir(), cachefilename)
+    # requests_cache.install_cache(cachefile, backend='sqlite', expire_after=3600)
+    _session = requests_cache.CachedSession(cachefile, backend='sqlite', expire_after=expire_time)
     _session.hooks = {'response': cacheinfo_hook}
 
     if custom_session:
@@ -98,3 +100,4 @@ class DownloaderSession:
             self._cache[key] = downloader.get_downloader('ext')(
                 options=self.external_downloaders[key])
         return self._cache[key]
+
