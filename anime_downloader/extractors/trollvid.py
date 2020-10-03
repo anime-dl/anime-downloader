@@ -6,10 +6,12 @@ from anime_downloader.sites import helpers
 
 class Trollvid(BaseExtractor):
     def _get_data(self):
+
         # TODO: Provide referer by source
         referer = 'https://anistream.xyz'
 
-        req = helpers.get(self.url, referer=referer)
+        # The token expires after ~1 minute, making caching error future requests.
+        req = helpers.get(self.url, referer=referer, cache=False)
         source_regex = r'<source src="(.*?)"'
         source = re.search(source_regex, req.text)
 
