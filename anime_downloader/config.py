@@ -183,6 +183,16 @@ DEFAULT_CONFIG = {
                 'mp4upload',
                 'streamtape'
             ]
+        },
+        'animetake': {
+            'version': 'subbed',
+            'servers': [
+                'gstore',
+                'hydrax',
+                'fembed',
+                'vidstreaming',
+                'mixdrop',
+            ]
         }
     }
 }
