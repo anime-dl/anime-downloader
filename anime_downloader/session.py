@@ -12,7 +12,6 @@ import tempfile
 logger = logging.getLogger(__name__)
 
 
-
 def cacheinfo_hook(response, *args, **kwargs):
     if not getattr(response, 'from_cache', False):
         logger.debug('uncached request')
@@ -20,10 +19,11 @@ def cacheinfo_hook(response, *args, **kwargs):
         logger.debug('cached request')
     return response
 
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-def get_session(custom_session=None, cache=False):
+def get_session(custom_session=None, cache=True):
     global _session
     if cache:
         cachefilename = 'anime-cache'
