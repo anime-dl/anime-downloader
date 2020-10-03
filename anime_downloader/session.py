@@ -11,10 +11,6 @@ import tempfile
 
 logger = logging.getLogger(__name__)
 
-cachefile = os.path.join(tempfile.gettempdir(), 'anime-cache')
-# requests_cache.install_cache(cachefile, backend='sqlite', expire_after=3600)
-
-_session = requests_cache.CachedSession(cachefile, backend='sqlite', expire_after=3600)
 
 def cacheinfo_hook(response, *args, **kwargs):
     if not getattr(response, 'from_cache', False):
@@ -22,14 +18,24 @@ def cacheinfo_hook(response, *args, **kwargs):
     else:
         logger.debug('cached request')
     return response
-_session.hooks = {'response': cacheinfo_hook}
 
-# _session = requests.Session()
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-def get_session(custom_session=None):
+def get_session(custom_session=None, cache=True):
     global _session
+    if cache:
+        cachefilename = 'anime-cache'
+        expire_time = 3600
+    else:
+        cachefilename = 'anime-cache-temp'
+        expire_time = 10
+
+    cachefile = os.path.join(tempfile.gettempdir(), cachefilename)
+    # requests_cache.install_cache(cachefile, backend='sqlite', expire_after=3600)
+    _session = requests_cache.CachedSession(cachefile, backend='sqlite', expire_after=expire_time)
+    _session.hooks = {'response': cacheinfo_hook}
 
     if custom_session:
         custom_session.verify = _session.verify
@@ -94,3 +100,4 @@ class DownloaderSession:
             self._cache[key] = downloader.get_downloader('ext')(
                 options=self.external_downloaders[key])
         return self._cache[key]
+

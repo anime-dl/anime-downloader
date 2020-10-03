@@ -169,8 +169,8 @@ class Anime:
             self._len, self._episode_urls))
 
         if not isinstance(self._episode_urls[0], tuple):
-            self._episode_urls = [(no+1, id) for no, id in
-                                enumerate(self._episode_urls)]
+            self._episode_urls = [(no + 1, id) for no, id in
+                                  enumerate(self._episode_urls)]
 
         return self._episode_urls
 
@@ -354,11 +354,10 @@ class AnimeEpisode:
     def _get_sources(self):
         raise NotImplementedError
 
-
     def sort_sources(self, data):
         """
         Formatted data should look something like this
-        
+
         [
         {'extractor': 'mp4upload', 'url': 'https://twist.moe/mp4upload/...', 'server': 'mp4upload', 'version': 'subbed'}, 
         {'extractor': 'vidstream', 'url': 'https://twist.moe/vidstream/...', 'server': 'vidstream', 'version': 'dubbed'},
@@ -371,7 +370,7 @@ class AnimeEpisode:
         version = subbed/dubbed
 
         The config should consist of a list with servers in preferred order and a preferred language, eg
-        
+
         "servers":["vidstream","default","mp4upload"],
         "version":"subbed"
 
@@ -379,22 +378,21 @@ class AnimeEpisode:
         as it prioritizes preferred language over preferred server
         """
 
-        version = self.config.get('version','subbed') #TODO add a flag for this
-        servers = self.config.get('servers',[''])
+        version = self.config.get('version', 'subbed')  # TODO add a flag for this
+        servers = self.config.get('servers', [''])
 
         logger.debug('Data : {}'.format(data))
 
-        #Sorts the dicts by preferred server in config
+        # Sorts the dicts by preferred server in config
         sorted_by_server = sorted(data, key=lambda x: servers.index(x['server']) if x['server'] in servers else len(data))
 
-        #Sorts the above by preferred language 
-        #resulting in a list with the dicts sorted by language and server
-        #with language being prioritized over server
+        # Sorts the above by preferred language
+        # resulting in a list with the dicts sorted by language and server
+        # with language being prioritized over server
         sorted_by_lang = list(sorted(sorted_by_server, key=lambda x: x['version'] == version, reverse=True))
         logger.debug('Sorted sources : {}'.format(sorted_by_lang))
 
-        return '' if not sorted_by_lang else [(sorted_by_lang[0]['extractor'],sorted_by_lang[0]['url'])]
-
+        return '' if not sorted_by_lang else [(sorted_by_lang[0]['extractor'], sorted_by_lang[0]['url'])]
 
     def download(self, force=False, path=None,
                  format='{anime_title}_{ep_no}', range_size=None):
@@ -413,7 +411,7 @@ class AnimeEpisode:
         # TODO: Remove this shit
         logger.info('Downloading {}'.format(self.pretty_title))
         if format:
-            file_name = util.format_filename(format, self)+'.mp4'
+            file_name = util.format_filename(format, self) + '.mp4'
 
         if path is None:
             path = './' + file_name

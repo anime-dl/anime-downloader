@@ -19,9 +19,9 @@ class FastAni(Anime, sitename="fastani"):
         js = helpers.get(js_location).text
 
         # Get authorization token, e.g: {authorization:"Bearer h8X2exbErErNSxRnr6sSXAE2ycUSyrbU"}
-        token = re.search("authorization:.*?\"(.*?)\"", js).group(1)
+        key, token = re.search("method:\"GET\".*?\"(.*?)\".*?\"(.*?)\"", js).group(1,2)
 
-        return {"authorization": token}
+        return {key: token}
 
     @classmethod
     def search(cls, query):
