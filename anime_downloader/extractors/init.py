@@ -144,6 +144,12 @@ ALL_EXTRACTORS = [
         'modulename': 'vudeo',
         'regex': 'vudeo',
         'class': 'Vudeo'
+    },
+    {
+        'sitename': 'streamtape',
+        'modulename': 'streamtape',
+        'regex': 'streamtape',
+        'class': 'StreamTape'
     }
 ]
 

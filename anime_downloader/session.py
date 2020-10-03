@@ -12,13 +12,13 @@ import tempfile
 logger = logging.getLogger(__name__)
 
 
+
 def cacheinfo_hook(response, *args, **kwargs):
     if not getattr(response, 'from_cache', False):
         logger.debug('uncached request')
     else:
         logger.debug('cached request')
     return response
-
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 

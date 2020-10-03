@@ -13,14 +13,13 @@ class KissanimeEpisode(AnimeEpisode, sitename='kissanime'):
     _base_url = 'https://kissanime.ru'
 
     def _get_sources(self):
-        ret = helpers.get(self.url+'&s=hydrax', sel=True).text
+        ret = helpers.get(self.url + '&s=hydrax', sel=True).text
         data = self._scrape_episode(ret)
         return data
 
-
     def _scrape_episode(self, response):
         regex = r'iframe.*src="(https://.*?)"'
-        url = (re.search(regex,response).group(1))
+        url = (re.search(regex, response).group(1))
         return [('hydrax', url)]
 
 
@@ -33,14 +32,14 @@ class KissAnime(Anime, sitename='kissanime'):
 
     @classmethod
     def search(cls, query):
-        sel = helpers.get("https://kissanime.ru",sel=True)
+        sel = helpers.get("https://kissanime.ru", sel=True)
         cookies = sel.cookies
-        agent = sel.user_agent # Note that the user agent must be the same as the one which generated the cookies
+        agent = sel.user_agent  # Note that the user agent must be the same as the one which generated the cookies
         cookies = {c['name']: c['value'] for c in cookies}
-        soup = helpers.soupify((helpers.post("https://kissanime.ru/Search/Anime", headers = {
+        soup = helpers.soupify((helpers.post("https://kissanime.ru/Search/Anime", headers={
             "User-Agent": agent,
             "Referer": "https://kissanime.ru/Search/Anime"
-            },data = {"keyword": query},cookies=cookies)))
+        }, data={"keyword": query}, cookies=cookies)))
 
         # If only one anime found, kissanime redirects to anime page.
         # We don't want that
@@ -49,10 +48,10 @@ class KissAnime(Anime, sitename='kissanime'):
                 title=soup.find('a', 'bigChar').text,
                 url=cls.domain +
                     soup.find('a', 'bigChar').get('href'),
-                poster='',
-                meta_info = {
-                    'version_key_dubbed':'(Dub)',
-                    'version_key_subbed':'(Sub)'
+                    poster='',
+                    meta_info={
+                    'version_key_dubbed': '(Dub)',
+                    'version_key_subbed': '(Sub)'
                 }
             )]
 
@@ -64,16 +63,15 @@ class KissAnime(Anime, sitename='kissanime'):
                 title=res.text.strip(),
                 url=cls.domain + res.find('a').get('href'),
                 poster='',
-                meta_info = {
-                    'version_key_dubbed':'(Dub)',
-                    'version_key_subbed':'(Sub)'
+                meta_info={
+                    'version_key_dubbed': '(Dub)',
+                    'version_key_subbed': '(Sub)'
                 }
             )
             logger.debug(res)
             ret.append(res)
 
         return ret
-
 
     def _scrape_episodes(self):
         soup = helpers.soupify(helpers.get(self.url, sel=True).text)
@@ -93,7 +91,6 @@ class KissAnime(Anime, sitename='kissanime'):
 
         ret = ret[::-1]
         return ret
-
 
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url, sel=True).text)

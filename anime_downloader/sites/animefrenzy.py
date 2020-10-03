@@ -6,17 +6,19 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class AnimeFrenzy(Anime, sitename='animefrenzy'):
-    sitename='animefrenzy'
+    sitename = 'animefrenzy'
+
     @classmethod
     def search(cls, query):
-        r = helpers.get("https://animefrenzy.net/search", params = {"q": query})
+        r = helpers.get("https://animefrenzy.net/search", params={"q": query})
         soup = helpers.soupify(r)
         titleName = soup.select("div.conm > a.cona")
         search_results = [
             SearchResult(
-                title = a.text,
-                url = 'https://animefrenzy.net/' + a.get('href')
+                title=a.text,
+                url='https://animefrenzy.net/' + a.get('href')
             )
             for a in titleName
         ]
@@ -43,7 +45,8 @@ class AnimeFrenzy(Anime, sitename='animefrenzy'):
 
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url))
-        self.title = soup.select_one("div.infodes > h1").text 
+        self.title = soup.select_one("div.infodes > h1").text
+
 
 class AnimeFrenzyEpisode(AnimeEpisode, sitename='animefrenzy'):
     def _get_sources(self):

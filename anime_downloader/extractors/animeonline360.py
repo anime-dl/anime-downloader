@@ -1,6 +1,8 @@
 from anime_downloader.extractors.base_extractor import BaseExtractor
 from anime_downloader.sites import helpers
 import urllib.parse
+
+
 class AnimeOnline360(BaseExtractor):
     def _get_data(self):
         try:
