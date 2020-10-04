@@ -2,8 +2,11 @@
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 from difflib import get_close_matches
+from requests.exceptions import HTTPError
+from bs4.element import NavigableString
 
 import re
+import time
 import logging
 
 logger = logging.getLogger(__name__)
@@ -17,20 +20,51 @@ class EraiRaws(Anime, sitename='erai-raws'):
     @classmethod
     def bypass(self):
         host = "https://erai-raws.info"
-        resp = helpers.get("https://check.ddos-guard.net/check.js").text
+        resp = helpers.get("https://check.ddos-guard.net/check.js", cache=False).text
 
         # new Image().src = '/.well-known/ddos-guard/id/WaEVEyURh4MduAdI'; -> /.well-known/ddos-guard/id/WaEVEyURh4MduAdI
         ddosBypassPath = re.search("'(.*?)'", resp).groups()[0]
-        return helpers.get(host + ddosBypassPath).cookies
+        return helpers.get(host + ddosBypassPath, cache=False).cookies
 
-    def parse(self, server, cookies):
+    def parse(self, server):
+        cookies=self.bypass()
         soup=helpers.soupify(helpers.get(server, cookies=cookies))
-        # A mix of episodes and folders containing episodes
-        links=[x.get("href") for x in soup.select("td[title] > a[href]")]
-        folderIndices=[i for i, x in enumerate(links) if "folder" in x]
+        # A mix of episodes and folders containing episode
+        # Keeping the nodes to check the titles later for quality selection
+        linkNodes=soup.select("td[title] > a[href]")
+        folderIndices=[i for i, x in enumerate(linkNodes) if "folder" in x.get("href")]
 
-        for index in folderIndices:
+        while len(folderIndices) > 0:
+            for index in folderIndices:
+                link=linkNodes[index].get("href")
 
+                # Sometimes we get a 403 and have to wait for 5 seconds
+                try:
+                    soup=helpers.soupify(helpers.get(link, cookies=cookies))
+                except HTTPError:
+                    time.sleep(5)
+                    cookies=self.bypass()
+                    soup=helpers.soupify(helpers.get(link, cookies=cookies))
+                
+                # Replace the folder node with all the nodes of what the folder contains
+                linkNodes[index]=soup.select("td[title] > a[href]")
+
+            # Flatten list, e.g. [node, node, [node, node], node] -> [node, node, node, node, node]
+            linkNodes=[i for x in linkNodes for i in x]
+
+            # Maybe due to the flattening, but sometimes <a class="responsiveInfoTable" href="https://srv9.erai-ddl3.info/5757d93aae57a6916eed08bc368ad8b7" target="_blank">[Erai-raws] One Piece - 915 [1080p][Multiple Subtitle].mkv</a> becomes [Erai-raws] One Piece - 915 [1080p][Multiple Subtitle].mkv which leads to an error when getting the links
+            for x, y in enumerate(linkNodes):
+                if type(y) == NavigableString:
+                    linkNodes[x] = y.parent
+
+            folderIndices=[i for i, x in enumerate(linkNodes) if "folder" in x.get("href")]
+
+        links=[x.get("href") for x in linkNodes if self.quality in x.text]
+
+        return links
+
+    def getTorrents(self):
+        pass
 
     @classmethod
     def search(cls, query):
@@ -65,7 +99,7 @@ class EraiRaws(Anime, sitename='erai-raws'):
         # As opposed to Subs
         if ddl.text == "DDL":
             server=ddl.get("href")
-            return self.parse(server, cookies)
+            return self.parse(server)
         else:
             # use torrent
             logger.warn("Direct download links not found, using torrent...")
@@ -81,4 +115,4 @@ class EraiRawsEpisode(AnimeEpisode, sitename='erai-raws'):
         if self.url.startswith("magnet:"):
             return [("no_extractor", self.url)]
 
-
+        logger.info(helpers.get(self.url).text)
