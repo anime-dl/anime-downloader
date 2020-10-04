@@ -19,6 +19,8 @@ from tabulate import tabulate
 from uuid import uuid4
 from secrets import choice
 from urllib.parse import urlparse
+import signal
+from m3u8_dl import M3u8Downloader, M3u8Context, PickleContextRestore
 
 from anime_downloader import session
 from anime_downloader.sites import get_anime_class, helpers
@@ -308,8 +310,8 @@ def format_command(cmd, episode, file_format, speed_limit, path):
     if extension.startswith('m3u'):
         filename = format_filename(rep_dict['file_format'], episode)
         expected_file = rep_dict['download_dir'] + '/' + filename + '.mp4'
-        cmd_dict['{m3u8_dl}'] = get_m3u8_command(cmd_dict['{m3u8_dl}'], expected_file)
-        cmd = "{m3u8_dl}"
+        download_m3u8(rep_dict["stream_url"], rep_dict["referer"], expected_file)
+        return
 
     if cmd == "{idm}":
         rep_dict['file_format'] = rep_dict['file_format'].replace('/', '\\')
@@ -324,7 +326,9 @@ def format_command(cmd, episode, file_format, speed_limit, path):
     return cmd
 
 
-def get_m3u8_command(cmd, expected_file):
+def download_m3u8(url, referer, expected_file):
+    context = None
+
     # As the m3u8 downloader only creates the mp4 file when complete just
     # checking that is exists is sufficent.
     if os.path.isfile(expected_file):
@@ -335,20 +339,67 @@ def get_m3u8_command(cmd, expected_file):
     file_dir = '/'.join(expected_file.split('/')[:-1])
     make_dir(file_dir)
 
+    restore = PickleContextRestore()
     # Checks if it can resume.
     if os.path.isfile(os.getcwd() + '/m3u8_dl.restore'):
-        with open(os.getcwd() + '/m3u8_dl.restore') as f:
+        with open(os.getcwd() + '/m3u8_dl.restore', 'rb') as f:
             # Checks if the file downloaded is the same as expected.
             # Without this it'll resume the previous download regardless
             # of what the user chooses does.
-            restore_json = json.load(f)
+            restore_object = pickle.load(f)
             # Be aware that '.mp4' here needs to be changed if cmd_dict is changed.
-            if restore_json['user_options'].get('output_file') == expected_file:
+            if restore_object._container["output_file"] == expected_file:
                 # Only restores if it can AND the expected file location is the same.
                 # NOTE: only the most recent download can be resumed!
-                cmd = cmd + ' --restore'
+                context = restore.load()
 
-    return cmd
+    if not context:
+        context = M3u8Context(file_url=url, referer=referer, threads=16, output_file=expected_file,
+                              get_m3u8file_complete=False, downloaded_ts_urls=[])
+        context["base_url"] = url
+        context['sslverify'] = False
+
+    # Basically copied from cli.py in m3u8_dl
+    m = M3u8Downloader(context, on_progress_callback=_show_progress_bar)
+
+    def signal_handler(sig, frame):
+        click.echo('\nCaptured Ctrl + C ! Saving Current Session ...')
+        restore.dump(context)
+        sys.exit(1)
+
+    signal.signal(signal.SIGINT, signal_handler)
+
+    m.get_m3u8file()
+    click.echo('m3u8: Saving as ' + M3u8Downloader.m3u8_filename)
+
+    m.parse_m3u8file()
+    m.get_tsfiles()
+    if m.is_task_success:
+        m.merge()
+
+    # clean everything Downloader generates
+    m.cleanup()
+    # clean restore
+    restore.cleanup()
+
+    if not m.is_task_success:
+        click.echo('Download Failed')
+
+
+def _show_progress_bar(_, downloaded, total):
+    """
+    progress bar for command line
+    This can probably be replaced with write_status() in base_downloader.
+    """
+    htlen = 33
+    percent = downloaded / total * 100
+    # 20 hashtag(#)
+    hashtags = int(percent / 100 * htlen)
+    click.echo('|'
+        + '#' * hashtags + ' ' * (htlen - hashtags) +
+        '|' +
+        '  {0}/{1} '.format(downloaded, total) +
+        ' {:.1f}'.format(percent).ljust(5) + ' %\r', nl=False)  # noqa
 
 
 # Credits to: https://github.com/Futei/SineCaptcha
