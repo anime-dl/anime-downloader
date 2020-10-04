@@ -25,5 +25,5 @@ class pySmartDL(BaseDownloader):
         request_args = {'headers': headers}
 
         dest = str(self.path)  # str(path.parent.absolute())
-        obj = SmartDL(url, dest, request_args=request_args, progress_bar=True)
+        obj = SmartDL(url, dest, request_args=request_args, progress_bar=True, verify=False)
         obj.start()

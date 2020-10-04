@@ -67,13 +67,13 @@ Yeah. Me too! That's why this tool exists.
 - Animerush
 - Animesimple
 - Animevibe
+- AnimeTake
 - Animixplay
 - Anistream
 - Darkanime
 - Dbanimes 
 - FastAni
 - GurminderBoparai (AnimeChameleon)
-- HorribleSubs
 - itsaturday
 - Justdubs
 - Kickassanime
