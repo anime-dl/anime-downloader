@@ -25,7 +25,7 @@ class Animeflv(Anime, sitename='animeflv'):
 
     """
     sitename = 'animeflv'
-    QUALITIES = ['360p', '480p', '720p', '1080p']
+    QUALITIES = ('360p', '480p', '720p', '1080p')
     DOMAIN = "https://animeflv.net/"
 
     @classmethod
