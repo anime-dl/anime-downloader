@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class KisscartoonEpisode(AnimeEpisode, sitename='kisscartoon'):
     _episode_list_url = 'https://kisscartoon.is/ajax/anime/load_episodes_v2'
-    QUALITIES = ['720p']
+    QUALITIES = ('720p')
 
     def _get_sources(self):
         servers = self.config['servers']
