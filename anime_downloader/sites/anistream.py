@@ -14,7 +14,7 @@ class Anistream(Anime, sitename='anistream.xyz'):
         Selects the version of audio of anime.
     """
     sitename = 'anistream.xyz'
-    QUALITIES = ['360p', '480p', '720p', '1080p']
+    QUALITIES = ('360p', '480p', '720p', '1080p')
 
     @classmethod
     def search(self, query):
