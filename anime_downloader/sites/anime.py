@@ -36,14 +36,14 @@ class Anime:
         Title of the anime
     meta: dict
         metadata about the anime. [Can be empty]
-    QUALITIES: list
+    QUALITIES: tuple
         Possible qualities for the site
     """
     sitename = ''
     title = ''
     meta = dict()
     subclasses = {}
-    QUALITIES = ['360p', '480p', '720p', '1080p']
+    QUALITIES = ('360p', '480p', '720p', '1080p')
 
     @classmethod
     def search(cls, query):
