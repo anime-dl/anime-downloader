@@ -31,7 +31,7 @@ class TwistMoe(Anime, sitename='twist.moe'):
     Twist.moe
     """
     sitename = 'twist.moe'
-    QUALITIES = ['360p', '480p', '720p', '1080p']
+    QUALITIES = ('360p', '480p', '720p', '1080p')
     _api_url = "https://twist.moe/api/anime/{}/sources"
 
     @classmethod
