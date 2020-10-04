@@ -270,7 +270,6 @@ def format_command(cmd, episode, file_format, speed_limit, path):
                    '{file_format}.mp4 --continue=true --dir={download_dir}'
                    ' --stream-piece-selector=inorder --min-split-size=5M --referer={referer} --check-certificate=false --user-agent={useragent} --max-overall-download-limit={speed_limit}',
         '{idm}': 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4',
-        '{m3u8_dl}': 'm3u8-dl -r {referer} --insecure -t 16 {stream_url} {download_dir}/{file_format}.mp4'
     }
 
     # Allows for passing the user agent with self.headers in the site.
@@ -343,7 +342,6 @@ def download_m3u8(url, referer, expected_file):
             # Without this it'll resume the previous download regardless
             # of what the user chooses does.
             restore_object = pickle.load(f)
-            # Be aware that '.mp4' here needs to be changed if cmd_dict is changed.
             if restore_object._container["output_file"] == expected_file:
                 # Only restores if it can AND the expected file location is the same.
                 # NOTE: only the most recent download can be resumed!
