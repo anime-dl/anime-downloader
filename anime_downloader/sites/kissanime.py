@@ -28,7 +28,7 @@ class KissAnime(Anime, sitename='kissanime'):
     sitename = 'kissanime'
     domain = 'https://kissanime.ru'
     _referer = 'https://kissanime.ru'
-    QUALITIES = ['360p', '480p', '720p', '1080p']
+    QUALITIES = ('360p', '480p', '720p', '1080p')
 
     @classmethod
     def search(cls, query):
