@@ -2,7 +2,11 @@
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 from difflib import get_close_matches
+
 import re
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class EraiRaws(Anime, sitename='erai-raws'):
@@ -10,48 +14,27 @@ class EraiRaws(Anime, sitename='erai-raws'):
     QUALITIES = ['720p', '1080p']
 
     # Bypass DDosGuard
+    @classmethod
     def bypass(self):
         host = "https://erai-raws.info"
         resp = helpers.get("https://check.ddos-guard.net/check.js").text
+
+        # new Image().src = '/.well-known/ddos-guard/id/WaEVEyURh4MduAdI'; -> /.well-known/ddos-guard/id/WaEVEyURh4MduAdI
         ddosBypassPath = re.search("'(.*?)'", resp).groups()[0]
         return helpers.get(host + ddosBypassPath).cookies
 
-    def parse(self, rows, url):
-        episodes = []
+    def parse(self, server, cookies):
+        soup=helpers.soupify(helpers.get(server, cookies=cookies))
+        # A mix of episodes and folders containing episodes
+        links=[x.get("href") for x in soup.select("td[title] > a[href]")]
+        folderIndices=[i for i, x in enumerate(links) if "folder" in x]
 
-        if self.quality == self.QUALITIES[0] and len(rows) > 1:
-            rows = rows[::2]
-        elif len(rows) > 1:
-            rows = rows[1::2]
+        for index in folderIndices:
 
-        for row in rows:
-            if row.parent.get("href")[-3:] != "mkv":
-                if url[-1] != '/':
-                    url = url + '/'
-                folder = helpers.get(url + "index.php" + row.parent.get("href"))
-                folder = helpers.soupify(folder)
-
-                # Append all episodes in folder - folders are also seperated by quality
-                # So everything in a folder can be taken in one go
-                [episodes.append(url + x.parent.get("href")) for x in folder.find("ul", {"id": "directory-listing"}).find_all("div", {"class": "row"})]
-            else:
-                episodes.append(url + row.parent.get("href"))
-
-        episodes = episodes[1:]
-
-        if len(rows) == 1:
-            if rows[0].parent.get("href")[-3:] != "mkv":
-                url = f"{url}index.php" if url[:-1] == "/" else f"{url}/index.php"
-                folder = helpers.soupify(helpers.get(url + rows[0].parent.get("href")))
-                episodes = [url + x.parent.get("href") for x in folder.find("ul", {"id": "directory-listing"}).find_all("div", {"class": "row"})]
-            else:
-                episodes = [url + rows[0].parent["href"]]
-
-        return episodes
 
     @classmethod
     def search(cls, query):
-        cookies=cls.bypass(cls)
+        cookies=cls.bypass()
         soup = helpers.soupify(helpers.get("https://erai-raws.info/anime-list/", cookies=cookies))
         result_data = soup.find("div", {"class": "shows-wrapper"}).find_all("a")
         titles = [x.text.strip() for x in result_data]
@@ -70,17 +53,23 @@ class EraiRaws(Anime, sitename='erai-raws'):
         return search_results
 
     def _scrape_episodes(self):
-        self.bypass()
-        soup = helpers.soupify(helpers.get(self.url))
-        files = soup.find("div", {"class": "ddmega"}).find("a").get("href")
-        if files[-1] != '/':
-            files = files + '/'
-        index = files + "index.php"
-        html = helpers.get(index, headers={"Referer": files})
-        soup = helpers.soupify(html)
-        rows = soup.find("ul", {"id": "directory-listing"}).find_all("div", {"class": "row"})
-        episodes = self.parse(rows, files)
-        return episodes
+        if self.quality not in self.QUALITIES:
+            self.quality = "720p"
+
+        cookies=self.bypass()
+        soup = helpers.soupify(helpers.get(self.url, cookies=cookies))
+
+        #Check if anime has DDL - as of writing this, most do not
+        ddl=soup.select("div.ddmega > a[href]")[0]
+
+        # As opposed to Subs
+        if ddl.text == "DDL":
+            server=ddl.get("href")
+            return self.parse(server, cookies)
+        else:
+            # use torrent
+            logger.warn("Direct download links not found, using torrent...")
+            return self.getTorrents(soup, cookies)
 
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url))
@@ -89,4 +78,7 @@ class EraiRaws(Anime, sitename='erai-raws'):
 
 class EraiRawsEpisode(AnimeEpisode, sitename='erai-raws'):
     def _get_sources(self):
-        return [("no_extractor", self.url)]
+        if self.url.startswith("magnet:"):
+            return [("no_extractor", self.url)]
+
+
