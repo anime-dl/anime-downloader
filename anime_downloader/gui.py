@@ -291,7 +291,7 @@ class Window(QtWidgets.QMainWindow):
     QAbstractItemView,
     QTabBar::tab
     {
-        color: #1a2035;
+        color: white;
         background: #1a2035;
     }
     QPushButton {
@@ -337,7 +337,7 @@ class Window(QtWidgets.QMainWindow):
         width: 20px;
     }
     */
-    """) 
+    """)
 
     def __redTheme(self):
         self.setStyleSheet("""
