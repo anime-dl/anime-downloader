@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 class AnimePaheEpisode(AnimeEpisode, sitename='animepahe'):
-    QUALITIES = ['360p', '480p', '720p', '1080p']
+    QUALITIES = ('360p', '480p', '720p', '1080p')
 
     def _get_source(self, episode_id, server, session_id):
         # We will extract the episodes data through the animepahe api
@@ -57,7 +57,7 @@ class AnimePahe(Anime, sitename='animepahe'):
     sitename = 'animepahe'
     api_url = 'https://animepahe.com/api'
     base_anime_url = 'https://animepahe.com/anime/'
-    QUALITIES = ['360p', '480p', '720p', '1080p']
+    QUALITIES = ('360p', '480p', '720p', '1080p')
     _episodeClass = AnimePaheEpisode
 
     @classmethod
