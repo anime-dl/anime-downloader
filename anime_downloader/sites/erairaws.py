@@ -14,7 +14,7 @@ class EraiRaws(Anime, sitename='erai-raws'):
         host = "https://erai-raws.info"
         resp = helpers.get("https://check.ddos-guard.net/check.js").text
         ddosBypassPath = re.search("'(.*?)'", resp).groups()[0]
-        helpers.get(host + ddosBypassPath)
+        return helpers.get(host + ddosBypassPath).cookies
 
     def parse(self, rows, url):
         episodes = []
@@ -51,8 +51,8 @@ class EraiRaws(Anime, sitename='erai-raws'):
 
     @classmethod
     def search(cls, query):
-        cls.bypass(cls)
-        soup = helpers.soupify(helpers.get("https://erai-raws.info/anime-list/"))
+        cookies=cls.bypass(cls)
+        soup = helpers.soupify(helpers.get("https://erai-raws.info/anime-list/", cookies=cookies))
         result_data = soup.find("div", {"class": "shows-wrapper"}).find_all("a")
         titles = [x.text.strip() for x in result_data]
 
