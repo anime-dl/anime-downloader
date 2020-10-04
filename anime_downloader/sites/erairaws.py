@@ -7,7 +7,7 @@ import re
 
 class EraiRaws(Anime, sitename='erai-raws'):
     sitename = 'erai-raws'
-    QUALITIES = ['720p', '1080p']
+    QUALITIES = ('720p', '1080p')
 
     # Bypass DDosGuard
     def bypass(self):
