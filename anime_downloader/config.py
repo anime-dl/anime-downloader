@@ -21,27 +21,35 @@ DEFAULT_CONFIG = {
         'external_downloader': '',
         'aria2c_for_torrents': False,
         'selescrape_browser': None,
-        'selescrape_browser_executable_path' : None,
-        'selescrape_driver_binary_path' : None,
-        'speed_limit' : 0,
+        'selescrape_browser_executable_path': None,
+        'selescrape_driver_binary_path': None,
+        'speed_limit': 0,
     },
     'ezdl': {
-        'file_format':'{animeinfo_anime_title}/{animeinfo_anime_title}_{provider}_{ep_no}',
-        'provider':'twist.moe',
-        'ratio':50,
-        'fallback_providers':['9anime','vidstream','watchmovie'],
-        'download_metadata':False,
+        'file_format': '{animeinfo_anime_title}/{animeinfo_anime_title}_{provider}_{ep_no}',
+        'provider': 'twist.moe',
+        'ratio': 50,
+        'fallback_providers': ['vidstream', 'anime8'],
+        'download_metadata': False,
     },
     'watch': {
         'quality': '1080p',
         'fallback_qualities': ['720p', '480p', '360p'],
         'log_level': 'INFO',
         'provider': 'twist.moe',
-        'autoplay_next':True
+        'autoplay_next': True
     },
     'siteconfig': {
         'animefrenzy': {
             'version': 'subbed'
+        },
+        'animebinge': {
+            'version': 'subbed',
+            'servers': [
+                'mp4upload',
+                'xstreamcdn',
+                'trollvid'
+            ]
         },
         'animixplay': {
             'server': 'vidstream',
@@ -49,7 +57,8 @@ DEFAULT_CONFIG = {
         },
         '9anime': {
             'server': 'mp4upload',
-            'version':'subbed',
+            'version': 'subbed',
+            'domain_extension': 'to'
         },
         'anistream.xyz': {
             'version': 'subbed',
@@ -59,31 +68,32 @@ DEFAULT_CONFIG = {
             'server': 'natsuki',
         },
         'anime8': {
-            'version':'subbed',
+            'version': 'subbed',
+            'servers': ['fserver', 'fdserver', 'oserver'],
             'include_special_eps': False
         },
         'gogoanime': {
             'server': 'cdn',
             'version': 'subbed'
         },
-        'animerush':{
-            'servers': ['Mp4uploadHD Video','MP4Upload', 'Mp4upload Video', 'Youruploads Video']
+        'animerush': {
+            'servers': ['Mp4uploadHD Video', 'MP4Upload', 'Mp4upload Video', 'Youruploads Video']
         },
         'kickass': {
             'server': 'A-KICKASSANIME',
-            'fallback_servers': ['ORIGINAL-QUALITY-V2','HTML5-HQ','HTML5','A-KICKASSANIME','BETAPLAYER','KICKASSANIME','DEVSTREAM'],
-            'ext_fallback_servers': ['Mp4Upload','Vidcdn','Vidstreaming'],
+            'fallback_servers': ['ORIGINAL-QUALITY-V2', 'HTML5-HQ', 'HTML5', 'A-KICKASSANIME', 'BETAPLAYER', 'KICKASSANIME', 'DEVSTREAM'],
+            'ext_fallback_servers': ['Mp4Upload', 'Vidcdn', 'Vidstreaming'],
         },
         'kissanimex': {
             'version': 'subbed',
         },
         'animesimple': {
             'version': 'subbed',
-            'servers': ['vidstreaming','trollvid','mp4upload','xstreamcdn']
+            'servers': ['vidstreaming', 'trollvid', 'mp4upload', 'xstreamcdn']
         },
         'darkanime': {
             'version': 'subbed',
-            'servers': ['mp4upload','trollvid'],
+            'servers': ['mp4upload', 'trollvid'],
         },
         'dreamanime': {
             'version': 'subbed',
@@ -95,11 +105,11 @@ DEFAULT_CONFIG = {
         },
         'animekisa': {
             'server': 'gcloud',
-            'fallback_servers': ['mp4upload','vidstream']
+            'fallback_servers': ['mp4upload', 'vidstream']
         },
-        
+
         'watchmovie': {
-            'servers': ['vidstream','gcloud','yourupload','hydrax'],
+            'servers': ['vidstream', 'gcloud', 'yourupload', 'hydrax'],
             'version': 'subbed',
         },
         'animeflix': {
@@ -108,7 +118,7 @@ DEFAULT_CONFIG = {
             'version': 'sub',
         },
         'dubbedanime': {
-            'servers': ['vidstream','mp4upload','trollvid'],
+            'servers': ['vidstream', 'mp4upload', 'trollvid'],
             'version': 'dubbed',
         },
         'animedaisuki': {
@@ -119,11 +129,11 @@ DEFAULT_CONFIG = {
             'category': 'English-translated'
         },
         'vidstream': {
-            'servers': ['vidstream','vidstream_bk','gcloud','mp4upload','cloud9','hydrax','mixdrop'],
+            'servers': ['vidstream', 'vidstream_bk', 'gcloud', 'mp4upload', 'cloud9', 'hydrax', 'mixdrop'],
             'version': 'subbed'
         },
         'justdubs': {
-            'servers': ['mp4upload','gcloud']
+            'servers': ['mp4upload', 'gcloud']
         },
         'kisscartoon': {
             'servers': [
@@ -154,18 +164,35 @@ DEFAULT_CONFIG = {
             'server': 'sibnet'
         },
         'voiranime': {
-            'servers':[
+            'servers': [
                 'gounlimited'
             ]
         },
         'dbanimes': {
-            'servers':['mixdrop','gounlimited','vudeo','fembed', 'sendvid']
+            'servers': ['mixdrop', 'gounlimited', 'vudeo', 'fembed', 'sendvid']
         },
         'kissanime': {
-            'version':'subbed'
+            'version': 'subbed'
         },
         'animeonline360': {
-            'version':'subbed'
+            'version': 'subbed'
+        },
+        'animesuge': {
+            'version': 'subbed',
+            'servers': [
+                'mp4upload',
+                'streamtape'
+            ]
+        },
+        'animetake': {
+            'version': 'subbed',
+            'servers': [
+                'gstore',
+                'hydrax',
+                'fembed',
+                'vidstreaming',
+                'mixdrop',
+            ]
         }
     }
 }

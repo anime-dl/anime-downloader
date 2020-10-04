@@ -7,6 +7,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class RyuAnime(Anime, sitename='ryuanime'):
     """
     Site: http://www4.ryuanime.com
@@ -18,20 +19,20 @@ class RyuAnime(Anime, sitename='ryuanime'):
         Selects the server to download from.
     """
 
-    sitename='ryuanime'
+    sitename = 'ryuanime'
 
     @classmethod
     def search(cls, query):
-        soup = helpers.soupify(helpers.get("https://www4.ryuanime.com/search", params = {"term" : query}))
+        soup = helpers.soupify(helpers.get("https://www4.ryuanime.com/search", params={"term": query}))
         result_data = soup.select("ul.list-inline")[0].select("a")
 
         search_results = [
             SearchResult(
-                title = result.text,
-                url = result.get("href")
-                )
+                title=result.text,
+                url=result.get("href")
+            )
             for result in result_data
-            ]
+        ]
         return search_results
 
     def _scrape_episodes(self):
@@ -49,6 +50,7 @@ class RyuAnime(Anime, sitename='ryuanime'):
         soup = helpers.soupify(helpers.get(self.url))
         self.title = soup.select("div.card-header")[0].find("h1").text
 
+
 class RyuAnimeEpisode(AnimeEpisode, sitename='ryuanime'):
     def getLink(self, name, _id):
         if name == "trollvid":
@@ -61,7 +63,7 @@ class RyuAnimeEpisode(AnimeEpisode, sitename='ryuanime'):
     def _get_sources(self):
         server = self.config.get("server", "trollvid")
         soup = helpers.soupify(helpers.get(self.url))
-        
+
         hosts = json.loads(re.search("\[.*?\]", soup.select("div.col-sm-9")[0].select("script")[0].text).group())
 
         _type = hosts[0]["type"]
@@ -69,7 +71,7 @@ class RyuAnimeEpisode(AnimeEpisode, sitename='ryuanime'):
             host = list(filter(lambda video: video["host"] == server and video["type"] == _type, hosts))[0]
         except IndexError:
             host = hosts[0]
-            #I will try to avoid mp4upload since it mostly doesn't work
+            # I will try to avoid mp4upload since it mostly doesn't work
             if host["host"] == "mp4upload" and len(hosts) > 1:
                 host = hosts[1]
 

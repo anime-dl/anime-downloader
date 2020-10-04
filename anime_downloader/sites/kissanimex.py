@@ -4,7 +4,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-class KissAnimeX(Anime, sitename = 'kissanimex'):
+
+class KissAnimeX(Anime, sitename='kissanimex'):
     sitename = "kissanimex"
 
     @classmethod
@@ -13,12 +14,12 @@ class KissAnimeX(Anime, sitename = 'kissanimex'):
         soup = helpers.soupify(helpers.get(url, params={'q': query}))
         items = soup.select('td > a')
         search_results = [
-                SearchResult(
-                    title = x.text,
-                    url = 'https://kissanimex.com' + x['href']
-                    )
-                for x in items
-                ]
+            SearchResult(
+                title=x.text,
+                url='https://kissanimex.com' + x['href']
+            )
+            for x in items
+        ]
         return search_results
 
     def _scrape_episodes(self):
@@ -29,8 +30,8 @@ class KissAnimeX(Anime, sitename = 'kissanimex'):
         # This makes it possible to download pokemon (for example) without having to change config.
         subbed = self.config['version'] != 'dubbed'
         subbed_converter = {
-            True:'div#episodes-sub',
-            False:'div#episodes-dub',
+            True: 'div#episodes-sub',
+            False: 'div#episodes-dub',
         }
 
         eps = soup.select_one(subbed_converter.get(subbed)).select('td > a')
@@ -46,6 +47,7 @@ class KissAnimeX(Anime, sitename = 'kissanimex'):
 
     def _scrape_metadata(self):
         self.title = helpers.soupify(helpers.get(self.url).text).select_one('a.bigChar').text
+
 
 class KissAnimeXEpisode(AnimeEpisode, sitename='kissanimex'):
     def _get_sources(self):

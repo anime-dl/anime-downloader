@@ -6,7 +6,7 @@ import requests_cache
 
 from anime_downloader import session, util
 from anime_downloader.__version__ import __version__
-from anime_downloader.sites import get_anime_class, ALL_ANIME_SITES
+from anime_downloader.sites import get_anime_class, ALL_ANIME_SITES, exceptions
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +47,7 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     metavar='FORMAT STRING'
 )
 @click.option(
-    '-p','--provider',
+    '-p', '--provider',
     help='The anime provider (website) for search.',
     type=click.Choice(sitenames)
 )
@@ -69,13 +69,13 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     help='Disable verifying the SSL certificate, if flag is set'
 )
 @click.option(
-    '--choice', '-c',type=int,
+    '--choice', '-c', type=int,
     help='Choice to start downloading given anime number '
 )
 @click.option("--skip-fillers", is_flag=True, help="Skip downloading of fillers.")
 @click.option(
-    "--speed-limit", 
-    type=str, 
+    "--speed-limit",
+    type=str,
     help="Set the speed limit (in KB/s or MB/s) for downloading when using aria2c",
     metavar='<int>K/M'
 )
@@ -103,6 +103,9 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
     logger.info('Found anime: {}'.format(anime.title))
 
     animes = util.parse_ep_str(anime, episode_range)
+    if not animes:
+        # Issue #508.
+        raise exceptions.NotFoundError('No episodes found within index.')
 
     # TODO:
     # Two types of plugins:
@@ -122,7 +125,7 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             if episode.ep_no in fillers:
                 logger.info("Skipping episode {} because it is a filler.".format(episode.ep_no))
                 continue
-        
+
         if url:
             util.print_episodeurl(episode)
 

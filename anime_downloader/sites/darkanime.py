@@ -7,7 +7,8 @@ from anime_downloader.sites import helpers
 
 logger = logging.getLogger(__name__)
 
-class DarkAnime(Anime, sitename = 'darkanime'):
+
+class DarkAnime(Anime, sitename='darkanime'):
     sitename = 'darkanime'
 
     @classmethod
@@ -16,12 +17,11 @@ class DarkAnime(Anime, sitename = 'darkanime'):
         soup = soup.find_all('a', href=True)
         return [
             SearchResult(
-                title = x.find('h3').text.strip(),
-                url = 'https://app.darkanime.stream' + x['href'],
-                )
+                title=x.find('h3').text.strip(),
+                url='https://app.darkanime.stream' + x['href'],
+            )
             for x in soup
-            ]
-
+        ]
 
     def _scrape_episodes(self):
         html = helpers.soupify(helpers.get(self.url).text)
@@ -29,7 +29,6 @@ class DarkAnime(Anime, sitename = 'darkanime'):
         eps = ['https://app.darkanime.stream' + x.a['href'] for x in eps]
         eps.reverse()
         return eps
-
 
     def _scrape_metadata(self):
         self.title = helpers.soupify(helpers.get(self.url).text).find_all('h2')[0].text.strip()
@@ -39,11 +38,11 @@ class DarkAnimeEpisode(AnimeEpisode, sitename='darkanime'):
     def _get_sources(self):
 
         server_links = {
-            'mp4upload':'https://www.mp4upload.com/embed-{}.html',
+            'mp4upload': 'https://www.mp4upload.com/embed-{}.html',
             'trollvid': 'https://trollvid.net/embed/{}',
         }
 
-        resp = helpers.soupify(helpers.get(self.url).text).find_all('script')#[-3].string
+        resp = helpers.soupify(helpers.get(self.url).text).find_all('script')  # [-3].string
         for i in resp:
             if i.string:
                 if 'sources' in i.string:
@@ -57,10 +56,10 @@ class DarkAnimeEpisode(AnimeEpisode, sitename='darkanime'):
             for j in server_links:
                 if i.get('host') in j and i.get('source'):
                     sources_list.append({
-                        'extractor':j,
-                        'url':server_links[j].format(i['source']),
-                        'server':j,
-                        'version':i['source']
-                        })
+                        'extractor': j,
+                        'url': server_links[j].format(i['source']),
+                        'server': j,
+                        'version': i['source']
+                    })
 
         return self.sort_sources(sources_list)

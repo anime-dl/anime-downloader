@@ -5,6 +5,7 @@ import sys
 
 from anime_downloader import util
 from anime_downloader import session
+from urllib.parse import urlparse
 
 import requests
 
@@ -30,24 +31,41 @@ class BaseDownloader:
         # Added Referer Header as kwik needd it.
         headers = self.source.headers
         if 'user-agent' not in headers:
-            headers['user-agent'] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101Firefox/56.0",
+            headers['user-agent'] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101Firefox/56.0"
 
         if self.source.referer:
             headers['referer'] = self.source.referer
 
-        # using session downloads the whole file, essentially freezing the program.
-        r = requests.get(
-            self.source.stream_url, headers=headers, stream=True)
+        # I couldn't figure out how to retry based on headers with httpadapter.
+        for i in range(5):
+            with requests.get(self.source.stream_url,
+                              headers=headers,
+                              stream=True,
+                              verify=False,
+                              allow_redirects=True) as r:
 
-        self._total_size = int(r.headers['Content-length'])
-        logger.debug('total size: ' + str(self._total_size))
-        if os.path.exists(self.path):
-            if abs(os.stat(self.path).st_size - self._total_size) < 10 \
-               and not self.force:
-                logger.warning('File already downloaded. Skipping download.')
-                return
-            else:
-                os.remove(self.path)
+                self._total_size = max(int(r.headers.get('Content-length', 0)),
+                                       int(r.headers.get('Content-Length', 0)),
+                                       int(r.headers.get('content-length', 0)))
+                if not self._total_size and not r.headers.get('Transfer-Encoding') == 'chunked':
+                    continue
+
+                # For m3u8 checking.
+                extension = urlparse(r.url).path.split('.')[-1]
+
+                if os.path.exists(self.path):
+                    if abs(os.stat(self.path).st_size - self._total_size) < 10 \
+                       and not self.force and not extension.startswith('m3u'):
+                        logger.warning('File already downloaded. Skipping download.')
+                        return True
+                    else:
+                        # NOTE: Unknown size assumes no mismatch and will redownload the file.
+                        if not abs(os.stat(self.path).st_size - self._total_size) < 10 and self._total_size != 0:
+                            logger.error('Total size mismatch ({} and {}), the file already downloaded probably comes from a different source.'.format(
+                                         self._total_size, abs(os.stat(self.path).st_size)))
+                            sys.exit(1)
+
+        logger.debug('Total size: ' + str(self._total_size))
 
     def download(self):
         # TODO: Clean this up
@@ -56,7 +74,8 @@ class BaseDownloader:
 
         # TODO: Use pathlib. Break into functions
         util.make_dir(self.path.rsplit('/', 1)[0])
-        self.check_if_exists()
+        if self.check_if_exists():
+            return
 
         self.start_time = time.time()
         self.downloaded = 0
@@ -78,13 +97,13 @@ class BaseDownloader:
 
 
 def write_status(downloaded, total_size, start_time):
-    elapsed_time = time.time()-start_time
-    rate = (downloaded/1024)/elapsed_time if elapsed_time else 'x'
-    downloaded = float(downloaded)/1048576
-    total_size = float(total_size)/1048576
+    elapsed_time = time.time() - start_time
+    rate = (downloaded / 1024) / elapsed_time if elapsed_time else 'x'
+    downloaded = float(downloaded) / 1048576
+    total_size = float(total_size) / 1048576
 
     status = 'Downloaded: {0:.2f}MB/{1:.2f}MB, Rate: {2:.2f}KB/s'.format(
         downloaded, total_size, rate)
 
-    sys.stdout.write("\r" + status + " "*5 + "\r")
+    sys.stdout.write("\r" + status + " " * 5 + "\r")
     sys.stdout.flush()

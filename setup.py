@@ -21,6 +21,7 @@ setup(
     url='https://github.com/vn-ki/anime-downloader',
     keywords=['anime', 'downloader', '9anime', 'download', 'kissanime'],
     install_requires=[
+        'pySmartDL>=1.3.4',
         'beautifulsoup4>=4.6.0',
         'requests>=2.18.4',
         'Click>=6.7',
@@ -30,6 +31,7 @@ setup(
         'requests-cache>=0.4.13',
         'tabulate>=0.8.3',
         'pycryptodome>=3.8.2',
+        'm3u8-dl>=0.2.3'
     ],
     extras_require={
         'selescrape': ['selenium'],

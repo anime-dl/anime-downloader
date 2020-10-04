@@ -150,6 +150,12 @@ ALL_EXTRACTORS = [
         'modulename': 'ezlink',
         'regex': 'ezlink',
         'class': 'Ezlink'
+    },
+    {
+        'sitename': 'streamtape',
+        'modulename': 'streamtape',
+        'regex': 'streamtape',
+        'class': 'StreamTape'
     }
 ]
 

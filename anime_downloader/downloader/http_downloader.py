@@ -11,6 +11,7 @@ session = session.get_session()
 session = requests
 logger = logging.getLogger(__name__)
 
+
 class HTTPDownloader(BaseDownloader):
     def _download(self):
         logger.warning('Using internal downloader which might be slow. Use aria2 for full bandwidth.')
@@ -28,7 +29,7 @@ class HTTPDownloader(BaseDownloader):
         url = self.source.stream_url
         headers = self.source.headers
         if 'user-agent' not in headers:
-            headers['user-agent'] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101Firefox/56.0",
+            headers['user-agent'] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101Firefox/56.0"
 
         if self.source.referer:
             headers['Referer'] = self.source.referer
@@ -59,7 +60,7 @@ class HTTPDownloader(BaseDownloader):
     def _non_range_download(self):
         url = self.source.stream_url
         headers = {
-            'user-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101Firefox/56.0",
+            'user-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101Firefox/56.0"
         }
         if self.source.referer:
             headers['Referer'] = self.source.referer
