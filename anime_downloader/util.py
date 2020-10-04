@@ -353,7 +353,8 @@ def download_m3u8(url, referer, expected_file):
         context = M3u8Context(file_url=url, referer=referer, threads=16, output_file=expected_file,
                               get_m3u8file_complete=False, downloaded_ts_urls=[])
         context["base_url"] = url
-        context['sslverify'] = False
+        context["sslverify"] = False
+        context["quiet"] = False
 
     # Basically copied from cli.py in m3u8_dl
     m = M3u8Downloader(context, on_progress_callback=_show_progress_bar)
@@ -382,7 +383,7 @@ def download_m3u8(url, referer, expected_file):
         click.echo('Download Failed')
 
 
-def _show_progress_bar(_, downloaded, total):
+def _show_progress_bar(downloaded, total):
     """
     progress bar for command line
     This can probably be replaced with write_status() in base_downloader.
