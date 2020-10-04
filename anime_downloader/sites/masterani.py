@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class MasteraniEpisode(AnimeEpisode, sitename='masterani'):
-    QUALITIES = ['360p', '480p', '720p', '1080p']
+    QUALITIES = ('360p', '480p', '720p', '1080p')
 
     def _get_sources(self):
         soup = helpers.soupify(helpers.get(self.url, headers=desktop_headers))
