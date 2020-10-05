@@ -66,8 +66,17 @@ class EraiRaws(Anime, sitename='erai-raws'):
 
         return links
 
-    def getTorrents(self):
-        pass
+    def getTorrents(self, soup, cookies):
+        # Clickable nodes, such as: Notifications, Episodes, Batch, etc
+        # We are only interested in Episode/Batch
+        nodes=soup.select("a.aa_ss")
+        episode_nodes=[x for x in nodes if x.text == "Episodes"]
+
+        if len(episode_nodes) == 0:
+            logger.warn("Episodic torrents not found, using batch torrents...")
+            batch_torrents=[x for x in nodes if x.text == "Batch"]
+
+
 
     @classmethod
     def search(cls, query):
@@ -105,7 +114,7 @@ class EraiRaws(Anime, sitename='erai-raws'):
             return self.parse(server)
         else:
             # use torrent
-            logger.warn("Direct download links not found, using torrent...")
+            logger.warn("Direct download links not found, using torrents...")
             return self.getTorrents(soup, cookies)
 
     def _scrape_metadata(self):
@@ -135,7 +144,7 @@ class EraiRawsEpisode(AnimeEpisode, sitename='erai-raws'):
         for i in range(4):
             # Using a request session as helpers is lacking the head function, and having a session makes everything more seamless
             session=requests.session()
-            resp=session.get(self.url, cookies=EraiRaws.bypass(), headers=headers, verify=False)
+            resp=session.get(self.url, cookies=EraiRaws.bypass(), headers=headers)
             page=resp.text
 
             """
@@ -144,10 +153,11 @@ class EraiRawsEpisode(AnimeEpisode, sitename='erai-raws'):
             $('.download-timer').html("<a class='btn btn-free' href='https://srv9.erai-ddl3.info/486dbafc9628c685c5e67c14d438a425?pt=UmpjMllXWlNSbVl4Vm5CcVNqRnBSVlVyUm5WcVVUMDlPdlF5TEtZVi9TZ2JXc01DOGc2WkhIYz0%3D'>download now</a>");
             """
             download_link=re.search("\.download-timer.*?html.*?href=['\"](.*?)['\"]", page).group(1)
+
+            # Required - if you don't wait, you generally won't get the actual download link
             time.sleep(10)
 
-            resp=requests.head(download_link, headers=headers, cookies=resp.cookies, verify=False)
-            logger.info(resp)
+            resp=requests.head(download_link, headers=headers, cookies=resp.cookies)
 
             if resp.status_code == 302:
                 download_link=resp.headers.get("location")
