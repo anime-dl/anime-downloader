@@ -14,23 +14,25 @@ class AniMixPlay(Anime, sitename='animixplay'):
     @classmethod
     def search(cls, query):
         # V3 not supported
-        v1 = helpers.soupify(helpers.post("https://animixplay.com/api/search/v1",
+        v1 = helpers.soupify(helpers.post("https://v1.nmtvjxdtx42qdwktdxjfoikjq.workers.dev/",
                                           data={"q2": query}, verify=False).json()['result']).select('p.name > a')
-        v2 = helpers.soupify(helpers.post("https://animixplay.com/api/search/",
-                                          data={"qfast2": query}, verify=False).json()['result']).select('p.name > a')
-        # v3 = helpers.soupify(helpers.post("https://animixplay.com/api/search/v3",
-        #    data = {"q3": query}, verify = False).json()['result'])
+        v5 = helpers.soupify(helpers.post("https://animixplay.to/api/search/",
+                                          data={"qfast": query}, verify=False).json()['result']).select('p.name > a')
+
+        # v3 = helpers.soupify(helpers.post("https://v3.w0ltfgqz8y3ygjozgs4v.workers.dev/",
+        #                                  data={"q3": query}, verify=False).json()['result'])
 
         # Gives 400 error on v3 and v4 if there's no results.
         # HTTPError doesn't seem to play along helpers hence why it's not expected.
+
         try:
-            v4 = helpers.soupify(helpers.post("https://animixplay.com/api/search/v4",
+            v4 = helpers.soupify(helpers.post("https://v4.w0ltfgqz8y3ygjozgs4v.workers.dev/",
                                               data={"q": query}, verify=False).json()['result']).select('p.name > a')
         except:
             v4 = []
 
         # Meta will be name of the key in versions_dict
-        versions_dict = {'v1': v1, 'v2': v2, 'v4': v4}
+        versions_dict = {'v1': v1, 'v4': v4, 'v5': v5}
         logger.debug('Versions: {}'.format(versions_dict))
         data = []
         for i in versions_dict:
@@ -51,6 +53,8 @@ class AniMixPlay(Anime, sitename='animixplay'):
         soup = helpers.soupify(helpers.get(url))
         # v1 and v3 is embedded video player
         # v2 and v4 is json post request
+
+        # ALL shit below really needs refactoring!
         if '/v2/' in self.url or '/v4/' in self.url:
             # Uses the id in the url and encodes it twice
             # NaN and N4CP9Eb6laO9N are permanent encoded variables found in
@@ -73,6 +77,7 @@ class AniMixPlay(Anime, sitename='animixplay'):
                                          data={'id': url.split('/')[-1]}).json())['epstream']
 
             logger.debug(data)
+
             if '/v4/' in self.url:
                 # Has a list of mp4 links.
                 return data
@@ -88,21 +93,45 @@ class AniMixPlay(Anime, sitename='animixplay'):
                     else:
                         episodes.append('')
                 return episodes
+
         else:
+            # V5 and V1 are somewhat similar.
+
+            servers = self.config['v5-servers']
             try:
                 ep_list = soup.find('div', {'id': 'epslistplace'}).get_text()
                 logger.debug(ep_list)
                 jdata = json.loads(ep_list)
-                keyList = list(jdata.keys())
-                del keyList[0]
-                logger.debug(keyList)
-                return [jdata[x] for x in keyList if '.' in jdata[x]]
+                if '/v1/' in self.url:
+                    keyList = list(jdata.keys())
+                    del keyList[0]
+                    logger.debug(keyList)
+                    return [jdata[x] for x in keyList if '.' in jdata[x]]
+                else:
+                    for i in servers:
+                        if jdata.get(i):
+                            return jdata.get(i)
+                    return
+
             except json.decoder.JSONDecodeError:
                 # Link generation
-                data = (helpers.post('https://animixplay.com/e1/9DYiGVLD7ASqZ5p',
+                url_dict = {'v5': '/e5/dZ40LAuJHZjuiWX', 'v1': '/e1/9DYiGVLD7ASqZ5p'}
+                if '/v5/' in self.url:
+                    version = 'v5'
+                else:
+                    version = 'v1'
+
+                # Not sure if v5 id for data works.
+                data = (helpers.post('https://animixplay.to' + url_dict[version],
                                      data={'id': url.split('/')[-1]}).json())['epstream']
                 logger.debug('Data: {}'.format(data))
-                return [data[i] for i in data if i != 'eptotal']
+                if '/v1/' in self.url:
+                    return [data[i] for i in data if i != 'eptotal']
+                else:
+                    for i in servers:
+                        if jdata.get(i):
+                            return jdata.get(i)
+                    return
 
     def _scrape_metadata(self):
         self.title = helpers.soupify(helpers.get(self.url).text).select_one("span.animetitle").get_text()
@@ -111,6 +140,7 @@ class AniMixPlay(Anime, sitename='animixplay'):
 class AniMixPlayEpisode(AnimeEpisode, sitename='animixplay'):
     def _get_sources(self):
         logger.debug(self.url)
+        # These could be done with dict.
         if not self.url:
             return ''
         elif 'googleapis.com/' in self.url:
@@ -123,6 +153,10 @@ class AniMixPlayEpisode(AnimeEpisode, sitename='animixplay'):
             resp = helpers.get(self.url, headers=self.headers)
             stream_url = helpers.soupify(resp).find('div', class_='videojs-desktop').find('source')['src']
             return [('no_extractor', stream_url)]
+        elif 'mp4upload' in self.url:
+            return [('mp4upload', self.url)]
+        elif 'streamtape' in self.url:
+            return [('streamtape', self.url)]
         else:
             return [('vidstream', self.url)]
 
