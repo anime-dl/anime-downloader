@@ -43,5 +43,8 @@ class PutLockersEpisode(AnimeEpisode, sitename="putlockers"):
     def _get_sources(self):
         self.headers = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/56.0"}
         text = helpers.get(self.url).text
+        if 'This link currently not available!' in text:
+            return ''
+
         link = helpers.soupify(base64.b64decode(re.search(r'Base64.decode\("(.*)"\)', text).group(1)).decode()).iframe.get("src")
         return [("eplay", link)]
