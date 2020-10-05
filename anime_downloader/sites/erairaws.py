@@ -115,16 +115,44 @@ class EraiRaws(Anime, sitename='erai-raws'):
 
 class EraiRawsEpisode(AnimeEpisode, sitename='erai-raws'):
     def _get_sources(self):
-        resp=helpers.get(self.url, cookies=EraiRaws.bypass(), cache=False)
-        page=resp.text
-        cookies=resp.cookies
+        if self.url.startswith("magnet:"):
+            return [("no_extractor", self.url)]
 
-        """
-        Example:
-        --------
-        $('.download-timer').html("<a class='btn btn-free' href='https://srv9.erai-ddl3.info/486dbafc9628c685c5e67c14d438a425?pt=UmpjMllXWlNSbVl4Vm5CcVNqRnBSVlVyUm5WcVVUMDlPdlF5TEtZVi9TZ2JXc01DOGc2WkhIYz0%3D'>download now</a>");
-        """
-        download_link=re.search("\.download-timer.*?html.*?href=['\"](.*?)['\"]", page).group(1)
-        headers={"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/56.0"}
-        requests.head(download_link, cookies=cookies, headers={"accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9", "referer": self.url, "user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/56.0"}, verify=False)
+        # Headers have to be really good
+        headers={
+            'cache-control': 'max-age=0',
+            'upgrade-insecure-requests': '1',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/56.0',
+            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+            'sec-fetch-site': 'same-origin',
+            'sec-fetch-mode': 'navigate',
+            'sec-fetch-dest': 'document',
+            'referer': self.url,
+            'accept-encoding': 'gzip, deflate, br',
+            'accept-language': 'en-GB,en;q=0.9'
+        }
+
+        for i in range(4):
+            # Using a request session as helpers is lacking the head function, and having a session makes everything more seamless
+            session=requests.session()
+            resp=session.get(self.url, cookies=EraiRaws.bypass(), headers=headers, verify=False)
+            page=resp.text
+
+            """
+            Example:
+            --------
+            $('.download-timer').html("<a class='btn btn-free' href='https://srv9.erai-ddl3.info/486dbafc9628c685c5e67c14d438a425?pt=UmpjMllXWlNSbVl4Vm5CcVNqRnBSVlVyUm5WcVVUMDlPdlF5TEtZVi9TZ2JXc01DOGc2WkhIYz0%3D'>download now</a>");
+            """
+            download_link=re.search("\.download-timer.*?html.*?href=['\"](.*?)['\"]", page).group(1)
+            time.sleep(10)
+
+            resp=requests.head(download_link, headers=headers, cookies=resp.cookies, verify=False)
+            logger.info(resp)
+
+            if resp.status_code == 302:
+                download_link=resp.headers.get("location")
+                break
+
+            self.url=download_link
+
         return [("no_extractor", download_link)]
