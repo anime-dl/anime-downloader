@@ -66,7 +66,7 @@ DEFAULT_CONFIG = {
         },
         'animeflv': {
             'version': 'subbed',
-            'server': 'natsuki',
+            'server': 'Stape',
         },
         'anime8': {
             'version': 'subbed',
