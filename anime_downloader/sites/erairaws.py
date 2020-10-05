@@ -6,6 +6,7 @@ from requests.exceptions import HTTPError
 from bs4.element import NavigableString
 
 import re
+import requests
 import time
 import logging
 
@@ -39,12 +40,14 @@ class EraiRaws(Anime, sitename='erai-raws'):
                 link=linkNodes[index].get("href")
 
                 # Sometimes we get a 403 and have to wait for 5 seconds
-                try:
-                    soup=helpers.soupify(helpers.get(link, cookies=cookies))
-                except HTTPError:
-                    time.sleep(5)
-                    cookies=self.bypass()
-                    soup=helpers.soupify(helpers.get(link, cookies=cookies))
+                for i in range(3):
+                    try:
+                        soup=helpers.soupify(helpers.get(link, cookies=cookies))
+                        break
+                    except HTTPError:
+                        time.sleep(5)
+                        cookies=self.bypass()
+                        soup=helpers.soupify(helpers.get(link, cookies=cookies))
                 
                 # Replace the folder node with all the nodes of what the folder contains
                 linkNodes[index]=soup.select("td[title] > a[href]")
@@ -112,7 +115,16 @@ class EraiRaws(Anime, sitename='erai-raws'):
 
 class EraiRawsEpisode(AnimeEpisode, sitename='erai-raws'):
     def _get_sources(self):
-        if self.url.startswith("magnet:"):
-            return [("no_extractor", self.url)]
+        resp=helpers.get(self.url, cookies=EraiRaws.bypass(), cache=False)
+        page=resp.text
+        cookies=resp.cookies
 
-        logger.info(helpers.get(self.url).text)
+        """
+        Example:
+        --------
+        $('.download-timer').html("<a class='btn btn-free' href='https://srv9.erai-ddl3.info/486dbafc9628c685c5e67c14d438a425?pt=UmpjMllXWlNSbVl4Vm5CcVNqRnBSVlVyUm5WcVVUMDlPdlF5TEtZVi9TZ2JXc01DOGc2WkhIYz0%3D'>download now</a>");
+        """
+        download_link=re.search("\.download-timer.*?html.*?href=['\"](.*?)['\"]", page).group(1)
+        headers={"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/56.0"}
+        requests.head(download_link, cookies=cookies, headers={"accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9", "referer": self.url, "user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/56.0"}, verify=False)
+        return [("no_extractor", download_link)]
