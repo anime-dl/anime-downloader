@@ -19,6 +19,8 @@ from tabulate import tabulate
 from uuid import uuid4
 from secrets import choice
 from urllib.parse import urlparse
+import signal
+from m3u8_dl import M3u8Downloader, M3u8Context, PickleContextRestore
 
 from anime_downloader import session
 from anime_downloader.sites import get_anime_class, helpers
@@ -267,7 +269,7 @@ def format_command(cmd, episode, file_format, speed_limit, path):
         '{aria2}': 'aria2c {stream_url} -x 12 -s 12 -j 12 -k 10M -o '
                    '{file_format}.mp4 --continue=true --dir={download_dir}'
                    ' --stream-piece-selector=inorder --min-split-size=5M --referer={referer} --check-certificate=false --user-agent={useragent} --max-overall-download-limit={speed_limit}',
-        '{idm}': 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4'
+        '{idm}': 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4',
     }
 
     # Allows for passing the user agent with self.headers in the site.
@@ -286,16 +288,113 @@ def format_command(cmd, episode, file_format, speed_limit, path):
         'speed_limit': speed_limit
     }
 
+    # This checks the last redirect url for the file extension.
+    # If it's m3u8 it uses m3u8_dl.
+    with requests.get(rep_dict['stream_url'],
+                      headers={'user-agent': rep_dict['useragent'],
+                               'Referer': rep_dict['referer']
+                               },
+                      stream=True,
+                      allow_redirects=True,
+                      verify=False
+                      ) as r:
+
+        logger.debug(f'Real download url: {r.url}')
+        extension = urlparse(r.url).path.split('.')[-1]
+
+    if extension.startswith('m3u'):
+        filename = format_filename(rep_dict['file_format'], episode)
+        expected_file = rep_dict['download_dir'] + '/' + filename + '.mp4'
+        download_m3u8(rep_dict["stream_url"], rep_dict["referer"], expected_file)
+        return
+
     if cmd == "{idm}":
         rep_dict['file_format'] = rep_dict['file_format'].replace('/', '\\')
 
     if cmd in cmd_dict:
         cmd = cmd_dict[cmd]
 
-    cmd = cmd.split(' ')
-    cmd = [c.format(**rep_dict) for c in cmd]
-    cmd = [format_filename(c, episode) for c in cmd]
+    if cmd:
+        cmd = cmd.split(' ')
+        cmd = [c.format(**rep_dict) for c in cmd]
+        cmd = [format_filename(c, episode) for c in cmd]
     return cmd
+
+
+def download_m3u8(url, referer, expected_file):
+    context = None
+
+    # As the m3u8 downloader only creates the mp4 file when complete just
+    # checking that is exists is sufficent.
+    if os.path.isfile(expected_file):
+        logger.info(f'{expected_file} already downloaded.')
+        return
+
+    # m3u8_dl doesn't make the directories itself, hence why this needs to be done.
+    file_dir = '/'.join(expected_file.split('/')[:-1])
+    make_dir(file_dir)
+
+    restore = PickleContextRestore()
+    # Checks if it can resume.
+    if os.path.isfile(os.getcwd() + '/m3u8_dl.restore'):
+        with open(os.getcwd() + '/m3u8_dl.restore', 'rb') as f:
+            # Checks if the file downloaded is the same as expected.
+            # Without this it'll resume the previous download regardless
+            # of what the user chooses does.
+            restore_object = pickle.load(f)
+            if restore_object._container["output_file"] == expected_file:
+                # Only restores if it can AND the expected file location is the same.
+                # NOTE: only the most recent download can be resumed!
+                context = restore.load()
+
+    if not context:
+        context = M3u8Context(file_url=url, referer=referer, threads=16, output_file=expected_file,
+                              get_m3u8file_complete=False, downloaded_ts_urls=[])
+        context["base_url"] = url
+        context["sslverify"] = False
+        context["quiet"] = False
+
+    # Basically copied from cli.py in m3u8_dl
+    m = M3u8Downloader(context, on_progress_callback=_show_progress_bar)
+
+    def signal_handler(sig, frame):
+        click.echo('\nCaptured Ctrl + C ! Saving Current Session ...')
+        restore.dump(context)
+        sys.exit(1)
+
+    signal.signal(signal.SIGINT, signal_handler)
+
+    m.get_m3u8file()
+    click.echo('m3u8: Saving as ' + M3u8Downloader.m3u8_filename)
+
+    m.parse_m3u8file()
+    m.get_tsfiles()
+    if m.is_task_success:
+        m.merge()
+
+    # clean everything Downloader generates
+    m.cleanup()
+    # clean restore
+    restore.cleanup()
+
+    if not m.is_task_success:
+        click.echo('Download Failed')
+
+
+def _show_progress_bar(downloaded, total):
+    """
+    progress bar for command line
+    This can probably be replaced with write_status() in base_downloader.
+    """
+    htlen = 33
+    percent = downloaded / total * 100
+    # 20 hashtag(#)
+    hashtags = int(percent / 100 * htlen)
+    click.echo('|'
+        + '#' * hashtags + ' ' * (htlen - hashtags) +
+        '|' +
+        '  {0}/{1} '.format(downloaded, total) +
+        ' {:.1f}'.format(percent).ljust(5) + ' %\r', nl=False)  # noqa
 
 
 def deobfuscate_packed_js(packedjs):
@@ -326,18 +425,19 @@ def external_download(cmd, episode, file_format, speed_limit, path=''):
 
     cmd = format_command(cmd, episode, file_format, speed_limit, path=path)
 
-    logger.debug('formatted cmd: ' + ' '.join(cmd))
+    if cmd:
+        logger.debug('formatted cmd: ' + ' '.join(cmd))
 
-    if cmd[0] == 'open':  # for torrents
-        open_magnet(cmd[1])
-    else:
-        p = subprocess.Popen(cmd)
-        return_code = p.wait()
+        if cmd[0] == 'open':  # for torrents
+            open_magnet(cmd[1])
+        else:
+            p = subprocess.Popen(cmd)
+            return_code = p.wait()
 
-        if return_code != 0:
-            # Sleep for a while to make sure downloader exits correctly
-            time.sleep(2)
-            sys.exit(1)
+            if return_code != 0:
+                # Sleep for a while to make sure downloader exits correctly
+                time.sleep(2)
+                sys.exit(1)
 
 
 def make_dir(path):
