@@ -3,6 +3,9 @@ from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 from urllib.parse import quote_plus
 
+import base64
+import re
+
 
 class PutLockers(Anime, sitename="putlockers"):
     sitename="putlockers"
@@ -37,4 +40,7 @@ class PutLockers(Anime, sitename="putlockers"):
 
 class PutLockersEpisode(AnimeEpisode, sitename="putlockers"):
     def _get_sources(self):
-        return [("eplay", self.url)]
+        self.headers={"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/56.0"}
+        text=helpers.get(self.url).text
+        link=helpers.soupify(base64.b64decode(re.search('Base64.decode\("(.*)"\)', text).group(1)).decode()).iframe.get("src")
+        return [("eplay", link)]
