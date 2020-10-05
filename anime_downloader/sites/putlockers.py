@@ -27,11 +27,12 @@ class PutLockers(Anime, sitename="putlockers"):
     def _scrape_episodes(self):
         soup = helpers.soupify(helpers.get(self.url))
         eps = soup.select("a.episode.episode_series_link")
+        eps = [i['href'] for i in eps]
 
         if not eps:
             eps.append(self.url)
 
-        return [i['href'] for i in eps]
+        return eps
 
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url))
