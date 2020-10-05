@@ -62,6 +62,15 @@ class RyuAnimeEpisode(AnimeEpisode, sitename='ryuanime'):
         server = self.config.get("server", "trollvid")
         page = helpers.get(self.url).text
 
+        # Example:
+        """
+        [
+          {
+            "host":"trollvid","id":"c4a94b4e50ee","type":"dubbed","date":"2019-08-01 20:48:01"}
+            ...
+          }
+        ]
+        """
         hosts = json.loads(re.search("let.*?episode.*?videos.*?(\[\{.*?\}\])", page).group(1))
 
         sources_list=[]
