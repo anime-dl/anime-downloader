@@ -59,7 +59,6 @@ class RyuAnimeEpisode(AnimeEpisode, sitename='ryuanime'):
             return f"https://xstreamcdn.com/v/" + _id
 
     def _get_sources(self):
-        server = self.config.get("server", "trollvid")
         page = helpers.get(self.url).text
 
         # Example:
