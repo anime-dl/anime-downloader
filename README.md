@@ -68,6 +68,7 @@ Yeah. Me too! That's why this tool exists.
 - Animesimple
 - Animevibe
 - AnimeTake
+- AniTube
 - Animixplay
 - Anistream
 - Darkanime
