@@ -12,7 +12,7 @@ class Gcloud(BaseExtractor):
     def _get_data(self):
         logger.debug('Gcloud url: {}'.format(self.url))  # Surprisingly not debug printed in anime.py
         """gcloud uses the same video ID as other sites"""
-        id_regex = r'(gcloud\.live|fembed\.com|feurl\.com|vcdn\.space)/(v|api/source)/([^(?|#)]*)'  # Group 3 for id
+        id_regex = r'(gcloud\.live|fembed\.com|feurl\.com|vcdn\.space|embedsito\.com)/(v|api/source)/([^(?|#)]*)'  # Group 3 for id
         gcloud_id = re.search(id_regex, self.url)
         if not gcloud_id:
             logger.error('Unable to get ID for url "{}"'.format(self.url))
