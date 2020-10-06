@@ -66,7 +66,13 @@ DEFAULT_CONFIG = {
         },
         'animeflv': {
             'version': 'subbed',
-            'server': 'Stape',
+            'servers': [
+                'stape',
+                'natsuki',
+                'gocdn',
+                'yu',
+                'fembed'
+            ]
         },
         'anime8': {
             'version': 'subbed',

@@ -82,28 +82,34 @@ class AnimeflvEpisode(AnimeEpisode, sitename='animeflv'):
         lang = {'subbed': 'SUB', 'latin': 'LAT'}
         videos = videos[lang[self.config.get('version', 'subbed')]]
 
-        server = self.config['server']
-
-        # Trying preferred server from config first
-        for video in videos:
-            if video['server'] == server:
-                if server == 'stape':
-                    return [('streamtape', video['code'])]
-                if server == 'natsuki':
+        # Exceptions to domain -> extractor
+        extractor_dict = {
+            'fembed': 'gcloud',
+            'gocdn': 'streamium',
+            'yu': 'yourupload',
+            'stape': 'streamtape'
+        }
+        sources_list = []
+        for i in videos:
+            if i['server'] in self.config['servers']:
+                extractor = extractor_dict.get(i['server'], 'no_extractor')
+                # Should be extractor to prevent extra requests.
+                if i['server'] == 'natsuki':
                     url = helpers.get(video['code'].replace('embed', 'check')).json()['file']
-                    return [('no_extractor', url)]
+                    extractor = 'no_extractor'
 
-        logger.debug('Preferred server %s not found.  Trying all supported servers.', server)
+                sources_list.append({
+                    'extractor': extractor,
+                    'url': i['code'],
+                    'server': i['server'],
+                    'version': 'subbed'
+                })
 
-        # Trying streamtape and natsuki.  The second for loop is not ideal.
-        for video in videos:
-            if video['server'] == 'stape':
-                return [('streamtape', video['code'])]
-            if video['server'] == 'natsuki':
-                url = helpers.get(video['code'].replace('embed', 'check')).json()['file']
-                return [('no_extractor', url)]
+        return self.sort_sources(sources_list)
 
+        """
         # No supported server found, exit.
         err = 'No supported host server found.  Try another site.'
         args = [self.url]
         raise NotFoundError(err, *args)
+        """
