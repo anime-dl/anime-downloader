@@ -145,7 +145,8 @@ DEFAULT_CONFIG = {
         },
         'nyaa': {
             'filter': 'Trusted only',
-            'category': 'English-translated'
+            'category': 'English-translated',
+            'type': 'episodic'
         },
         'vidstream': {
             'servers': ['vidstream', 'vidstream_bk', 'gcloud', 'mp4upload', 'cloud9', 'hydrax', 'mixdrop'],
