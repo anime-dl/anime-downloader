@@ -150,6 +150,12 @@ ALL_EXTRACTORS = [
         'modulename': 'streamtape',
         'regex': 'streamtape',
         'class': 'StreamTape'
+    },
+    {
+        'sitename': 'streamium',
+        'modulename': 'streamium',
+        'regex': 'streamium',
+        'class': 'Streamium'
     }
 ]
 
