@@ -45,5 +45,5 @@ class AniTubeEpisode(AnimeEpisode, sitename='anitube'):
             if 'var play' in str(script):
                 js = script
 
-        link = re.search(r"file.*?[\"'](.*?)['\"]", str(js)).group(1)
+        link = re.search("file.*?[\"'](http.*?)['\"]", str(js)).group(1)
         return [('no_extractor', link)]
