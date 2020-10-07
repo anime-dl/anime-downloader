@@ -17,7 +17,10 @@ class PutLockers(Anime, sitename="putlockers"):
         search_results = [
             SearchResult(
                 title=x.find("img").get("alt"),
-                url=x.get("href")
+                url=x.get("href"),
+                meta_info={
+                    'version_key_dubbed': '(dub)'
+                }
             )
             for x in soup.select("div.item > a")
         ]
@@ -43,9 +46,9 @@ class PutLockersEpisode(AnimeEpisode, sitename="putlockers"):
     def _get_sources(self):
         self.headers = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/56.0"}
         text = helpers.get(self.url).text
-        
+
         sources_list = []
-        regexed = re.search('Base64.decode\("(.*)"\)', text)
+        regexed = re.search(r'Base64.decode\("(.*)"\)', text)
 
         if regexed:
             link = helpers.soupify(base64.b64decode(regexed.group(1)).decode()).iframe.get("src")
@@ -65,7 +68,7 @@ class PutLockersEpisode(AnimeEpisode, sitename="putlockers"):
             if page_link:
                 text = helpers.get(page_link).text
                 soup = helpers.soupify(text)
-                regexed = re.search('Base64.decode\("(.*)"\)', text)
+                regexed = re.search(r'Base64.decode\("(.*)"\)', text)
                 if regexed:
                     link = helpers.soupify(base64.b64decode(regexed.group(1)).decode()).iframe.get("src")
                     sources_list.append({
