@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 
 class Kwik(BaseExtractor):
     '''Extracts video url from kwik pages, Kwik has some `security`
-       which allows to access kwik pages when only refered by something
-       and the kwik video stream when refered through the corresponding
+       which allows to access kwik pages when only referred by something
+       and the kwik video stream when referred through the corresponding
        kwik video page.
     '''
 

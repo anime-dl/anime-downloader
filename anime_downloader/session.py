@@ -85,7 +85,7 @@ class DownloaderSession:
         # HACK: Because of circular dependency
         from anime_downloader import downloader
         # HACK: This has to obtained like this because this variable is
-        # set inside dl. There should be a persistant data store throughout
+        # set inside dl. There should be a persistent data store throughout
         # the app instead.
         disable_ssl = get_session().verify
         if key not in self._cache:

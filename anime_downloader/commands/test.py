@@ -60,7 +60,7 @@ def command(test_query):
                 # echo(click.style('Works ', fg='green') + site)
                 echo(click.style(p, fg='green') + thread.site)
             else:
-                logging.debug('Error occured during testing')
+                logging.debug('Error occurred during testing')
                 logging.debug(thread.exception)
                 echo(click.style(f, fg='red') + thread.site)
         else:
