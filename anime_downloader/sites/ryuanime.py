@@ -1,4 +1,3 @@
-
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 import json
@@ -36,7 +35,7 @@ class RyuAnime(Anime, sitename='ryuanime'):
         return search_results
 
     def _scrape_episodes(self):
-        soup=helpers.soupify(helpers.get(self.url))
+        soup = helpers.soupify(helpers.get(self.url))
         episodes = ['https://ryuanime.com' + x.get("href") for x in soup.select("li.jt-di > a")]
 
         if len(episodes) == 0:
@@ -70,14 +69,14 @@ class RyuAnimeEpisode(AnimeEpisode, sitename='ryuanime'):
           }
         ]
         """
-        hosts = json.loads(re.search("let.*?episode.*?videos.*?(\[\{.*?\}\])", page).group(1))
+        hosts = json.loads(re.search(r"let.*?episode.*?videos.*?(\[\{.*?\}\])", page).group(1))
 
-        sources_list=[]
+        sources_list = []
 
         for host in hosts:
-            name=host.get("host")
-            _id=host.get("id")
-            link=self.getLink(name, _id)
+            name = host.get("host")
+            _id = host.get("id")
+            link = self.getLink(name, _id)
 
             if link:
                 sources_list.append({
