@@ -43,8 +43,49 @@ class PutLockersEpisode(AnimeEpisode, sitename="putlockers"):
     def _get_sources(self):
         self.headers = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/56.0"}
         text = helpers.get(self.url).text
-        if 'This link currently not available!' in text:
-            return ''
+        
+        sources_list = []
+        regexed = re.search('Base64.decode\("(.*)"\)', text)
 
-        link = helpers.soupify(base64.b64decode(re.search(r'Base64.decode\("(.*)"\)', text).group(1)).decode()).iframe.get("src")
-        return [("eplay", link)]
+        if regexed:
+            link = helpers.soupify(base64.b64decode(regexed.group(1)).decode()).iframe.get("src")
+            sources_list.append({
+                "extractor": "eplay",
+                "url": link,
+                "server": "eplay",
+                "version": "dubbed"
+            })
+
+        soup = helpers.soupify(text)
+        servers = soup.select("p.server_version a")
+
+        for server in servers:
+            page_link = server.get("href")
+
+            if page_link:
+                text = helpers.get(page_link).text
+                soup = helpers.soupify(text)
+                regexed = re.search('Base64.decode\("(.*)"\)', text)
+                if regexed:
+                    link = helpers.soupify(base64.b64decode(regexed.group(1)).decode()).iframe.get("src")
+                    sources_list.append({
+                        "extractor": "eplay",
+                        "url": link,
+                        "server": "eplay",
+                        "version": "dubbed"
+                    })
+
+                link_node = soup.select("div.mediaplayer a")
+                if link_node:
+                    link = link_node[0].get("href")
+
+                    # There's also vshare - but that didn't work for me
+                    if "mixdrop" in link:
+                        sources_list.append({
+                            "extractor": "mixdrop",
+                            "url": link,
+                            "server": "mixdrop",
+                            "version": "dubbed"
+                        })
+
+        return self.sort_sources(sources_list)

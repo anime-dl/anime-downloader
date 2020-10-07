@@ -193,6 +193,13 @@ DEFAULT_CONFIG = {
                 'vidstreaming',
                 'mixdrop',
             ]
+        },
+        'putlockers': {
+            'version': 'dubbed',
+            'servers': [
+                'eplay',
+                'mixdrop'
+            ]
         }
     }
 }
