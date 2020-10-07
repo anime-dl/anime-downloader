@@ -31,13 +31,13 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     help="Retrieve without downloading")
 @click.option(
     '--download-dir', metavar='PATH',
-    help="Specifiy the directory to download to")
+    help="Specify the directory to download to")
 @click.option(
     '--quality', '-q', type=click.Choice(['360p', '480p', '720p', '1080p']),
     help='Specify the quality of episode. Default-720p')
 @click.option(
     '--fallback-qualities', '-fq', cls=util.ClickListOption,
-    help='Specifiy the order of fallback qualities as a list.')
+    help='Specify the order of fallback qualities as a list.')
 @click.option(
     '--force-download', '-f', is_flag=True,
     help='Force downloads even if file exists')

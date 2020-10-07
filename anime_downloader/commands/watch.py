@@ -131,7 +131,7 @@ def command_parser(command):
     # new "no neverland" --provider vidstream > ['new', '--provider', 'no neverland', 'vidstream']
 
     # Better than split(' ') because it accounts for quoutes.
-    # Group 3 for qouted command
+    # Group 3 for quoted command
     command_regex = r'(("|\')(.*?)("|\')|.*?\s)'
     matches = re.findall(command_regex, command + " ")
     commands = [i[0].strip('"').strip("'").strip() for i in matches if i[0].strip()]

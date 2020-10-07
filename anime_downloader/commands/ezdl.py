@@ -203,5 +203,5 @@ def command(ctx, anime_url, episode_range, player,
                                          range_size=chunk_size)
                     print()
 
-            # If it's all successfull proceeds to next ep instead of looping.
+            # If it's all successful proceeds to next ep instead of looping.
             break
