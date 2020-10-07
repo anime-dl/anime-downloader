@@ -81,6 +81,7 @@ Yeah. Me too! That's why this tool exists.
 - KissanimeX
 - Kisscartoon - requires Selenium
 - Nyaa.si
+- PutLockers
 - RyuAnime
 - twist.moe - requires Node.js
 - tenshi.moe

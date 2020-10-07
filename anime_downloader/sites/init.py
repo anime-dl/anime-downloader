@@ -30,6 +30,7 @@ ALL_ANIME_SITES = [
     ('kissanimex', 'kissanimex', 'KissAnimeX'),
     ('kisscartoon', 'kisscartoon', 'KissCartoon'),
     ('nyaa', 'nyaa', 'Nyaa'),
+    ('putlockers', 'putlockers', 'PutLockers'),
     ('ryuanime', 'ryuanime', 'RyuAnime'),
     ('twistmoe', 'twist.moe', 'TwistMoe'),
     ('tenshimoe', 'tenshi.moe', 'TenshiMoe'),
