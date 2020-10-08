@@ -17,7 +17,8 @@ class AniTube(Anime, sitename="anitube"):
                 title=x['title'].split(
                     'Temporada')[0].split('– Todos')[0].split(
                     'Todos os')[0],
-                url=x['href']
+                url=x['href'],
+                meta_info={'version_key_dubbed': '(Dublado)'}
             )
             for x in html.select('div.aniItem > a')
         ]
@@ -45,5 +46,5 @@ class AniTubeEpisode(AnimeEpisode, sitename='anitube'):
             if 'var play' in str(script):
                 js = script
 
-        link = re.search("file.*?[\"'](http.*?)['\"]", str(js)).group(1)
+        link = re.search(r"file.*?[\"'](http.*?)['\"]", str(js)).group(1)
         return [('no_extractor', link)]
