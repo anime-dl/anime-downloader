@@ -269,8 +269,8 @@ def format_command(cmd, episode, file_format, speed_limit, path):
 
     cmd_dict = {
         '{aria2}': 'aria2c {stream_url} -x 12 -s 12 -j 12 -k 10M -o '
-                   '{file_format}.mp4 --continue=true --console-log-level=error --dir={download_dir}'
-                   ' --stream-piece-selector=inorder --min-split-size=5M --referer={referer} --check-certificate=false --user-agent={useragent} --max-overall-download-limit={speed_limit}',
+                   '{file_format}.mp4 --continue=true --dir={download_dir}'
+                   ' --stream-piece-selector=inorder --min-split-size=5M --referer={referer} --check-certificate=false --user-agent={useragent} --max-overall-download-limit={speed_limit}' + ' --console-log-level={}'.format(Config['dl']['aria2_log_level']) if bool(Config['dl']['aria2_log_level']) else '',
         '{idm}'  : 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4'
     }
 
