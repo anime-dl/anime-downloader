@@ -12,6 +12,7 @@ with warnings.catch_warnings():
 
 logger = logging.getLogger(__name__)
 
+
 class AnimeInfo:
     """
     Attributes
@@ -27,7 +28,8 @@ class AnimeInfo:
     episodes: int
         Max amount of episodes
     """
-    def __init__(self, url, episodes,title=None, jp_title=None, metadata={}):
+
+    def __init__(self, url, episodes, title=None, jp_title=None, metadata={}):
         self.url = url
         self.episodes = episodes
         self.title = title
@@ -47,22 +49,24 @@ class MatchObject:
         A number between 0-100 describing the similarities between SearchResult and AnimeInfo.
         Higher number = more similar.
     """
-    def __init__(self, AnimeInfo, SearchResult, ratio = 100):
+
+    def __init__(self, AnimeInfo, SearchResult, ratio=100):
         self.AnimeInfo = AnimeInfo
         self.SearchResult = SearchResult
         self.ratio = ratio
 
 # Not used
+
+
 def search_mal(query):
 
     def search(query):
-        soup = helpers.soupify(helpers.get('https://myanimelist.net/anime.php', params = {'q':query}))
+        soup = helpers.soupify(helpers.get('https://myanimelist.net/anime.php', params={'q': query}))
         search_results = soup.select("a.hoverinfo_trigger.fw-b.fl-l")
         return [SearchResult(
-            url = i.get('href'),
-            title = i.select('strong')[0].text
-            ) for i in search_results]
-
+            url=i.get('href'),
+            title=i.select('strong')[0].text
+        ) for i in search_results]
 
     def scrape_metadata(url):
         soup = helpers.soupify(helpers.get(url))
@@ -77,20 +81,20 @@ def search_mal(query):
         'jp_title': '約束のネバーランド 第2期'}]
         """
         info_dict = {
-            'url':url
+            'url': url
         }
 
         # Maps specified info in sidebar to variables in info_dict
         name_dict = {
-        'Japanese:':'jp_title',
-        'English:':'title',
-        'synonyms:':'synonyms',
-        'Episodes:':'episodes'
+            'Japanese:': 'jp_title',
+            'English:': 'title',
+            'synonyms:': 'synonyms',
+            'Episodes:': 'episodes'
         }
         info = soup.select('span.dark_text')
         extra_info = [i.parent.text.strip() for i in info]
         for i in extra_info:
-            text = i.replace('\n','').strip()
+            text = i.replace('\n', '').strip()
             for j in name_dict:
                 if text.startswith(j):
                     info_dict[name_dict[j]] = text[len(j):].strip()
@@ -106,8 +110,8 @@ def search_mal(query):
 
         # TODO error message when this stuff is not correctly scraped
         # Can happen if MAL is down or something similar
-        return AnimeInfo(url = info_dict['url'], title = info_dict.get('title'),
-                jp_title = info_dict.get('jp_title'), episodes = int(info_dict['episodes']))
+        return AnimeInfo(url=info_dict['url'], title=info_dict.get('title'),
+                         jp_title=info_dict.get('jp_title'), episodes=int(info_dict['episodes']))
 
     search_results = search(query)
     season_info = []
@@ -118,14 +122,16 @@ def search_mal(query):
             season_info.append(anime_info)
 
     # Code below uses the first result to compare
-    #season_info = [scrape_metadata(search_results[0].url)] 
-    #return season_info
+    #season_info = [scrape_metadata(search_results[0].url)]
+    # return season_info
 
     # Prompts the user for selection
     return primitive_search(season_info)
 
 # Choice allows the user to preselect, used to download from a list overnight.
 # None prompts the user.
+
+
 def search_anilist(query, choice=None):
 
     def search(query):
@@ -154,7 +160,7 @@ def search_anilist(query, choice=None):
                 }
             """
         url = 'https://graphql.anilist.co'
-        
+
         # TODO check in case there's no results
         # It seems to error on no results (anime -ll DEBUG dl "nev")
         results = helpers.post(url, json={'query': ani_query, 'variables': {'search': query, 'page': 1, 'type': 'ANIME'}}).json()['data']['Page']['media']
@@ -162,8 +168,8 @@ def search_anilist(query, choice=None):
             logger.error('No results found in anilist')
             raise NameError
 
-        search_results = [AnimeInfo(url = 'https://anilist.co/anime/' + str(i['id']), title = i['title']['romaji'],
-                jp_title = i['title']['native'], episodes=int(i['episodes']), metadata=i) for i in results if i['episodes'] != None]
+        search_results = [AnimeInfo(url='https://anilist.co/anime/' + str(i['id']), title=i['title']['romaji'],
+                                    jp_title=i['title']['native'], episodes=int(i['episodes']), metadata=i) for i in results if i['episodes'] != None]
         return search_results
 
     search_results = search(query)
@@ -171,7 +177,7 @@ def search_anilist(query, choice=None):
     # This can also be fuzzied, but too many options.
     if choice != None:
         # Fixes too low or high to get a real value.
-        fixed_choice = ((choice-1)%len(search_results))
+        fixed_choice = ((choice - 1) % len(search_results))
         return search_results[fixed_choice]
     else:
         # Prompts the user for selection
@@ -193,11 +199,11 @@ def fuzzy_match_metadata(seasons_info, search_results):
             # Essentially adds the chosen key to the query if the version is in use
             # Dirty solution, but should work pretty well
 
-            config = Config['siteconfig'].get(get_anime_class(j.url).sitename,{})
+            config = Config['siteconfig'].get(get_anime_class(j.url).sitename, {})
             version = config.get('version')
             version_use = version == 'dubbed'
             # Adds something like (Sub) or (Dub) to the title
-            key_used = j.meta_info.get('version_key_dubbed','') if version_use else j.meta_info.get('version_key_subbed','')
+            key_used = j.meta_info.get('version_key_dubbed', '') if version_use else j.meta_info.get('version_key_subbed', '')
             title_info += ' ' + key_used
             title_info = title_info.strip()
 
@@ -205,9 +211,9 @@ def fuzzy_match_metadata(seasons_info, search_results):
             # 0 if there's no japanese name
             jap_ratio = fuzz.ratio(i.jp_title, j.meta_info['jp_title']) if j.meta_info.get('jp_title') else 0
             # Outputs the max ratio for japanese or english name (0-100)
-            ratio = max(fuzz.ratio(title_info,title_provider), jap_ratio)
+            ratio = max(fuzz.ratio(title_info, title_provider), jap_ratio)
             logger.debug('Ratio: {}, Info title: {}, Provider Title: {}, Key used: {}'.format(ratio, title_info, title_provider, key_used))
             results.append(MatchObject(i, j, ratio))
 
     # Returns the result with highest ratio
-    return max(results, key=lambda item:item.ratio)
+    return max(results, key=lambda item: item.ratio)

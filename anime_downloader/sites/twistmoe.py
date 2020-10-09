@@ -37,8 +37,8 @@ class TwistMoe(Anime, sitename='twist.moe'):
     @classmethod
     def search(self, query):
         headers = {
-        'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.46 Safari/537.36',
-        'x-access-token': '1rj2vRtegS8Y60B3w3qNZm5T2Q0TN2NR'
+            'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.46 Safari/537.36',
+            'x-access-token': '1rj2vRtegS8Y60B3w3qNZm5T2Q0TN2NR'
         }
         # soup = helpers.soupify(helpers.get('https://twist.moe/', allow_redirects=True, headers=headers))
         req = helpers.get('https://twist.moe/api/anime', headers=headers)
@@ -75,7 +75,7 @@ class TwistMoe(Anime, sitename='twist.moe'):
                         decrypt(episode['source'].encode('utf-8'), KEY).decode('utf-8')
                         for episode in episodes]
 
-        self._episode_urls = [(i+1, episode_url)
+        self._episode_urls = [(i + 1, episode_url)
                               for i, episode_url in enumerate(episode_urls)]
         self._len = len(self._episode_urls)
 
@@ -85,7 +85,7 @@ class TwistMoe(Anime, sitename='twist.moe'):
 # From stackoverflow https://stackoverflow.com/questions/36762098/how-to-decrypt-password-from-javascript-cryptojs-aes-encryptpassword-passphras
 def pad(data):
     length = BLOCK_SIZE - (len(data) % BLOCK_SIZE)
-    return data + (chr(length)*length).encode()
+    return data + (chr(length) * length).encode()
 
 
 def unpad(data):
@@ -108,7 +108,7 @@ def decrypt(encrypted, passphrase):
     encrypted = base64.b64decode(encrypted)
     assert encrypted[0:8] == b"Salted__"
     salt = encrypted[8:16]
-    key_iv = bytes_to_key(passphrase, salt, 32+16)
+    key_iv = bytes_to_key(passphrase, salt, 32 + 16)
     key = key_iv[:32]
     iv = key_iv[32:]
     aes = AES.new(key, AES.MODE_CBC, iv)
@@ -117,6 +117,6 @@ def decrypt(encrypted, passphrase):
 
 def get_cookie(soup):
     js = soup.select_one('script').text
-    js = "location = {'reload': ()=>true};document = {}; \n" + js + f"document.cookie"
+    js = "location = {'reload': ()=>true};document = {}; \n" + js + f"console.log(document.cookie)"
     cookie = eval_in_node(js).strip()
     return cookie

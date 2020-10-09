@@ -27,9 +27,10 @@ class HTTPDownloader(BaseDownloader):
         range_end = http_chunksize
 
         url = self.source.stream_url
-        headers = {
-            'user-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101Firefox/56.0",
-        }
+        headers = self.source.headers
+        if 'user-agent' not in headers:
+            headers['user-agent'] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101Firefox/56.0"
+
         if self.source.referer:
             headers['Referer'] = self.source.referer
 
@@ -59,7 +60,7 @@ class HTTPDownloader(BaseDownloader):
     def _non_range_download(self):
         url = self.source.stream_url
         headers = {
-            'user-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101Firefox/56.0",
+            'user-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101Firefox/56.0"
         }
         if self.source.referer:
             headers['Referer'] = self.source.referer

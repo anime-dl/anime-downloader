@@ -55,40 +55,40 @@ Yeah. Me too! That's why this tool exists.
 **Details about the sites can be found in [FAQ](https://github.com/vn-ki/anime-downloader/wiki/FAQ)**
 
 - 4Anime
-- 9Anime
 - a2zanime
-- Anistream
-- AnimeOnline360
-- Animeflix
-- Animefreak
-- animeout
-- Animeflv
-- AnimeKisa
-- Animesimple
-- Animerush
+- AnimeBinge
 - Animedaisuki
-- Animixplay
+- Animeflix
+- Animeflv
+- Animefreak
+- AnimeKisa
+- AnimeOnline360
+- animeout
+- Animerush
+- Animesimple
 - Animevibe
-- Dbanimes
+- AnimeTake
+- AniTube
+- Animixplay
+- Anistream
 - Darkanime
-- DreamAnime
-- Erai-Raws
-- Gogoanime
+- Dbanimes 
+- FastAni
 - GurminderBoparai (AnimeChameleon)
-- HorribleSubs
 - itsaturday
 - Justdubs
 - Kickassanime
 - Kissanimefree
+- KissanimeX
 - Kisscartoon - requires Selenium
 - Nyaa.si
+- PutLockers
 - RyuAnime
 - twist.moe - requires Node.js
-- Watchmovie
-- Yify
-- Vostfree
-- Voiranime
+- tenshi.moe
 - Vidstream
+- Voiranime
+- Vostfree
 
 Sites that require Selenium **DO NOT** and **WILL NOT** work on mobile operating systems
 
@@ -129,4 +129,4 @@ See [development instructions](https://anime-downlader.readthedocs.io/en/latest/
 
 ---
 
-*Please don't judge me for not paying for anime. I want to support the anime industry, but being a college student, I can't.*
+*Please bear in mind the production of this repo is for educational/research purposes only with regards to webscraping for videos, we take no responsibility for people who decide to actually use this repository.*

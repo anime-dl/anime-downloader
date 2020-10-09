@@ -30,6 +30,7 @@ class Anistream(Anime, sitename='anistream.xyz'):
         version = self.config.get('version', 'subbed')
         soup = helpers.soupify(helpers.get(self.url))
         versions = soup.select_one('.card-body').select('ul')
+
         def get_links(version):
             links = [v.attrs['href'] for v in version.select('a')][::-1]
             return links

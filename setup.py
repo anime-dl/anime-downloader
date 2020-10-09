@@ -21,6 +21,7 @@ setup(
     url='https://github.com/vn-ki/anime-downloader',
     keywords=['anime', 'downloader', '9anime', 'download', 'kissanime'],
     install_requires=[
+        'pySmartDL>=1.3.4',
         'beautifulsoup4>=4.6.0',
         'requests>=2.18.4',
         'Click>=6.7',
@@ -37,11 +38,6 @@ setup(
             'pytest',
             'httpretty'
         ],
-    },
-    package_data={
-        # setuptools doesn't support recursive globbing so we need patterns
-        # for each depth
-        'anime_downloader': ['node_modules/**/*', 'node_modules/**/**/*']
     },
     long_description=long_description,
     long_description_content_type='text/markdown',
