@@ -264,10 +264,20 @@ def format_command(cmd, episode, file_format, speed_limit, path):
     if not Config._CONFIG['dl']['aria2c_for_torrents'] and episode.url.startswith('magnet:?xt=urn:btih:'):
         return ['open', episode.url]
 
+    # For aria2c.
+    log_levels = ['debug', 'info', 'notice', 'warn', 'error']
+    log_level = Config['dl']['aria2c_log_level'].lower()
+    if log_level not in log_levels:
+        logger.warn('Invalid logging level "{}", defaulting to "error".'.format(log_level))
+        logger.debug('Possible levels: {}.'.format(log_levels))
+        log_level = 'error'
+
     cmd_dict = {
         '{aria2}': 'aria2c {stream_url} -x 12 -s 12 -j 12 -k 10M -o '
-                   '{file_format}.mp4 --continue=true --dir={download_dir}'
-                   ' --stream-piece-selector=inorder --min-split-size=5M --referer={referer} --check-certificate=false --user-agent={useragent} --max-overall-download-limit={speed_limit}',
+                   '{file_format}.mp4 --continue=true --dir={download_dir} '
+                   '--stream-piece-selector=inorder --min-split-size=5M --referer={referer} '
+                   '--check-certificate=false --user-agent={useragent} --max-overall-download-limit={speed_limit} '
+                   '--console-log-level={log_level}',
         '{idm}': 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4'
     }
 
@@ -284,7 +294,8 @@ def format_command(cmd, episode, file_format, speed_limit, path):
         'download_dir': os.path.abspath(path),
         'referer': episode.source().referer,
         'useragent': useragent,
-        'speed_limit': speed_limit
+        'speed_limit': speed_limit,
+        'log_level': log_level
     }
 
     if cmd == "{idm}":
