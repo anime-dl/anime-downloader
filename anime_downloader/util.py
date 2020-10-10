@@ -266,7 +266,7 @@ def format_command(cmd, episode, file_format, speed_limit, path):
 
     # For aria2c.
     log_levels = ['debug', 'info', 'notice', 'warn', 'error']
-    log_level = Config['dl']['aria2_log_level'].lower()
+    log_level = Config['dl']['aria2c_log_level'].lower()
     if log_level not in log_levels:
         logger.warn('Invalid logging level "{}", defaulting to "error".'.format(log_level))
         logger.debug('Possible levels: {}.'.format(log_levels))
