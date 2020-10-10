@@ -22,7 +22,7 @@ class Nyaa(Anime, sitename='nyaa'):
     matches=[]
 
     @classmethod
-    def search_episodic(cls, query):
+    def search_episodic(cls, query, scrape_eps=False):
         parameters = {"f": 2, "c": "1_0", "q": query}
         soup=helpers.soupify(helpers.get("https://nyaa.si", params = parameters))
         links_and_titles = [(x.get("title"), x.get("href")) for x in soup.select("td[colspan] > a[href][title]:not(.comments)")]
@@ -34,6 +34,10 @@ class Nyaa(Anime, sitename='nyaa'):
             link = cls.url + soup.select(".next > a")[0].get("href")
             soup=helpers.soupify(helpers.get(link))
             links_and_titles.extend([(x.get("title"), x.get("href")) for x in soup.select("td[colspan] > a[href][title]:not(.comments)")])
+
+        # Used by _scrape_episodes_episodic
+        if scrape_eps:
+            return links_and_titles
 
         # '[Erai-raws] Boruto - Naruto Next Generations - 167 [1080p][Multiple Subtitle].mkv' -> ('[Erai-raws] Boruto - Naruto Next Generations - 167 [1080p][Multiple Subtitle].mkv', '[Erai-raws] Boruto - Naruto Next Generations', '167')
         regexed_titles_and_eps=[re.search(cls.title_regex, x[0]).group(1,2,3) for x in links_and_titles if re.search(cls.title_regex, x[0]) is not None]
@@ -62,7 +66,7 @@ class Nyaa(Anime, sitename='nyaa'):
 
     @classmethod
     def search(cls, query):
-        if Config._CONFIG["siteconfig"]["nyaa"]["type"] == "episodic":
+        if Config._CONFIG["siteconfig"]["nyaa"]["episodic"]:
             return cls.search_episodic(query)
 
         filters = {"No filter": 0, "No remakes": 1, "Trusted only": 2}
@@ -93,38 +97,46 @@ class Nyaa(Anime, sitename='nyaa'):
     def _scrape_episodes_episodic(self):
         soup=helpers.soupify(helpers.get(self.url))
         title=soup.select("h3.panel-title")[0].text.strip()
-        regexed_title=re.search(self.title_regex, title).group(1)
-        user_link='https://nyaa.si' + soup.select("a.text-success")[0].get("href")
-        soup=helpers.soupify(helpers.get(user_link))
+        regexed_title=re.search(self.title_regex, title).group(2)
+        anime=self.search_episodic(regexed_title, scrape_eps=True)
 
-        anime=[(x.get("title"), x.get("href")) for x in soup.select("td[colspan] > a[href][title]") if re.search(self.title_regex, x.get("title")) is not None]
+        cleaned_list = []
 
-        while soup.select("[rel=next]"):
-            link='https://nyaa.si' + soup.select("[rel=next]")[0].get("href")
-            soup=helpers.soupify(helpers.get(link))
-            anime.extend([(x.get("title"), x.get("href")) for x in soup.select("td[colspan] > a[href][title]") if re.search(self.title_regex, x.get("title")) is not None])
+        for potential_ep in anime:
+            regexed_ep = re.search(self.title_regex, potential_ep[0])
 
-        anime=[x for x in anime if re.search(self.title_regex, x[0]).group(1) == regexed_title]
-        
-        ep_number_and_link=dict([(re.search("\[.*?\]\s+?.*\s-\s+?(\d+).*\[.*", x[0]).group(1), x[1]) for x in anime])
-        keys=list(ep_number_and_link.keys())
-        keys.sort()
+            # Check that the regex isn't empty
+            if regexed_ep:
+                if regexed_ep.group(2) == regexed_title:
+                    cleaned_list.append(potential_ep)
 
-        episodes=[]
+        # This works!
+        cleaned_list.sort()
 
-        for key in keys:
-            episodes.append('https://nyaa.si' + ep_number_and_link[key])
+        final_list = []
 
-        return episodes
-        """
-        soup=helpers.soupify(helpers.get(self.url))
-        title=soup.select("h3.panel-title")[0].text.strip()
-        regexed_title=re.search(self.title_regex, title).group(1)
-        anime=[x for x in self.search_episodic(regexed_title, scrape_eps=True) if regexed_title in x]
-        """
+        for ep in cleaned_list:
+            if self.quality in ep[0]:
+                final_list.append(ep)
+
+        if not final_list:
+            logger.warn(f"No eps of quality: {self.quality} found")
+
+            # Attempt to get all eps with the same quality as the first ep
+            first_ep = cleaned_list[0]
+
+            # Finds: [1080p], [720p] etc, and then captures everything in the brackets
+            regexed_quality = re.search("\[(\d{3}\d?p)\]", first_ep[0])
+
+            if not regexed_quality:
+                logger.warn("Could not discern quality, downloading all links...")
+
+            final_list = [x for x in cleaned_list if regexed_quality in x[0]]
+
+        return final_list
 
     def _scrape_episodes(self):
-        if self.config["type"] == "episodic":
+        if self.config["episodic"]:
             return self._scrape_episodes_episodic()
 
         # the magnet has all episodes making this redundant
@@ -133,4 +145,8 @@ class Nyaa(Anime, sitename='nyaa'):
 
 class NyaaEpisode(AnimeEpisode, sitename='nyaa'):
     def _get_sources(self):
-        return [('no_extractor', self.url)]
+        if not self.config["episodic"]:
+            return [('no_extractor', self.url)]
+
+        url = 'https://nyaa.si' + self.url
+        soup = helpers.soupify(helper.get(url))
