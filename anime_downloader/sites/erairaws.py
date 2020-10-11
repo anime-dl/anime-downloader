@@ -71,12 +71,40 @@ class EraiRaws(Anime, sitename='erai-raws'):
         # We are only interested in Episode/Batch
         nodes=soup.select("a.aa_ss")
         episode_nodes=[x for x in nodes if x.text == "Episodes"]
+        load = "load_more_0"
 
-        if len(episode_nodes) == 0:
+        if not episode_nodes:
             logger.warn("Episodic torrents not found, using batch torrents...")
             batch_torrents=[x for x in nodes if x.text == "Batch"]
 
+            if not batch_torrents:
+                logger.error("Neither episode torrents nor batch torrents were found")
+                return
 
+            load = "load_more_3"
+
+        max_page_regex = f"{load}_params.*?max_page.*?(\d+)"
+        max_page = int(re.search(max_page_regex, str(soup)).group(1))
+
+        # E.g one-piece
+        anime_regex = "anime-list.*?([A-Z\-a-z]+)"
+        slug_title = re.search(anime_regex, str(soup)).group(1)
+
+        for page in range(max_page + 1):
+            # Should be a dictionary, but requests messes that up
+            post_data = {
+                'anime-list': slug_title,
+                'error': '',
+                'm': '',
+                'p': 0,
+                'post_parent': '',
+                'subpost': '',
+                'subpost_id': '',
+                'attachment': '',
+                'attachment_id': 0,
+                'name': '',
+                'pagename': '',
+                'page_id': 
 
     @classmethod
     def search(cls, query):
