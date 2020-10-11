@@ -9,6 +9,7 @@ import re
 import requests
 import time
 import logging
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -86,25 +87,36 @@ class EraiRaws(Anime, sitename='erai-raws'):
         max_page_regex = f"{load}_params.*?max_page.*?(\d+)"
         max_page = int(re.search(max_page_regex, str(soup)).group(1))
 
-        # E.g one-piece
-        anime_regex = "anime-list.*?([A-Z\-a-z]+)"
-        slug_title = re.search(anime_regex, str(soup)).group(1)
+        post_data = {"action": load}
+
+        # Get data to post and map to query, e.g:
+        """
+        {
+            'anime-list': 'one-piece', 
+             ...
+            'order': 'DESC'
+        }
+        """
+        post_data["query"] = json.dumps(json.loads(re.search("posts.*?(\{.*?order.*?\})", str(soup)).group(1).replace("\\", "")), separators=(",", ":"))
+
+        episodes = []
 
         for page in range(max_page + 1):
-            # Should be a dictionary, but requests messes that up
-            post_data = {
-                'anime-list': slug_title,
-                'error': '',
-                'm': '',
-                'p': 0,
-                'post_parent': '',
-                'subpost': '',
-                'subpost_id': '',
-                'attachment': '',
-                'attachment_id': 0,
-                'name': '',
-                'pagename': '',
-                'page_id': 
+            post_data["page"] = page
+            resp = helpers.post("https://erai-raws.info/wp-admin/admin-ajax.php", data=post_data, cookies=cookies)
+
+            if resp:
+                soup = helpers.soupify(resp)
+
+                # List of tuples of (quality, magnet)
+                # Which are then filtered by whether quality contains self.quality
+
+                # Worked in shell, doesn't work in practice - will come back later
+                episodes.extend([x[1] for x in [(x[0].text, x[1]["href"]) for y in [list(zip(x.select("i.sp_p_q"), x.select("a.load_more_links[href*=magnet]"))) for x in soup.select("article div:has(i.sp_p_q):has(a.load_more_links[href*=magnet])")] for x in y] if self.quality in x[0]])
+                logger.info(episodes)
+                exit()
+
+        return episodes
 
     @classmethod
     def search(cls, query):
