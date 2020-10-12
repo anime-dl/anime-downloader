@@ -41,7 +41,7 @@ class EraiRaws(Anime, sitename='erai-raws'):
                 link=linkNodes[index].get("href")
 
                 # Sometimes we get a 403 and have to wait for 5 seconds
-                for i in range(3):
+                for i in range(6):
                     try:
                         soup=helpers.soupify(helpers.get(link, cookies=cookies))
                         break
@@ -109,12 +109,22 @@ class EraiRaws(Anime, sitename='erai-raws'):
                 soup = helpers.soupify(resp)
 
                 # List of tuples of (quality, magnet)
-                # Which are then filtered by whether quality contains self.quality
+                # episodes.extend(
+                # [x[1] for x in
+                eps = [(x[0].text, x[1]["href"]) for y in [list(zip(x.select("i.sp_p_q"), x.select("a.load_more_links[href*=magnet]"))) for x in soup.select("article div:has(i.sp_p_q):has(a.load_more_links[href*=magnet])")] for x in y] 
+                # if self.quality in x[0]]
 
-                # Worked in shell, doesn't work in practice - will come back later
-                episodes.extend([x[1] for x in [(x[0].text, x[1]["href"]) for y in [list(zip(x.select("i.sp_p_q"), x.select("a.load_more_links[href*=magnet]"))) for x in soup.select("article div:has(i.sp_p_q):has(a.load_more_links[href*=magnet])")] for x in y] if self.quality in x[0]])
-                logger.info(episodes)
-                exit()
+                # Filter by quality
+                filtered_eps = [x[1] for x in eps if self.quality in x[0]]
+
+                if not filtered_eps:
+                    logger.warning(f"Quality {self.quality} not found. Trying {self.QUALITIES[not self.QUALITIES.index(self.quality)]}")
+                    filtered_eps = [x[1] for x in eps if self.QUALITIES[not self.QUALITIES.index(self.quality)]]
+
+                for ep in filtered_eps:
+                    # Sometimes duplication happens
+                    if ep not in episodes:
+                        episodes.append(ep)
 
         return episodes
 
