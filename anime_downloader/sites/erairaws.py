@@ -117,11 +117,8 @@ class EraiRaws(Anime, sitename='erai-raws'):
                 soup = helpers.soupify(resp)
 
                 # List of tuples of (quality, magnet)
-                # episodes.extend(
-                # [x[1] for x in
                 eps = [(x[0].text, x[1]["href"]) for y in [list(zip(x.select("i.sp_p_q"), x.select("a.load_more_links[href*=magnet]")))
                                                            for x in soup.select("article div:has(i.sp_p_q):has(a.load_more_links[href*=magnet])")] for x in y]
-                # if self.quality in x[0]]
 
                 # Filter by quality
                 filtered_eps = [x[1] for x in eps if self.quality in x[0]]
