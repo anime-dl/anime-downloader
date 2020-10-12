@@ -18,7 +18,7 @@ import requests
 from tabulate import tabulate
 from uuid import uuid4
 from secrets import choice
-from urllib.parse import urlparse
+from urllib.parse import urlparse, unquote
 
 from anime_downloader import session
 from anime_downloader.sites import get_anime_class, helpers
@@ -207,7 +207,8 @@ def print_episodeurl(episode):
     #    print(episode.source().stream_url + "?referer=" +  episode.source().referer)
     # else:
     # Currently I don't know of a way to specify referer in url itself so leaving it here.
-    print(episode.source().stream_url)
+    url = episode.url if episode.url.startswith("magnet") else episode.source().stream_url
+    print(unquote(url))
 
 
 def play_episode(episode, *, player, title):
