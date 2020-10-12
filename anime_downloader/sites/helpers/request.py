@@ -77,7 +77,6 @@ def setup(func):
         res = sess.request(func.__name__.upper(),
                            url,
                            headers=default_headers,
-                           verify=False,
                            **kwargs)
 
         if sess != selescrape:  # TODO fix this for selescrape too
