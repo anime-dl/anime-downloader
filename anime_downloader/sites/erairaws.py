@@ -84,14 +84,14 @@ class EraiRaws(Anime, sitename='erai-raws'):
             batch_torrents = [x for x in nodes if x.text == "Batch"]
 
             if not batch_torrents:
-                logger.error(
-                    "Neither episode torrents nor batch torrents were found")
-                return
+                logger.warning(
+                    "Neither episode torrents nor batch torrents were found.")
 
             load = "load_more_3"
 
-        max_page_regex = f"{load}_params.*?max_page.*?(\d+)"
-        max_page = int(re.search(max_page_regex, str(soup)).group(1))
+        max_page_regex = "{}_params.*?max_page.*?(\d+)"
+        max_page = int(re.search(max_page_regex.format(load), str(soup)).group(1))
+        max_page_special = int(re.search(max_page_regex.format("load_more_2"), str(soup)).group(1))
 
         post_data = {"action": load}
 
@@ -108,8 +108,12 @@ class EraiRaws(Anime, sitename='erai-raws'):
 
         episodes = []
 
-        for page in range(max_page + 1):
-            post_data["page"] = page
+        for page in range(max_page + max_page_special):
+            post_data["page"] = page if page < max_page else page - max_page
+
+            if page >= max_page:
+                post_data["action"] = "load_more_2"
+
             resp = helpers.post(
                 "https://erai-raws.info/wp-admin/admin-ajax.php", data=post_data, cookies=cookies)
 
