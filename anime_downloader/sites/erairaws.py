@@ -90,8 +90,10 @@ class EraiRaws(Anime, sitename='erai-raws'):
             load = "load_more_3"
 
         max_page_regex = "{}_params.*?max_page.*?(\d+)"
-        max_page = int(re.search(max_page_regex.format(load), str(soup)).group(1))
-        max_page_special = int(re.search(max_page_regex.format("load_more_2"), str(soup)).group(1))
+        max_page = int(
+            re.search(max_page_regex.format(load), str(soup)).group(1))
+        max_page_special = int(
+            re.search(max_page_regex.format("load_more_2"), str(soup)).group(1))
 
         post_data = {"action": load}
 
