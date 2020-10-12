@@ -73,6 +73,7 @@ Yeah. Me too! That's why this tool exists.
 - Anistream
 - Darkanime
 - Dbanimes 
+- EraiRaws
 - FastAni
 - GurminderBoparai (AnimeChameleon)
 - itsaturday
