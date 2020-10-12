@@ -225,7 +225,7 @@ class EraiRawsEpisode(AnimeEpisode, sitename='erai-raws'):
             # Required - if you don't wait, you generally won't get the actual download link
             time.sleep(10)
 
-            resp = requests.head(
+            resp = session.head(
                 download_link, headers=headers, cookies=resp.cookies)
 
             if resp.status_code == 302:
