@@ -24,19 +24,25 @@ class Nyaa(Anime, sitename='nyaa'):
 
     # Something like: [Erai-raws] Boruto Next Generations 38 [720p][Multiple Subs].mkv
     # Becomes something like ('[Erai-raws] Boruto Next Generations 38 [720p][Multiple Subs].mkv', '[Erai-raws] Boruto Next Generations', '78')
-    title_regex = "((\[.*?\]\s+?.*)\s-\s+?(\d+).*\[.*)"
+    title_regex = "((\[.*?\]\s+?.*)\s-\s+?([A-Za-z0-9]+).*\[.*)"
     matches = []
 
     @classmethod
     def search_episodic(cls, query, scrape_eps=False):
-        # Specifying an episode drastically reduces results
-        # and boosts the speed of this search method tremendously
-        # but for _scrape_episodes_episodic it won't catch all the episodes if we do that
-        # And thw query will already be precise and thus much faster
-        # than a user search
-        query = f"{query} 01" if not scrape_eps else query
-        parameters = {"f": 2, "c": "1_0", "q": query}
-        soup = helpers.soupify(helpers.get("https://nyaa.si", params=parameters))
+        # Keywords to narrow down results and thus increase the speed of episodic scraping
+        # 01 is an episode number
+        keywords = ["01", "Movie", "Special", "OVA"]
+
+        for keyword in keywords:
+            # scrapes_episodes_episodic needs the query to be unmodified to collect all eps
+            # It shouldn't be too slow, though, as the query will already be precise
+            query_modified = f"{query} {keyword}" if not scrape_eps else query
+            parameters = {"f": 2, "c": "1_0", "q": query_modified}
+            resp = helpers.get("https://nyaa.si", params=parameters)
+            if "No results found" not in resp.text:
+                break
+
+        soup = helpers.soupify(resp)
         links_and_titles = [(x.get("title"), x.get("href")) for x in soup.select("td[colspan] > a[href][title]:not(.comments)")]
 
         while soup.select(".next > a"):
