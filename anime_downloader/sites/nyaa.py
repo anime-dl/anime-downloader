@@ -29,6 +29,12 @@ class Nyaa(Anime, sitename='nyaa'):
 
     @classmethod
     def search_episodic(cls, query, scrape_eps=False):
+        # Specifying an episode drastically reduces results
+        # and boosts the speed of this search method tremendously
+        # but for _scrape_episodes_episodic it won't catch all the episodes if we do that
+        # And thw query will already be precise and thus much faster
+        # than a user search
+        query = f"{query} 01" if not scrape_eps else query
         parameters = {"f": 2, "c": "1_0", "q": query}
         soup = helpers.soupify(helpers.get("https://nyaa.si", params=parameters))
         links_and_titles = [(x.get("title"), x.get("href")) for x in soup.select("td[colspan] > a[href][title]:not(.comments)")]
@@ -140,8 +146,9 @@ class Nyaa(Anime, sitename='nyaa'):
 
             if not regexed_quality:
                 logger.warn("Could not discern quality, downloading all links...")
+                return cleaned_list
 
-            final_list = [x for x in cleaned_list if regexed_quality in x[0]]
+            final_list = [x for x in cleaned_list if regexed_quality.group(1) in x[0]]
 
         return final_list
 
