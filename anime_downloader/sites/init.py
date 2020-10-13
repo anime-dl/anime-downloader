@@ -23,7 +23,7 @@ ALL_ANIME_SITES = [
     ('animixplay', 'animixplay', 'AniMixPlay'),
     ('darkanime', 'darkanime', 'DarkAnime'),
     ('dbanimes', 'dbanimes', 'DBAnimes'),
-    # ('erairaws', 'erai-raws', 'EraiRaws'),
+    ('erairaws', 'erai-raws', 'EraiRaws'),
     ('fastani', 'fastani', 'FastAni'),
     ('itsaturday', 'itsaturday', 'Itsaturday'),
     ('justdubs', 'justdubs', 'JustDubs'),
