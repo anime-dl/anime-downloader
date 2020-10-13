@@ -134,11 +134,13 @@ class Window(QtWidgets.QMainWindow):
             self.providers.addItem(site)
 
     def download(self):
+        self.downloadPrompt.setEnabled(False)
         self.progressBar.setValue(0)
         self.updateProgress = Worker(self.download_episodes)
         self.updateProgress.signal.connect(self.onCountChanged)
         self.updateProgress.start()
-
+        self.updateProgress.finished.connect(self.handleFinished)
+        
     def onCountChanged(self, value):
 
         self.progressBar.setValue(value)
@@ -244,6 +246,10 @@ class Window(QtWidgets.QMainWindow):
             self.updateProgress = None
         else:
             return None
+    
+    def handleFinished(self):
+        self.downloadPrompt.setEnabled(True)
+    
     def __iggyTheme(self):
         self.setStyleSheet("""
     QMainWindow,
