@@ -140,7 +140,7 @@ class Window(QtWidgets.QMainWindow):
         self.updateProgress.signal.connect(self.onCountChanged)
         self.updateProgress.start()
         self.updateProgress.finished.connect(self.handleFinished)
-        
+
     def onCountChanged(self, value):
 
         self.progressBar.setValue(value)
@@ -168,8 +168,10 @@ class Window(QtWidgets.QMainWindow):
         else:
             choice = 1
 
-        start = self.animeEpisodeStart.text() if self.animeEpisodeStart.text().isnumeric() else 1
-        end = int(self.animeEpisodeEnd.text()) + 1 if self.animeEpisodeEnd.text().isnumeric() else ''
+        start = self.animeEpisodeStart.text(
+        ) if self.animeEpisodeStart.text().isnumeric() else 1
+        end = int(self.animeEpisodeEnd.text()) + \
+            1 if self.animeEpisodeEnd.text().isnumeric() else ''
         episode_range = f'{start}:{end}'
 
         anime = self.animeName.text()
@@ -246,10 +248,10 @@ class Window(QtWidgets.QMainWindow):
             self.updateProgress = None
         else:
             return None
-    
+
     def handleFinished(self):
         self.downloadPrompt.setEnabled(True)
-    
+
     def __iggyTheme(self):
         self.setStyleSheet("""
     QMainWindow,
@@ -402,6 +404,7 @@ class Window(QtWidgets.QMainWindow):
     }
     */
     """)
+
     def __arjixTheme(self):
         self.setStyleSheet("""
     QMainWindow,
