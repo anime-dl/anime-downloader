@@ -96,7 +96,7 @@ def command(anime_name, new, update_all, _list, quality, remove,
         else:
             query = click.prompt('Enter the file path for the MAL .xml file', type=str)
 
-        if PATH.endswith('.xml'):
+        if query.endswith('.xml'):
             watcher._import_from_MAL(query)
             sys.exit(0)
         else:
