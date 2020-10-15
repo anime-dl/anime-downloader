@@ -191,6 +191,16 @@ class Watcher:
 
     def _get_anime_info_class(self, url):
         cls = get_anime_class(url)
+        if not cls:
+            logger.warn(f"The url: {url} is no longer supported. The provider needs to be set manually upon selection.") 
+            
+            """
+            Literally the only way to make sure the watch list doesn't fail when people delete providers from ALL_ANIME_SITES.
+            If nyaa needs to go, change this to another website. The other alternative is to make a invalidURL provider. However, that causes issues
+            in that the user will theoretically be able to choose invalidURL as a provider. Honestly, this is a stupid way to provide backcompatability...
+            """
+            url = "https://nyaa.si" 
+            cls = get_anime_class(url)
 
         # TODO: Maybe this is better off as a mixin
         class AnimeInfo(cls, sitename=cls.sitename):
