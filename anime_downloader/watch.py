@@ -1,5 +1,5 @@
 from anime_downloader import config
-from anime_downloader.sites import get_anime_class
+from anime_downloader.sites import get_anime_class, ALL_ANIME_SITES
 
 import os
 import sys
@@ -195,11 +195,10 @@ class Watcher:
             logger.warn(f"The url: {url} is no longer supported. The provider needs to be set manually upon selection.") 
             
             """
-            Literally the only way to make sure the watch list doesn't fail when people delete providers from ALL_ANIME_SITES.
-            If nyaa needs to go, change this to another website. The other alternative is to make a invalidURL provider. However, that causes issues
-            in that the user will theoretically be able to choose invalidURL as a provider. Honestly, this is a stupid way to provide backcompatability...
+            Provides some level of backcompatability when watch lists have providers that have been removed. They are then warned via logger that they will 
+            have to change providers using the set function when an anime is selected in the list. 
             """
-            url = "https://nyaa.si" 
+            url = ALL_ANIME_SITES[0][1] 
             cls = get_anime_class(url)
 
         # TODO: Maybe this is better off as a mixin
