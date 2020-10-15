@@ -9,7 +9,7 @@ anime config
 
 
 This command lets you change the configuration for anime dl from within your terminal.
-.. code::
+::
     +--------+------------+
     |      4 | watch      |
     |      3 | siteconfig |
@@ -24,7 +24,7 @@ This command lets you change the configuration for anime dl from within your ter
 
 This lists all options in the config, and lets you change their values by entering them.
 If you select 1 (one) then it will bring all the sub-keys for that selected choice.
-.. code::
+::
     +--------+------------------------------------+
     |     16 | url                                |
     |     15 | speed_limit                        |
@@ -49,7 +49,7 @@ If you select 1 (one) then it will bring all the sub-keys for that selected choi
 
 
 Selecting a setting that has no sub-keys will get you to the value input mode.
-.. code::
+::
     +--------+------------------------------------+
     |     16 | url                                |
     |     15 | speed_limit                        |
@@ -90,7 +90,7 @@ It can be found under:
 
 The default config file is given below.
 
-.. code:: json
+::
 
     {
         "dl": {
