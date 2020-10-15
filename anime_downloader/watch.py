@@ -148,20 +148,24 @@ class Watcher:
             mal_watch_status = str(list(values[mal_watch_status].keys())[0])
             mal_title = type_tag.find('series_title').text
             mal_episodes = type_tag.find('series_episodes').text
+            #We have to initialise some values for when we add anime from MAL. Now, we do this instead of letting the user choose the provider 
+            #On first run, this is so the user doesn't have to manually do hundreds of entries. The values initialise to one of the sites we already have 
+            #But with a broken link, the provider needs to be set manually for a series by using the set command in the list.
             list_to_dict.append({
                 "episodes_done": int(mal_watched_episodes),
                 "_timestamp": time(),
                 "score": int(mal_score),
                 "watch_status": mal_watch_status,
                 "colours": colour,
-                "url": "https://twist.moe/",
+                "url": ALL_ANIME_SITES[0][1],
                 "_fallback_qualities": ["720p", "480p", "360p"],
                 "quality": "720p",
                 "title": mal_title,
-                "_episode_urls": [[1, "https://twist.moe/anime/"]],
+                "_episode_urls": [[1, "https://notarealwebsite.illusion/"]],
                 "_len": int(mal_episodes)
             })
             self._write_to_watch_file(list_to_dict, MAL_import=True)
+        logger.warn("MAL List has been imported, please initialise the sites by using the 'set' command on a list entry!")
 
     def _read_from_watch_file(self):
         if not os.path.exists(self.WATCH_FILE):
