@@ -77,7 +77,7 @@ class Watcher:
     def update_anime(self, anime):
         if not hasattr(anime, 'colours'):
             colours = {
-                'watching': 'blue',
+                'watching': 'cyan',
                 'completed': 'green',
                 'dropped': 'red',
                 'planned': 'yellow',
