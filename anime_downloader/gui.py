@@ -34,27 +34,15 @@ class Window(QtWidgets.QMainWindow):
         self.setGeometry(50, 50, 400, 400)
         self.setWindowTitle("Anime Downloader")
         self.setWindowIcon(QtGui.QIcon('placeholder.png'))
-
-        vnTheme = QtWidgets.QAction('&vn-ki Theme', self)
-        iggyTheme = QtWidgets.QAction('&Iggy Theme', self)
-        iggyTheme.triggered.connect(self.__iggyTheme)
-        redTheme = QtWidgets.QAction('&Red Theme', self)
-        redTheme.triggered.connect(self.__redTheme)
-        arjixTheme = QtWidgets.QAction('&Arjix Theme', self)
-        arjixTheme.triggered.connect(self.__arjixTheme)
-        lagradTheme = QtWidgets.QAction('&Lagrad Theme', self)
-        lagradTheme.triggered.connect(self.__laggyTheme)
-        defaultTheme = QtWidgets.QAction('&Default Theme', self)
-        defaultTheme.triggered.connect(self.__defaultTheme)
         self.statusBar()
         menubar = self.menuBar()
         themeMenu = menubar.addMenu('&Themes')
-        themeMenu.addAction(vnTheme)
-        themeMenu.addAction(lagradTheme)
-        themeMenu.addAction(iggyTheme)
-        themeMenu.addAction(redTheme)
-        themeMenu.addAction(arjixTheme)
-        themeMenu.addAction(defaultTheme)
+        titles = ['Iggy', 'Arjix', 'Lagrad' ,'Red', 'Default']
+        methods = [self.__iggyTheme, self.__arjixTheme, self.__laggyTheme, self.__redTheme, self.__defaultTheme]
+        for x, y in zip(titles,methods):
+            theme = QtWidgets.QAction(f'&{x} Theme',self)
+            theme.triggered.connect(y)
+            themeMenu.addAction(theme)
 
         self.downloadPage()
 
