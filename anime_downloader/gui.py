@@ -60,23 +60,27 @@ class Window(QtWidgets.QMainWindow):
         self.downloadPrompt = QtWidgets.QPushButton('Download')
         self.cancelButton = QtWidgets.QPushButton('Cancel')
 
+        #Allows for enter to be pressed to get search.
+        returnPressedWidgets = [self.animeName, self.animeEpisodeStart, self.animeEpisodeEnd]
+        for x in returnPressedWidgets:
+            x.returnPressed.connect(self.PrintResults)
+
         self.PopulateProviders()
 
         self.animeName.setPlaceholderText('Anime Name:')
         self.animeEpisodeStart.setPlaceholderText('Anime Episode Start:')
         self.animeEpisodeEnd.setPlaceholderText('Anime Episode End:')
         self.downloadDirectory.setPlaceholderText('Download Directory:')
-
+        
         layout = QtWidgets.QVBoxLayout()
         central_widget = QtWidgets.QWidget()
         central_widget.setLayout(layout)
 
-        layout.addWidget(self.animeName)
-        layout.addWidget(self.animeEpisodeStart)
-        layout.addWidget(self.animeEpisodeEnd)
-        layout.addWidget(self.providers)
-        layout.addWidget(self.searchButton)
-        layout.addWidget(self.searchOutput)
+        #Adds the widgets to the screen.
+        widgetNames = [self.animeName, self.animeEpisodeStart, self.animeEpisodeEnd, self.providers,
+                       self.searchButton, self.searchOutput]
+        for x in widgetNames:
+            layout.addWidget(x)
 
         horizontalLayout = QtWidgets.QHBoxLayout()
         horizontalLayout.addWidget(self.downloadDirectory)
