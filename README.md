@@ -109,13 +109,14 @@ If you have trouble installing, see extended installation instructions [here](ht
 
 See [docs](https://anime-downlader.readthedocs.io/en/latest/usage/dl.html).
 
-Anime Downloader has five (5) sub-commands, `dl` and `watch`, `config`, `ezdl`, `test`.
+Anime Downloader has five (6) sub-commands, `dl`, `watch`, `gui`, `config`, `ezdl` and `test`.
 
 - [dl](https://anime-downlader.readthedocs.io/en/latest/usage/dl.html): `dl` can download anime.
 - ezdl: Uses metadata agents to unify providers and also auto select a result if the search argument is close to the anime title.
 - [watch](https://anime-downlader.readthedocs.io/en/latest/usage/watch.html): `watch` can manage your anime watch list. Needs [mpv](https://mpv.io).
 - [config](https://anime-downlader.readthedocs.io/en/latest/usage/config.html): can manage the configuration for anime dl.
 - test: Tests all the providers, not the most reliable command as the results may be faulty.
+- gui: opens a PyQT gui that allows for non commandline downloading and streaming.
 
 **To use `anime_downloader` in your package:**
 
