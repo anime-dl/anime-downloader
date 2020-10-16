@@ -40,6 +40,9 @@ DEFAULT_CONFIG = {
         'provider': 'twist.moe',
         'autoplay_next': True
     },
+    'gui': {
+        'player': 'mpv'
+    },
     'siteconfig': {
         'animefrenzy': {
             'version': 'subbed'
@@ -267,7 +270,8 @@ class _Config:
             try:
                 conf = json.load(configfile)
             except:
-                raise SyntaxWarning('The config file is not correctly formatted')
+                raise SyntaxWarning(
+                    'The config file is not correctly formatted')
         return conf
 
     def _write_default_config(self):

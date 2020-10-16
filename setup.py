@@ -34,6 +34,7 @@ setup(
     ],
     extras_require={
         'selescrape': ['selenium'],
+        'gui': ['PyQt5>=5.15.1', 'selenium'],
         'dev': [
             'pytest',
             'httpretty'
