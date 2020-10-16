@@ -11,6 +11,7 @@ import subprocess
 
 
 class Worker(QtCore.QThread):
+    #Worker to run commands on another thread, allowing the GUI not to lock up. Theoretically, any function should be able to be passed to this Worker.
     signal = QtCore.pyqtSignal(int)
 
     def __init__(self, fn, *args, **kwargs):
@@ -27,7 +28,9 @@ class Worker(QtCore.QThread):
 class Window(QtWidgets.QMainWindow):
 
     def __init__(self):
-
+        '''
+        Initialises the window as well as objects in the window which will always be constant regardless of pages.
+        '''
         super().__init__()
         self.updateProgress = None
         self.defaultStyleSheet = self.setStyleSheet("")
@@ -47,6 +50,10 @@ class Window(QtWidgets.QMainWindow):
         self.downloadPage()
 
     def downloadPage(self):
+        '''
+        Contains all the information for the main download page, this contains all the positioning inputs for the widgets used in this page, as well
+        as information regarding connecting signals to later functions.
+        '''
         self.animeName = QtWidgets.QLineEdit()
         self.animeEpisodeStart = QtWidgets.QLineEdit()
         self.animeEpisodeEnd = QtWidgets.QLineEdit()
@@ -105,7 +112,9 @@ class Window(QtWidgets.QMainWindow):
         self.show()
 
     def PrintResults(self):
-
+        '''
+        This function will return the search outputs for the user to select what anime they want.
+        '''
         self.searchOutput.clear()
         cls = get_anime_class(self.providers.currentText())
         searchResults = cls.search(self.animeName.text())
@@ -115,17 +124,24 @@ class Window(QtWidgets.QMainWindow):
         self.searchOutput.repaint()
 
     def openFileDialog(self):
-
+        '''
+        Opens the window selector for users to select what folder they want to download to.
+        '''
         filename = QtWidgets.QFileDialog.getExistingDirectory()
         self.downloadDirectory.setText(str(filename) + '/')
 
     def PopulateProviders(self):
-
+        '''
+        Populates the drop down menu for all the providers we have available.
+        '''
         sitenames = [v[1] for v in ALL_ANIME_SITES]
         for site in sitenames:
             self.providers.addItem(site)
 
     def download(self):
+        '''
+        Contains all the information regarding updating the progress bar as well as passing the downloading to the Worker to download on another thread.
+        '''
         self.downloadPrompt.setEnabled(False)
         self.progressBar.setValue(0)
         self.updateProgress = Worker(self.download_episodes)
@@ -134,16 +150,24 @@ class Window(QtWidgets.QMainWindow):
         self.updateProgress.finished.connect(self.handleFinished)
 
     def onCountChanged(self, value):
-
+        '''
+        Updates the progress bar.
+        '''
         self.progressBar.setValue(value)
 
     def play(self):
+        '''
+        Initialises the play button, passes the streaming to another thread.
+        '''
         self.progressBar.setValue(0)
         self.updateProgress = Worker(self.play_episodes)
         self.updateProgress.signal.connect(self.onCountChanged)
         self.updateProgress.start()
 
     def play_episodes(self, signal):
+        '''
+        Brings all the episodes into a m3u8 playlist for one continuous mpv.
+        '''
         self.signal = signal
         animes, anime_title = self.get_animes()
 
