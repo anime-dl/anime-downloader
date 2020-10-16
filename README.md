@@ -109,7 +109,7 @@ If you have trouble installing, see extended installation instructions [here](ht
 
 See [docs](https://anime-downlader.readthedocs.io/en/latest/usage/dl.html).
 
-Anime Downloader has five (6) sub-commands, `dl`, `watch`, `gui`, `config`, `ezdl` and `test`.
+Anime Downloader has six (6) sub-commands, `dl`, `watch`, `gui`, `config`, `ezdl` and `test`.
 
 - [dl](https://anime-downlader.readthedocs.io/en/latest/usage/dl.html): `dl` can download anime.
 - ezdl: Uses metadata agents to unify providers and also auto select a result if the search argument is close to the anime title.
