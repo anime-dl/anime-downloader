@@ -2,9 +2,6 @@
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 
-import logging
-
-logger = logging.getLogger(__name__)
 
 class SubsPlease(Anime, sitename="subsplease"):
     sitename="subsplease"
