@@ -33,6 +33,7 @@ ALL_ANIME_SITES = [
     ('nyaa', 'nyaa', 'Nyaa'),
     ('putlockers', 'putlockers', 'PutLockers'),
     ('ryuanime', 'ryuanime', 'RyuAnime'),
+    ('subsplease', 'subsplease', 'SubsPlease'),
     ('twistmoe', 'twist.moe', 'TwistMoe'),
     ('tenshimoe', 'tenshi.moe', 'TenshiMoe'),
     ('vidstream', 'vidstream', 'VidStream'),
