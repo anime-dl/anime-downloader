@@ -4,22 +4,24 @@ from anime_downloader.sites import helpers
 
 
 class SubsPlease(Anime, sitename="subsplease"):
-    sitename="subsplease"
+    sitename = "subsplease"
     api_url = "https://subsplease.org/api"
 
     @classmethod
     def search(cls, query):
 
         # Tz for time zone - the parameter is required, but the value does not matter
-        resp = helpers.get(cls.api_url, params = {"f": "search", "tz": "", "s": query}).json()
+        resp = helpers.get(cls.api_url, params={
+                           "f": "search", "tz": "", "s": query}).json()
 
         # Using to deduplicate
-        slug_to_title_dict = dict([(resp[key]["show"], resp[key]["page"]) for key in resp.keys()])
+        slug_to_title_dict = dict(
+            [(resp[key]["show"], resp[key]["page"]) for key in resp.keys()])
 
         search_results = [
             SearchResult(
-                title = x[0],
-                url = "https://subsplease.org/shows/" + x[1],
+                title=x[0],
+                url="https://subsplease.org/shows/" + x[1],
             )
             for x in slug_to_title_dict.items()
         ]
@@ -28,10 +30,11 @@ class SubsPlease(Anime, sitename="subsplease"):
 
     def _scrape_episodes(self):
         soup = helpers.soupify(helpers.get(self.url))
-        
+
         # Show ID
         sid = soup.select("[sid]")[0]["sid"]
-        resp = helpers.get(self.api_url, params = {"f": "show", "tz": "", "sid": sid}).json()
+        resp = helpers.get(self.api_url, params={
+                           "f": "show", "tz": "", "sid": sid}).json()
 
         episodes = []
 
@@ -41,6 +44,7 @@ class SubsPlease(Anime, sitename="subsplease"):
 
         return episodes[::-1]
 
+
 class SubsPleaseEpisode(AnimeEpisode, sitename="subsplease"):
     QUALITIES = ["1080p", "720p", "480p"]
 
@@ -48,7 +52,8 @@ class SubsPleaseEpisode(AnimeEpisode, sitename="subsplease"):
         episode_name = self.url.split("/")[-1]
         sid = self.url.split("/")[-2]
 
-        resp = helpers.get(SubsPlease.api_url, params = {"f": "show", "tz": "", "sid": sid}).json()
+        resp = helpers.get(SubsPlease.api_url, params={
+                           "f": "show", "tz": "", "sid": sid}).json()
 
         downloads = resp[episode_name]["downloads"]
 
