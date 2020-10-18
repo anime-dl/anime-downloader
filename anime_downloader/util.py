@@ -136,7 +136,8 @@ def primitive_search(search_results):
     click.echo(table, err=True)
 
     while True:
-        val = click.prompt('Enter the anime no: ', type=int, default=1, err=True)
+        val = click.prompt('Enter the anime no: ',
+                           type=int, default=1, err=True)
         try:
             return search_results[val - 1]
         except IndexError:
@@ -207,7 +208,8 @@ def print_episodeurl(episode):
     #    print(episode.source().stream_url + "?referer=" +  episode.source().referer)
     # else:
     # Currently I don't know of a way to specify referer in url itself so leaving it here.
-    url = episode.url if episode.url.startswith("magnet") else episode.source().stream_url
+    url = episode.url if episode.url.startswith(
+        "magnet") else episode.source().stream_url
     print(unquote(url))
 
 
@@ -269,7 +271,8 @@ def format_command(cmd, episode, file_format, speed_limit, path):
     log_levels = ['debug', 'info', 'notice', 'warn', 'error']
     log_level = Config['dl']['aria2c_log_level'].lower()
     if log_level not in log_levels:
-        logger.warn('Invalid logging level "{}", defaulting to "error".'.format(log_level))
+        logger.warn(
+            'Invalid logging level "{}", defaulting to "error".'.format(log_level))
         logger.debug('Possible levels: {}.'.format(log_levels))
         log_level = 'error'
 
@@ -302,12 +305,13 @@ def format_command(cmd, episode, file_format, speed_limit, path):
     logger.info(cmd)
     if cmd == "{wget}":
         # Create the directory if it doesn't exist
-        make_dir(f"{rep_dict['download_dir']}/{os.path.dirname(format_filename(rep_dict['file_format'], episode))}")
+        make_dir(
+            f"{rep_dict['download_dir']}/{os.path.dirname(format_filename(rep_dict['file_format'], episode))}")
         path_string = file_format.replace('\\', '/').split('/')
         rep_dict['file_format'] = path_string.pop(-1)
         path_string = '/'.join(path_string)
         rep_dict['download_dir'] = os.path.join(path, path_string)
-        
+
     if cmd == "{idm}":
         rep_dict['file_format'] = rep_dict['file_format'].replace('/', '\\')
 
@@ -374,8 +378,10 @@ def make_dir(path):
 def get_filler_episodes(query):
     def search_filler_episodes(query, page):
         url = 'https://animefillerlist.com/search/node/'
-        search_results = helpers.soupify(helpers.get(url + query, params={'page': page})).select('h3.title > a')
-        urls = [a.get('href') for a in search_results if a.get('href').split('/')[-2] == 'shows']
+        search_results = helpers.soupify(helpers.get(
+            url + query, params={'page': page})).select('h3.title > a')
+        urls = [a.get('href') for a in search_results if a.get(
+            'href').split('/')[-2] == 'shows']
         search_results = [
             [
                 search_results[a].text]
@@ -388,7 +394,8 @@ def get_filler_episodes(query):
 
     for a in range(5):  # Max 5 pages, could be done using the pager element
         search_results, urls = search_filler_episodes(query, a)
-        if urls == prev and not (len(urls) == 0 or a == 0):  # stops the loop if the same site is visited twice
+        # stops the loop if the same site is visited twice
+        if urls == prev and not (len(urls) == 0 or a == 0):
             break
         prev = urls[:]
 
@@ -397,14 +404,16 @@ def get_filler_episodes(query):
         for c in urls:
             urls_list.append(c)
 
-    [results_list[a].insert(0, a + 1)for a in range(len(results_list))]  # inserts numbers
+    [results_list[a].insert(0, a + 1)
+     for a in range(len(results_list))]  # inserts numbers
 
     headers = ["SlNo", "Title"]
     table = tabulate(results_list, headers, tablefmt='psql')
     table = '\n'.join(table.split('\n')[::-1])
 
     click.echo(table)
-    val = click.prompt('Enter the filler-anime no (0 to cancel): ', type=int, default=1, err=True)
+    val = click.prompt(
+        'Enter the filler-anime no (0 to cancel): ', type=int, default=1, err=True)
     if val == 0:
         return False
 
@@ -431,7 +440,8 @@ def get_filler_episodes(query):
         return episodes
 
     except:
-        logger.warn("Can't get filler episodes. Will download all specified episodes.")
+        logger.warn(
+            "Can't get filler episodes. Will download all specified episodes.")
         return False
 
 
@@ -444,4 +454,3 @@ class ClickListOption(click.Option):
             return ast.literal_eval(value)
         except:
             raise click.BadParameter(value)
-
