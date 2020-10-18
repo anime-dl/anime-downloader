@@ -52,7 +52,6 @@ class AnimeFreakEpisode(AnimeEpisode, sitename='animefreak'):
             # Just in case we don't have the ep number in url_end for some unexpected reason
             if episode_number_regexed:
                 self.ep_no = episode_number_regexed.group()
-                logger.info(self.ep_no)
 
         if not match:
             raise NotFoundError(f'Failed to find video url for {self.url}')
