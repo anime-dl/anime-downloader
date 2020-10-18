@@ -302,7 +302,7 @@ def format_command(cmd, episode, file_format, speed_limit, path):
         'speed_limit': speed_limit,
         'log_level': log_level
     }
-    logger.info(cmd)
+
     if cmd == "{wget}":
         # Create the directory if it doesn't exist
         make_dir(
