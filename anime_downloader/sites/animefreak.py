@@ -45,7 +45,7 @@ class AnimeFreakEpisode(AnimeEpisode, sitename='animefreak'):
         # E.g. episode-946
         url_end = self.url.split("/")[-1]
 
-        # To ensure that isn't a special/preview or something
+        # To ensure that it isn't a special/preview or something
         logger.info(url_end)
         if "episode" in url_end:
             episode_number_regexed = re.search("\d+", url_end)
