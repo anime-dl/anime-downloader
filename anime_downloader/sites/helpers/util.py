@@ -4,11 +4,14 @@ import logging
 def not_working(message):
     orig_message = message
     message += " You can use `anime -ll DEBUG` to use it."
+
     def wrapper(cls):
         class NotWorking:
             """Site is not working"""
+
             def __init__(self, *args, **kwargs):
                 raise RuntimeError(message)
+
             def search(cls, *args, **kwargs):
                 raise RuntimeError(message)
 

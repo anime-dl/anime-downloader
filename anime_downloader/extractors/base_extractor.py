@@ -8,10 +8,13 @@ class BaseExtractor:
             url = 'https://' + url
         self.url = url
 
+        if headers is None:
+            headers = {}
+
         # TODO: Maybe quality should be only delt with inside epiosde(?)
         self.quality = quality
 
-        if headers is not None:
+        if headers:
             self.headers = headers
         else:
             self.headers = desktop_headers

@@ -22,32 +22,32 @@ class KisscartoonEpisode(AnimeEpisode, sitename='kisscartoon'):
                 'episode_id': self.url.split('id=')[-1],
             }
             api = helpers.post(self._episode_list_url,
-                              params=params,
-                              referer=self.url).json()
-            if api.get('status',False):
+                               params=params,
+                               referer=self.url).json()
+            if api.get('status', False):
                 iframe_regex = r'<iframe src="([^"]*?)"'
-                url = re.search(iframe_regex,api['value']).group(1)
+                url = re.search(iframe_regex, api['value']).group(1)
                 if url.startswith('//'):
                     url = 'https:' + url
-                if url.endswith('mp4upload.com/embed-.html') or url.endswith('yourupload.com/embed/'): #Sometimes returns empty link
+                if url.endswith('mp4upload.com/embed-.html') or url.endswith('yourupload.com/embed/'):  # Sometimes returns empty link
                     url = ''
                     continue
                 break
 
-        extractor = 'streamx' #defaut extractor
-        extractor_urls = { #dumb, but easily expandable, maps urls to extractors
-        "mp4upload.com":"mp4upload",
-        "yourupload.com":"yourupload"
+        extractor = 'streamx'  # defaut extractor
+        extractor_urls = {  # dumb, but easily expandable, maps urls to extractors
+            "mp4upload.com": "mp4upload",
+            "yourupload.com": "yourupload"
         }
         for i in extractor_urls:
             if i in url:
                 extractor = extractor_urls[i]
 
-        return [(extractor,url)]
+        return [(extractor, url)]
 
 
 class KissCartoon(KissAnime, sitename='kisscartoon'):
-    sitename='kisscartoon'
+    sitename = 'kisscartoon'
 
     @classmethod
     def search(cls, query):
@@ -69,7 +69,6 @@ class KissCartoon(KissAnime, sitename='kisscartoon'):
 
         return ret
 
-
     def _scrape_episodes(self):
         soup = helpers.soupify(helpers.get(self.url, sel=True).text)
         ret = [str(a['href'])
@@ -81,7 +80,6 @@ class KissCartoon(KissAnime, sitename='kisscartoon'):
             raise NotFoundError(err, *args)
 
         return list(reversed(ret))
-
 
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url, sel=True).text)

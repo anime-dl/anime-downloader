@@ -30,7 +30,7 @@ class Animeflv(Anime, sitename='animeflv'):
 
     @classmethod
     def search(cls, query):
-        soup = helpers.soupify(helpers.get(f"{cls.DOMAIN}browse?q={query}", cf=True))
+        soup = helpers.soupify(helpers.get(f"{cls.DOMAIN}browse", params={"q": query}))
         results = [
             SearchResult(title=v.h3.text, url=cls.DOMAIN + v.a['href'], poster=v.img['src'])
             for v in soup.select('ul.ListAnimes > li')
@@ -42,7 +42,7 @@ class Animeflv(Anime, sitename='animeflv'):
         #'<h3 class="Title">' + anime_info[1] + '</h3>'
         #'<p>Episodio ' + episodes[i][0] + '</p></a>'
         #'<label for="epi' + episodes[i][0]
-        html = helpers.get(self.url, cf=True).text
+        html = helpers.get(self.url).text
         anime_info = json.loads(
             re.findall('anime_info = (.*);', html)[0]
         )
@@ -56,8 +56,8 @@ class Animeflv(Anime, sitename='animeflv'):
         return links[::-1]
 
     def _scrape_metadata(self):
-        soup = helpers.soupify(helpers.get(self.url, cf=True).text)
-        self.title = soup.select_one('h2.Title').text
+        soup = helpers.soupify(helpers.get(self.url))
+        self.title = soup.select_one('h1.Title').text
 
 
 class AnimeflvEpisode(AnimeEpisode, sitename='animeflv'):
@@ -69,40 +69,47 @@ class AnimeflvEpisode(AnimeEpisode, sitename='animeflv'):
     # TODO: Implement support for amus and perhaps Zippyshare?
     # Hint:  https://github.com/Cartmanishere/zippyshare-scraper
 
+    # TODO add more servers.
     SERVERS = [
-        'streamango',
-        'natsuki'
+        'Stape'
     ]
 
     def _get_sources(self):
         videos = json.loads(
-            re.findall('videos = (.*);', helpers.get(self.url, cf=True).text)[0]
+            re.findall('videos = (.*);', helpers.get(self.url).text)[0]
         )
+
         lang = {'subbed': 'SUB', 'latin': 'LAT'}
         videos = videos[lang[self.config.get('version', 'subbed')]]
 
-        server = self.config['server']
-
-        # Trying preferred server from config first
-        for video in videos:
-            if video['server'] == server:
-                if server == 'streamango':
-                    return [(server, video['code'])]
-                if server == 'natsuki':
+        # Exceptions to domain -> extractor
+        extractor_dict = {
+            'fembed': 'gcloud',
+            'gocdn': 'streamium',
+            'yu': 'yourupload',
+            'stape': 'streamtape'
+        }
+        sources_list = []
+        for i in videos:
+            if i['server'] in self.config['servers']:
+                extractor = extractor_dict.get(i['server'], 'no_extractor')
+                # Should be extractor to prevent extra requests.
+                if i['server'] == 'natsuki':
                     url = helpers.get(video['code'].replace('embed', 'check')).json()['file']
-                    return [('no_extractor', url)]
+                    extractor = 'no_extractor'
 
-        logger.debug('Preferred server %s not found.  Trying all supported servers.', server)
+                sources_list.append({
+                    'extractor': extractor,
+                    'url': i['code'],
+                    'server': i['server'],
+                    'version': 'subbed'
+                })
 
-        # Trying streamango and natsuki.  The second for loop is not ideal.
-        for video in videos:
-            if video['server'] == 'streamango':
-                return [('streamango', video['code'])]
-            if video['server'] == 'natsuki':
-                url = helpers.get(video['code'].replace('embed', 'check')).json()['file']
-                return [('no_extractor', url)]
+        return self.sort_sources(sources_list)
 
+        """
         # No supported server found, exit.
         err = 'No supported host server found.  Try another site.'
         args = [self.url]
         raise NotFoundError(err, *args)
+        """

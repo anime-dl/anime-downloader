@@ -17,11 +17,11 @@ class GogoanimeEpisode(AnimeEpisode, sitename='gogoanime'):
 
         server = self.config.get('server', 'cdn')
         if server == 'cdn':
-            for element in soup.find_all('a', href=re.compile('https://vidstreaming\.io')):
+            for element in soup.find_all('a', href=re.compile('https://gogo-stream\.com')):
                 source_url = element.get('href')
                 logger.debug('%s' % (source_url))
                 dl_page_url = source_url
-                return[('vidstream',source_url)]
+                return[('vidstream', source_url)]
 
         else:
             soup = helpers.soupify(helpers.get(self.url))
@@ -60,18 +60,23 @@ class GogoAnime(Anime, sitename='gogoanime'):
     _base_url = 'https://gogoanime.io/'
     _episode_list_url = 'https://gogoanime.io/load-list-episode'
     _search_url = 'https://gogoanime.io/search.html'
+
     @classmethod
     def search(cls, query):
-        search_results = helpers.soupify(helpers.get(cls._search_url, params = {'keyword': query}))
+        search_results = helpers.soupify(helpers.get(cls._search_url, params={'keyword': query}))
         search_results = search_results.select('ul.items > li > p > a')
 
         search_results = [
             SearchResult(
-                title=a.get('title'),
-                url='https://gogoanime.io' + a.get('href'))
-            for a in search_results
+                title=i.get('title'),
+                url='https://gogoanime.io' + i.get('href'),
+                meta_info={
+                    'version_key_dubbed': '(Dub)'
+                }
+            )
+            for i in search_results
         ]
-        return(search_results)
+        return search_results
 
     def _scrape_episodes(self):
         soup = helpers.soupify(helpers.get(self.url))
@@ -87,8 +92,8 @@ class GogoAnime(Anime, sitename='gogoanime'):
                                            params=params))
 
         epurls = list(
-            reversed([self._base_url + a.get('href').strip()
-                      for a in soup.select('li a')])
+            reversed([self._base_url + i.get('href').strip()
+                      for i in soup.select('li a')])
         )
 
         return epurls

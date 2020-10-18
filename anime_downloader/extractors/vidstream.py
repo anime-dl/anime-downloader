@@ -8,25 +8,27 @@ from anime_downloader.sites import helpers
 
 logger = logging.getLogger(__name__)
 
+
 class VidStream(BaseExtractor):
+    # NOTE! website renamed from vidstreaming.io to gogo-stream.com
     def _get_data(self):
         """
         Config:
-        List of servers. Will use servers in order. 
+        List of servers. Will use servers in order.
         For example: ["hydrax","vidstream"] will prioritize the HydraX link.
         Available servers: links (below) and vidstream
         """
 
         links = {
-        "gcloud":"https://gcloud.live/",
-        "mp4upload":"https://www.mp4upload.com/",
-        "cloud9":"https://cloud9.to",
-        "hydrax":"https://hydrax.net",
-        "mixdrop":"https://mixdrop.co"
+            "gcloud": "https://gcloud.live/",
+            "mp4upload": "https://www.mp4upload.com/",
+            "cloud9": "https://cloud9.to",
+            "hydrax": "https://hydrax.net",
+            "mixdrop": "https://mixdrop.co"
         }
 
-        url = self.url.replace('https:////','https://')
-        url = url.replace('https://vidstreaming.io/download','https://vidstreaming.io/server.php')
+        url = self.url.replace('https:////', 'https://')
+        url = url.replace('https://gogo-stream.com/download', 'https://gogo-stream.com/server.php')
         soup = helpers.soupify(helpers.get(url))
         linkserver = soup.select('li.linkserver')
         logger.debug('Linkserver: {}'.format(linkserver))
@@ -36,16 +38,16 @@ class VidStream(BaseExtractor):
 
         for i in servers:
             """
-            Will only use _get_link() if the site is actually the real vidstream, as clones 
+            Will only use _get_link() if the site is actually the real vidstream, as clones
             use a different layout for their own videos
             """
             if 'vidstream' in i and 'vidstream' in self.url:
                 return self._get_link(soup)
             for j in linkserver:
-                if j.get('data-video').startswith(links.get(i,'None')):
+                if j.get('data-video').startswith(links.get(i, 'None')):
                     """
                     Another class needs to get created instead of using self, not to impact future loops.
-                    If the extractor fails it will rerun, which would lead to an error if self was changed 
+                    If the extractor fails it will rerun, which would lead to an error if self was changed
                     """
                     info = self.__dict__.copy()
                     info['url'] = j.get('data-video')
@@ -53,15 +55,24 @@ class VidStream(BaseExtractor):
                     """Gives away the link to another extractor"""
                     return extractors.get_extractor(i)._get_data(_self)
 
+        return {'stream_url': ''}
 
-    def _get_link(self,soup):
-        """
-        Matches something like
-        f("MTE2MDIw&title=Yakusoku+no+Neverland");
-        """
-        sources_regex = r'>\s*?f\("(.*?)"\);'
-        sources_url = re.search(sources_regex,str(soup)).group(1)
-        sources_json = helpers.get(f'https://vidstreaming.io/ajax.php?id={sources_url}', referer=self.url).json()
+    def _get_link(self, soup):
+
+        # Gets:
+        # <input type="hidden" id="id" value="MTEyMzg1">
+        # <input type="hidden" id="title" value="Yakusoku+no+Neverland">
+        # <input type="hidden" id="typesub" value="SUB">
+        # Used to create a download url.
+        soup_id = soup.select('input#id')[0]['value']
+        soup_title = soup.select('input#title')[0]['value']
+        soup_typesub = soup.select('input#typesub')[0].get('value', 'SUB')
+
+        sources_json = helpers.get(f'https://gogo-stream.com/ajax.php', params={
+            'id': soup_id,
+            'typesub': soup_typesub,
+            'title': soup_title,
+        }, referer=self.url).json()
 
         logger.debug('Sources json: {}'.format(str(sources_json)))
         """
@@ -70,8 +81,8 @@ class VidStream(BaseExtractor):
         is in the name in order to pass the check above.
         """
         sources_keys = {
-            "vidstream":"source",
-            "vidstream_bk":"source_bk"
+            "vidstream": "source",
+            "vidstream_bk": "source_bk"
         }
 
         """
@@ -80,7 +91,7 @@ class VidStream(BaseExtractor):
         """
 
         servers = Config._read_config()['siteconfig']['vidstream']['servers']
-        print(sources_json["source"][0]["file"])
+
         for i in servers:
             if i in sources_keys:
                 if sources_keys[i] in sources_json:
@@ -90,11 +101,13 @@ class VidStream(BaseExtractor):
                             'referer': self.url
                         }
 
-        return {'stream_url':''}
+        return {'stream_url': ''}
 
 
-"""dummy class to prevent changing self"""
-class Extractor: 
+class Extractor:
+    """dummy class to prevent changing self"""
+
     def __init__(self, dictionary):
         for k, v in dictionary.items():
             setattr(self, k, v)
+

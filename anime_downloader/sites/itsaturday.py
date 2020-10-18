@@ -1,6 +1,7 @@
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 
+
 class Itsaturday(Anime, sitename='itsaturday'):
     sitename = 'itsaturday'
     DOMAIN = 'http://www.itsaturday.com'
@@ -33,4 +34,3 @@ class ItsaturdayEpisode(AnimeEpisode, sitename='itsaturday'):
             ('no_extractor',
              self._parent.DOMAIN + helpers.soupify(helpers.get(self.url)).select_one('source').attrs['src'])
         ]
-
