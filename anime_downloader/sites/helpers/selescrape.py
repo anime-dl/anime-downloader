@@ -145,15 +145,14 @@ def driver_select():
                                            service_log_path=os.path.devnull)
 
     elif browser == 'chrome':
+        profile_path = os.path.join(data_dir, 'Selenium_chromium')
+        log_path = os.path.join(data_dir, 'chromedriver.log')
         from selenium.webdriver.chrome.options import Options
         chrome_options = Options()
         ops = ["--headless", "--disable-gpu", '--log-level=OFF', f"--user-data-dir={profile_path}",
                "--no-sandbox", "--window-size=1920,1080", f"user-agent={get_random_header()['user-agent']}"]
         for option in ops:
             chrome_options.add_argument(option)
-
-        profile_path = os.path.join(data_dir, 'Selenium_chromium')
-        log_path = os.path.join(data_dir, 'chromedriver.log')
 
         if not binary:
             if not executable:
