@@ -1,11 +1,8 @@
 import re
-import logging
 
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites.exceptions import NotFoundError
 from anime_downloader.sites import helpers
-
-logger = logging.getLogger(__name__)
 
 
 class AnimeFreak(Anime, sitename='animefreak'):
