@@ -280,7 +280,7 @@ def format_command(cmd, episode, file_format, speed_limit, path):
                    '--check-certificate=false --user-agent={useragent} --max-overall-download-limit={speed_limit} '
                    '--console-log-level={log_level}',
         '{idm}': 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4',
-        '{wget}': 'wget {stream_url} --referer={referer} --user-agent="{useragent}" -P {download_dir} -O {file_format}.mp4 -c'
+        '{wget}': 'wget {stream_url} --referer={referer} --user-agent={useragent} -O {download_dir}/{file_format}.mp4 -c'
     }
 
     # Allows for passing the user agent with self.headers in the site.
@@ -299,7 +299,10 @@ def format_command(cmd, episode, file_format, speed_limit, path):
         'speed_limit': speed_limit,
         'log_level': log_level
     }
+    logger.info(cmd)
     if cmd == "{wget}":
+        # Create the directory if it doesn't exist
+        make_dir(f"{rep_dict['download_dir']}/{os.path.dirname(format_filename(rep_dict['file_format'], episode))}")
         path_string = file_format.replace('\\', '/').split('/')
         rep_dict['file_format'] = path_string.pop(-1)
         path_string = '/'.join(path_string)
@@ -314,6 +317,7 @@ def format_command(cmd, episode, file_format, speed_limit, path):
     cmd = cmd.split(' ')
     cmd = [c.format(**rep_dict) for c in cmd]
     cmd = [format_filename(c, episode) for c in cmd]
+
     return cmd
 
 
