@@ -1,8 +1,11 @@
 import re
+import logging
 
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites.exceptions import NotFoundError
 from anime_downloader.sites import helpers
+
+logger = logging.getLogger(__name__)
 
 
 class AnimeFreak(Anime, sitename='animefreak'):
@@ -41,6 +44,18 @@ class AnimeFreakEpisode(AnimeEpisode, sitename='animefreak'):
         page = helpers.get(self.url).text
         source_re = re.compile(r'loadVideo.+file: "([^"]+)', re.DOTALL)
         match = source_re.findall(page)
+
+        # E.g. episode-946
+        url_end = self.url.split("/")[-1]
+
+        # To ensure that isn't a special/preview or something
+        logger.info(url_end)
+        if "episode" in url_end:
+            episode_number_regexed = re.search("\d+", url_end)
+            # Just in case we don't have the ep number in the url_end for some unexpected reason
+            if episode_number_regexed:
+                self.ep_no = episode_number_regexed.group()
+                logger.info(self.ep_no)
 
         if not match:
             raise NotFoundError(f'Failed to find video url for {self.url}')
