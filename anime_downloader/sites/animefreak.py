@@ -49,7 +49,7 @@ class AnimeFreakEpisode(AnimeEpisode, sitename='animefreak'):
         logger.info(url_end)
         if "episode" in url_end:
             episode_number_regexed = re.search("\d+", url_end)
-            # Just in case we don't have the ep number in the url_end for some unexpected reason
+            # Just in case we don't have the ep number in url_end for some unexpected reason
             if episode_number_regexed:
                 self.ep_no = episode_number_regexed.group()
                 logger.info(self.ep_no)
