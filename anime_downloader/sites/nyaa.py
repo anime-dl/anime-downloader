@@ -28,7 +28,7 @@ class Nyaa(Anime, sitename='nyaa'):
     matches = []
 
     @classmethod
-    def search_episodic(cls, query, scrape_eps=False):
+    def search_episodic(cls, query, scrape_eps=False, base_url="https://nyaa.si"):
         # Keywords to narrow down results and thus increase the speed of episodic scraping
         # 01 is an episode number
         keywords = ["01", "Movie", "Special", "OVA"]
@@ -38,7 +38,7 @@ class Nyaa(Anime, sitename='nyaa'):
             # It shouldn't be too slow, though, as the query will already be precise
             query_modified = f"{query} {keyword}" if not scrape_eps else query
             parameters = {"f": 2, "c": "1_0", "q": query_modified}
-            resp = helpers.get("https://nyaa.si", params=parameters)
+            resp = helpers.get(base_url, params=parameters)
             if "No results found" not in resp.text:
                 break
 
@@ -119,8 +119,12 @@ class Nyaa(Anime, sitename='nyaa'):
         title = soup.select("h3.panel-title")[0].text.strip()
         regexed_title = re.search(self.title_regex, title).group(2)
 
+        # Apparently you can do search by user
+        # Example: https://nyaa.si/user/Erai-raws?f=0&c=0_0&q=higurashi
+        uploader = 'https://nyaa.si' + soup.select("a.text-success")[0]["href"]
+
         # List of tuples of titles and links
-        anime = self.search_episodic(regexed_title, scrape_eps=True)
+        anime = self.search_episodic(regexed_title, scrape_eps=True, base_url=uploader)
 
         cleaned_list = []
 
