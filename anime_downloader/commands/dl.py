@@ -84,7 +84,7 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
 @click.option(
     "--queue", "-q",
     type=bool, is_flag=True,
-    help="Queue a series of anime"
+    help="Queue a list of anime"
 )
 @click.pass_context
 def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
