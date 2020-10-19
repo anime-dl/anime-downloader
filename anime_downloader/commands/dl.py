@@ -93,30 +93,35 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
     """ Download the anime using the url or search for it.
     """
     # Broken down by comma, and re-joined with comma, to remove trailing commas for accuracy with following len checks against choice and episode_range
-    anime_url = ",".join([x.strip() for x in anime_url.split(",") if x.strip() != ''])
+    anime_url = ",".join([x.strip()
+                          for x in anime_url.split(",") if x.strip() != ''])
     if choice:
         # Ensure that choice is only a combination of commas and numbers
         match = re.match("[\d,]+", choice)
         if not match or match.group() != choice:
-            raise UsageError(f"Invalid value for '--choice' / '-c': {choice} is not a valid integer/list of comma-delimited list of integers")
+            raise UsageError(
+                f"Invalid value for '--choice' / '-c': {choice} is not a valid integer/list of comma-delimited list of integers")
 
         choice = [x.strip() for x in choice.split(",") if x.strip()]
         # Check that length matches of choice list is equivalent to the number of specified anime
         if len(choice) != len(anime_url.split(",")):
-            raise UsageError(f"Invalid value for '--choice' / '-c': {','.join(choice)} does not have an equivalent number of arguments to {anime_url}")
-
+            raise UsageError(
+                f"Invalid value for '--choice' / '-c': {','.join(choice)} does not have an equivalent number of arguments to {anime_url}")
 
     if episode_range:
         # Check that only numeric characters, ',', and ':' are used
         match = re.match("[\d:,]+", episode_range)
 
         if not match or match.group() != episode_range:
-            raise UsageError("Invalid value for '--episodes' / '-e': only numerical characters, ',', and ':' are allowed")
+            raise UsageError(
+                "Invalid value for '--episodes' / '-e': only numerical characters, ',', and ':' are allowed")
 
-        episode_range = [x.strip() for x in episode_range.split(",") if x.strip()]
+        episode_range = [x.strip()
+                         for x in episode_range.split(",") if x.strip()]
 
         if len(episode_range) != len(anime_url.split(",")):
-            raise UsageError(f"Invalid value for '--episodes' / '-e: {','.join(episode_range)} does not have an equivalent number of arguments to {anime_url}")
+            raise UsageError(
+                f"Invalid value for '--episodes' / '-e: {','.join(episode_range)} does not have an equivalent number of arguments to {anime_url}")
 
     # anime_url changes after the first anime in the queue to the link of the previous anime
     original_url = anime_url
@@ -137,7 +142,8 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             if choice:
                 current_choice = int(choice[i])
 
-            anime_url, _ = util.search(original_url.split(",")[i], provider, current_choice)
+            anime_url, _ = util.search(original_url.split(",")[
+                                       i], provider, current_choice)
             cls = get_anime_class(anime_url)
 
         anime = cls(anime_url, quality=quality,
