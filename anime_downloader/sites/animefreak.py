@@ -29,7 +29,16 @@ class AnimeFreak(Anime, sitename='animefreak'):
         # Negative index for episode links in cases where full episode
         # list is available or if not default to usual episode list
         episode_links = soup.select('ul.check-list')[-1].select('li a')
-        return [a.get('href') for a in episode_links][::-1]
+        episodes = [a.get('href') for a in episode_links][::-1]
+
+        # Get links ending eith episode-74
+        episode_numbers = [re.search("episode-(\d+)", x.split("/")[-1]).group(1) for x in episodes if re.search("episode-\d+", x.split("/")[-1])]
+
+        # Ensure that the number of episode numbers which have been extracted, much the number of episode
+        if len(episodes) == len(episode_numbers):
+            return [(x, y) for x, y in zip(episode_numbers, episodes)]
+
+        return episodes
 
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url))
@@ -41,17 +50,6 @@ class AnimeFreakEpisode(AnimeEpisode, sitename='animefreak'):
         page = helpers.get(self.url).text
         source_re = re.compile(r'loadVideo.+file: "([^"]+)', re.DOTALL)
         match = source_re.findall(page)
-
-        # E.g. episode-946
-        url_end = self.url.split("/")[-1]
-
-        # To ensure that it isn't a special/preview or something
-        logger.info(url_end)
-        if "episode" in url_end:
-            episode_number_regexed = re.search("\d+", url_end)
-            # Just in case we don't have the ep number in url_end for some unexpected reason
-            if episode_number_regexed:
-                self.ep_no = episode_number_regexed.group()
 
         if not match:
             raise NotFoundError(f'Failed to find video url for {self.url}')
