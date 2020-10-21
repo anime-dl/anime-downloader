@@ -148,6 +148,7 @@ class Watcher:
             mal_watch_status = str(list(values[mal_watch_status].keys())[0])
             mal_title = type_tag.find('series_title').text
             mal_episodes = type_tag.find('series_episodes').text
+            mal_ID = type_tag.find('series_animedb_id').text
             #We have to initialise some values for when we add anime from MAL. Now, we do this instead of letting the user choose the provider 
             #On first run, this is so the user doesn't have to manually do hundreds of entries. The values initialise to one of the sites we already have 
             #But with a broken link, the provider needs to be set manually for a series by using the set command in the list.
@@ -157,6 +158,7 @@ class Watcher:
                 "score": int(mal_score),
                 "watch_status": mal_watch_status,
                 "colours": colour,
+                'mal_ID': int(mal_ID),
                 "url": ALL_ANIME_SITES[0][1],
                 "_fallback_qualities": ["720p", "480p", "360p"],
                 "quality": "720p",
@@ -210,9 +212,11 @@ class Watcher:
             def __init__(self, *args, **kwargs):
                 self.episodes_done = kwargs.pop('episodes_done', 0)
                 self._timestamp = kwargs.pop('timestamp', 0)
+                # Initial values needed for MAL which can't be got yet from just a simple addition to the watch list.
                 self.score = 0
                 self.watch_status = 'watching'
                 self.colours = 'blue'
+                self.mal_ID = 0
                 super(cls, self).__init__(*args, **kwargs)
 
             def progress(self):
