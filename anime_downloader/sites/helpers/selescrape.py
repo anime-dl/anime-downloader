@@ -195,11 +195,12 @@ def cloudflare_wait(driver):
         if delta >= abort_after:
             logger.error(f'Timeout:\tCouldnt bypass cloudflare. \
             See the screenshot for more info:\t{get_data_dir()}/screenshot.png')
-            break
+            return 1
         title = driver.title
         if not title == "Just a moment...":
             break
-    time.sleep(1)  # This is necessary to make sure everything has loaded fine.
+    time.sleep(2)  # This is necessary to make sure everything has loaded fine.
+    return 0
 
 
 def request(request_type, url, **kwargs):  # Headers not yet supported , headers={}
@@ -221,11 +222,15 @@ def request(request_type, url, **kwargs):  # Headers not yet supported , headers
 
         try:
 
-            cloudflare_wait(driver)
+            exit_code = cloudflare_wait(driver)
             user_agent = driver.execute_script("return navigator.userAgent;")
             cookies = driver.get_cookies()
             text = driver.page_source
             driver.close()
+            if exit_code == 0:
+                pass
+            else:
+                return SeleResponse(url, request_type, None, cookies, user_agent)
 
             seleResponse = SeleResponse(url, request_type, text, cookies, user_agent)
             cache_request(seleResponse)
