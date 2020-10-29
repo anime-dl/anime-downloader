@@ -206,9 +206,9 @@ def cloudflare_wait(driver):
 def request(request_type, url, **kwargs):  # Headers not yet supported , headers={}
     params = kwargs.get('params', {})
     url = url if not params else url + '?' + urlencode(params)
-
-    if bool(check_cache(url)):
-        cached_data = check_cache(url)
+    check_caches = check_cache(url)
+    if bool(check_caches):
+        cached_data = check_caches
         text = cached_data['data']
         user_agent = cached_data['user_agent']
         request_type = cached_data['method']
