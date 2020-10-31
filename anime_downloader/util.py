@@ -264,7 +264,7 @@ def format_filename(filename, episode):
 
 def format_command(cmd, episode, file_format, speed_limit, path):
     from anime_downloader.config import Config
-    if not Config._CONFIG['dl']['aria2c_for_torrents'] and episode.url.startswith('magnet:?xt=urn:btih:'):
+    if not Config._CONFIG['dl']['aria2c_for_torrents'] and (episode.url.startswith('magnet:?xt=urn:btih:') or episode.source().stream_url.startswith('https://magnet:?xt=urn:btih:')):
         return ['open', episode.url]
 
     # For aria2c.
@@ -293,8 +293,11 @@ def format_command(cmd, episode, file_format, speed_limit, path):
     else:
         useragent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36'
 
+    stream_url = episode.source().stream_url if not episode.url.startswith('magnet:?xt=urn:btih:') else episode.url
+    stream_url = stream_url if 'magnet:?xt=urn:btih:' not in stream_url else stream_url.replace('https://', '')
+
     rep_dict = {
-        'stream_url': episode.source().stream_url if not episode.url.startswith('magnet:?xt=urn:btih:') else episode.url,
+        'stream_url': stream_url,
         'file_format': file_format,
         'download_dir': os.path.abspath(path),
         'referer': episode.source().referer,
