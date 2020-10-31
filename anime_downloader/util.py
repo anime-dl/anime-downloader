@@ -266,6 +266,7 @@ def format_command(cmd, episode, file_format, speed_limit, path):
     from anime_downloader.config import Config
     if not Config._CONFIG['dl']['aria2c_for_torrents'] and (episode.url.startswith('magnet:?xt=urn:btih:') or episode.source().stream_url.startswith('https://magnet:?xt=urn:btih:')):
         url = episode.url if episode.url.startswith("magnet") else episode.source().stream_url
+        url = url.replace("https://","")
         return ['open', url]
 
     # For aria2c.
