@@ -31,10 +31,10 @@ class AnimeFreak(Anime, sitename='animefreak'):
         episode_links = soup.select('ul.check-list')[-1].select('li a')
         episodes = [a.get('href') for a in episode_links][::-1]
 
-        # Get links ending with episode-74
+        # Get links ending with episode-.*, e.g. episode-74
         episode_numbers = [re.search("episode-(\d+)", x.split("/")[-1]).group(1) for x in episodes if re.search("episode-\d+", x.split("/")[-1])]
 
-        # Ensure that the number of episode numbers which have been extracted, match the number of episode
+        # Ensure that the number of episode numbers which have been extracted match the number of episodes
         if len(episodes) == len(episode_numbers):
             return [(x, y) for x, y in zip(episode_numbers, episodes)]
 
