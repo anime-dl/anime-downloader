@@ -4,7 +4,6 @@ from anime_downloader.sites import helpers
 import re
 import json
 
-
 class AnimeSuge(Anime, sitename="animesuge"):
     sitename = "animesuge"
 
@@ -35,6 +34,81 @@ class AnimeSuge(Anime, sitename="animesuge"):
 
 
 class AnimeSugeEpisode(AnimeEpisode, sitename='animesuge'):
+    """
+    Decodes the encoded string returned by /ajax/anime/episodes to the embed url.
+
+    Python implementation of decode9AnimeURL, it's basically identical to the js one
+    """ 
+    def decodeString(self, str):
+        str1 = str[0:9]
+        str2 = str[9:]
+
+        encodedNum = 0
+        counter = 0
+        part1 = ""
+
+        for char in str2:
+            encodedNum <<= 6;
+
+            try:
+                letterNum = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'.index(char)
+                encodedNum |= letterNum
+            except:
+                pass
+
+            counter += 1
+
+            if counter == 4:
+                part1 += chr((16711680 & encodedNum) >> 16)
+                part1 += chr((65280 & encodedNum) >> 8)
+                part1 += chr(255 & encodedNum)
+
+                encodedNum = 0
+                counter = 0
+
+        if counter == 2:
+            encodedNum >>= 4
+            part1 += chr(encodedNum)
+        elif counter == 3:
+            encodedNum >>2
+            part1 += chr((65280 & encodedNum) >> 8)
+            part1 += chr(255 & encodedNum)
+
+        try:
+            part1 = urllib.parse.unquote(part1)
+        except:
+            pass
+
+        arr = {}
+        i = 0
+        byteSize = 256
+        final = ""
+
+        for c in range(byteSize):
+            arr[c] = c
+
+        x = 0
+        for c in range(byteSize):
+            x = (x + arr[c] + ord(str1[c % len(str1)])) % byteSize
+            i = arr[c]
+            arr[c] = arr[x]
+            arr[x] = i
+
+        x = 0
+        d = 0
+
+        for s in range(len(part1)):
+            d = (d + 1) % byteSize
+            x = (x + arr[d]) % byteSize
+
+            i = arr[d]
+            arr[d] = arr[x]
+            arr[x] = i
+
+            final += chr(ord(part1[s]) ^ arr[(arr[d] + arr[x]) % byteSize])
+
+        return final
+
     def _get_sources(self):
         # Get id and ep no. from url, e.g: https://animesuge.io/anime/naruto-xx8z/ep-190 -> xx8z, 190
         _id, ep_no = re.search(r".*\/anime\/.*-(.*?)\/.*-(\d+)$", self.url).group(1, 2)
@@ -67,7 +141,7 @@ class AnimeSugeEpisode(AnimeEpisode, sitename='animesuge'):
                 server = id_source_map[key]
                 sources_list.append({
                     'extractor': server,
-                    'url': link,
+                    'url': self.decodeString(link),
                     'server': server,
                     # This may not be true, can't see the info on page.
                     'version': 'subbed'
