@@ -45,7 +45,7 @@ class AnimeKisaEpisode(AnimeEpisode, sitename='animekisa'):
         fallback = self.config['fallback_servers']
         regex = {
             'mp4upload': r'(https://www.mp4upload.com/)+[^"]*',
-            'vidstream': r'(https://vidstreaming.io/)+[^"]*',
+            'vidstream': r'(https://gogo-stream.com/)+[^"]*',
             'gcloud': r'(https://gcloud.live/)+[^"]*',
         }
         if re.search(regex[server], soup):  # Testing sources with selected provider
