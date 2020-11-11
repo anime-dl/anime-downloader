@@ -16,7 +16,7 @@ class AniMixPlay(Anime, sitename='animixplay'):
         # V3 not supported
         v1 = helpers.soupify(helpers.post("https://v1.nmtvjxdtx42qdwktdxjfoikjq.workers.dev/",
                                           data={"q2": query}, verify=False).json()['result']).select('p.name > a')
-        v5 = helpers.soupify(helpers.post("https://animixplay.to/api/search/",
+        v5 = helpers.soupify(helpers.post("https://cdn.animixplay.to/api/search/",
                                           data={"qfast": query}, verify=False).json()['result']).select('p.name > a')
 
         # v3 = helpers.soupify(helpers.post("https://v3.w0ltfgqz8y3ygjozgs4v.workers.dev/",
