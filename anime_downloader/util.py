@@ -492,8 +492,7 @@ def getAllProcesses_Win32():
 
 
 def getAllProcesses_unix():
-    from sys import platform
-    if platform.startwith('darwin'):
+    if sys.platform.startwith('darwin'):
         cmd = 'ps -Ao user,pid,%cpu,%mem,vsz,rss,tt,stat,start,time,command'
     elif platform.startwith('linux'):
         cmd = 'ps aux'
@@ -510,8 +509,7 @@ def getAllProcesses_unix():
 
 
 def get_all_processes():
-    from sys import platform
-    if platform.startswith('win'):
+    if sys.platform.startswith('win'):
         return getAllProcesses_Win32()
     else:
         return getAllProcesses_unix()
@@ -523,7 +521,6 @@ def is_running(regex, expected_matches):
     and returns a boolean if a process matches the regex passed
     and the groups matched are equal to or more than the expected_matches.
     """
-    import re
 
     already_running = False
     dict_pids = {
