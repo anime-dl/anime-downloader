@@ -5,7 +5,6 @@ if is_running(regex=r'python|anime|config', expected_matches=3):
 import os
 import click
 from tabulate import tabulate
-
 from anime_downloader.config import APP_DIR, Config  # noqa
 
 data = Config._CONFIG
