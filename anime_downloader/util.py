@@ -65,31 +65,6 @@ def setup_logger(log_level):
     coloredlogs.install(level=log_level, fmt=format, logger=logger)
 
 
-def is_running(regex, expected_matches):
-    """
-    Iterates through all the processes that are running
-    and returns a boolean if a process matches the regex passed
-    and the groups matched are equal to or more than the expected_matches.
-    """
-    import psutil
-    import re
-
-    already_running = False
-    dict_pids = {
-        p.info["pid"]: [p.info["name"], p.info['cmdline']]
-        for p in psutil.process_iter(attrs=["pid", "name", 'cmdline'])
-    }
-
-    if os.getpid() in dict_pids:
-        del dict_pids[os.getpid()]
-    for key, value in dict_pids.items():
-        if bool(value[1]):
-            list_of_matches = re.findall(regex, ' '.join(value[1]))
-            if bool(list_of_matches) and len(list_of_matches) >= expected_matches:  # noqa
-                already_running = True
-    return already_running
-
-
 def format_search_results(search_results):
     headers = [
         'SlNo',
@@ -494,10 +469,11 @@ class Process:
 
     def __str__(self):
         return str({
-            'Process': self.name,
-            'PID': self.pid,
+            'name': self.name,
+            'pid': self.pid,
             'cmdline': self.cmdline
         })
+
 
 def getAllProcesses_Win32():
     placeholder = list()
@@ -513,6 +489,7 @@ def getAllProcesses_Win32():
                 placeholder.append(
                     Process(name=f[0], cmdline=None, pid=int(f[-1])))
     return placeholder
+
 
 def getAllProcesses_unix():
     from sys import platform
@@ -531,9 +508,34 @@ def getAllProcesses_unix():
         placeholder.append(Process(name=NAME, cmdline=CMD, pid=PID))
     return placeholder
 
+
 def get_all_processes():
     from sys import platform
     if platform.startswith('win'):
         return getAllProcesses_Win32()
     else:
         return getAllProcesses_unix()
+
+
+def is_running(regex, expected_matches):
+    """
+    Iterates through all the processes that are running
+    and returns a boolean if a process matches the regex passed
+    and the groups matched are equal to or more than the expected_matches.
+    """
+    import re
+
+    already_running = False
+    dict_pids = {
+        p.pid: [p.name, p.cmdline]
+        for p in get_all_processes()
+    }
+
+    if os.getpid() in dict_pids:
+        del dict_pids[os.getpid()]
+    for key, value in dict_pids.items():
+        if bool(value[1]):
+            list_of_matches = re.findall(regex, ' '.join(value[1]))
+            if bool(list_of_matches) and len(list_of_matches) >= expected_matches:  # noqa
+                already_running = True
+    return already_running
