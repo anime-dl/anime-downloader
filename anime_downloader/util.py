@@ -494,7 +494,7 @@ def getAllProcesses_Win32():
 def getAllProcesses_unix():
     if sys.platform.startwith('darwin'):
         cmd = 'ps -Ao user,pid,%cpu,%mem,vsz,rss,tt,stat,start,time,command'
-    elif platform.startwith('linux'):
+    elif sys.startwith('linux'):
         cmd = 'ps aux'
     out = os.popen(cmd).read()
     out = out.split('\n')[1:]
