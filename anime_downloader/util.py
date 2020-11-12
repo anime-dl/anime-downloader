@@ -65,6 +65,26 @@ def setup_logger(log_level):
     coloredlogs.install(level=log_level, fmt=format, logger=logger)
 
 
+def is_running(regex, expected_matches):
+    import psutil
+    import re
+
+    already_running = False
+    dict_pids = {
+        p.info["pid"]: [p.info["name"], p.info['cmdline']]
+        for p in psutil.process_iter(attrs=["pid", "name", 'cmdline'])
+    }
+
+    if os.getpid() in dict_pids:
+        del dict_pids[os.getpid()]
+    for key, value in dict_pids.items():
+        if bool(value[1]):
+            list_of_matches = re.findall(regex, ' '.join(value[1]))
+            if bool(list_of_matches) and len(list_of_matches) >= expected_matches:  # noqa
+                already_running = True
+    return already_running
+
+
 def format_search_results(search_results):
     headers = [
         'SlNo',
