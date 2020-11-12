@@ -1,11 +1,11 @@
+from anime_downloader.util import is_running
+if is_running(regex=r'python|anime|config', expected_matches=3):
+    raise Exception('Another instance of "anime config" is already running!')
+
 import os
 import click
 from tabulate import tabulate
-from anime_downloader.util import is_running
 
-
-if is_running(regex=r'python|anime|config', expected_matches=3):
-    raise Exception('Another instance of "anime config" is already running!')
 from anime_downloader.config import APP_DIR, Config  # noqa
 
 data = Config._CONFIG
