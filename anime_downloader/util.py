@@ -484,3 +484,56 @@ class ClickListOption(click.Option):
             return ast.literal_eval(value)
         except:
             raise click.BadParameter(value)
+
+
+class Process:
+    def __init__(self, name, cmdline, pid):
+        self.name = name
+        self.pid = pid
+        self.cmdline = cmdline
+
+    def __str__(self):
+        return str({
+            'Process': self.name,
+            'PID': self.pid,
+            'cmdline': self.cmdline
+        })
+
+def getAllProcesses_Win32():
+    placeholder = list()
+    out = os.popen('WMIC path win32_process get Caption,Processid,Commandline').read(
+    ).split('\n')[::2][1:]
+    for line in out:
+        f = line.split()
+        if bool(f):
+            if len(f) > 2:
+                placeholder.append(
+                    Process(name=f[0], cmdline=f[1:-1], pid=int(f[-1])))
+            else:
+                placeholder.append(
+                    Process(name=f[0], cmdline=None, pid=int(f[-1])))
+    return placeholder
+
+def getAllProcesses_unix():
+    from sys import platform
+    if platform.startwith('darwin'):
+        cmd = 'ps -Ao user,pid,%cpu,%mem,vsz,rss,tt,stat,start,time,command'
+    elif platform.startwith('linux'):
+        cmd = 'ps aux'
+    out = os.popen(cmd).read()
+    out = out.split('\n')[1:]
+    placeholder = list()
+    for line in out:
+        line_list = line.split()
+        PID = line_list[1]
+        NAME = line_list[10:][0]
+        CMD = line_list[10:]
+        placeholder.append(Process(name=NAME, cmdline=CMD, pid=PID))
+    return placeholder
+
+def get_all_processes():
+    from sys import platform
+    if platform.startswith('win'):
+        return getAllProcesses_Win32()
+    else:
+        return getAllProcesses_unix()
