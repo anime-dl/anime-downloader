@@ -1,31 +1,12 @@
 import os
 import click
 from tabulate import tabulate
+from anime_downloader.util import is_running
 
 
-def check_running():
-    import psutil
-
-    already_running = False
-    dict_pids = {
-        p.info["pid"]: [p.info["name"], p.info['cmdline']]
-        for p in psutil.process_iter(attrs=["pid", "name", 'cmdline'])
-    }
-
-    if os.getpid() in dict_pids:
-        del dict_pids[os.getpid()]
-
-    for key, value in dict_pids.items():
-        if bool(value[1]):
-            if ('anime config' in ' '.join(value[1]) or
-                    'anime.exe config' in ' '.join(value[1])
-                        ) and ('python' in ' '.join(value[1])):
-                already_running = True
-    return already_running
-
-if check_running():
+if is_running(regex=r'python|anime|config', expected_matches=3):
     raise Exception('Another instance of "anime config" is already running!')
-from anime_downloader.config import APP_DIR, Config
+from anime_downloader.config import APP_DIR, Config  # noqa
 
 data = Config._CONFIG
 
