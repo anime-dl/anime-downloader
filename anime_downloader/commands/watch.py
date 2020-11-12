@@ -1,3 +1,8 @@
+from anime_downloader.util import is_running
+if is_running(regex=r'python|anime|watch', expected_matches=3):
+    raise Exception('Another instance of "anime watch" is already running!')
+
+
 import click
 import logging
 import sys
