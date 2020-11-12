@@ -66,6 +66,11 @@ def setup_logger(log_level):
 
 
 def is_running(regex, expected_matches):
+    """
+    Iterates through all the processes that are running
+    and returns a boolean if a process matches the regex passed
+    and the groups matched are equal to or more than the expected_matches.
+    """
     import psutil
     import re
 
