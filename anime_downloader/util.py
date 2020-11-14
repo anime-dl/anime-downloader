@@ -168,7 +168,7 @@ def split_anime(anime, episode_range):
     from anime_downloader.sites.anime import AnimeEpisode
     try:
         start, end = [int(x) for x in episode_range.split(':')]
-        ep_range = [str(x) for x in range(start, end)]
+        ep_range = [x for x in range(start, end)]
         eps = [x for x in anime._episode_urls if x[0] in ep_range]
 
         ep_cls = AnimeEpisode.subclasses[anime.sitename]
@@ -202,6 +202,7 @@ def parse_ep_str(anime, grammar):
             start, end = parse_episode_range(anime, episode_grammar).split(':')
             episode_grammar = '%d:%d' % (int(start), int(end) + 1)
             for episode in split_anime(anime, episode_grammar):
+                print(episode)
                 episodes.append(episode)
         else:
             from anime_downloader.sites.anime import AnimeEpisode
