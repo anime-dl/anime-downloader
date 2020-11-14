@@ -32,7 +32,7 @@ class AnimeFreak(Anime, sitename='animefreak'):
         episodes = [a.get('href') for a in episode_links][::-1]
 
         # Get links ending with episode-.*, e.g. episode-74
-        episode_numbers = [re.search("episode-(\d+)", x.split("/")[-1]).group(1) for x in episodes if re.search("episode-\d+", x.split("/")[-1])]
+        episode_numbers = [int(re.search("episode-(\d+)", x.split("/")[-1]).group(1)) for x in episodes if re.search("episode-\d+", x.split("/")[-1])]
 
         # Ensure that the number of episode numbers which have been extracted match the number of episodes
         if len(episodes) == len(episode_numbers):
