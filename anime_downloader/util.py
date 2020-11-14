@@ -500,11 +500,14 @@ def getAllProcesses_unix():
     out = out.split('\n')[1:]
     placeholder = list()
     for line in out:
-        line_list = line.split()
-        PID = line_list[1]
-        NAME = line_list[10:][0]
-        CMD = line_list[10:]
-        placeholder.append(Process(name=NAME, cmdline=CMD, pid=PID))
+        try:
+            line_list = line.split()
+            PID = line_list[1]
+            NAME = line_list[10:][0]
+            CMD = line_list[10:]
+            placeholder.append(Process(name=NAME, cmdline=CMD, pid=PID))
+        except IndexError:
+            continue
     return placeholder
 
 
