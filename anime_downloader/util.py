@@ -536,6 +536,6 @@ def is_running(regex, expected_matches):
     for key, value in dict_pids.items():
         if bool(value[1]):
             list_of_matches = re.findall(regex, ' '.join(value[1]))
-            if bool(list_of_matches) and len(list_of_matches) >= expected_matches:  # noqa
+            if list_of_matches and len(list_of_matches) >= expected_matches:
                 already_running = True
     return already_running
