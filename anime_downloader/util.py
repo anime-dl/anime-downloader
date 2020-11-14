@@ -501,7 +501,7 @@ def getAllProcesses_unix():
     placeholder = list()
     for line in out:
         try:
-            line_list = line.split()
+            line_list = line.lower().split()
             PID = line_list[1]
             NAME = line_list[10:][0]
             CMD = line_list[10:]
