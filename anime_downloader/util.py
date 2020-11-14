@@ -507,7 +507,7 @@ def getAllProcesses_unix():
             CMD = line_list[10:]
             placeholder.append(Process(name=NAME, cmdline=CMD, pid=PID))
         except IndexError:
-            continue
+            print(line)
     return placeholder
 
 
