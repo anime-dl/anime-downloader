@@ -202,7 +202,6 @@ def parse_ep_str(anime, grammar):
             start, end = parse_episode_range(anime, episode_grammar).split(':')
             episode_grammar = '%d:%d' % (int(start), int(end) + 1)
             for episode in split_anime(anime, episode_grammar):
-                print(episode)
                 episodes.append(episode)
         else:
             from anime_downloader.sites.anime import AnimeEpisode
