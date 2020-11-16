@@ -165,9 +165,14 @@ def download_metadata(file_format, metdata, episode, filename='metdata.json'):
 
 
 def split_anime(anime, episode_range):
+    from anime_downloader.sites.anime import AnimeEpisode
     try:
         start, end = [int(x) for x in episode_range.split(':')]
-        anime = anime[start - 1:end - 1]
+        ep_range = [x for x in range(start, end)]
+        eps = [x for x in anime._episode_urls if x[0] in ep_range]
+
+        ep_cls = AnimeEpisode.subclasses[anime.sitename]
+        anime = [ep_cls(x[1], parent=anime, ep_no=x[0]) for x in eps]
     except ValueError:
         # Only one episode specified
         episode = int(episode_range)
@@ -180,7 +185,7 @@ def parse_episode_range(max_range, episode_range):
     if not episode_range:
         episode_range = '1:'
     if episode_range.endswith(':'):
-        length = max_range if type(max_range) == int else len(max_range)
+        length = max_range if type(max_range) == int else (int(max_range._episode_urls[-1][0]) - 1)
         episode_range += str(length + 1)
     if episode_range.startswith(':'):
         episode_range = '1' + episode_range
@@ -199,7 +204,11 @@ def parse_ep_str(anime, grammar):
             for episode in split_anime(anime, episode_grammar):
                 episodes.append(episode)
         else:
-            episodes.append(anime[int(episode_grammar) - 1])
+            from anime_downloader.sites.anime import AnimeEpisode
+            ep = [x for x in anime._episode_urls if x[0] == int(grammar)][0]
+            ep_cls = AnimeEpisode.subclasses[anime.sitename]
+
+            episodes.append(ep_cls(ep[1], parent=anime, ep_no=ep[0]))
     return episodes
 
 
