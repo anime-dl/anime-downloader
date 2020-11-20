@@ -171,8 +171,8 @@ def split_anime(anime, episode_range):
         ep_range = [x for x in range(start, end)]
         eps = [x for x in anime._episode_urls if x[0] in ep_range]
 
-        ep_cls = AnimeEpisode.subclasses[anime.sitename]
-        anime = [ep_cls(x[1], parent=anime, ep_no=x[0]) for x in eps]
+        anime._episode_urls = [(x[0], x[1]) for x in eps]
+        anime._len = len(anime._episode_urls)
     except ValueError:
         # Only one episode specified
         episode = int(episode_range)
