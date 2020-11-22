@@ -77,6 +77,14 @@ def format_search_results(search_results):
     table = '\n'.join(table.split('\n')[::-1])
     return table
 
+def format_matches(matches):
+    if matches:
+        table = [[[p], [sr]] for p, sr, r in sorted(matches, key = lambda x: x[2], reverse=True)]
+        table = [a for b in table for a in b]
+    else:
+        table = [["None"]]
+    table = tabulate(table, ['RESULTS'], tablefmt='grid', colalign=("center",))
+    return table
 
 def search(query, provider, val=None, season_info=None, ratio=50):
     # Will use animeinfo sync if season_info is provided
@@ -123,6 +131,15 @@ def search(query, provider, val=None, season_info=None, ratio=50):
 
     return url, val
 
+def search_only(query, provider):
+    
+    cls = get_anime_class(provider)
+    search_results = cls.search(query)
+
+    if not search_results:
+        return None
+
+    return format_search_results(search_results)
 
 def primitive_search(search_results):
     headers = [
