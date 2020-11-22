@@ -77,4 +77,4 @@ class FastAni(Anime, sitename="fastani"):
 
 class FastAniEpisode(AnimeEpisode, sitename='fastani'):
     def _get_sources(self):
-        return [("no_extractor", "https://fastani.net" + self.url)]
+        return [("no_extractor", self.url)]
