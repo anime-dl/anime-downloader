@@ -3,10 +3,12 @@ import os
 
 import click
 import requests_cache
+import re
 
 from anime_downloader import session, util
 from anime_downloader.__version__ import __version__
 from anime_downloader.sites import get_anime_class, ALL_ANIME_SITES, exceptions
+from click import UsageError
 
 logger = logging.getLogger(__name__)
 
@@ -85,6 +87,10 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             external_downloader, chunk_size, disable_ssl, fallback_qualities, choice, skip_fillers, speed_limit):
     """ Download the anime using the url or search for it.
     """
+
+    if not re.compile("^[0-9:]+$").search(episode_range):
+        raise UsageError("Invalid value for '--episode' / '-e': {} is not a valid range".format(episode_range))
+
     query = anime_url[:]
 
     util.print_info(__version__)
