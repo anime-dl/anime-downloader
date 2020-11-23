@@ -88,7 +88,7 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
     """ Download the anime using the url or search for it.
     """
 
-    if not re.compile("^[0-9:]+$").search(episode_range):
+    if episode_range and not re.compile("^[0-9:]+$").search(episode_range):
         raise UsageError("Invalid value for '--episode' / '-e': {} is not a valid range".format(episode_range))
 
     query = anime_url[:]
