@@ -185,7 +185,7 @@ def parse_episode_range(max_range, episode_range):
     if not episode_range:
         episode_range = '1:'
     if episode_range.endswith(':'):
-        length = max_range if type(max_range) == int else (int(max_range._episode_urls[-1][0]) - 1)
+        length = max_range if type(max_range) == int else (int(max_range._episode_urls[-1][0]))
         episode_range += str(length + 1)
     if episode_range.startswith(':'):
         episode_range = '1' + episode_range
