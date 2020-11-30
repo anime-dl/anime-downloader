@@ -9,7 +9,7 @@ class StreamTape(BaseExtractor):
         resp = helpers.get(self.url, cache=False).text
         url = "https:" + \
             re.search(
-                "document\.getElementById\([\"']videolink[\"']\)\.innerHTML.*?=.*?[\"'](.*?)[\"']", resp).group(1)
+                "document\.getElementById\([\"']videolink[\"']\);.*?innerHTML.*?=.*?[\"'](.*?)[\"']", resp).group(1)
 
         return {
             'stream_url': url,
