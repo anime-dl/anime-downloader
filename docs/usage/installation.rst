@@ -102,7 +102,8 @@ This does not require a rooted device to work.
  
 - The usage commands should now match the commands used on PC.
 
-iOS (Jailbreak Required)
+
+iOS (Jailbreak Method - Recommended)
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
  A jailbroken iPhone is required. Visit r/jailbreak on Reddit for the latest jailbreak news and information.
@@ -150,3 +151,11 @@ The following steps install Anime-Downloader;
    python3 setup.py install
    
 - Wait for the line to finish, then the program functions the same as the PC version.
+
+iOS (No Jailbreak Method)
+~~~~~~~~~~~~~~~~~~~~~~~~
+A jailbreak is not required, but this method is much slower.
+
+Install the app `iSH` from the appstore
+
+to be continued
