@@ -24,11 +24,6 @@ class EgyAnime(Anime, sitename='egyanime'):
         return search_results
 
     def _scrape_episodes(self):
-        """
-        Because of how the website is built, 
-        the only way to access the episodes is by going to the last episode available
-        thats why im making two requests here.
-        """
         soup = helpers.soupify(helpers.get(self.url).text)
         eps = ["https://www.egyanime.com/" + x['href'] for x in soup.select('a.tag.is-dark.is-medium.m-5')]
         return eps
