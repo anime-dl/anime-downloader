@@ -48,6 +48,13 @@ DEFAULT_CONFIG = {
         'animefrenzy': {
             'version': 'subbed'
         },
+        'egyanime': {
+            'version': 'subbed',
+            'servers': [
+                'streamtape',
+                'clipwatching'
+            ]
+        },
         'animebinge': {
             'version': 'subbed',
             'servers': [
