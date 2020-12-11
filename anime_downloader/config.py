@@ -51,8 +51,8 @@ DEFAULT_CONFIG = {
         'egyanime': {
             'version': 'subbed',
             'servers': [
-                'streamtape',
-                'clipwatching'
+                'clipwatching',
+                'streamtape'
             ]
         },
         'animebinge': {
