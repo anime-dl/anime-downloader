@@ -25,7 +25,10 @@ class EgyAnime(Anime, sitename='egyanime'):
 
     def _scrape_episodes(self):
         soup = helpers.soupify(helpers.get(self.url).text)
+
         eps = ["https://www.egyanime.com/" + x['href'] for x in soup.select('a.tag.is-dark.is-medium.m-5')]
+        if len(eps) == 0:
+            eps = ["https://www.egyanime.com/movie" + soup.find('a', class_='button is-large is-egyanime-button', href=True)['href']]
         return eps
 
     def _scrape_metadata(self):
@@ -36,8 +39,13 @@ class EgyAnime(Anime, sitename='egyanime'):
 class EgyAnimeEpisode(AnimeEpisode, sitename='egyanime'):
     def _get_sources(self):
         soup = helpers.soupify(helpers.get(self.url).text)
-        servers = [x['data-link'] for x in soup.select('div.server-watch#server-watch > a')]
-        logger.debug('Hosts: ' + str([urllib.parse.urlparse(x).netloc for x in servers]))
+        servers = soup.select('div.server-watch#server-watch > a')
+        if servers:
+            servers = [x['data-link'] for x in servers]
+            logger.debug('Hosts: ' + str([urllib.parse.urlparse(x).netloc for x in servers]))
+        else:
+            servers = soup.find_all('a', {'data-link': True, 'class': 'panel-block'})
+            servers = [x['data-link'] for x in servers]
         sources = []
         for i in servers:
             if 'clipwatching' in i:
