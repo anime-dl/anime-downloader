@@ -25,10 +25,9 @@ class EgyAnime(Anime, sitename='egyanime'):
 
     def _scrape_episodes(self):
         soup = helpers.soupify(helpers.get(self.url).text)
-
         eps = ["https://www.egyanime.com/" + x['href'] for x in soup.select('a.tag.is-dark.is-medium.m-5')]
         if len(eps) == 0:
-            eps = ["https://www.egyanime.com/movie" + soup.find('a', class_='button is-large is-egyanime-button', href=True)['href']]
+            return [self.url.replace('do', 'w')]
         return eps
 
     def _scrape_metadata(self):
@@ -62,4 +61,8 @@ class EgyAnimeEpisode(AnimeEpisode, sitename='egyanime'):
                     'server': 'streamtape',
                     'version': '1'
                 })
-        return self.sort_sources(sources)
+        if sources:
+            return self.sort_sources(sources)
+        else:
+            logger.error('No episode source was found, file might have been deleted.')
+            return
