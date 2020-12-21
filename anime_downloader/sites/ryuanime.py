@@ -1,4 +1,3 @@
-
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 import json
@@ -23,23 +22,21 @@ class RyuAnime(Anime, sitename='ryuanime'):
 
     @classmethod
     def search(cls, query):
-        soup = helpers.soupify(helpers.get("https://www4.ryuanime.com/search", params={"term": query}))
-        result_data = soup.select("ul.list-inline")[0].select("a")
+        soup = helpers.soupify(helpers.get("https://ryuanime.com/browse-anime", params={"search": query}))
+        result_data = soup.select("li.list-inline-item:has(p.anime-name):has(a.ani-link)")
 
         search_results = [
             SearchResult(
-                title=result.text,
-                url=result.get("href")
+                title=result.select("p.anime-name")[0].text,
+                url='https://ryuanime.com' + result.select("a.ani-link")[0].get("href")
             )
             for result in result_data
         ]
         return search_results
 
     def _scrape_episodes(self):
-        version = self.config.get("version", "subbed")
         soup = helpers.soupify(helpers.get(self.url))
-        ep_list = [x for x in soup.select("div.col-sm-6") if x.find("h5").text == version.title()][0].find_all("a")
-        episodes = [x.get("href") for x in ep_list]
+        episodes = ['https://ryuanime.com' + x.get("href") for x in soup.select("li.jt-di > a")]
 
         if len(episodes) == 0:
             logger.warning("No episodes found")
@@ -48,7 +45,7 @@ class RyuAnime(Anime, sitename='ryuanime'):
 
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url))
-        self.title = soup.select("div.card-header")[0].find("h1").text
+        self.title = soup.find("h1").text.strip()
 
 
 class RyuAnimeEpisode(AnimeEpisode, sitename='ryuanime'):
@@ -61,22 +58,32 @@ class RyuAnimeEpisode(AnimeEpisode, sitename='ryuanime'):
             return f"https://xstreamcdn.com/v/" + _id
 
     def _get_sources(self):
-        server = self.config.get("server", "trollvid")
-        soup = helpers.soupify(helpers.get(self.url))
+        page = helpers.get(self.url).text
 
-        hosts = json.loads(re.search("\[.*?\]", soup.select("div.col-sm-9")[0].select("script")[0].text).group())
+        # Example:
+        """
+        [
+          {
+            "host":"trollvid","id":"c4a94b4e50ee","type":"dubbed","date":"2019-08-01 20:48:01"}
+            ...
+          }
+        ]
+        """
+        hosts = json.loads(re.search(r"let.*?episode.*?videos.*?(\[\{.*?\}\])", page).group(1))
 
-        _type = hosts[0]["type"]
-        try:
-            host = list(filter(lambda video: video["host"] == server and video["type"] == _type, hosts))[0]
-        except IndexError:
-            host = hosts[0]
-            # I will try to avoid mp4upload since it mostly doesn't work
-            if host["host"] == "mp4upload" and len(hosts) > 1:
-                host = hosts[1]
+        sources_list = []
 
-        name = host["host"]
-        _id = host["id"]
-        link = self.getLink(name, _id)
+        for host in hosts:
+            name = host.get("host")
+            _id = host.get("id")
+            link = self.getLink(name, _id)
 
-        return [(name, link)]
+            if link:
+                sources_list.append({
+                    "extractor": name,
+                    "url": link,
+                    "server": name,
+                    "version": host.get("type")
+                })
+
+        return self.sort_sources(sources_list)

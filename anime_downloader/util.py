@@ -18,7 +18,7 @@ import requests
 from tabulate import tabulate
 from uuid import uuid4
 from secrets import choice
-from urllib.parse import urlparse
+from urllib.parse import urlparse, unquote
 
 from anime_downloader import session
 from anime_downloader.sites import get_anime_class, helpers
@@ -35,7 +35,6 @@ __all__ = [
     'parse_episode_range',
     'parse_ep_str',
     'print_episodeurl',
-    'download_episode',
     'play_episode',
     'print_info',
 ]
@@ -137,7 +136,8 @@ def primitive_search(search_results):
     click.echo(table, err=True)
 
     while True:
-        val = click.prompt('Enter the anime no: ', type=int, default=1, err=True)
+        val = click.prompt('Enter the anime no: ',
+                           type=int, default=1, err=True)
         try:
             return search_results[val - 1]
         except IndexError:
@@ -165,9 +165,14 @@ def download_metadata(file_format, metdata, episode, filename='metdata.json'):
 
 
 def split_anime(anime, episode_range):
+    from anime_downloader.sites.anime import AnimeEpisode
     try:
         start, end = [int(x) for x in episode_range.split(':')]
-        anime = anime[start - 1:end - 1]
+        ep_range = [x for x in range(start, end)]
+        eps = [x for x in anime._episode_urls if x[0] in ep_range]
+
+        anime._episode_urls = [(x[0], x[1]) for x in eps]
+        anime._len = len(anime._episode_urls)
     except ValueError:
         # Only one episode specified
         episode = int(episode_range)
@@ -180,7 +185,7 @@ def parse_episode_range(max_range, episode_range):
     if not episode_range:
         episode_range = '1:'
     if episode_range.endswith(':'):
-        length = max_range if type(max_range) == int else len(max_range)
+        length = max_range if type(max_range) == int else (int(max_range._episode_urls[-1][0]))
         episode_range += str(length + 1)
     if episode_range.startswith(':'):
         episode_range = '1' + episode_range
@@ -199,7 +204,11 @@ def parse_ep_str(anime, grammar):
             for episode in split_anime(anime, episode_grammar):
                 episodes.append(episode)
         else:
-            episodes.append(anime[int(episode_grammar) - 1])
+            from anime_downloader.sites.anime import AnimeEpisode
+            ep = [x for x in anime._episode_urls if x[0] == int(grammar)][0]
+            ep_cls = AnimeEpisode.subclasses[anime.sitename]
+
+            episodes.append(ep_cls(ep[1], parent=anime, ep_no=ep[0]))
     return episodes
 
 
@@ -208,12 +217,9 @@ def print_episodeurl(episode):
     #    print(episode.source().stream_url + "?referer=" +  episode.source().referer)
     # else:
     # Currently I don't know of a way to specify referer in url itself so leaving it here.
-    print(episode.source().stream_url)
-
-
-def download_episode(episode, **kwargs):
-    episode.download(**kwargs)
-    print()
+    url = episode.url if episode.url.startswith(
+        "magnet") else episode.source().stream_url
+    print(unquote(url))
 
 
 def play_episode(episode, *, player, title):
@@ -248,12 +254,13 @@ def get_json(url, params=None):
 
 def slugify(file_name):
     file_name = str(file_name).strip().replace(' ', '_')
-    return re.sub(r'(?u)[^-\w.]', '', file_name)
+    # First group removes filenames starting with a dot making them hidden.
+    # Second group removes anything not in it, for example '"/\|
+    return re.sub(r'(^\.)|([^-\w.!+-])', '', file_name)
 
 
 def format_filename(filename, episode):
     zerosTofill = math.ceil(math.log10(episode._parent._len))
-
     rep_dict = {
         'anime_title': slugify(episode._parent.title),
         'ep_no': str(episode.ep_no).zfill(zerosTofill),
@@ -266,14 +273,28 @@ def format_filename(filename, episode):
 
 def format_command(cmd, episode, file_format, speed_limit, path):
     from anime_downloader.config import Config
-    if not Config._CONFIG['dl']['aria2c_for_torrents'] and episode.url.startswith('magnet:?xt=urn:btih:'):
-        return ['open', episode.url]
+    if not Config._CONFIG['dl']['aria2c_for_torrents'] and (episode.url.startswith('magnet:?xt=urn:btih:') or episode.source().stream_url.startswith('https://magnet:?xt=urn:btih:')):
+        url = episode.url if episode.url.startswith("magnet") else episode.source().stream_url
+        url = url.replace("https://","")
+        return ['open', url]
+
+    # For aria2c.
+    log_levels = ['debug', 'info', 'notice', 'warn', 'error']
+    log_level = Config['dl']['aria2c_log_level'].lower()
+    if log_level not in log_levels:
+        logger.warn(
+            'Invalid logging level "{}", defaulting to "error".'.format(log_level))
+        logger.debug('Possible levels: {}.'.format(log_levels))
+        log_level = 'error'
 
     cmd_dict = {
         '{aria2}': 'aria2c {stream_url} -x 12 -s 12 -j 12 -k 10M -o '
-                   '{file_format}.mp4 --continue=true --dir={download_dir}'
-                   ' --stream-piece-selector=inorder --min-split-size=5M --referer={referer} --check-certificate=false --user-agent={useragent} --max-overall-download-limit={speed_limit}',
-        '{idm}': 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4'
+                   '{file_format}.mp4 --continue=true --dir={download_dir} '
+                   '--stream-piece-selector=inorder --min-split-size=5M --referer={referer} '
+                   '--check-certificate=false --user-agent={useragent} --max-overall-download-limit={speed_limit} '
+                   '--console-log-level={log_level}',
+        '{idm}': 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4',
+        '{wget}': 'wget {stream_url} --referer={referer} --user-agent={useragent} -O {download_dir}/{file_format}.mp4 -c'
     }
 
     # Allows for passing the user agent with self.headers in the site.
@@ -283,14 +304,27 @@ def format_command(cmd, episode, file_format, speed_limit, path):
     else:
         useragent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36'
 
+    stream_url = episode.source().stream_url if not episode.url.startswith('magnet:?xt=urn:btih:') else episode.url
+    stream_url = stream_url if 'magnet:?xt=urn:btih:' not in stream_url else stream_url.replace('https://', '')
+
     rep_dict = {
-        'stream_url': episode.source().stream_url if not episode.url.startswith('magnet:?xt=urn:btih:') else episode.url,
+        'stream_url': stream_url,
         'file_format': file_format,
         'download_dir': os.path.abspath(path),
         'referer': episode.source().referer,
         'useragent': useragent,
-        'speed_limit': speed_limit
+        'speed_limit': speed_limit,
+        'log_level': log_level
     }
+
+    if cmd == "{wget}":
+        # Create the directory if it doesn't exist
+        make_dir(
+            f"{rep_dict['download_dir']}/{os.path.dirname(format_filename(rep_dict['file_format'], episode))}")
+        path_string = file_format.replace('\\', '/').split('/')
+        rep_dict['file_format'] = path_string.pop(-1)
+        path_string = '/'.join(path_string)
+        rep_dict['download_dir'] = os.path.join(path, path_string)
 
     if cmd == "{idm}":
         rep_dict['file_format'] = rep_dict['file_format'].replace('/', '\\')
@@ -301,101 +335,8 @@ def format_command(cmd, episode, file_format, speed_limit, path):
     cmd = cmd.split(' ')
     cmd = [c.format(**rep_dict) for c in cmd]
     cmd = [format_filename(c, episode) for c in cmd]
+
     return cmd
-
-
-# Credits to: https://github.com/Futei/SineCaptcha
-def bypass_hcaptcha(url):
-    """
-    :param url: url to page which gives hcaptcha
-    :return: Returns Response object (cookies stored for future use)
-    """
-    host = urlparse(url).netloc
-    bypassed = False
-    session = requests.session()
-
-    headers = {
-        'User-Agent': choice((
-            'Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36',
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/605.1.15 (KHTML, like Gecko)',
-            'Mozilla/5.0 (iPad; CPU OS 9_3_5 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13G36',
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'
-        ))
-    }
-
-    logger.info("Bypassing captcha...")
-
-    # Retry until success
-    while not bypassed:
-        site_key = str(uuid4())
-        response = session.post('https://hcaptcha.com/getcaptcha', headers=headers, data={
-            'sitekey': site_key,
-            'host': host
-        }).json()
-
-        try:
-            key = response['key']
-            tasks = [row['task_key'] for row in response['tasklist']]
-            job = response['request_type']
-            timestamp = round(time()) + choice(range(30, 120))
-            answers = dict(zip(tasks, [choice(['true', 'false']) for index in range(len(tasks))]))
-
-            mouse_movements = []
-            last_movement = timestamp
-
-            for index in range(choice(range(1000, 10000))):
-                last_movement += choice(range(10))
-                mouse_movements.append([choice(range(500)), choice(range(500)), last_movement])
-
-            json = {
-                'job_mode': job,
-                'answers': answers,
-                'serverdomain': host,
-                'sitekey': site_key,
-                'motionData': {
-                    'st': timestamp,
-                    'dct': timestamp,
-                    'mm': mouse_movements
-                }
-            }
-
-            response = session.post(f'https://hcaptcha.com/checkcaptcha/{key}', json=json)
-
-            response = response.json()
-            bypassed = response['pass']
-        except (TypeError, KeyError):
-            pass
-
-        if bypassed:
-            token = response['generated_pass_UUID']
-
-            resp = helpers.soupify(session.get(url))
-            bypass_url = f'https://{host}{resp.form.get("action")}'
-
-            data = dict((x.get('name'), x.get('value')) for x in resp.select('form > input'))
-            data.update({'id': resp.strong.text, 'g-recaptcha-response': token, 'h-captcha-response': token})
-
-            resp = session.post(bypass_url, data=data)
-
-            if resp.status_code == 200:
-                pickle.dump(resp.cookies, open(f'{tempfile.gettempdir()}/{host}', 'wb'))
-                logger.info("Succesfully bypassed captcha!")
-
-                return resp
-            else:
-                bypassed = False
-
-
-def get_hcaptcha_cookies(url):
-    """
-    :param url: url that you want to use cookies for
-    :return: returns cookies if they were stored, or nothing, if they weren't
-    """
-
-    COOKIE_FILE = f'{tempfile.gettempdir()}/{urlparse(url).netloc}'
-
-    if os.path.isfile(COOKIE_FILE):
-        return pickle.load(open(COOKIE_FILE, 'rb'))
 
 
 def deobfuscate_packed_js(packedjs):
@@ -451,8 +392,10 @@ def make_dir(path):
 def get_filler_episodes(query):
     def search_filler_episodes(query, page):
         url = 'https://animefillerlist.com/search/node/'
-        search_results = helpers.soupify(helpers.get(url + query, params={'page': page})).select('h3.title > a')
-        urls = [a.get('href') for a in search_results if a.get('href').split('/')[-2] == 'shows']
+        search_results = helpers.soupify(helpers.get(
+            url + query, params={'page': page})).select('h3.title > a')
+        urls = [a.get('href') for a in search_results if a.get(
+            'href').split('/')[-2] == 'shows']
         search_results = [
             [
                 search_results[a].text]
@@ -465,7 +408,8 @@ def get_filler_episodes(query):
 
     for a in range(5):  # Max 5 pages, could be done using the pager element
         search_results, urls = search_filler_episodes(query, a)
-        if urls == prev and not (len(urls) == 0 or a == 0):  # stops the loop if the same site is visited twice
+        # stops the loop if the same site is visited twice
+        if urls == prev and not (len(urls) == 0 or a == 0):
             break
         prev = urls[:]
 
@@ -474,14 +418,16 @@ def get_filler_episodes(query):
         for c in urls:
             urls_list.append(c)
 
-    [results_list[a].insert(0, a + 1)for a in range(len(results_list))]  # inserts numbers
+    [results_list[a].insert(0, a + 1)
+     for a in range(len(results_list))]  # inserts numbers
 
     headers = ["SlNo", "Title"]
     table = tabulate(results_list, headers, tablefmt='psql')
     table = '\n'.join(table.split('\n')[::-1])
 
     click.echo(table)
-    val = click.prompt('Enter the filler-anime no (0 to cancel): ', type=int, default=1, err=True)
+    val = click.prompt(
+        'Enter the filler-anime no (0 to cancel): ', type=int, default=1, err=True)
     if val == 0:
         return False
 
@@ -508,7 +454,8 @@ def get_filler_episodes(query):
         return episodes
 
     except:
-        logger.warn("Can't get filler episodes. Will download all specified episodes.")
+        logger.warn(
+            "Can't get filler episodes. Will download all specified episodes.")
         return False
 
 

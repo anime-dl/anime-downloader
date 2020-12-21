@@ -1,5 +1,5 @@
 from anime_downloader import config
-from anime_downloader.sites import get_anime_class
+from anime_downloader.sites import get_anime_class, ALL_ANIME_SITES
 
 import os
 import sys
@@ -77,7 +77,7 @@ class Watcher:
     def update_anime(self, anime):
         if not hasattr(anime, 'colours'):
             colours = {
-                'watching': 'blue',
+                'watching': 'cyan',
                 'completed': 'green',
                 'dropped': 'red',
                 'planned': 'yellow',
@@ -148,20 +148,26 @@ class Watcher:
             mal_watch_status = str(list(values[mal_watch_status].keys())[0])
             mal_title = type_tag.find('series_title').text
             mal_episodes = type_tag.find('series_episodes').text
+            mal_ID = type_tag.find('series_animedb_id').text
+            #We have to initialise some values for when we add anime from MAL. Now, we do this instead of letting the user choose the provider 
+            #On first run, this is so the user doesn't have to manually do hundreds of entries. The values initialise to one of the sites we already have 
+            #But with a broken link, the provider needs to be set manually for a series by using the set command in the list.
             list_to_dict.append({
                 "episodes_done": int(mal_watched_episodes),
                 "_timestamp": time(),
                 "score": int(mal_score),
                 "watch_status": mal_watch_status,
                 "colours": colour,
-                "url": "https://twist.moe/",
+                'mal_ID': int(mal_ID),
+                "url": ALL_ANIME_SITES[0][1],
                 "_fallback_qualities": ["720p", "480p", "360p"],
                 "quality": "720p",
                 "title": mal_title,
-                "_episode_urls": [[1, "https://twist.moe/anime/"]],
+                "_episode_urls": [[1, "https://notarealwebsite.illusion/"]],
                 "_len": int(mal_episodes)
             })
             self._write_to_watch_file(list_to_dict, MAL_import=True)
+        logger.warn("MAL List has been imported, please initialise the sites by using the 'set' command on a list entry!")
 
     def _read_from_watch_file(self):
         if not os.path.exists(self.WATCH_FILE):
@@ -191,15 +197,26 @@ class Watcher:
 
     def _get_anime_info_class(self, url):
         cls = get_anime_class(url)
+        if not cls:
+            logger.warn(f"The url: {url} is no longer supported. The provider needs to be set manually upon selection.") 
+            
+            """
+            Provides some level of backcompatability when watch lists have providers that have been removed. They are then warned via logger that they will 
+            have to change providers using the set function when an anime is selected in the list. 
+            """
+            url = ALL_ANIME_SITES[0][1] 
+            cls = get_anime_class(url)
 
         # TODO: Maybe this is better off as a mixin
         class AnimeInfo(cls, sitename=cls.sitename):
             def __init__(self, *args, **kwargs):
                 self.episodes_done = kwargs.pop('episodes_done', 0)
                 self._timestamp = kwargs.pop('timestamp', 0)
+                # Initial values needed for MAL which can't be got yet from just a simple addition to the watch list.
                 self.score = 0
                 self.watch_status = 'watching'
                 self.colours = 'blue'
+                self.mal_ID = 0
                 super(cls, self).__init__(*args, **kwargs)
 
             def progress(self):

@@ -20,6 +20,7 @@ DEFAULT_CONFIG = {
         'provider': 'twist.moe',
         'external_downloader': '',
         'aria2c_for_torrents': False,
+        'aria2c_log_level': 'error',
         'selescrape_browser': None,
         'selescrape_browser_executable_path': None,
         'selescrape_driver_binary_path': None,
@@ -39,6 +40,9 @@ DEFAULT_CONFIG = {
         'provider': 'twist.moe',
         'autoplay_next': True
     },
+    'gui': {
+        'player': 'mpv'
+    },
     'siteconfig': {
         'animefrenzy': {
             'version': 'subbed'
@@ -53,7 +57,8 @@ DEFAULT_CONFIG = {
         },
         'animixplay': {
             'server': 'vidstream',
-            'version': 'subbed'
+            'v5-servers': ['mp4up', 'stape'],
+            'version': 'subbed',
         },
         '9anime': {
             'server': 'mp4upload',
@@ -65,7 +70,13 @@ DEFAULT_CONFIG = {
         },
         'animeflv': {
             'version': 'subbed',
-            'server': 'natsuki',
+            'servers': [
+                'stape',
+                'natsuki',
+                'gocdn',
+                'yu',
+                'fembed'
+            ]
         },
         'anime8': {
             'version': 'subbed',
@@ -183,6 +194,23 @@ DEFAULT_CONFIG = {
                 'mp4upload',
                 'streamtape'
             ]
+        },
+        'animetake': {
+            'version': 'subbed',
+            'servers': [
+                'gstore',
+                'hydrax',
+                'fembed',
+                'vidstreaming',
+                'mixdrop',
+            ]
+        },
+        'putlockers': {
+            'version': 'dubbed',
+            'servers': [
+                'eplay',
+                'mixdrop'
+            ]
         }
     }
 }
@@ -242,7 +270,8 @@ class _Config:
             try:
                 conf = json.load(configfile)
             except:
-                raise SyntaxWarning('The config file is not correctly formatted')
+                raise SyntaxWarning(
+                    'The config file is not correctly formatted')
         return conf
 
     def _write_default_config(self):

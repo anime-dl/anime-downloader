@@ -12,21 +12,23 @@ class FastAni(Anime, sitename="fastani"):
 
     @classmethod
     def getToken(cls):
-        site_text = helpers.get("https://fastani.net").text
+        resp = helpers.get("https://fastani.net")
+        site_text = resp.text
+        cookies = resp.cookies
 
         # Path to js file, e.g /static/js/main.f450dd1c.chunk.js - which contains the token
         js_location = "https://fastani.net" + re.search(r"src=\"(\/static\/js\/main.*?)\"", site_text).group(1)
         js = helpers.get(js_location).text
 
         # Get authorization token, e.g: {authorization:"Bearer h8X2exbErErNSxRnr6sSXAE2ycUSyrbU"}
-        token = re.search("authorization:.*?\"(.*?)\"", js).group(1)
+        key, token = re.search("method:\"GET\".*?\"(.*?)\".*?\"(.*?)\"", js).group(1,2)
 
-        return {"authorization": token}
+        return ({key: token}, cookies)
 
     @classmethod
     def search(cls, query):
-        headers = cls.getToken()
-        results = helpers.get(f"https://fastani.net/api/data?page=1&search={query}&tags=&years=", headers=headers).json()
+        headers, cookies = cls.getToken()
+        results = helpers.get(f"https://fastani.net/api/data?page=1&search={query}&tags=&years=", headers=headers, cookies=cookies).json()
 
         return [
             SearchResult(
@@ -38,11 +40,10 @@ class FastAni(Anime, sitename="fastani"):
         ]
 
     def _scrape_episodes(self):
-        cls = type(self)
-        headers = cls.getToken()
+        headers, cookies = self.getToken()
         split = self.url.split("/")
         query, selected = split[-1], int(split[-2])
-        anime = helpers.get(f"https://fastani.net/api/data?page=1&search={query}&tags=&years=", headers=headers).json()
+        anime = helpers.get(f"https://fastani.net/api/data?page=1&search={query}&tags=&years=", headers=headers, cookies=cookies).json()
 
         cdnData = anime["animeData"]["cards"][selected]["cdnData"]
 
@@ -67,11 +68,10 @@ class FastAni(Anime, sitename="fastani"):
         return episodes
 
     def _scrape_metadata(self):
-        cls = type(self)
-        headers = cls.getToken()
+        headers, cookies = self.getToken()
         split = self.url.split("/")
         query, selected = split[-1], int(split[-2])
-        anime = helpers.get(f"https://fastani.net/api/data?page=1&search={query}&tags=&years=", headers=headers).json()
+        anime = helpers.get(f"https://fastani.net/api/data?page=1&search={query}&tags=&years=", headers=headers, cookies=cookies).json()
         self.title = anime["animeData"]["cards"][selected]["title"]["english"]
 
 

@@ -1,9 +1,9 @@
-from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
+from anime_downloader.sites.anime import Anime, SearchResult
+from anime_downloader.sites.nineanime import NineAnimeEpisode
 from anime_downloader.sites import helpers
 
 import re
 import json
-
 
 class AnimeSuge(Anime, sitename="animesuge"):
     sitename = "animesuge"
@@ -34,7 +34,7 @@ class AnimeSuge(Anime, sitename="animesuge"):
         self.title = helpers.soupify(helpers.get(self.url)).find("h1").text
 
 
-class AnimeSugeEpisode(AnimeEpisode, sitename='animesuge'):
+class AnimeSugeEpisode(NineAnimeEpisode, sitename='animesuge'):
     def _get_sources(self):
         # Get id and ep no. from url, e.g: https://animesuge.io/anime/naruto-xx8z/ep-190 -> xx8z, 190
         _id, ep_no = re.search(r".*\/anime\/.*-(.*?)\/.*-(\d+)$", self.url).group(1, 2)
@@ -67,7 +67,7 @@ class AnimeSugeEpisode(AnimeEpisode, sitename='animesuge'):
                 server = id_source_map[key]
                 sources_list.append({
                     'extractor': server,
-                    'url': link,
+                    'url': self.decodeString(link),
                     'server': server,
                     # This may not be true, can't see the info on page.
                     'version': 'subbed'
