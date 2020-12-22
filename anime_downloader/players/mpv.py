@@ -1,5 +1,6 @@
 from anime_downloader.players.baseplayer import BasePlayer
 from anime_downloader import config
+from anime_downloader.config import Config
 
 import os
 
@@ -20,13 +21,14 @@ class mpv(BasePlayer):
     @property
     def args(self):
         # Doesnt use the referer if it's none
+        launchArgs = Config['watch']['mpv_arguments']
         if self.episode.source().referer:
             return ['--input-conf=' + get_mpv_configfile(),
                     '--http-header-fields=referer: ' + str(self.episode.source().referer),
-                    self.episode.source().stream_url]
+                    self.episode.source().stream_url, launchArgs]
         else:
             return ['--input-conf=' + get_mpv_configfile(),
-                    self.episode.source().stream_url]
+                    self.episode.source().stream_url, launchArgs]
 
 
 def get_mpv_home():
