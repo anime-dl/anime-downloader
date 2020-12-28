@@ -8,6 +8,12 @@ ALL_EXTRACTORS = [
         'class': 'RapidVideo'
     },
     {
+        'sitename': 'clipwatching',
+        'modulename': 'clipwatching',
+        'regex': 'clipwatching',
+        'class': 'clipwatching'
+    },
+    {
         'sitename': 'no_extractor',
         'modulename': 'fake_extractor',
         'regex': 'no_extractor',

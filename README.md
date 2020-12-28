@@ -74,6 +74,7 @@ Yeah. Me too! That's why this tool exists.
 - Darkanime
 - Dbanimes 
 - EraiRaws
+- EgyAnime - usually m3u8 (good for streaming, not so much for downloading)
 - FastAni
 - GurminderBoparai (AnimeChameleon)
 - itsaturday
