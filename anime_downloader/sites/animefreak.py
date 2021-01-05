@@ -35,7 +35,7 @@ class AnimeFreak(Anime, sitename='animefreak'):
         episode_numbers = [int(re.search("episode-(\d+)", x.split("/")[-1]).group(1)) for x in episodes if re.search("episode-\d+", x.split("/")[-1])]
 
         # Ensure that the number of episode numbers which have been extracted match the number of episodes
-        if len(episodes) == len(episode_numbers):
+        if len(episodes) == len(episode_numbers) and len(episode_numbers) == len(set(episode_numbers)):
             return [(x, y) for x, y in zip(episode_numbers, episodes)]
 
         return episodes
