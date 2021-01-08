@@ -38,7 +38,7 @@ class SubsPlease(Anime, sitename="subsplease"):
 
         episodes = []
 
-        for episode in resp.keys():
+        for episode in resp["episode"].keys():
             # Construct a fake url for AnimeEpisode to use
             episodes.append(f"{self.url}/episode/{sid}/{episode}")
 
@@ -55,7 +55,7 @@ class SubsPleaseEpisode(AnimeEpisode, sitename="subsplease"):
         resp = helpers.get(SubsPlease.api_url, params={
                            "f": "show", "tz": "", "sid": sid}).json()
 
-        downloads = resp[episode_name]["downloads"]
+        downloads = resp["episode"][episode_name]["downloads"]
 
         # dict of quality-magnet
         magnets = dict([(x["res"] + 'p', x["magnet"]) for x in downloads])
