@@ -18,12 +18,12 @@ with warnings.catch_warnings():
     from fuzzywuzzy import process
 
 BLOCK_SIZE = 16
-KEY = b"LXgIVP&PorO68Rq7dTx8N^lP!Fa5sGJ^*XK"
+KEY = b""
 
 
 class TwistMoeEpisode(AnimeEpisode, sitename='twist.moe'):
     def _get_sources(self):
-        return [('no_extractor', self.url)]
+        return [('twist', self.url)]
 
 
 class TwistMoe(Anime, sitename='twist.moe'):
@@ -38,7 +38,8 @@ class TwistMoe(Anime, sitename='twist.moe'):
     def search(self, query):
         headers = {
             'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.46 Safari/537.36',
-            'x-access-token': '0df14814b9e590a1f26d3071a4ed7974'
+            'x-access-token': '0df14814b9e590a1f26d3071a4ed7974',
+            'referer': 'https://twist.moe'
         }
         # soup = helpers.soupify(helpers.get('https://twist.moe/', allow_redirects=True, headers=headers))
         req = helpers.get('https://twist.moe/api/anime', headers=headers)
@@ -65,19 +66,22 @@ class TwistMoe(Anime, sitename='twist.moe'):
         episodes = helpers.get(
             url,
             headers={
-                'x-access-token': '0df14814b9e590a1f26d3071a4ed7974'
+                'x-access-token': '0df14814b9e590a1f26d3071a4ed7974',
+                'referer': 'https://twist.moe'
             }
         )
         episodes = episodes.json()
         logging.debug(episodes)
         self.title = anime_name
-        episode_urls = ['https://twist.moe' +
-                        decrypt(episode['source'].encode('utf-8'), KEY).decode('utf-8')
+        
+        episode_urls = ['https://edge-50.cdn.bunny.sh' +
+                        decrypt(episode['source'], KEY).decode('utf-8')
                         for episode in episodes]
 
         self._episode_urls = [(i + 1, episode_url)
                               for i, episode_url in enumerate(episode_urls)]
         self._len = len(self._episode_urls)
+        self.referer = 'https://twist.moe'
 
         return self._episode_urls
 
