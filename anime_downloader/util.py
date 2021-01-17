@@ -224,12 +224,8 @@ def print_episodeurl(episode):
 
 def play_episode(episode, *, player, title):
     if player == 'mpv':
-        p = subprocess.Popen([
-            player,
-            '--title={}'.format(title),
-            '--referrer="{}"'.format(episode.source().referer),
-            episode.source().stream_url
-        ])
+        command_string = f'{player} --title="{title}" "{episode.source().stream_url}" --referrer="{episode.source().referer}"'
+        p = subprocess.Popen(command_string)
     else:
         p = subprocess.Popen([player, episode.source().stream_url
                               ])
