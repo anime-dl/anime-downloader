@@ -22,7 +22,7 @@ from urllib.parse import urlparse, unquote
 
 from anime_downloader import session
 from anime_downloader.sites import get_anime_class, helpers
-from anime_downloader.const import desktop_headers
+from anime_downloader.const import desktop_headers, get_random_header
 
 logger = logging.getLogger(__name__)
 
@@ -224,12 +224,11 @@ def print_episodeurl(episode):
 
 def play_episode(episode, *, player, title):
     if player == 'mpv':
-        p = subprocess.Popen([
-            player,
-            '--title={}'.format(title),
-            '--referrer="{}"'.format(episode.source().referer),
-            episode.source().stream_url
-        ])
+        p = subprocess.Popen([player, 
+            f'--title={title}', 
+            f'--referrer={episode.source().referer}', 
+            f'--user-agent={get_random_header()["user-agent"]}', 
+            episode.source().stream_url])
     else:
         p = subprocess.Popen([player, episode.source().stream_url
                               ])
