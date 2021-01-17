@@ -20,7 +20,7 @@ class BaseExtractor:
             self.headers = desktop_headers
 
         self._stream_url = None
-        self._referer = ''
+        self._referer = self.headers.get('Referer', '')
         self._meta = None
 
     @property

@@ -18,11 +18,12 @@ with warnings.catch_warnings():
     from fuzzywuzzy import process
 
 BLOCK_SIZE = 16
-KEY = b"LXgIVP&PorO68Rq7dTx8N^lP!Fa5sGJ^*XK"
+KEY = b""
 
 
 class TwistMoeEpisode(AnimeEpisode, sitename='twist.moe'):
     def _get_sources(self):
+        self.headers["Referer"] = self._parent.url + str(self.ep_no)
         return [('no_extractor', self.url)]
 
 
@@ -71,14 +72,13 @@ class TwistMoe(Anime, sitename='twist.moe'):
         episodes = episodes.json()
         logging.debug(episodes)
         self.title = anime_name
-        episode_urls = ['https://twist.moe' +
+        episode_urls = ['https://twistcdn.bunny.sh' +
                         decrypt(episode['source'].encode('utf-8'), KEY).decode('utf-8')
                         for episode in episodes]
 
         self._episode_urls = [(i + 1, episode_url)
                               for i, episode_url in enumerate(episode_urls)]
         self._len = len(self._episode_urls)
-
         return self._episode_urls
 
 
