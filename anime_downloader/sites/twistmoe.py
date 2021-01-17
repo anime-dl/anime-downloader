@@ -18,7 +18,7 @@ with warnings.catch_warnings():
     from fuzzywuzzy import process
 
 BLOCK_SIZE = 16
-KEY = b""
+KEY = b"LXgIVP&PorO68Rq7dTx8N^lP!Fa5sGJ^*XK"
 
 
 class TwistMoeEpisode(AnimeEpisode, sitename='twist.moe'):
@@ -95,6 +95,7 @@ def unpad(data):
 def bytes_to_key(data, salt, output=48):
     # extended from https://gist.github.com/gsakkis/4546068
     assert len(salt) == 8, len(salt)
+    data = b"267041df55ca2b36f2e322d05ee2c9cf"
     data += salt
     key = md5(data).digest()
     final_key = key
