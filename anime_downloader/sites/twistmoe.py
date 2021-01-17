@@ -18,7 +18,6 @@ with warnings.catch_warnings():
     from fuzzywuzzy import process
 
 BLOCK_SIZE = 16
-KEY = b"LXgIVP&PorO68Rq7dTx8N^lP!Fa5sGJ^*XK"
 
 
 class TwistMoeEpisode(AnimeEpisode, sitename='twist.moe'):
@@ -73,7 +72,7 @@ class TwistMoe(Anime, sitename='twist.moe'):
         logging.debug(episodes)
         self.title = anime_name
         episode_urls = ['https://twistcdn.bunny.sh' +
-                        decrypt(episode['source'].encode('utf-8'), KEY).decode('utf-8')
+                        decrypt(episode['source'].encode('utf-8')).decode('utf-8')
                         for episode in episodes]
 
         self._episode_urls = [(i + 1, episode_url)
@@ -92,7 +91,7 @@ def unpad(data):
     return data[:-(data[-1] if type(data[-1]) == int else ord(data[-1]))]
 
 
-def bytes_to_key(data, salt, output=48):
+def bytes_to_key(salt, output=48):
     # extended from https://gist.github.com/gsakkis/4546068
     assert len(salt) == 8, len(salt)
     data = b"267041df55ca2b36f2e322d05ee2c9cf"
@@ -105,11 +104,11 @@ def bytes_to_key(data, salt, output=48):
     return final_key[:output]
 
 
-def decrypt(encrypted, passphrase):
+def decrypt(encrypted):
     encrypted = base64.b64decode(encrypted)
     assert encrypted[0:8] == b"Salted__"
     salt = encrypted[8:16]
-    key_iv = bytes_to_key(passphrase, salt, 32 + 16)
+    key_iv = bytes_to_key(salt, 32 + 16)
     key = key_iv[:32]
     iv = key_iv[32:]
     aes = AES.new(key, AES.MODE_CBC, iv)
