@@ -20,6 +20,12 @@ ALL_EXTRACTORS = [
         'class': 'AnimeVideo',
     },
     {
+        'sitename': 'twist',
+        'modulename': 'twist',
+        'regex': 'twist',
+        'class': 'Twist',
+    },
+    {
         'sitename': 'animeonline360',
         'modulename': 'animeonline360',
         'regex': 'animeonline360',
