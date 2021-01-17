@@ -1,3 +1,4 @@
+
 from anime_downloader.const import desktop_headers
 from anime_downloader.sites.exceptions import NotFoundError
 
@@ -47,6 +48,7 @@ class BaseExtractor:
             raise NotFoundError
         self._stream_url = data['stream_url']
         self._referer = data.get('referer', None)
+
         self.meta = data.get('meta')
 
     def _get_data(self):
