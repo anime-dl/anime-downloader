@@ -1,4 +1,5 @@
 import logging
+import re
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 from anime_downloader.const import HEADERS
@@ -17,7 +18,8 @@ class Anime4(Anime, sitename='4anime'):
             "asid": 1,
             "options": "qtranslate_lang=0&set_intitle=None&customset%5B%5D=anime"
         }
-        soup = helpers.soupify(helpers.post("https://4anime.to/wp-admin/admin-ajax.php", data=data)).select('div.info > a')
+        soup = helpers.soupify(helpers.post(
+            "https://4anime.to/wp-admin/admin-ajax.php", data=data)).select('div.info > a')
 
         search_results = [
             SearchResult(
@@ -29,7 +31,8 @@ class Anime4(Anime, sitename='4anime'):
         return search_results
 
     def _scrape_episodes(self):
-        soup = helpers.soupify(helpers.get(self.url)).select('ul.episodes.range.active > li > a')
+        soup = helpers.soupify(helpers.get(self.url)).select(
+            'ul.episodes.range.active > li > a')
         return [x['href'] for x in soup]
 
     def _scrape_metadata(self):
@@ -42,9 +45,16 @@ class Anime4(Anime, sitename='4anime'):
 
 class Anime4Episode(AnimeEpisode, sitename='4anime'):
     def _get_sources(self):
-        self.headers = {'user-agent': HEADERS[self.hash_url(self.url, len(HEADERS))]}
+        self.headers = {
+            'user-agent': HEADERS[self.hash_url(self.url, len(HEADERS))]}
         resp = helpers.get(self.url, headers=self.headers)
-        stream_url = helpers.soupify(resp).find('div', class_='videojs-desktop').find('source')['src']
+
+        # E.g.  document.write( '<a class=\"mirror_dl\" href=\"https://v3.4animu.me/One-Piece/One-Piece-Episode-957-1080p.mp4\"><i class=\"fa fa-download\"></i> Download</a>' );
+        stream_url = helpers.soupify(
+            re.search("(<a.*?mirror_dl.*?)'", resp.text).group(1)).find("a").get("href")
+
+        # Otherwise we end up with "url" and barring that, url\
+        stream_url = re.search('"(.*?)\\\\"', stream_url).group(1)
         return [('no_extractor', stream_url)]
 
     """
