@@ -128,7 +128,6 @@ def driver_select():
     driver_binary = get_driver_binary()
     binary = None if not driver_binary else driver_binary
     if browser == 'firefox':
-
         fireFox_Options = webdriver.FirefoxOptions()
         fireFox_Options.headless = True
         fireFox_Options.add_argument('--log fatal')
@@ -241,7 +240,7 @@ def request(request_type, url, **kwargs):  # Headers not yet supported , headers
             driver.close()
             logger.error(f'There was a problem getting the page: {url}.' +
                          '\nSee the screenshot for more info:\t{get_data_dir()}/screenshot.png')
-            exit()
+            return
 
 
 class SeleResponse:
@@ -274,5 +273,5 @@ class SeleResponse:
         return self.text
 
     def __repr__(self):
-        return '<SeleResponse URL: {} METHOD: {} TEXT: {} COOKIES {} USERAGENT {}>'.format(
+        return '<SeleResponse URL: {} METHOD: {} TEXT: {} COOKIES: {} USERAGENT: {}>'.format(
             self.url, self.method, self.text, self.cookies, self.user_agent)

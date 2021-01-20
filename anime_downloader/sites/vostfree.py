@@ -6,6 +6,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class VostFree(Anime, sitename='vostfree'):
     """
     Site: https://vostfree.com
@@ -18,11 +19,11 @@ class VostFree(Anime, sitename='vostfree'):
 
     @classmethod
     def search(cls, query):
-        soup = helpers.soupify(helpers.post('https://vostfree.com', data = {'do': 'search', 'subaction': 'search', 'story': query}))
+        soup = helpers.soupify(helpers.post('https://vostfree.com', data={'do': 'search', 'subaction': 'search', 'story': query}))
         return [
             SearchResult(
-                title = re.sub('\s+?FRENCH(\s+)?$', '', x.text.strip()),
-                url = x['href']
+                title=re.sub('\s+?FRENCH(\s+)?$', '', x.text.strip()),
+                url=x['href']
             )
             for x in soup.select('div.title > a')
         ]
@@ -52,13 +53,13 @@ class VostFree(Anime, sitename='vostfree'):
             if current:
                 links.append(self.getLink(soup.find('div', {'id': f'content_{current[0]["id"]}'}).text, alternate_server))
                 continue
-            
 
         return links
 
     def _scrape_metadata(self):
-       soup = helpers.soupify(helpers.get(self.url))
-       self.title = re.sub('\s+?FRENCH(\s+)?$', '', soup.select('meta[property=og\:title]')[0]['content'])
+        soup = helpers.soupify(helpers.get(self.url))
+        self.title = re.sub('\s+?FRENCH(\s+)?$', '', soup.select('meta[property=og\:title]')[0]['content'])
+
 
 class VostFreeEpisode(AnimeEpisode, sitename='vostfree'):
     def _get_sources(self):

@@ -21,26 +21,44 @@ Features
 Supported Sites
 ---------------
 
-- Animepahe
-- Anistream
+- 4Anime
+- AnimeBinge
+- Animedaisuki
 - Animeflix
-- Animefreak
-- Gogoanime
-- Dubbedanime
-- a2zanime
-- animeout
-- itsaturday
 - Animeflv
-- Kickassanime
-- DreamAnime
-- RyuAnime
-- Erai-Raws
-- Animesimple
+- Animefreak
+- AnimeKisa
+- AnimeOnline360
+- animeout
 - Animerush
-- Watchmovie
+- Animesimple
+- Animevibe
+- AnimeTake
+- AniTube
+- Animixplay
+- Anistream
+- Darkanime
+- Dbanimes 
+- EraiRaws
+- EgyAnime - usually m3u8 (good for streaming, not so much for downloading)
+- FastAni
+- GurminderBoparai (AnimeChameleon)
+- itsaturday
+- Justdubs
+- Kickassanime
+- Kissanimefree
+- KissanimeX
+- Kisscartoon - requires Selenium
+- Nyaa.si
+- PutLockers
+- RyuAnime
+- SubsPlease
 - twist.moe - requires Node.js
-- Kissanime - requires Node.js
-- Kisscartoon - requires Node.js
+- tenshi.moe
+- Vidstream
+- Voiranime
+- Vostfree
+
 
 NOTE: To download from sites marked `[cloudflare]`, anime-downloader has to be installed with cloudflare support(See below);
 

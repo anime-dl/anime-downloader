@@ -18,11 +18,11 @@ with warnings.catch_warnings():
     from fuzzywuzzy import process
 
 BLOCK_SIZE = 16
-KEY = b"LXgIVP&PorO68Rq7dTx8N^lP!Fa5sGJ^*XK"
 
 
 class TwistMoeEpisode(AnimeEpisode, sitename='twist.moe'):
     def _get_sources(self):
+        self.headers["Referer"] = self._parent.url + str(self.ep_no)
         return [('no_extractor', self.url)]
 
 
@@ -37,8 +37,8 @@ class TwistMoe(Anime, sitename='twist.moe'):
     @classmethod
     def search(self, query):
         headers = {
-        'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.46 Safari/537.36',
-        'x-access-token': '1rj2vRtegS8Y60B3w3qNZm5T2Q0TN2NR'
+            'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.46 Safari/537.36',
+            'x-access-token': '0df14814b9e590a1f26d3071a4ed7974'
         }
         # soup = helpers.soupify(helpers.get('https://twist.moe/', allow_redirects=True, headers=headers))
         req = helpers.get('https://twist.moe/api/anime', headers=headers)
@@ -65,36 +65,36 @@ class TwistMoe(Anime, sitename='twist.moe'):
         episodes = helpers.get(
             url,
             headers={
-                'x-access-token': '1rj2vRtegS8Y60B3w3qNZm5T2Q0TN2NR'
+                'x-access-token': '0df14814b9e590a1f26d3071a4ed7974'
             }
         )
         episodes = episodes.json()
         logging.debug(episodes)
         self.title = anime_name
-        episode_urls = ['https://twist.moe' +
-                        decrypt(episode['source'].encode('utf-8'), KEY).decode('utf-8')
+        episode_urls = ['https://twistcdn.bunny.sh' +
+                        decrypt(episode['source'].encode('utf-8')).decode('utf-8')
                         for episode in episodes]
 
-        self._episode_urls = [(i+1, episode_url)
+        self._episode_urls = [(i + 1, episode_url)
                               for i, episode_url in enumerate(episode_urls)]
         self._len = len(self._episode_urls)
-
         return self._episode_urls
 
 
 # From stackoverflow https://stackoverflow.com/questions/36762098/how-to-decrypt-password-from-javascript-cryptojs-aes-encryptpassword-passphras
 def pad(data):
     length = BLOCK_SIZE - (len(data) % BLOCK_SIZE)
-    return data + (chr(length)*length).encode()
+    return data + (chr(length) * length).encode()
 
 
 def unpad(data):
     return data[:-(data[-1] if type(data[-1]) == int else ord(data[-1]))]
 
 
-def bytes_to_key(data, salt, output=48):
+def bytes_to_key(salt, output=48):
     # extended from https://gist.github.com/gsakkis/4546068
     assert len(salt) == 8, len(salt)
+    data = b"267041df55ca2b36f2e322d05ee2c9cf"
     data += salt
     key = md5(data).digest()
     final_key = key
@@ -104,11 +104,11 @@ def bytes_to_key(data, salt, output=48):
     return final_key[:output]
 
 
-def decrypt(encrypted, passphrase):
+def decrypt(encrypted):
     encrypted = base64.b64decode(encrypted)
     assert encrypted[0:8] == b"Salted__"
     salt = encrypted[8:16]
-    key_iv = bytes_to_key(passphrase, salt, 32+16)
+    key_iv = bytes_to_key(salt, 32 + 16)
     key = key_iv[:32]
     iv = key_iv[32:]
     aes = AES.new(key, AES.MODE_CBC, iv)

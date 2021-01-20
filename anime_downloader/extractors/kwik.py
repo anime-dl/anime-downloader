@@ -9,10 +9,11 @@ from subprocess import CalledProcessError
 
 logger = logging.getLogger(__name__)
 
+
 class Kwik(BaseExtractor):
     '''Extracts video url from kwik pages, Kwik has some `security`
-       which allows to access kwik pages when only refered by something
-       and the kwik video stream when refered through the corresponding
+       which allows to access kwik pages when only referred by something
+       and the kwik video stream when referred through the corresponding
        kwik video page.
     '''
 
@@ -21,7 +22,7 @@ class Kwik(BaseExtractor):
         # from somewhere, I will just use the url itself. We then
         # have to rebuild the url. Hopefully kwik doesn't block this too
 
-        #Necessary
+        # Necessary
         self.url = self.url.replace(".cx/e/", ".cx/f/")
         self.headers.update({"referer": self.url})
 
@@ -30,7 +31,7 @@ class Kwik(BaseExtractor):
         if not cookies:
             resp = util.bypass_hcaptcha(self.url)
         else:
-            resp = requests.get(self.url, cookies = cookies)
+            resp = requests.get(self.url, cookies=cookies)
 
         title_re = re.compile(r'title>(.*)<')
 
@@ -47,18 +48,16 @@ class Kwik(BaseExtractor):
                     kwik_text = resp.text
 
                 if type(e) == CalledProcessError:
-                    resp = requests.get(self.url, cookies = cookies)
+                    resp = requests.get(self.url, cookies=cookies)
             finally:
                 cookies = resp.cookies
                 title = title_re.search(kwik_text).group(1)
                 loops += 1
 
-
-
         post_url = deobfuscated.form["action"]
         token = deobfuscated.input["value"]
 
-        resp = helpers.post(post_url, headers = self.headers, params={"_token": token}, cookies = cookies, allow_redirects = False)
+        resp = helpers.post(post_url, headers=self.headers, params={"_token": token}, cookies=cookies, allow_redirects=False)
         stream_url = resp.headers["Location"]
 
         logger.debug('Stream URL: %s' % stream_url)

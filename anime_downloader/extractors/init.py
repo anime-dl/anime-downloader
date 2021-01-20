@@ -8,6 +8,12 @@ ALL_EXTRACTORS = [
         'class': 'RapidVideo'
     },
     {
+        'sitename': 'clipwatching',
+        'modulename': 'clipwatching',
+        'regex': 'clipwatching',
+        'class': 'clipwatching'
+    },
+    {
         'sitename': 'no_extractor',
         'modulename': 'fake_extractor',
         'regex': 'no_extractor',
@@ -144,6 +150,24 @@ ALL_EXTRACTORS = [
         'modulename': 'vudeo',
         'regex': 'vudeo',
         'class': 'Vudeo'
+    },
+    {
+        'sitename': 'eplay',
+        'modulename': 'eplay',
+        'regex': 'eplay',
+        'class': 'EPlay'
+    },
+    {
+        'sitename': 'streamtape',
+        'modulename': 'streamtape',
+        'regex': 'streamtape',
+        'class': 'StreamTape'
+    },
+    {
+        'sitename': 'streamium',
+        'modulename': 'streamium',
+        'regex': 'streamium',
+        'class': 'Streamium'
     }
 ]
 

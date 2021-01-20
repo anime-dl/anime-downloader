@@ -1,4 +1,4 @@
-﻿import click
+import click
 import sys
 import os
 import importlib
@@ -43,9 +43,9 @@ def cli(log_level):
 
     Download or watch your favourite anime
     """
-    if not util.check_in_path('aria2c'):
-        raise RuntimeError("Aria2 is not in path. Please follow installation instructions: https://github.com/vn-ki/anime-downloader/wiki/Installation")
     util.setup_logger(log_level)
+    # if not util.check_in_path('aria2c'):
+    #    raise logger.ERROR("Aria2 is not in path. Please follow installation instructions: https://github.com/vn-ki/anime-downloader/wiki/Installation")
 
 
 def main():
@@ -55,5 +55,5 @@ def main():
         if 'DEBUG' in sys.argv:
             raise
         click.echo(click.style('ERROR:', fg='black', bg='red') +
-                   ' '+click.style(str(e), fg='red'))
+                   ' ' + click.style(str(e), fg='red'))
         sys.exit(1)

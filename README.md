@@ -55,7 +55,7 @@ Yeah. Me too! That's why this tool exists.
 **Details about the sites can be found in [FAQ](https://github.com/vn-ki/anime-downloader/wiki/FAQ)**
 
 - 4Anime
-- a2zanime
+- AnimeBinge
 - Animedaisuki
 - Animeflix
 - Animeflv
@@ -66,13 +66,16 @@ Yeah. Me too! That's why this tool exists.
 - Animerush
 - Animesimple
 - Animevibe
+- AnimeTake
+- AniTube
 - Animixplay
 - Anistream
 - Darkanime
-- Dbanimes
-- Gogoanime
+- Dbanimes 
+- EraiRaws
+- EgyAnime - usually m3u8 (good for streaming, not so much for downloading)
+- FastAni
 - GurminderBoparai (AnimeChameleon)
-- HorribleSubs
 - itsaturday
 - Justdubs
 - Kickassanime
@@ -80,8 +83,11 @@ Yeah. Me too! That's why this tool exists.
 - KissanimeX
 - Kisscartoon - requires Selenium
 - Nyaa.si
+- PutLockers
 - RyuAnime
+- SubsPlease
 - twist.moe - requires Node.js
+- tenshi.moe
 - Vidstream
 - Voiranime
 - Vostfree
@@ -99,20 +105,27 @@ If you have trouble installing, see extended installation instructions [here](ht
 **Note**:
 - For Cloudflare scraping either [cfscrape](https://github.com/Anorov/cloudflare-scrape) or [selenium](https://www.selenium.dev/) is used. [Cfscrape](https://github.com/Anorov/cloudflare-scrape) depends on [`node-js`](https://nodejs.org/en/) and [selenium](https://www.selenium.dev/) utilizes an automated invisible instance of a browser (chrome/firefox). So, if you want to use Cloudflare enabled sites, make sure you have [node-js](https://nodejs.org/en/) and a [webdriver](https://www.selenium.dev/selenium/docs/api/py/index.html#drivers) installed.
 - You might have to use pip3 depending on your system
+- To install this project with gui and all its dependencies, add `#egg=anime-downloader[gui]` to the pip command you are using to install it. Example: `pip install -U git+https://github.com/anime-dl/anime-downloader#egg=anime_downloader[gui]`
+- To install this project with selescrape (if you are using GUI, ignore this line), do the same as above - but with `#egg=anime-downloader[selescrape]`
 
 ## Usage
 
 See [docs](https://anime-downlader.readthedocs.io/en/latest/usage/dl.html).
 
-Anime Downloader has two sub-commands, `dl` and `watch`.
+Anime Downloader has six (6) sub-commands, `dl`, `watch`, `gui`, `config`, `ezdl` and `test`.
 
 - [dl](https://anime-downlader.readthedocs.io/en/latest/usage/dl.html): `dl` can download anime.
+- ezdl: Uses metadata agents to unify providers and also auto select a result if the search argument is close to the anime title.
 - [watch](https://anime-downlader.readthedocs.io/en/latest/usage/watch.html): `watch` can manage your anime watch list. Needs [mpv](https://mpv.io).
+- [config](https://anime-downlader.readthedocs.io/en/latest/usage/config.html): can manage the configuration for anime dl.
+- test: Tests all the providers, not the most reliable command as the results may be faulty.
+- gui: opens a PyQT gui that allows for non commandline downloading and streaming.
 
 **To use `anime_downloader` in your package:**
 
 This tool can be used as a library. This means you can import it into your own applications and search for anime and do many other wonderful things.
 See [documentation](https://anime-downlader.readthedocs.io/en/latest/usage/api.html).
+
 
 **Development Instructions:**
 
