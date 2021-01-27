@@ -85,6 +85,7 @@ Yeah. Me too! That's why this tool exists.
 - Nyaa.si
 - PutLockers
 - RyuAnime
+- Shiro.is
 - SubsPlease
 - twist.moe - requires Node.js
 - tenshi.moe
