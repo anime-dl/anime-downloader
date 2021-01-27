@@ -1,4 +1,5 @@
 import re
+import logging
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 
