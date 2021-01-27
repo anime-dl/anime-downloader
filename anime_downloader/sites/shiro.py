@@ -66,4 +66,6 @@ class Shiro(Anime, sitename='shiro'):
 
 class ShiroEpisode(AnimeEpisode, sitename='shiro'):
     def _get_sources(self):
-        return [('no_extractor', self.url)]
+        r = helpers.get(self.url).text
+        link = re.search(r'\"file\"\:\"(.*?)\"', r)[1]
+        return [('no_extractor', link)]
