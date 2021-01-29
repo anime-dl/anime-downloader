@@ -71,7 +71,7 @@ class TwistMoe(Anime, sitename='twist.moe'):
         episodes = episodes.json()
         logging.debug(episodes)
         self.title = anime_name
-        episode_urls = ['https://twistcdn.bunny.sh' +
+        episode_urls = ['https://cdn.twist.moe' +
                         decrypt(episode['source'].encode('utf-8')).decode('utf-8')
                         for episode in episodes]
 
