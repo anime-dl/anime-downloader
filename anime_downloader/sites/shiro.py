@@ -44,6 +44,7 @@ class Shiro(Anime, sitename='shiro'):
             return []
 
     def _scrape_episodes(self):
+        self.token = get_token()
         slug = self.url.replace('https://shiro.is/anime/', '')
         api_link = 'https://ani.api-web.site/anime/slug/' + slug
         r = helpers.get(api_link, params={'token': self.token}).json()
