@@ -221,19 +221,22 @@ def print_episodeurl(episode):
         "magnet") else episode.source().stream_url
     print(unquote(url))
 
-
-def play_episode(episode, *, player, title):
+def play_episode(episode, *, player, title, episodes="0:0"):
     if player == 'mpv':
         p = subprocess.Popen([player, 
             f'--title={title}', 
             f'--referrer={episode.source().referer}', 
             f'--user-agent={get_random_header()["user-agent"]}', 
             episode.source().stream_url])
+    elif player == "android":
+        if episodes == None or ':' in episodes:
+            p = subprocess.Popen(['am', 'start', '-a', 'android.intent.action.VIEW', '-t', 'video/*', '-d', f'{episode.source().stream_url}'])
+            input("Press enter to continue\n")
+        else:
+            p = subprocess.Popen(['am', 'start', '-a', 'android.intent.action.VIEW', '-t', 'video/*', '-d', f'{episode.source().stream_url}'])
     else:
-        p = subprocess.Popen([player, episode.source().stream_url
-                              ])
+       p = subprocess.Popen([player, episode.source().stream_url])
     p.wait()
-
 
 def print_info(version):
     logger.info('anime-downloader {}'.format(version))
