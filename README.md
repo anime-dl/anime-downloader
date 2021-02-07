@@ -60,6 +60,7 @@ Yeah. Me too! That's why this tool exists.
 - Animeflix
 - Animeflv
 - Animefreak
+- Animeheros
 - AnimeKisa
 - AnimeOnline360
 - animeout
