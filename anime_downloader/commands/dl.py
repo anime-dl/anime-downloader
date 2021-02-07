@@ -79,12 +79,23 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     help="Set the speed limit (in KB/s or MB/s) for downloading when using aria2c",
     metavar='<int>K/M'
 )
+@click.option(
+    "--sub", "-s", type=bool, is_flag=True,
+    help="If flag is set, it downloads the subbed version of an anime if the provider supports it. Must not be used with the --dub/-d flag")
+@click.option(
+    "--dub", "-d", type=bool, is_flag=True,
+    help="If flag is set, it downloads the dubbed version of anime if the provider supports it. Must not be used with the --sub/-s flag")
 @click.pass_context
 def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             force_download, download_dir, file_format, provider,
-            external_downloader, chunk_size, disable_ssl, fallback_qualities, choice, skip_fillers, speed_limit):
+            external_downloader, chunk_size, disable_ssl, fallback_qualities, choice, skip_fillers, speed_limit, sub, dub):
     """ Download the anime using the url or search for it.
     """
+
+    if sub and dub:
+        raise click.UsageError(
+            "--dub/-d and --sub/-s flags cannot be used together")
+
     query = anime_url[:]
 
     util.print_info(__version__)
@@ -98,8 +109,14 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
         anime_url, _ = util.search(anime_url, provider, choice)
         cls = get_anime_class(anime_url)
 
+    subbed = None
+
+    if sub or dub:
+        subbed = subbed is not None
+
     anime = cls(anime_url, quality=quality,
-                fallback_qualities=fallback_qualities)
+                fallback_qualities=fallback_qualities,
+                subbed=subbed)
     logger.info('Found anime: {}'.format(anime.title))
 
     animes = util.parse_ep_str(anime, episode_range)
