@@ -123,14 +123,17 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
     for episode in animes:
         if skip_fillers and fillers:
             if episode.ep_no in fillers:
-                logger.info("Skipping episode {} because it is a filler.".format(episode.ep_no))
+                logger.info(
+                    "Skipping episode {} because it is a filler.".format(episode.ep_no))
                 continue
 
         if url:
             util.print_episodeurl(episode)
 
         if player:
-            util.play_episode(episode, player=player, title=f'{anime.title} - Episode {episode.ep_no}')
+            episode_range = f"0:{len(animes)}" if not episode_range else episode_range
+            util.play_episode(
+                episode, player=player, title=f'{anime.title} - Episode {episode.ep_no}', episodes=episode_range)
 
         if not skip_download:
             if external_downloader:
