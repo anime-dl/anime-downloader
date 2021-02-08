@@ -130,7 +130,7 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             util.print_episodeurl(episode)
 
         if player:
-            episode_range = f"0:{len(animes)}" if not episode_range else episode_rang
+            episode_range = f"0:{len(animes)}" if not episode_range else episode_range
             util.play_episode(episode, player=player, title=f'{anime.title} - Episode {episode.ep_no}', episodes=episode_range)
 
         if not skip_download:
