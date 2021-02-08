@@ -230,9 +230,8 @@ def play_episode(episode, *, player, title, episodes="0:0"):
             episode.source().stream_url])
     elif player == "android":
         p = subprocess.Popen(['am', 'start', '-a', 'android.intent.action.VIEW', '-t', 'video/*', '-d', f'{episode.source().stream_url}'])
-        if episodes == None or ':' in episodes:
-            if episodes != "0:1":
-                input("Press enter to continue\n")
+        if episodes == None or ':' in episodes and episodes != "0:1":
+            input("Press enter to continue\n")
     else:
         p = subprocess.Popen([player, episode.source().stream_url])
     p.wait()
