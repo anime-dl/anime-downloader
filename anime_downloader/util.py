@@ -185,7 +185,8 @@ def parse_episode_range(max_range, episode_range):
     if not episode_range:
         episode_range = '1:'
     if episode_range.endswith(':'):
-        length = max_range if type(max_range) == int else (int(max_range._episode_urls[-1][0]))
+        length = max_range if type(max_range) == int else (
+            int(max_range._episode_urls[-1][0]))
         episode_range += str(length + 1)
     if episode_range.startswith(':'):
         episode_range = '1' + episode_range
@@ -221,20 +222,23 @@ def print_episodeurl(episode):
         "magnet") else episode.source().stream_url
     print(unquote(url))
 
+
 def play_episode(episode, *, player, title, episodes="0:0"):
     if player == 'mpv':
         p = subprocess.Popen([player,
-            f'--title={title}',
-            f'--referrer={episode.source().referer}',
-            f'--user-agent={get_random_header()["user-agent"]}',
-            episode.source().stream_url])
+                              f'--title={title}',
+                              f'--referrer={episode.source().referer}',
+                              f'--user-agent={get_random_header()["user-agent"]}',
+                              episode.source().stream_url])
     elif player == "android":
-        p = subprocess.Popen(['am', 'start', '-a', 'android.intent.action.VIEW', '-t', 'video/*', '-d', f'{episode.source().stream_url}'])
+        p = subprocess.Popen(['am', 'start', '-a', 'android.intent.action.VIEW',
+                              '-t', 'video/*', '-d', f'{episode.source().stream_url}'])
         if episodes == None or ':' in episodes and episodes != "0:1":
             input("Press enter to continue\n")
     else:
         p = subprocess.Popen([player, episode.source().stream_url])
     p.wait()
+
 
 def print_info(version):
     logger.info('anime-downloader {}'.format(version))
@@ -274,8 +278,9 @@ def format_filename(filename, episode):
 def format_command(cmd, episode, file_format, speed_limit, path):
     from anime_downloader.config import Config
     if not Config._CONFIG['dl']['aria2c_for_torrents'] and (episode.url.startswith('magnet:?xt=urn:btih:') or episode.source().stream_url.startswith('https://magnet:?xt=urn:btih:')):
-        url = episode.url if episode.url.startswith("magnet") else episode.source().stream_url
-        url = url.replace("https://","")
+        url = episode.url if episode.url.startswith(
+            "magnet") else episode.source().stream_url
+        url = url.replace("https://", "")
         return ['open', url]
 
     # For aria2c.
@@ -304,8 +309,10 @@ def format_command(cmd, episode, file_format, speed_limit, path):
     else:
         useragent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36'
 
-    stream_url = episode.source().stream_url if not episode.url.startswith('magnet:?xt=urn:btih:') else episode.url
-    stream_url = stream_url if 'magnet:?xt=urn:btih:' not in stream_url else stream_url.replace('https://', '')
+    stream_url = episode.source().stream_url if not episode.url.startswith(
+        'magnet:?xt=urn:btih:') else episode.url
+    stream_url = stream_url if 'magnet:?xt=urn:btih:' not in stream_url else stream_url.replace(
+        'https://', '')
 
     rep_dict = {
         'stream_url': stream_url,
