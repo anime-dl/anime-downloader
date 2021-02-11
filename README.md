@@ -78,7 +78,6 @@ Yeah. Me too! That's why this tool exists.
 - GurminderBoparai (AnimeChameleon)
 - itsaturday
 - Justdubs
-- Kickassanime
 - Kissanimefree
 - KissanimeX
 - Kisscartoon - requires Selenium
