@@ -80,7 +80,6 @@ Yeah. Me too! That's why this tool exists.
 - Justdubs
 - Kissanimefree
 - KissanimeX
-- Kisscartoon - requires Selenium
 - Nyaa.si
 - PutLockers
 - RyuAnime
