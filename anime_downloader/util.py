@@ -206,7 +206,13 @@ def parse_ep_str(anime, grammar):
                 episodes.append(episode)
         else:
             from anime_downloader.sites.anime import AnimeEpisode
-            ep = [x for x in anime._episode_urls if x[0] == int(grammar)][0]
+
+            if grammar == '0':
+                ep = sorted(anime._episode_urls)[-1]
+            else:
+                ep = [x for x in anime._episode_urls if x[0]
+                      == int(grammar)][0]
+
             ep_cls = AnimeEpisode.subclasses[anime.sitename]
 
             episodes.append(ep_cls(ep[1], parent=anime, ep_no=ep[0]))
