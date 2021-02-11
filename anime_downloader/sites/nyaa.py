@@ -17,7 +17,7 @@ class Nyaa(Anime, sitename='nyaa'):
     ~~~~~~
     filter: Choose filter method in search. One of ['No filter', 'No remakes', 'Trusted Only'] - ignored if episodic is set to 'True'
     category: Choose categories to search. One of ['Anime Music Video', 'English-translated', 'Non-English-translated'] - ignored if episodic is set to 'True'
-    episodic: one of ['True', 'False'] - used to determine whether nyaa should be scraped as-is, or whether attempts should be made to find single-ep links, order them by ep, snd download them as you would from other providers
+    episodic: one of ['True', 'False'] - used to determine whether nyaa should be scraped as-is, or whether attempts should be made to find single-ep links, order them by ep, and download them as you would from other providers
     """
 
     sitename = 'nyaa'
