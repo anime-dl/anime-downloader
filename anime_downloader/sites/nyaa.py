@@ -2,6 +2,7 @@ import re
 import logging
 
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
+from anime_downloader.sites.exceptions import NotFoundError
 from anime_downloader.sites import helpers
 from anime_downloader.config import Config
 from urllib.parse import unquote
@@ -21,11 +22,11 @@ class Nyaa(Anime, sitename='nyaa'):
     """
 
     sitename = 'nyaa'
-    url = f'https://{sitename}.si'
+    base_url = f'https://{sitename}.si'
 
     # Something like: [Erai-raws] Boruto Next Generations 38 [720p][Multiple Subs].mkv
     # Becomes something like ('[Erai-raws] Boruto Next Generations 38 [720p][Multiple Subs].mkv', '[Erai-raws] Boruto Next Generations', '78')
-    title_regex = "((\[.*?\]\s+?.*)\s-\s+?([A-Za-z0-9]+).*\[.*)"
+    title_regex = "((\[.*?\]\s+?.*)\s-\s+?([A-Za-z0-9~\s\-]+).*\[.*)"
     matches = []
 
     @classmethod
@@ -51,7 +52,7 @@ class Nyaa(Anime, sitename='nyaa'):
             if not soup.select(".next > a")[0].get("href"):
                 break
 
-            link = cls.url + soup.select(".next > a")[0].get("href")
+            link = cls.base_url + soup.select(".next > a")[0].get("href")
             soup = helpers.soupify(helpers.get(link))
             links_and_titles.extend([(x.get("title"), x.get("href")) for x in soup.select(
                 "td[colspan] > a[href][title]:not(.comments)")])
@@ -79,7 +80,7 @@ class Nyaa(Anime, sitename='nyaa'):
         search_results = [
             SearchResult(
                 title=x[0],
-                url=cls.url + x[1]
+                url=cls.base_url + x[1]
             )
             for x in final_dict.items()
         ]
@@ -106,9 +107,6 @@ class Nyaa(Anime, sitename='nyaa'):
         search_results = helpers.soupify(helpers.get(
             f"https://nyaa.si/", params=parameters))
 
-        # Used to match magnet links
-        rex = r'(magnet:)+[^"]*'
-
         search_results = [
             SearchResult(
                 title=i.select("a:not(.comments)")[1].get("title"),
@@ -127,7 +125,7 @@ class Nyaa(Anime, sitename='nyaa'):
 
         # Apparently you can do search by user
         # Example: https://nyaa.si/user/Erai-raws?f=0&c=0_0&q=higurashi
-        uploader = 'https://nyaa.si' + soup.select("a.text-success")[0]["href"]
+        uploader = self.base_url + soup.select("a.text-success")[0]["href"]
 
         # List of tuples of titles and links
         anime = self.search_episodic(
@@ -135,12 +133,19 @@ class Nyaa(Anime, sitename='nyaa'):
 
         cleaned_list = []
 
+        # Flag for whether to specify episodes
+        # If there are no batches, and ep numbers are properly regexed
+        # Then episode numbers are specified
+        ep_binding = True
+        ep_num_list = []
+
         for potential_ep in anime:
             regexed_ep = re.search(self.title_regex, potential_ep[0])
 
             # Check that the regex isn't empty
             if regexed_ep:
                 if regexed_ep.group(2) == regexed_title:
+                    ep_num_list.append(regexed_ep.group(3))
                     cleaned_list.append(potential_ep)
 
         # This works!
@@ -150,7 +155,7 @@ class Nyaa(Anime, sitename='nyaa'):
 
         for ep in cleaned_list:
             if self.quality in ep[0]:
-                final_list.append("https://nyaa.si" + ep[1])
+                final_list.append(self.base_url + ep[1])
 
         if not final_list:
             logger.warn(f"No eps of quality: {self.quality} found")
@@ -166,8 +171,16 @@ class Nyaa(Anime, sitename='nyaa'):
                     "Could not discern quality, downloading all links...")
                 return cleaned_list
 
-            final_list = [x[1]
+            final_list = [self.base_url + x[1]
                           for x in cleaned_list if regexed_quality.group(1) in x[0]]
+
+        try:
+            ep_num_list = [int(x) for x in ep_num_list]
+        except ValueError:
+            ep_binding = False
+
+        if ep_binding and len(ep_num_list) == len(final_list):
+            final_list = list(zip(ep_num_list, final_list))
 
         return final_list
 
@@ -196,5 +209,10 @@ class NyaaEpisode(AnimeEpisode, sitename='nyaa'):
 
         soup = helpers.soupify(helpers.get(self.url))
         magnet_link = soup.select("a:has(i.fa.fa-magnet)")[0].get("href")
+        seeds = soup.select("span[style=color\:\ green\;]")[0].text
+
+        if seeds == "0":
+            logger.warn("No seeders found for episode(s)")
+            raise NotFoundError
 
         return [("no_extractor", magnet_link)]
