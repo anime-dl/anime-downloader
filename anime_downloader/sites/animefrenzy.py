@@ -10,7 +10,8 @@ class AnimeFrenzy(Anime, sitename='animefrenzy'):
 
     @classmethod
     def search(cls, query):
-        r = helpers.get("https://old.animefrenzy.org/search", params={"term": query})
+        r = helpers.get("https://old.animefrenzy.org/search",
+                        params={"term": query})
         soup = helpers.soupify(r)
         # Warning, assuming only these links!
         # Can cause errors in the future.
@@ -50,12 +51,14 @@ class AnimeFrenzyEpisode(AnimeEpisode, sitename='animefrenzy'):
 
         for i in scripts:
             if 'var episode_videos' in str(i):
-                sources = json.loads(re.search(r"\[.*host.*id.*?\]", str(i)).group())
+                sources = json.loads(
+                    re.search(r"\[.*host.*id.*?\]", str(i)).group())
 
         sources_list = []
         for i in sources:
             if mappings.get(i.get('host')):
-                extractor = 'no_extractor' if not get_extractor(i['host']) else i['host']
+                extractor = 'no_extractor' if not get_extractor(
+                    i['host']) else i['host']
                 sources_list.append({
                     'extractor': extractor,
                     'url': mappings[i['host']].format(i['id']),
