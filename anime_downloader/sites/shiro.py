@@ -48,7 +48,9 @@ class Shiro(Anime, sitename='shiro'):
         self.token = get_token()
         slug = self.url.split('/')[-1]
         if 'episode' in slug:
-            slug = slug.split('-episode')[0]
+            api_link = 'https://ani.api-web.site/anime-episode/slug/' + slug
+            r = helpers.get(api_link, params={'token': self.token}).json()
+            slug = r['data']['anime_slug']
         api_link = 'https://ani.api-web.site/anime/slug/' + slug
         r = helpers.get(api_link, params={'token': self.token}).json()
         if r['status'] == 'Found':
@@ -65,7 +67,9 @@ class Shiro(Anime, sitename='shiro'):
         self.token = get_token()
         slug = self.url.split('/')[-1]
         if 'episode' in slug:
-            slug = slug.split('-episode')[0]
+            api_link = 'https://ani.api-web.site/anime-episode/slug/' + slug
+            r = helpers.get(api_link, params={'token': self.token}).json()
+            slug = r['data']['anime_slug']
         api_link = 'https://ani.api-web.site/anime/slug/' + slug
         r = helpers.get(api_link, params={'token': self.token}).json()
         self.title = r['data']['name']

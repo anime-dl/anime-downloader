@@ -45,7 +45,9 @@ class AnimeFrenzy(Anime, sitename='animefrenzy'):
         self.token = get_token()
         slug = self.url.split('/')[-1]
         if 'episode' in slug:
-            slug = slug.split('-episode')[0]
+            api_link = 'https://moo.yare.wtf/anime-episode/slug/' + slug
+            r = helpers.get(api_link, params={'token': self.token}).json()
+            slug = r['data']['anime_slug']
 
         api_link = 'https://moo.yare.wtf/anime/slug/' + slug
         r = helpers.get(api_link, params={'token': self.token}).json()
@@ -62,7 +64,9 @@ class AnimeFrenzy(Anime, sitename='animefrenzy'):
     def _scrape_metadata(self):
         slug = self.url.split('/')[-1]
         if 'episode' in slug:
-            slug = slug.split('-episode')[0]
+            api_link = 'https://moo.yare.wtf/anime-episode/slug/' + slug
+            r = helpers.get(api_link, params={'token': self.token}).json()
+            slug = r['data']['anime_slug']
         api_link = 'https://moo.yare.wtf/anime/slug/' + slug
         r = helpers.get(api_link, params={'token': self.token}).json()
         self.title = r['data']['name']
