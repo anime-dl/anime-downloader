@@ -32,13 +32,14 @@ class Shiro(Anime, sitename='shiro'):
                     title=i['name'],
                     url='https://shiro.is/anime/' + i['slug'],
                     poster='https://ani-cdn.api-web.site/' + i['image'],
+                    meta={'year': i['year']},
                     meta_info={
                         'version_key_dubbed': '(Sub)' if i['language'] == 'subbed' else '(Dub)'  # noqa
                     }
                 )
                 for i in results
             ]
-            search_results = sorted(search_results, key=lambda x: len(x.title))
+            search_results = sorted(search_results, key=lambda x: int(x.meta['year']))
             return search_results
         else:
             return []
