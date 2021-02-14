@@ -27,6 +27,7 @@ ALL_ANIME_SITES = [
     ('erairaws', 'erai-raws', 'EraiRaws'),
     ('egyanime', 'egyanime', 'EgyAnime'),
     ('fastani', 'fastani', 'FastAni'),
+    ('genoanime', 'genoanime', 'GenoAnime'),
     ('itsaturday', 'itsaturday', 'Itsaturday'),
     ('justdubs', 'justdubs', 'JustDubs'),
     # ('kickass', 'kickass', 'KickAss'),
