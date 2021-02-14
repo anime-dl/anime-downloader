@@ -29,13 +29,14 @@ class AnimeFrenzy(Anime, sitename='animefrenzy'):
                     title=i['name'],
                     url='https://animefrenzy.org/anime/' + i['slug'],
                     poster='https://moo.yare.wtf/' + i['image'],
+                    meta={'year': i['year']},
                     meta_info={
                         'version_key_dubbed': '(Sub)' if i['language'] == 'subbed' else '(Dub)'  # noqa
                     }
                 )
                 for i in results
             ]
-            search_results = sorted(search_results, key=lambda x: len(x.title))
+            search_results = sorted(search_results, key=lambda x: int(x.meta['year']))
             return search_results
         else:
             return []
