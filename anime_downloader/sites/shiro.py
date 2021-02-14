@@ -1,5 +1,5 @@
-import re
 import logging
+import re
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 
@@ -46,7 +46,9 @@ class Shiro(Anime, sitename='shiro'):
 
     def _scrape_episodes(self):
         self.token = get_token()
-        slug = self.url.replace('https://shiro.is/anime/', '')
+        slug = self.url.split('/')[-1]
+        if 'episode' in slug:
+            slug = slug.split('-episode')[0]
         api_link = 'https://ani.api-web.site/anime/slug/' + slug
         r = helpers.get(api_link, params={'token': self.token}).json()
         if r['status'] == 'Found':
@@ -60,7 +62,10 @@ class Shiro(Anime, sitename='shiro'):
             return []
 
     def _scrape_metadata(self):
-        slug = self.url.replace('https://shiro.is/anime/', '')
+        self.token = get_token()
+        slug = self.url.split('/')[-1]
+        if 'episode' in slug:
+            slug = slug.split('-episode')[0]
         api_link = 'https://ani.api-web.site/anime/slug/' + slug
         r = helpers.get(api_link, params={'token': self.token}).json()
         self.title = r['data']['name']
