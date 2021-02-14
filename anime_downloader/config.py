@@ -45,9 +45,6 @@ DEFAULT_CONFIG = {
         'player': 'mpv'
     },
     'siteconfig': {
-        'animefrenzy': {
-            'version': 'subbed'
-        },
         'egyanime': {
             'version': 'subbed',
             'servers': [
