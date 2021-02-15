@@ -1,4 +1,5 @@
 from anime_downloader.extractors.base_extractor import BaseExtractor
+from anime_downloader.config import Config
 from anime_downloader.sites import helpers
 import logging
 import re
@@ -14,7 +15,12 @@ class VidStream(BaseExtractor):
 
         data = helpers.get(url).json()
         links = [data['source'][0]['file'], data['source_bk'][0]['file']]
-
-        return {
-            'stream_url': links[0]
-        }
+        servers = Config._read_config()['siteconfig']['vidstream']['servers']
+        if servers[0] == "vidstream":
+            return {
+                'stream_url': links[0]
+            }
+        elif servers[0] == "vidstream_bk":
+            return {
+                'stream_url': links[1]
+            }
