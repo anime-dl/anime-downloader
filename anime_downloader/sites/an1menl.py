@@ -2,6 +2,7 @@ import logging
 import re
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
+from urllib.parse import unquote
 
 logger = logging.getLogger(__name__)
 
@@ -14,16 +15,14 @@ class An1menl(Anime, sitename='an1me'):
         params = {
             's': query
         }
-        matches = re.finditer(r"href\=\"(https://an1me\.nl/f/.*?)\" title\=\"(.*?)\"", helpers.get('https://an1me.nl/', params=params).text, re.MULTILINE)  # noqa
-        results = {
-            x[1]: x[2]
-            for _, x in enumerate(matches, start=1)
-        }
+
+        soup = helpers.soupify(helpers.get('https://an1me.nl/', params=params))
+        results = dict([(x.get("title"), x.get("href")) for x in soup.select("[href*=https\:\/\/an1me\.nl\/f\/][title]")])
 
         search_results = [
             SearchResult(
-                title=value,
-                url=key
+                title=key,
+                url=value
             )
             for key, value in results.items()
         ][::-1]
