@@ -145,7 +145,7 @@ DEFAULT_CONFIG = {
             'category': 'English-translated'
         },
         'vidstream': {
-            'servers': ['vidstream', 'vidstream_bk', 'gcloud', 'mp4upload', 'cloud9', 'hydrax', 'mixdrop'],
+            'servers': ['vidstream', 'vidstream_bk'],
             'version': 'subbed'
         },
         'justdubs': {
