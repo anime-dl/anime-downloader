@@ -3,6 +3,7 @@ from importlib import import_module
 ALL_ANIME_SITES = [
     # ('filename', 'sitename', 'classname')
     ('_4anime', '4anime', 'Anime4'),
+    ('an1menl', 'an1me', 'An1menl'),
     ('anitube', 'anitube', 'AniTube'),
     ('anime8', 'anime8', 'Anime8'),
     ('animebinge', 'animebinge', 'AnimeBinge'),
