@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class VidStream(BaseExtractor):
     def _get_data(self):
-        id_ = re.search(r'id\=(.*?)[&]', url)[1]
+        id_ = re.search(r'id\=(.*?)[&]', self.url)[1]
         url = f'https://gogo-play.net/ajax.php?id={id_}'
 
         data = helpers.get(url).json()
