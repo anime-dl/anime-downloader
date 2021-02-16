@@ -57,8 +57,8 @@ class SiteThread(threading.Thread):
 @click.command()
 @click.argument('anime', default='naruto')
 @click.option(
-    '-f', '--full-search', is_flag=True,
-    help='Don\'t ask to stop searching on anime match.')
+    '-f', '--prompt-found', is_flag=True,
+    help='Ask to stop searching on anime match.')
 @click.option(
     '-p', '--providers',
     help='Limit search to specific provider(s) separated by a comma.'
@@ -84,15 +84,15 @@ class SiteThread(threading.Thread):
     help='Disable fuzzy search to include possible inaccurate results.'
 )
 @click.option(
-    '-d', '--no-results', is_flag=True,
-    help='Disable echoing the search results at the end of testing.'
+    '-r', '--print-results', is_flag=True,
+    help='Enable echoing the search results at the end of testing.'
 )
 @click.option(
     '-t', '--timeout', type=int, default=10,
     help='How long to wait for a site to respond. (default: 10s)'
 )
 
-def command(anime, full_search, providers, exclude, selenium, verify, v_tries, no_fuzzy, no_results, timeout):
+def command(anime, prompt_found, providers, exclude, selenium, verify, v_tries, no_fuzzy, print_results, timeout):
     """Test all sites to see which ones are working and which ones aren't. Test naruto as a default. Return results for each provider."""
 
     util.print_info(__version__)
@@ -150,9 +150,10 @@ def command(anime, full_search, providers, exclude, selenium, verify, v_tries, n
                         if ratio > 50:
                             matches.append([thread.provider, thread.search_result, ratio])
                             click.secho(p + "Works, anime found.", fg="green")
-                            if not full_search:
-                                click.echo(f"\n- - -{thread.provider}- - -\n\n{thread.search_result}")
-                                confirm = click.confirm(f"Found anime in {thread.provider}. Keep seaching? (use -f / --full-search to disable this prompt)", default=True)
+                            if prompt_found:
+                                if print_results:
+                                    click.echo(f"\n- - -{thread.provider}- - -\n\n{thread.search_result}")
+                                confirm = click.confirm(f"Found anime in {thread.provider}. Keep seaching?", default=True)
                                 if not confirm:
                                     break
                         else:
@@ -175,6 +176,8 @@ def command(anime, full_search, providers, exclude, selenium, verify, v_tries, n
             if not skip:
                 break
 
-    if not no_results:
+    if print_results:
         click.echo("\n" + util.format_matches(matches))
+    else:
+        click.echo("\n" + "Test finished.")
     
