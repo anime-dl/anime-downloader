@@ -68,10 +68,6 @@ class SiteThread(threading.Thread):
     help='Provider(s) to exclude separated by a comma.'
 )
 @click.option(
-    '-s', '--selenium', is_flag=True,
-    help='Enable providers using selenium.'
-)
-@click.option(
     '-v', '--verify', is_flag=True,
     help='Verify extraction of stream url in case of anime match.'
 )
@@ -92,7 +88,7 @@ class SiteThread(threading.Thread):
     help='How long to wait for a site to respond. (default: 10s)'
 )
 
-def command(anime, prompt_found, providers, exclude, selenium, verify, v_tries, no_fuzzy, print_results, timeout):
+def command(anime, prompt_found, providers, exclude, verify, v_tries, no_fuzzy, print_results, timeout):
     """Test all sites to see which ones are working and which ones aren't. Test naruto as a default. Return results for each provider."""
 
     util.print_info(__version__)
@@ -106,8 +102,6 @@ def command(anime, prompt_found, providers, exclude, selenium, verify, v_tries, 
                 raise click.BadParameter(f"{p}. Choose from {', '.join(sitenames)}")
     else:
         providers = sitenames
-        if not selenium:
-            providers.remove("kisscartoon")
 
     if exclude:
         exclude = [e.strip() for e in exclude.split(",")]
