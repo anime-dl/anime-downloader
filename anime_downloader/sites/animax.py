@@ -43,5 +43,8 @@ class AnimaxEpisode(AnimeEpisode, sitename='animax'):
     def _get_sources(self):
         regex = r"file: \"(.*?)\""
         html = helpers.get(self.url).text
-        stream = re.search(regex, html)[1].replace('/m3u8/', 'https://animax.to/m3u8/')
+        try:
+            stream = re.search(regex, html)[1].replace('/m3u8/', 'https://animax.to/m3u8/')
+        except:
+            return []
         return [('no_extractor', stream)]
