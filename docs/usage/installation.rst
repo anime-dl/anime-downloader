@@ -139,7 +139,8 @@ The following steps install Anime-Downloader;
    
 - Delete the highlighted line as to match the image below;
 
-:image: https://i.imgur.com/0fRiNP6.png
+.. image:: https://i.imgur.com/0fRiNP6.png
+   :width: 250
 
 - Press ctrl+o then enter then press ctrl+X.
 
