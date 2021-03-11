@@ -8,7 +8,8 @@
 #
 # usage:
 #
-# if detect(some_string):
+# if 
+(some_string):
 #     unpacked = unpack(some_string)
 #
 
@@ -29,7 +30,7 @@ class UnpackingError(Exception):
 PRIORITY = 1
 
 
-def detect(source):
+def detect_packed_js(source):
     global beginstr
     global endstr
     beginstr = ""
@@ -57,7 +58,7 @@ def detect(source):
     return mystr is not None
 
 
-def unpack(source):
+def unpack_packed_js(source):
     """Unpacks P.A.C.K.E.R. packed js code."""
     payload, symtab, radix, count = _filterargs(source)
 
