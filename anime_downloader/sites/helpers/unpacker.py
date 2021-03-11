@@ -8,9 +8,8 @@
 #
 # usage:
 #
-# if 
-(some_string):
-#     unpacked = unpack(some_string)
+# if detect_packed_js(some_string):
+#     unpacked = unpack_packed_js(some_string)
 #
 
 """Unpacker for Dean Edward's p.a.c.k.e.r"""
