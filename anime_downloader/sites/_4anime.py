@@ -1,5 +1,6 @@
 import logging
 import re
+from anime_downloader.util import eval_in_node
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 from anime_downloader.const import HEADERS
@@ -49,12 +50,10 @@ class Anime4Episode(AnimeEpisode, sitename='4anime'):
             'user-agent': HEADERS[self.hash_url(self.url, len(HEADERS))]}
         resp = helpers.get(self.url, headers=self.headers)
 
+        text = eval_in_node(re.search(r"(eval\(function\(p,a,c,k,e,d\).*source.*\))", resp.text).group(1).replace('eval', 'console.log'))
         # E.g.  document.write( '<a class=\"mirror_dl\" href=\"https://v3.4animu.me/One-Piece/One-Piece-Episode-957-1080p.mp4\"><i class=\"fa fa-download\"></i> Download</a>' );
-        stream_url = helpers.soupify(
-            re.search("(<a.*?mirror_dl.*?)'", resp.text).group(1)).find("a").get("href")
+        stream_url = re.search(r"<source src=\\\"(.*?)\\", str(helpers.soupify(f"<script>{text}</script>"))).group(1)
 
-        # Otherwise we end up with "url" and barring that, url\
-        stream_url = re.search('"(.*?)\\\\"', stream_url).group(1)
         return [('no_extractor', stream_url)]
 
     """
