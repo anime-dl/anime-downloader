@@ -50,10 +50,8 @@ class Anime4Episode(AnimeEpisode, sitename='4anime'):
         resp = helpers.get(self.url, headers=self.headers)
 
         text = re.search(r"(eval\(function\(p,a,c,k,e,d\).*source.*\))", resp.text).group(1)
-        if helpers.detect_packed_js(text):
-            text = helpers.unpack_packed_js(text)
-        else:
-            return []
+        text = helpers.deobfuscate_packed_js(text)
+
         # E.g.  document.write( '<a class=\"mirror_dl\" href=\"https://v3.4animu.me/One-Piece/One-Piece-Episode-957-1080p.mp4\"><i class=\"fa fa-download\"></i> Download</a>' );
         stream_url = re.search(r"<source src=\\\"(.*?)\\", str(helpers.soupify(f"<script>{text}</script>"))).group(1)
 
