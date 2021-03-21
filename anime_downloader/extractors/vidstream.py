@@ -28,7 +28,8 @@ class VidStream(BaseExtractor):
         }
 
         url = self.url.replace('https:////', 'https://')
-        url = url.replace('https://gogo-stream.com/download', 'https://gogo-stream.com/server.php')
+        url = url.replace('https://gogo-stream.com/download',
+                          'https://gogo-stream.com/server.php')
         soup = helpers.soupify(helpers.get(url))
         linkserver = soup.select('li.linkserver')
         logger.debug('Linkserver: {}'.format(linkserver))
@@ -64,7 +65,11 @@ class VidStream(BaseExtractor):
         # <input type="hidden" id="title" value="Yakusoku+no+Neverland">
         # <input type="hidden" id="typesub" value="SUB">
         # Used to create a download url.
-        soup_id = soup.select('input#id')[0]['value']
+        try:
+            soup_id = soup.select('input#id')[0]['value']
+        except IndexError:
+            return self._get_link_new(soup)
+
         soup_title = soup.select('input#title')[0]['value']
         soup_typesub = soup.select('input#typesub')[0].get('value', 'SUB')
 
@@ -103,6 +108,11 @@ class VidStream(BaseExtractor):
 
         return {'stream_url': ''}
 
+    def _get_link_new(self, soup):
+        link_buttons = soup.select('div.mirror_link')[
+            0].select('div.dowload > a[href]')
+        return {'stream_url': link_buttons[0].get('href')}
+
 
 class Extractor:
     """dummy class to prevent changing self"""
@@ -110,4 +120,3 @@ class Extractor:
     def __init__(self, dictionary):
         for k, v in dictionary.items():
             setattr(self, k, v)
-

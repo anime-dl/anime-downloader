@@ -117,7 +117,12 @@ DEFAULT_CONFIG = {
         },
         'ryuanime': {
             'version': 'subbed',
-            'server': 'trollvid',
+            'servers': [
+                'vidstream',
+                'mp4upload',
+                'xstreamcdn',
+                'trollvid'
+            ]
         },
         'animekisa': {
             'server': 'gcloud',
