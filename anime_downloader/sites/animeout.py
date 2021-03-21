@@ -38,9 +38,9 @@ class AnimeOut(Anime, sitename='animeout'):
         filters = [self.quality, "1080p", "720p"]
         quality_filtered = []
 
-        for i in range(3):
+        for _filter in filters:
             if not quality_filtered:
-                quality_filtered = [x for x in episodes if filters[i] in x]
+                quality_filtered = [x for x in episodes if _filter in x]
             else:
                 break
 
