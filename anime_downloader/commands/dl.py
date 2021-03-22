@@ -3,6 +3,7 @@ import os
 
 import click
 import requests_cache
+import requests
 
 from anime_downloader import session, util
 from anime_downloader.__version__ import __version__
@@ -79,10 +80,11 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     help="Set the speed limit (in KB/s or MB/s) for downloading when using aria2c",
     metavar='<int>K/M'
 )
+@click.option("--video-info", "-i", is_flag=True, help="enables getting video information")
 @click.pass_context
 def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             force_download, download_dir, file_format, provider,
-            external_downloader, chunk_size, disable_ssl, fallback_qualities, choice, skip_fillers, speed_limit):
+            external_downloader, chunk_size, disable_ssl, fallback_qualities, choice, skip_fillers, speed_limit, video_info):
     """ Download the anime using the url or search for it.
     """
     query = anime_url[:]
@@ -121,6 +123,34 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
     if speed_limit:
         logger.info("Speed is being limited to {}".format(speed_limit))
     for episode in animes:
+        if video_info:
+            import cv2
+            cv2video = cv2.VideoCapture(episode.source().stream_url)
+            try:
+                if cv2video.isOpened():
+                    try:
+                        framecount = cv2video.get(cv2.CAP_PROP_FRAME_COUNT ) 
+                        frames_per_sec = cv2video.get(cv2.CAP_PROP_FPS)
+                        duration = framecount / frames_per_sec
+                        logger.info(f"Video duration (sec): {duration}")
+                    except:
+                        logger.warning("Error in video time calculation")
+                    try:
+                        video_height = cv2video.get(cv2.CAP_PROP_FRAME_HEIGHT)
+                        video_width = cv2video.get(cv2.CAP_PROP_FRAME_WIDTH)
+                    except:
+                        logger.warning("Error in getting video dimensions")
+                    try:
+                        video_bitrate = cv2video.get(cv2.CAP_PROP_BITRATE)
+                    except:
+                        logger.warning("Error in getting the bitrate")
+                    logger.info(f"Video Dimensions: {video_width} x {video_height}")
+                    logger.info(f"Video Bitrate in kbps: {video_bitrate}")
+                elif not cv2video.isOpened():
+                    logger.warning("File cannot be opened")
+            except:
+                logger.warning("something went horribly wrong")
+
         if skip_fillers and fillers:
             if episode.ep_no in fillers:
                 logger.info(
