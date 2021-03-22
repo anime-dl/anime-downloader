@@ -43,6 +43,7 @@ class Anime:
     title = ''
     meta = dict()
     subclasses = {}
+    subbed = None
     QUALITIES = ['360p', '480p', '720p', '1080p']
 
     @classmethod
@@ -64,8 +65,10 @@ class Anime:
 
     def __init__(self, url=None, quality='720p',
                  fallback_qualities=None,
-                 _skip_online_data=False):
+                 _skip_online_data=False,
+                 subbed=None):
         self.url = url
+        self.subbed = subbed
 
         if fallback_qualities is None:
             fallback_qualities = ['720p', '480p', '360p']
@@ -342,7 +345,8 @@ class AnimeEpisode:
         except IndexError:
             raise NotFoundError("No episode sources found.")
 
-        ext = get_extractor(sitename)(url, quality=self.quality, headers=self.headers)
+        ext = get_extractor(sitename)(
+            url, quality=self.quality, headers=self.headers)
         self._sources[index] = ext
 
         return ext
@@ -377,19 +381,24 @@ class AnimeEpisode:
         Using the example above, this function will return: [('no_extractor', 'https://twist.moe/anime/...')]
         as it prioritizes preferred language over preferred server
         """
+        if self._parent and self._parent.subbed is not None:
+            version = "subbed" if self._parent.subbed else "dubbed"
+        else:
+            version = self.config.get('version', 'subbed')
 
-        version = self.config.get('version', 'subbed')  # TODO add a flag for this
         servers = self.config.get('servers', [''])
 
         logger.debug('Data : {}'.format(data))
 
         # Sorts the dicts by preferred server in config
-        sorted_by_server = sorted(data, key=lambda x: servers.index(x['server']) if x['server'] in servers else len(data))
+        sorted_by_server = sorted(data, key=lambda x: servers.index(
+            x['server']) if x['server'] in servers else len(data))
 
         # Sorts the above by preferred language
         # resulting in a list with the dicts sorted by language and server
         # with language being prioritized over server
-        sorted_by_lang = list(sorted(sorted_by_server, key=lambda x: x['version'] == version, reverse=True))
+        sorted_by_lang = list(
+            sorted(sorted_by_server, key=lambda x: x['version'] == version, reverse=True))
         logger.debug('Sorted sources : {}'.format(sorted_by_lang))
 
         return '' if not sorted_by_lang else [(sorted_by_lang[0]['extractor'], sorted_by_lang[0]['url'])]
