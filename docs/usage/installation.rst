@@ -86,7 +86,7 @@ This does not require a rooted device to work.
 
 - Install Aria2c via the following command if using Termux; ::
 
-   pkg install aria2c
+   pkg install aria2
    
 - Install Python via the following command if using Termux; ::
 
