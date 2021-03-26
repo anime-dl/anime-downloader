@@ -41,7 +41,7 @@ ALL_ANIME_SITES = [
     ('twistmoe', 'twist.moe', 'TwistMoe'),
     ('tenshimoe', 'tenshi.moe', 'TenshiMoe'),
     ('vidstream', 'vidstream', 'VidStream'),
-    ('voiranime', 'voiranime', 'VoirAnime'),
+    # ('voiranime', 'voiranime', 'VoirAnime'),
     ('vostfree', 'vostfree', 'VostFree'),
 ]
 
