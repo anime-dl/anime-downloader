@@ -104,9 +104,9 @@ If you have trouble installing, see extended installation instructions [here](ht
 **Note**:
 - For Cloudflare scraping either [cfscrape](https://github.com/Anorov/cloudflare-scrape) or [selenium](https://www.selenium.dev/) is used. [Cfscrape](https://github.com/Anorov/cloudflare-scrape) depends on [`node-js`](https://nodejs.org/en/) and [selenium](https://www.selenium.dev/) utilizes an automated invisible instance of a browser (chrome/firefox). So, if you want to use Cloudflare enabled sites, make sure you have [node-js](https://nodejs.org/en/) and a [webdriver](https://www.selenium.dev/selenium/docs/api/py/index.html#drivers) installed.
 - You might have to use pip3 depending on your system
-- To install this project with gui and all its dependencies, add `#egg=anime-downloader[gui]` to the pip command you are using to install it. Example: `pip install -U git+https://github.com/anime-dl/anime-downloader#egg=anime_downloader[gui]`
+- To install this project with gui and all its dependencies, add `#egg=anime-downloader[gui]` to the pip command you are using to install it. Example: `pip install --force-reinstall -U git+https://github.com/anime-dl/anime-downloader#egg=anime_downloader[gui]`
 - To install this project with selescrape (if you are using GUI, ignore this line), do the same as above - but with `#egg=anime-downloader[selescrape]`
-- To install this project with jsbeautifier run `pip install -U git+https://github.com/anime-dl/anime-downloader#egg=anime-downloader[unpacker]`
+- To install this project with jsbeautifier run `pip install --force-reinstall -U git+https://github.com/anime-dl/anime-downloader#egg=anime-downloader[unpacker]`
 
 ## Usage
 
