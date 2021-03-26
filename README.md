@@ -54,7 +54,7 @@ Yeah. Me too! That's why this tool exists.
 ## Supported Sites
 **Details about the sites can be found in [FAQ](https://github.com/vn-ki/anime-downloader/wiki/FAQ)**
 
-- 4Anime
+- 4Anime - requires jsbeautifier
 - AnimeBinge
 - Animedaisuki
 - Animeflix
@@ -106,6 +106,7 @@ If you have trouble installing, see extended installation instructions [here](ht
 - You might have to use pip3 depending on your system
 - To install this project with gui and all its dependencies, add `#egg=anime-downloader[gui]` to the pip command you are using to install it. Example: `pip install -U git+https://github.com/anime-dl/anime-downloader#egg=anime_downloader[gui]`
 - To install this project with selescrape (if you are using GUI, ignore this line), do the same as above - but with `#egg=anime-downloader[selescrape]`
+- To install this project with jsbeautifier run `pip install -U git+https://github.com/anime-dl/anime-downloader#egg=anime-downloader[unpacker]
 
 ## Usage
 
