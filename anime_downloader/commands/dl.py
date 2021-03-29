@@ -7,6 +7,7 @@ import requests_cache
 from anime_downloader import session, util
 from anime_downloader.__version__ import __version__
 from anime_downloader.sites import get_anime_class, ALL_ANIME_SITES, exceptions
+from anime_downloader.plugins import plugins
 
 logger = logging.getLogger(__name__)
 
@@ -85,10 +86,14 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
 @click.option(
     "--dub", "-d", type=bool, is_flag=True,
     help="If flag is set, it downloads the dubbed version of anime if the provider supports it. Must not be used with the --sub/-s flag")
+@click.option(
+    "--enable-plugins", type=bool, is_flag=True,
+    help="If flag is set, it enables the use of plugins in the system"
+)
 @click.pass_context
 def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             force_download, download_dir, file_format, provider,
-            external_downloader, chunk_size, disable_ssl, fallback_qualities, choice, skip_fillers, speed_limit, sub, dub):
+            external_downloader, chunk_size, disable_ssl, fallback_qualities, choice, skip_fillers, speed_limit, sub, dub, enable_plugins):
     """ Download the anime using the url or search for it.
     """
 
@@ -130,13 +135,13 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
     #   - Ep plugin: Pass each episode
     if url or player:
         skip_download = True
-
     if download_dir and not skip_download:
         logger.info('Downloading to {}'.format(os.path.abspath(download_dir)))
     if skip_fillers:
         fillers = util.get_filler_episodes(query)
     if speed_limit:
         logger.info("Speed is being limited to {}".format(speed_limit))
+    AllEpisodeUrls = list()
     for episode in animes:
         if skip_fillers and fillers:
             if episode.ep_no in fillers:
@@ -169,3 +174,12 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
                                  format=file_format,
                                  range_size=chunk_size)
             print()
+        
+        AllEpisodeUrls.append(episode.source().stream_url)
+    
+    if enable_plugins:
+        PluginData = {
+            "All Episode URLs":AllEpisodeUrls,
+            "Anime Title": anime.title
+        }
+        plugins(PluginData)
