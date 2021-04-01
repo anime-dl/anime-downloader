@@ -4,8 +4,6 @@ from anime_downloader.sites import helpers
 from difflib import get_close_matches
 
 import re
-import logging
-logger = logging.getLogger(__name__)
 
 
 class AnimTime(Anime, sitename='animtime'):
@@ -42,7 +40,6 @@ class AnimTime(Anime, sitename='animtime'):
             for match in matches
         ]
 
-        logger.info(search_results)
         return search_results
 
     def _scrape_episodes(self):
