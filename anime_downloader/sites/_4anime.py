@@ -49,12 +49,7 @@ class Anime4Episode(AnimeEpisode, sitename='4anime'):
             'user-agent': HEADERS[self.hash_url(self.url, len(HEADERS))]}
         resp = helpers.get(self.url, headers=self.headers)
 
-        text = re.search(r"(eval\(function\(p,a,c,k,e,d\).*source.*\))", resp.text).group(1)
-        text = helpers.deobfuscate_packed_js(text)
-
-        # E.g.  document.write( '<a class=\"mirror_dl\" href=\"https://v3.4animu.me/One-Piece/One-Piece-Episode-957-1080p.mp4\"><i class=\"fa fa-download\"></i> Download</a>' );
-        stream_url = re.search(r"src=\\\\\"(.*)\\\\\" type", str(helpers.soupify(f"<script>{text}</script>"))).group(1)
-
+        stream_url = soupify(resp).source['src']
         return [('no_extractor', stream_url)]
 
     """
