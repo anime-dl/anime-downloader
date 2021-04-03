@@ -49,7 +49,7 @@ class Anime4Episode(AnimeEpisode, sitename='4anime'):
             'user-agent': HEADERS[self.hash_url(self.url, len(HEADERS))]}
         resp = helpers.get(self.url, headers=self.headers)
 
-        stream_url = soupify(resp).source['src']
+        stream_url = helpers.soupify(resp).source['src']
         return [('no_extractor', stream_url)]
 
     """
