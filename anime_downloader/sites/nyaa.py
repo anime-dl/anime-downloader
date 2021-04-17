@@ -156,10 +156,39 @@ class Nyaa(Anime, sitename='nyaa'):
         cleaned_list.sort()
 
         final_list = []
+        batches = []
 
         for ep in cleaned_list:
+            ep_range = re.search("\d+\s+[-~]\s+\d+", ep[0])
+
+            if ep_range:
+                ep_range = ep_range.group()
+                ep_range = range(*[int(x.strip())
+                                   for x in re.split("[-~]", ep_range)])
+                ep_range = range(ep_range.start, ep_range.stop + 1)
+                batches.append((ep_range, self.base_url + ep[1]))
+
             if self.quality in ep[0]:
                 final_list.append(self.base_url + ep[1])
+
+        if batches:
+            indexes_to_remove = []
+            for index, batch in enumerate(batches):
+                for rem_index, remaining in enumerate(batches[index + 1:]):
+                    intersect = set(batch[0]).intersection(remaining[0])
+
+                    if intersect:
+                        if len(batch[0]) > len(remaining[0]):
+                            indexes_to_remove.append(rem_index + (index + 1))
+                        else:
+                            indexes_to_remove.append(index)
+
+            indexes_to_remove = list(set(indexes_to_remove))[::-1]
+
+            for index in indexes_to_remove:
+                batches.pop(index)
+
+            final_list = [x[1] for x in batches]
 
         if not final_list:
             logger.warn(f"No eps of quality: {self.quality} found")
@@ -177,6 +206,7 @@ class Nyaa(Anime, sitename='nyaa'):
 
             final_list = [self.base_url + x[1]
                           for x in cleaned_list if regexed_quality.group(1) in x[0]]
+            logger.info(final_list)
 
         try:
             ep_num_list = [int(x) for x in ep_num_list]
