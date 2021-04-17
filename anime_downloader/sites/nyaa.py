@@ -125,7 +125,11 @@ class Nyaa(Anime, sitename='nyaa'):
 
         # Apparently you can do search by user
         # Example: https://nyaa.si/user/Erai-raws?f=0&c=0_0&q=higurashi
-        uploader = self.base_url + soup.select("a.text-success")[0]["href"]
+        try:
+            uploader = self.base_url + soup.select("a.text-success")[0]["href"]
+        except IndexError:
+            logger.warn("Cannot find other episodes due to anonymous uploader")
+            return [self.url]
 
         # List of tuples of titles and links
         anime = self.search_episodic(
