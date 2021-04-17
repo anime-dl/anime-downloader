@@ -207,11 +207,11 @@ def parse_ep_str(anime, grammar):
         else:
             from anime_downloader.sites.anime import AnimeEpisode
 
-            if grammar == '0':
+            if episode_grammar == '0':
                 ep = sorted(anime._episode_urls)[-1]
             else:
                 ep = [x for x in anime._episode_urls if x[0]
-                      == int(grammar)][0]
+                      == int(episode_grammar)][0]
 
             ep_cls = AnimeEpisode.subclasses[anime.sitename]
 

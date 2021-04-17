@@ -54,7 +54,8 @@ Yeah. Me too! That's why this tool exists.
 ## Supported Sites
 **Details about the sites can be found in [FAQ](https://github.com/vn-ki/anime-downloader/wiki/FAQ)**
 
-- 4Anime - requires jsbeautifier
+
+- 4Anime
 - AnimTime
 - AnimeBinge
 - Animedaisuki
