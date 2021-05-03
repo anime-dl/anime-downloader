@@ -8,7 +8,7 @@ import re
 
 def format_title_case(text):
     """
-    Will format text to title case and in will have roman numbers in capital case
+    Will format text to title case and it will have roman numbers in capital case
     only I is supported so only up to III, any number bigger than that will keep its original capitalization case
     """
     words = text.split()
