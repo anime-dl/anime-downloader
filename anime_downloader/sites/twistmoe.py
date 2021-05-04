@@ -55,6 +55,7 @@ class TwistMoe(Anime, sitename='twist.moe'):
             animes.append(SearchResult(
                 title=anime['title'],
                 url='https://twist.moe/a/' + anime['slug']['slug'] + '/',
+                poster=f"https://media.kitsu.io/anime/poster_images/{anime['hb_id']}/large.jpg"
             ))
         animes = [ani[0] for ani in process.extract(query, animes)]
         return animes
