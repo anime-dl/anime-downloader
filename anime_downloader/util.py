@@ -306,7 +306,7 @@ def format_command(cmd, episode, file_format, speed_limit, path):
                    '--console-log-level={log_level}',
         '{idm}': 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4',
         '{wget}': 'wget {stream_url} --referer={referer} --user-agent={useragent} -O {download_dir}/{file_format}.mp4 -c',
-        '{uget}': 'uget --http-referer={referer} --http-user-agent={useragent} --folder={download_dir} --filename={file_format}.mp4 {stream_url}'
+        '{uget}': '/CMD/ --http-referer={referer} --http-user-agent={useragent} --folder={download_dir} --filename={file_format}.mp4 {stream_url}'
     }
 
     # Allows for passing the user agent with self.headers in the site.
@@ -342,6 +342,9 @@ def format_command(cmd, episode, file_format, speed_limit, path):
 
     if cmd == "{idm}":
         rep_dict['file_format'] = rep_dict['file_format'].replace('/', '\\')
+
+    if cmd == '{uget}':
+        cmd_dict['{uget}'] = cmd_dict['{uget}'].replace('/CMD/', 'uget-gtk' if check_in_path('uget-gtk') else 'uget')
 
     if cmd in cmd_dict:
         cmd = cmd_dict[cmd]
