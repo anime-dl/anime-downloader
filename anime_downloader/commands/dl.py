@@ -33,7 +33,7 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     '--download-dir', metavar='PATH',
     help="Specify the directory to download to")
 @click.option(
-    '--quality', '-q', type=click.Choice(['360p', '480p', '720p', '1080p']),
+    '--quality', '-q', type=click.Choice(['360p', '480p', '540p', '720p', '1080p']),
     help='Specify the quality of episode. Default-720p')
 @click.option(
     '--fallback-qualities', '-fq', cls=util.ClickListOption,
