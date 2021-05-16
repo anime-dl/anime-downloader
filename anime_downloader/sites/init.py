@@ -4,6 +4,7 @@ ALL_ANIME_SITES = [
     # ('filename', 'sitename', 'classname')
     ('_4anime', '4anime', 'Anime4'),
     ('anitube', 'anitube', 'AniTube'),
+    ('animtime', 'animtime', 'AnimTime'),
     ('anime8', 'anime8', 'Anime8'),
     ('animebinge', 'animebinge', 'AnimeBinge'),
     ('animechameleon', 'gurminder', 'AnimeChameleon'),

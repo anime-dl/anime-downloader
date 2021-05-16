@@ -168,6 +168,12 @@ ALL_EXTRACTORS = [
         'modulename': 'streamium',
         'regex': 'streamium',
         'class': 'Streamium'
+    },
+    {
+        'sitename': 'wasabisys',
+        'modulename': 'wasabisys',
+        'regex': 'wasabisys',
+        'class': 'Wasabisys'
     }
 ]
 

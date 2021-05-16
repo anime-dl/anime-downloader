@@ -23,7 +23,7 @@ class Anime:
     ----------
     url: string
         URL of the anime.
-    quality: One of ['360p', '480p', '720p', '1080p']
+    quality: One of ['360p', '480p', '540p', '720p', '1080p']
         Quality of episodes
     fallback_qualities: list
         The order of fallback.
@@ -44,7 +44,7 @@ class Anime:
     meta = dict()
     subclasses = {}
     subbed = None
-    QUALITIES = ['360p', '480p', '720p', '1080p']
+    QUALITIES = ['360p', '480p', '540p', '720p', '1080p']
 
     @classmethod
     def search(cls, query):
@@ -253,7 +253,7 @@ class AnimeEpisode:
     ----------
     url: string
         URL of the episode.
-    quality: One of ['360p', '480p', '720p', '1080p']
+    quality: One of ['360p', '480p', '540p', '720p', '1080p']
         Quality of episode
     fallback_qualities: list
         The order of fallback.
