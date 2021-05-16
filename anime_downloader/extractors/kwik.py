@@ -29,15 +29,10 @@ class Kwik(BaseExtractor):
         # have to rebuild the url. Hopefully kwik doesn't block this too
 
         # Necessary
-        # ld(self.url)
-        #self.url = self.url.replace(".cx/e/", ".cx/f/")
-        #self.headers.update({"referer": self.url})
 
         headers = {"Referer": "https://kwik.cx/"}
 
         res = requests.get(self.url, headers=headers)
-
-        # ld(res.text)
 
         evalText = helpers.soupify(res.text)
 
@@ -55,74 +50,16 @@ class Kwik(BaseExtractor):
 
         with open(tf, 'w', encoding="utf-8") as f:
             f.write(rexd)
-
-        # print(tf)
-
-        # ld(nodeRes)
-
         nodeRes = str(subprocess.getoutput(f"node {tf}"))
 
         ld(nodeRes)
 
         stream_url = re.search(
             r"source='([^;]*)';", nodeRes).group().replace("source='", "").replace("';", "")
-        #reg = re.compile("[\s\S]*")
 
         ld(stream_url)
 
-        #kwik_text = resp.text
-
-        #title_re = re.compile(r'title>(.*)<')
-        #title = title_re.search(kwik_text).group(1)
-
         return {
             'stream_url': stream_url,
-            # 'meta': {
-            #   'title': title,
-            #   'thumbnail': ''
-            # },
             'referer': "https://kwik.cx/"
         }
-
-        #cookies = util.get_hcaptcha_cookies(self.url)
-
-        # if not cookies:
-        #    resp = util.bypass_hcaptcha(self.url)
-        # else:
-        #    resp = requests.get(self.url, cookies=cookies)
-
-        #
-        #deobfuscated = None
-
-        #loops = 0
-        # while not deobfuscated and loops < 6:
-        #    try:
-        #        deobfuscated = helpers.soupify(util.deobfuscate_packed_js(re.search(r'<(script).*(var\s+_.*escape.*?)</\1>(?s)', kwik_text).group(2)))
-        #    except (AttributeError, CalledProcessError) as e:
-        #        if type(e) == AttributeError:
-        #            resp = util.bypass_hcaptcha(self.url)
-        #            kwik_text = resp.text
-
-        #        if type(e) == CalledProcessError:
-        #            resp = requests.get(self.url, cookies=cookies)
-        #    finally:
-        #        cookies = resp.cookies
-        #
-        #        loops += 1
-
-        #post_url = deobfuscated.form["action"]
-        #token = deobfuscated.input["value"]
-
-        #resp = helpers.post(post_url, headers=self.headers, params={"_token": token}, cookies=cookies, allow_redirects=False)
-        #stream_url = resp.headers["Location"]
-
-        #logger.debug('Stream URL: %s' % stream_url)
-
-        # return {
-        #    'stream_url': stream_url,
-        #    'meta': {
-        #        'title': title,
-        #        'thumbnail': ''
-        #    },
-        #    'referer': None
-        # }
