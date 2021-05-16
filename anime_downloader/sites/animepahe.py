@@ -21,7 +21,8 @@ class AnimePaheEpisode(AnimeEpisode, sitename='animepahe'):
             'session': session_id
         }
 
-        episode_data = helpers.get('https://animepahe.com/api', params=params).json()
+        episode_data = helpers.get(
+            'https://animepahe.com/api', params=params).json()
         episode_data = episode_data['data']
         sources = {}
 
@@ -39,7 +40,8 @@ class AnimePaheEpisode(AnimeEpisode, sitename='animepahe'):
         sources = []
 
         server_list = re.findall(r'data-provider="([^"]+)', source_text)
-        episode_id, session_id = re.search("getUrls\((\d+?), \"(.*)?\"", source_text).groups()
+        episode_id, session_id = re.search(
+            "getUrls\((\d+?), \"(.*)?\"", source_text).groups()
 
         for server in server_list:
             if server not in supported_servers:

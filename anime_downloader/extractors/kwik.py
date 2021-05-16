@@ -29,17 +29,15 @@ class Kwik(BaseExtractor):
         # have to rebuild the url. Hopefully kwik doesn't block this too
 
         # Necessary
-        #ld(self.url)
+        # ld(self.url)
         #self.url = self.url.replace(".cx/e/", ".cx/f/")
         #self.headers.update({"referer": self.url})
 
         headers = {"Referer": "https://kwik.cx/"}
 
-        
-        
         res = requests.get(self.url, headers=headers)
 
-        #ld(res.text)
+        # ld(res.text)
 
         evalText = helpers.soupify(res.text)
 
@@ -57,18 +55,19 @@ class Kwik(BaseExtractor):
 
         with open(tf, 'w', encoding="utf-8") as f:
             f.write(rexd)
-        
-        #print(tf)
 
-        #ld(nodeRes)
-        
+        # print(tf)
+
+        # ld(nodeRes)
+
         nodeRes = str(subprocess.getoutput(f"node {tf}"))
 
         ld(nodeRes)
 
-        stream_url = re.search(r"source='([^;]*)';", nodeRes).group().replace("source='", "").replace("';", "")
+        stream_url = re.search(
+            r"source='([^;]*)';", nodeRes).group().replace("source='", "").replace("';", "")
         #reg = re.compile("[\s\S]*")
-        
+
         ld(stream_url)
 
         #kwik_text = resp.text
@@ -78,30 +77,25 @@ class Kwik(BaseExtractor):
 
         return {
             'stream_url': stream_url,
-#            'meta': {
-#                'title': title,
-#                'thumbnail': ''
-#            },
+            # 'meta': {
+            #   'title': title,
+            #   'thumbnail': ''
+            # },
             'referer': "https://kwik.cx/"
         }
 
-        
-        
-
         #cookies = util.get_hcaptcha_cookies(self.url)
 
-        #if not cookies:
+        # if not cookies:
         #    resp = util.bypass_hcaptcha(self.url)
-        #else:
+        # else:
         #    resp = requests.get(self.url, cookies=cookies)
-
-        
 
         #
         #deobfuscated = None
 
         #loops = 0
-        #while not deobfuscated and loops < 6:
+        # while not deobfuscated and loops < 6:
         #    try:
         #        deobfuscated = helpers.soupify(util.deobfuscate_packed_js(re.search(r'<(script).*(var\s+_.*escape.*?)</\1>(?s)', kwik_text).group(2)))
         #    except (AttributeError, CalledProcessError) as e:
@@ -113,7 +107,7 @@ class Kwik(BaseExtractor):
         #            resp = requests.get(self.url, cookies=cookies)
         #    finally:
         #        cookies = resp.cookies
-        #        
+        #
         #        loops += 1
 
         #post_url = deobfuscated.form["action"]
@@ -124,11 +118,11 @@ class Kwik(BaseExtractor):
 
         #logger.debug('Stream URL: %s' % stream_url)
 
-        #return {
+        # return {
         #    'stream_url': stream_url,
         #    'meta': {
         #        'title': title,
         #        'thumbnail': ''
         #    },
         #    'referer': None
-        #}
+        # }
