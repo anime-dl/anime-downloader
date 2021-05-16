@@ -27,7 +27,7 @@ class AnimePahe(Anime, sitename='animepahe'):
         return [
             SearchResult(
                 title=result['title'] + " (" + result['type'] + ")",
-                url="https://animepahe.com/anime/" + result['session'] + "/" + str(result['id']),  # noqa
+                url="https://animepahe.com/anime/TITLE!" + result['title'] + " (" + result['type'] + ")" + '!TITLE/' + result['session'] + "/" + str(result['id']),  # noqa
                 poster=result['poster']
             )
             for result in search_results['data']
@@ -67,8 +67,8 @@ class AnimePahe(Anime, sitename='animepahe'):
                         break
         return episodes
 
-    def _scrape_metadata(self, data):
-        self.title = re.search(r'<h1>([^<]+)', data).group(1)
+    def _scrape_metadata(self):
+        self.title = re.findall(r"TITLE!(.*?)!TITLE", self.url)[0]
 
 
 class AnimePaheEpisode(AnimeEpisode, sitename='animepahe'):
@@ -94,14 +94,15 @@ class AnimePaheEpisode(AnimeEpisode, sitename='animepahe'):
         episode_data = helpers.get(self.url, cf=True).json()
 
         episode_data = episode_data['data']
-        sources = {}
+        sources_list = []
 
         for info in range(len(episode_data)):
             quality = list(episode_data[info].keys())[0]
+            sources_list.append({
+                'extractor': 'kwik',
+                'url': episode_data[info][quality]['kwik'],
+                'server': 'kwik',
+                'version': 'subbed'
+            })
 
-            sources[('720' if quality == '800' else quality) + 'p'] = episode_data[info][quality]['kwik']
-
-        return [
-            ('kwik', sources[x])
-            for x in sources
-        ]
+        return self.sort_sources(sources_list)
