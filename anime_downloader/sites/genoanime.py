@@ -38,4 +38,11 @@ class GenoAnimeEpisode(AnimeEpisode, sitename='genoanime'):
     def _get_sources(self):
         soup = helpers.soupify(helpers.get(self.url))
         soup = helpers.soupify(helpers.get(soup.iframe.get("src")))
-        return [("no_extractor", soup.source.get("src"))]
+        id_ = re.findall(r"data: {id: [\"'](.*?)[\"']}", str(soup))[0]
+
+        response = helpers.post('https://genoanime.com/player/genovids.php', data={"id": id_}).json()  # noqa
+
+        return [
+            ("no_extractor", x['src'])
+            for x in response['url']
+        ]
