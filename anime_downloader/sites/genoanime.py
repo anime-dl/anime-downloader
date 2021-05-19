@@ -1,7 +1,7 @@
 
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
-
+import re
 
 class GenoAnime(Anime, sitename="genoanime"):
     sitename = "genoanime"
