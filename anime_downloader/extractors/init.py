@@ -68,6 +68,12 @@ ALL_EXTRACTORS = [
         'class': 'Yourupload'
     },
     {
+        'sitename': 'wcostream',
+        'modulename': 'wcostream',
+        'regex': 'wcostream',
+        'class': 'WcoStream'
+    },
+    {
         'sitename': 'vidstream',
         'modulename': 'vidstream',
         'regex': 'vidstream',
