@@ -1,6 +1,8 @@
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.extractors import get_extractor
+from anime_downloader.config import Config
 from anime_downloader.sites import helpers
+
 import re
 
 
@@ -46,6 +48,7 @@ class WcoStream(Anime, sitename='wcostream'):
 
 class WcoStreamEpisode(AnimeEpisode, sitename='wcostream'):
     def _get_sources(self):
+        config = Config._read_config()['siteconfig']['wcostream']
         soup = helpers.soupify(helpers.get(self.url))
         servers = soup.select("#servers-list > ul > li")
         servers = [
@@ -55,6 +58,8 @@ class WcoStreamEpisode(AnimeEpisode, sitename='wcostream'):
             }
             for server in servers
         ]
+
+        servers = sorted(servers, key=lambda x: x['name'].lower() in config['servers'][0].lower())[::-1]  # noqa
         sources = []
 
         for server in servers:
