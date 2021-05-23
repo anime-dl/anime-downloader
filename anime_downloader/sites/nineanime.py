@@ -1,19 +1,38 @@
-import time
+import json
 import logging
 import re
+import time
 import json
 
-from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
-from anime_downloader.sites import helpers
+from urllib.parse import unquote
+
 from anime_downloader.config import Config
+from anime_downloader.sites import helpers
+from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
+
 logger = logging.getLogger(__name__)
 
+NINEANIME_SITE_REGEX = re.compile(r"(?:https?://)?(?:\S+\.)?9anime\.to/watch/[^&?/]+\.(?P<slug>[^&?/]+)")
+
+WAF_TOKEN = re.compile(r"(\d{64})")
+WAF_SEPARATOR = re.compile(r"\w{2}")
+    
+DATA_SOURCE = {
+    '28': 'mycloud',
+    '41': 'vidstream',
+    '40': 'streamtape',
+    '35': 'mp4upload'
+}
+    
+def get_waf_cv(html_str_content):
+    return ''.join(chr(int(c, 16)) for c in WAF_SEPARATOR.findall(WAF_TOKEN.search(html_str_content).group(1)))
 
 class NineAnime(Anime, sitename='nineanime'):
     sitename = '9anime'
     extension = Config['siteconfig'][sitename]['domain_extension']
     url = f'https://{sitename}.{extension}'
     search_url = f"{url}/search"
+    server_ajax = "https://%s.%s/ajax/anime/servers" % (sitename, extension)
 
     @classmethod
     def search(cls, query):
@@ -35,27 +54,24 @@ class NineAnime(Anime, sitename='nineanime'):
 
     def _scrape_episodes(self):
         self.extension = self.config['domain_extension']
-        soup = helpers.soupify(helpers.get(self.url))
-        # Assumptions can cause errors, but if this fails it's better to get issues on github.
-        title_id = soup.select("div.player-wrapper")[0]
-        title_id = title_id.get('data-id')
-        episode_html = helpers.get(f"https://9anime.{self.extension}/ajax/anime/servers?id={title_id}").text
-        # Only using streamtape, MyCloud can get added, but it uses m3u8.
-        streamtape_regex = r'data-sources=[\'"](.*?"40".*?".*?".*?\})'
-        streamtape_episodes = re.findall(streamtape_regex, episode_html)
-
-        if not streamtape_episodes:
-            logger.error('Unable to find streamtape server')
-            return ['']
-
-        episodes = [json.loads(x)['40'] for x in streamtape_episodes]
-
-        if not episodes:
-            logger.error('Unable to find any episodes')
-            return ['']
-
-        # Returns an ID instead of actual URL
-        return episodes
+        content_id = NINEANIME_SITE_REGEX.search(self.url).group('slug')
+        waf_cv = get_waf_cv(helpers.get("https://9anime.to/").text)
+        access_headers = {
+            'cookie': 'waf_cv=%s' % waf_cv,
+            'referer': 'https://9anime.to/',
+        }
+        servers_ajax = helpers.soupify(helpers.get(self.server_ajax, params={'id': content_id}, headers=access_headers).json().get('html'))
+        
+        def fast_yield():
+            """
+            Internal generator to avoid creating lists and appending to them.
+            """
+            for element in servers_ajax.select('li > a'):
+                data_content = json.loads(element.get('data-sources'), '{}')
+                if data_content:
+                    yield json.dumps({'sources': data_content, 'waf_cv': waf_cv})
+        
+        return [*fast_yield()]
 
     def _scrape_metadata(self):
         self.title = helpers.soupify(helpers.get(self.url)).select('h1.title')[0].text
@@ -103,7 +119,7 @@ class NineAnimeEpisode(AnimeEpisode, sitename='9anime'):
             part1 += chr(255 & encodedNum)
 
         try:
-            part1 = urllib.parse.unquote(part1)
+            part1 = unquote(part1)
         except:
             pass
 
@@ -138,19 +154,20 @@ class NineAnimeEpisode(AnimeEpisode, sitename='9anime'):
         return final
 
     def _get_sources(self):
+        """
+        4 API calls to extract content url from all the servers.
+        """
         self.extension = self.config['domain_extension']
+        
         if not self.url:
-            return ''
-
-        # Arbitrary timeout to prevent spamming the server which will result in an error.
-        time.sleep(0.3)
-        # Server 40 is streamtape, change this if you want to add other servers
-        episode_ajax = f"https://9anime.{self.extension}/ajax/anime/episode?id={self.url}"
-        target = self.decodeString(helpers.get(episode_ajax).json().get('url', ''))
-
-        logger.debug('Videolink: {}'.format(target))
-        if not target:
-            return ''
-
-        # Appends https
-        return [('streamtape', target)]
+            return []
+        
+        data = json.loads(self.url) # type: dict[str, str]
+        episode_source_ajax = "https://9anime.%s/ajax/anime/episode" % self.extension
+        
+        def fast_yield():
+            sources = data.get('sources', {})
+            for data_source, id_hash in sources.items():
+                yield (DATA_SOURCE.get(data_source, ''), self.decodeString(helpers.get(episode_source_ajax, params={'id': id_hash}, headers={'cookie': 'waf_cv=%s' % data.get('waf_cv', '')}).json().get('url', '')))
+                
+        return [*fast_yield()]
