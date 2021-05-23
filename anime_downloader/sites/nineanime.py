@@ -2,8 +2,6 @@ import json
 import logging
 import re
 import time
-import json
-
 from urllib.parse import unquote
 
 from anime_downloader.config import Config
@@ -26,6 +24,21 @@ DATA_SOURCE = {
     
 def get_waf_cv(html_str_content):
     return ''.join(chr(int(c, 16)) for c in WAF_SEPARATOR.findall(WAF_TOKEN.search(html_str_content).group(1)))
+
+def validate_json_content_yield(session, url, **session_kwargs):
+    """
+    Use this when the JSON content yield is guarenteed, else, it will request content till eternity.
+    
+    9Anime throws 500s if fast paced traffic is seen; this function combats that.
+    """
+    c = False
+    while not c:
+        time.sleep(.3)
+        with session.get(url, **session_kwargs) as response:
+            c = response.ok
+    
+    return json.loads(response.text)
+    
 
 class NineAnime(Anime, sitename='nineanime'):
     sitename = '9anime'
@@ -55,19 +68,20 @@ class NineAnime(Anime, sitename='nineanime'):
     def _scrape_episodes(self):
         self.extension = self.config['domain_extension']
         content_id = NINEANIME_SITE_REGEX.search(self.url).group('slug')
-        waf_cv = get_waf_cv(helpers.get("https://9anime.to/").text)
+        session = helpers.request.requests.Session()
+        waf_cv = get_waf_cv(session.get("https://9anime.to/").text)
         access_headers = {
             'cookie': 'waf_cv=%s' % waf_cv,
             'referer': 'https://9anime.to/',
         }
-        servers_ajax = helpers.soupify(helpers.get(self.server_ajax, params={'id': content_id}, headers=access_headers).json().get('html'))
+        servers_ajax = helpers.soupify(validate_json_content_yield(session, self.server_ajax, params={'id': content_id}, headers=access_headers).get('html'))
         
         def fast_yield():
             """
             Internal generator to avoid creating lists and appending to them.
             """
             for element in servers_ajax.select('li > a'):
-                data_content = json.loads(element.get('data-sources'), '{}')
+                data_content = json.loads(element.get('data-sources', '{}'))
                 if data_content:
                     yield json.dumps({'sources': data_content, 'waf_cv': waf_cv})
         
@@ -162,12 +176,14 @@ class NineAnimeEpisode(AnimeEpisode, sitename='9anime'):
         if not self.url:
             return []
         
+        session = helpers.request.requests.Session()
         data = json.loads(self.url) # type: dict[str, str]
         episode_source_ajax = "https://9anime.%s/ajax/anime/episode" % self.extension
         
         def fast_yield():
             sources = data.get('sources', {})
             for data_source, id_hash in sources.items():
-                yield (DATA_SOURCE.get(data_source, ''), self.decodeString(helpers.get(episode_source_ajax, params={'id': id_hash}, headers={'cookie': 'waf_cv=%s' % data.get('waf_cv', '')}).json().get('url', '')))
+                url = validate_json_content_yield(session, episode_source_ajax, params={'id': id_hash}, headers={'cookie': 'waf_cv=%s' % data.get('waf_cv', '')}).get('url', '')
+                yield (DATA_SOURCE.get(data_source, ''), self.decodeString(url))
                 
         return [*fast_yield()]
