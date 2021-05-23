@@ -35,7 +35,7 @@ class WcoStream(Anime, sitename='wcostream'):
         return [
             x.find('a')['href']
             for x in episodes
-            if 'javascript' not in str(x)
+            if 'https://wcostream.cc/watch' in x.find('a')['href']
         ]
 
     def _scrape_metadata(self):
