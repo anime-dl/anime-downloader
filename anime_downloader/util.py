@@ -322,7 +322,7 @@ def format_command(cmd, episode, file_format, speed_limit, path):
     if episode.headers.get('user-agent'):
         useragent = episode.headers['user-agent']
     else:
-        useragent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36'
+        useragent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/605.1.15 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/605.1.15'
 
     stream_url = episode.source().stream_url if not episode.url.startswith(
         'magnet:?xt=urn:btih:') else episode.url
