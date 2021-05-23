@@ -69,6 +69,7 @@ Yeah. Me too! That's why this tool exists.
 - AnimeTake
 - AniTube
 - Animixplay
+- Animax
 - Anistream
 - Darkanime
 - Dbanimes 
