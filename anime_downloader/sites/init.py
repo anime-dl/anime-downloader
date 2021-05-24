@@ -33,7 +33,7 @@ ALL_ANIME_SITES = [
     # ('kickass', 'kickass', 'KickAss'),
     ('kissanimex', 'kissanimex', 'KissAnimeX'),
     # ('kisscartoon', 'kisscartoon', 'KissCartoon'),
-    # ('nineanime', '9anime', 'NineAnime'),
+    ('nineanime', '9anime', 'NineAnime'),
     ('nyaa', 'nyaa', 'Nyaa'),
     ('putlockers', 'putlockers', 'PutLockers'),
     ('ryuanime', 'ryuanime', 'RyuAnime'),
