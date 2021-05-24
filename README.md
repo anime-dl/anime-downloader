@@ -93,6 +93,7 @@ Yeah. Me too! That's why this tool exists.
 - Vidstream
 - Voiranime
 - Vostfree
+- Wcostream
 
 Sites that require Selenium **DO NOT** and **WILL NOT** work on mobile operating systems
 

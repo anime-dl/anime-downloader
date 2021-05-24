@@ -44,6 +44,7 @@ ALL_ANIME_SITES = [
     ('vidstream', 'vidstream', 'VidStream'),
     # ('voiranime', 'voiranime', 'VoirAnime'),
     ('vostfree', 'vostfree', 'VostFree'),
+    ('wcostream', 'wcostream', 'WcoStream'),
 ]
 
 
