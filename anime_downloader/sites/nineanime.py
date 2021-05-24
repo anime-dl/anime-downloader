@@ -47,11 +47,17 @@ class NineAnime(Anime, sitename='nineanime'):
     search_url = f"{url}/search"
     server_ajax = "https://%s.%s/ajax/anime/servers" % (sitename, extension)
 
+    def __init__(self, url=None, quality='720p', fallback_qualities=None, _skip_online_data=False, subbed=None):
+        session = helpers.request.requests.Session()
+        self.session_waf_cv = get_waf_cv(session.get("https://9anime.to/").text)
+        super().__init__(url=None, quality='720p', fallback_qualities=None, _skip_online_data=False, subbed=None)
+
     @classmethod
     def search(cls, query):
-        # Only uses the first page of search results, but it's sufficent.
-        search_results = helpers.soupify(helpers.get(cls.search_url, params={'keyword': query})).select('a.name')
-        search_results = [
+        session = helpers.request.requests.Session()
+        search_waf = get_waf_cv(session.get("https://9anime.to/").text)
+        search_results = helpers.soupify(session.get(cls.search_url, params={'keyword': query}, headers={'cookie': 'waf_cv=%s' % search_waf, 'referer': 'https://9anime.to/'})).select('a.name')
+        return [
             SearchResult(
                 title=i.text,
                 url= cls.url + i.get('href') if i.get("href").startswith("/") else i.get("href"),
@@ -63,15 +69,12 @@ class NineAnime(Anime, sitename='nineanime'):
             for i in search_results
         ]
 
-        return search_results
-
     def _scrape_episodes(self):
         self.extension = self.config['domain_extension']
-        content_id = NINEANIME_SITE_REGEX.search(self.url).group('slug')
         session = helpers.request.requests.Session()
-        waf_cv = get_waf_cv(session.get("https://9anime.to/").text)
+        content_id = NINEANIME_SITE_REGEX.search(self.url).group('slug')
         access_headers = {
-            'cookie': 'waf_cv=%s' % waf_cv,
+            'cookie': 'waf_cv=%s' % self.session_waf_cv,
             'referer': 'https://9anime.to/',
         }
         servers_ajax = helpers.soupify(validate_json_content_yield(session, self.server_ajax, params={'id': content_id}, headers=access_headers).get('html'))
@@ -83,13 +86,13 @@ class NineAnime(Anime, sitename='nineanime'):
             for element in servers_ajax.select('li > a'):
                 data_content = json.loads(element.get('data-sources', '{}'))
                 if data_content:
-                    yield json.dumps({'sources': data_content, 'waf_cv': waf_cv})
+                    yield json.dumps({'sources': data_content, 'waf_cv': self.session_waf_cv})
         
         return [*fast_yield()]
 
     def _scrape_metadata(self):
-        self.title = helpers.soupify(helpers.get(self.url)).select('h1.title')[0].text
-
+        session = helpers.request.requests.Session()
+        self.title = helpers.soupify(session.get(self.url, headers={'cookie': 'waf_cv=%s' % self.session_waf_cv, 'referer': 'https://9anime.to/'})).select('h1.title')[0].text
 
 class NineAnimeEpisode(AnimeEpisode, sitename='9anime'):
     """
