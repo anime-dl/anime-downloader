@@ -50,7 +50,7 @@ class NineAnime(Anime, sitename='nineanime'):
     def __init__(self, url=None, quality='720p', fallback_qualities=None, _skip_online_data=False, subbed=None):
         session = helpers.request.requests.Session()
         self.session_waf_cv = get_waf_cv(session.get("https://9anime.to/").text)
-        super().__init__(url=None, quality='720p', fallback_qualities=None, _skip_online_data=False, subbed=None)
+        super().__init__(url=url, quality=quality, fallback_qualities=fallback_qualities, _skip_online_data=_skip_online_data, subbed=subbed)
 
     @classmethod
     def search(cls, query):
