@@ -4,14 +4,25 @@ from urllib.parse import urlencode
 from selenium import webdriver
 from sys import platform
 import tempfile
-import os
 import logging
 import click
 import time
 import json
+import os
+
+
+def open_config():
+    from anime_downloader.config import Config
+    return Config
+
 
 serverLogger.setLevel(logging.ERROR)
 logger = logging.getLogger(__name__)
+TEMP_FOLDER = os.path.join(tempfile.gettempdir(), 'AnimeDL-SeleniumCache')
+data = open_config()
+
+if not os.path.isdir(TEMP_FOLDER):
+    os.makedirs(TEMP_FOLDER)
 
 
 def get_data_dir():
@@ -21,14 +32,6 @@ def get_data_dir():
     '''
     APP_NAME = 'anime downloader'
     return os.path.join(click.get_app_dir(APP_NAME), 'data')
-
-
-def open_config():
-    from anime_downloader.config import Config
-    return Config
-
-
-data = open_config()
 
 
 def get_browser_config():
@@ -63,24 +66,31 @@ def get_browser_executable():
 
 def get_driver_binary():
     value = data['dl']['selescrape_driver_binary_path']
-    binary_path = value.lower() if value else value
-    return binary_path
+    if value:
+        return value
+
+    return None
 
 
 def cache_request(sele_response):
     """
     This function saves the response from a Selenium request in a json.
-    It uses timestamps so that the rest of the code can know if the cache has expired or not.
+    It uses timestamps to can know if the cache has expired or not.
     """
 
-    file = os.path.join(tempfile.gettempdir(), 'selenium_cached_requests.json')
+    file = os.path.join(TEMP_FOLDER, 'selenium_cached_requests.json')
+
     if os.path.isfile(file):
         with open(file, 'r') as f:
             tmp_cache = json.load(f)
     else:
         tmp_cache = {}
+
     data = sele_response.__dict__
-    tmp_cache[data['url']] = {
+    url = data['url']
+    url = (url[:-1] if url and url[-1] == '/' else url)
+
+    tmp_cache[url] = {
         'data': data['text'],
         'expiry': time.time(),
         'method': data['method'],
@@ -96,80 +106,111 @@ def check_cache(url):
     """
     This function checks if the cache file exists,
     if it exists then it will read the file
-    And it will verify if the cache is less than or equal to 1 hour ago
+    And it will verify if the cache is less than or equal to 30 mins ago
     If it is, it will return it as it is.
     If it isn't, it will delete the expired cache from the file and return None
     If the file doesn't exist at all it will return None
     """
-    file = os.path.join(tempfile.gettempdir(), 'selenium_cached_requests.json')
+    file = os.path.join(TEMP_FOLDER, 'selenium_cached_requests.json')
     if os.path.isfile(file):
+
         with open(file, 'r') as f:
             data = json.load(f)
-        if url not in data:
+
+        # Yes, this is ugly,
+        # but its the best way that I found to find the cache
+        # when the url is not exactly the same (a slash at the end or not)
+        clean_url = (url[:-1] if url and url[-1] == '/' else url)
+        found = False
+
+        for link in data:
+            if link == clean_url:
+                url = link
+                found = True
+
+        if not found:
             return
+
         timestamp = data[url]['expiry']
-        if (time.time() - timestamp <= 3600):
+
+        if (time.time() - timestamp <= 1800):
             return data[url]
         else:
             data.pop(url, None)
+
             with open(file, 'w') as f:
                 json.dump(data, f, indent=4)
 
 
 def driver_select():
     '''
-    it configures what each browser should do
-    and gives the driver variable that is used
-    to perform any actions below this function.
+    This configures what each browser should do
+    and returns the corresponding driver.
     '''
     browser = get_browser_config()
     data_dir = get_data_dir()
     executable = get_browser_executable()
-    driver_binary = get_driver_binary()
-    binary = None if not driver_binary else driver_binary
+    binary = get_driver_binary()
+
     if browser == 'firefox':
         fireFox_Options = webdriver.FirefoxOptions()
-        fireFox_Options.headless = True
-        fireFox_Options.add_argument('--log fatal')
-        fireFox_Profile = webdriver.FirefoxProfile()
-        fireFox_Profile.set_preference("general.useragent.override", get_random_header()['user-agent'])
+        ops = [
+            "--width=1920", "--height=1080",
+            "headless", "--log fatal"
+        ]
 
-        if not binary:
-            driver = webdriver.Firefox(fireFox_Profile, options=fireFox_Options, service_log_path=os.path.devnull)
-        else:
-            try:
-                driver = webdriver.Firefox(fireFox_Profile, options=fireFox_Options, service_log_path=os.path.devnull)
-            except:
-                driver = webdriver.Firefox(fireFox_Profile, executable_path=binary, options=fireFox_Options,
-                                           service_log_path=os.path.devnull)
+        for option in ops:
+            fireFox_Options.add_argument(option)
+
+        fireFox_Profile = webdriver.FirefoxProfile()
+        fireFox_Profile.set_preference(
+            "general.useragent.override", get_random_header()['user-agent']
+        )
+
+        driver = webdriver.Firefox(
+            # sets user-agent
+            firefox_profile=fireFox_Profile,
+            # sets various firefox settings
+            options=fireFox_Options,
+            # by default it will be None, if a chromedriver location is in the config then it will use that
+            executable_path=(binary if binary else "geckodriver"),
+            # an attempt at stopping selenium from printing a pile of garbage to the console.
+            service_log_path=os.path.devnull
+        )
 
     elif browser == 'chrome':
-        profile_path = os.path.join(data_dir, 'Selenium_chromium')
-        log_path = os.path.join(data_dir, 'chromedriver.log')
         from selenium.webdriver.chrome.options import Options
+
+        profile_path = os.path.join(data_dir, 'Selenium_chromium')
         chrome_options = Options()
-        ops = ["--headless", "--disable-gpu", '--log-level=OFF', f"--user-data-dir={profile_path}",
-               "--no-sandbox", "--window-size=1920,1080", f"user-agent={get_random_header()['user-agent']}"]
+
+        ops = [
+            "--headless", "--disable-gpu", '--log-level=OFF',
+            f"--user-data-dir={profile_path}", "--no-sandbox",
+            "--window-size=1920,1080", f"user-agent={get_random_header()['user-agent']}"  # noqa
+        ]
+
         for option in ops:
             chrome_options.add_argument(option)
 
+        cap = None
+
         if not binary:
-            if not executable:
-                driver = webdriver.Chrome(options=chrome_options)
-            else:
-                from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-                cap = DesiredCapabilities.CHROME
-                cap['binary_location'] = executable
-                driver = webdriver.Chrome(desired_capabilities=cap, options=chrome_options)
-        else:
-            if not executable:
-                driver = webdriver.Chrome(options=chrome_options)
-            else:
-                from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-                cap = DesiredCapabilities.CHROME
-                cap['binary_location'] = executable
-                driver = webdriver.Chrome(executable_path=binary, desired_capabilities=cap, options=chrome_options,
-                                          service_log_path=os.path.devnull)
+            from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+
+            cap = DesiredCapabilities.CHROME
+            cap['binary_location'] = executable
+
+        driver = webdriver.Chrome(
+            # sets user-agent, and various chrome settings
+            options=chrome_options,
+            # by default it will be None, if a chromedriver location is in the config then it will use that
+            executable_path=binary,
+            # by default it will be None, if a binary location is in the config then it will use that
+            desired_capabilities=cap,
+            # an attempt at stopping selenium from printing a pile of garbage to the console.
+            service_log_path=os.path.devnull
+        )
     return driver
 
 
@@ -184,19 +225,19 @@ def cloudflare_wait(driver):
     Also, i have made it time out after 50 seconds, useful if the target website is not responsive
     and to stop it from running infinitely.
     '''
-    abort_after = 50
+    abort_after = 50  # seconds
     start = time.time()
 
     title = driver.title  # title = "Just a moment..."
-    while title == "Just a moment...":
-        time.sleep(0.25)
+    while "Just a moment" in title:
+        time.sleep(0.35)
         delta = time.time() - start
         if delta >= abort_after:
             logger.error(f'Timeout:\tCouldnt bypass cloudflare. \
             See the screenshot for more info:\t{get_data_dir()}/screenshot.png')
             return 1
         title = driver.title
-        if not title == "Just a moment...":
+        if not "Just a moment" in title:
             break
     time.sleep(2)  # This is necessary to make sure everything has loaded fine.
     return 0
@@ -204,10 +245,11 @@ def cloudflare_wait(driver):
 
 def request(request_type, url, **kwargs):  # Headers not yet supported , headers={}
     params = kwargs.get('params', {})
+
     url = url if not params else url + '?' + urlencode(params)
-    check_caches = check_cache(url)
-    if bool(check_caches):
-        cached_data = check_caches
+    cached_data = check_cache(url)
+
+    if cached_data:
         text = cached_data['data']
         user_agent = cached_data['user_agent']
         request_type = cached_data['method']
@@ -215,28 +257,30 @@ def request(request_type, url, **kwargs):  # Headers not yet supported , headers
         return SeleResponse(url, request_type, text, cookies, user_agent)
 
     else:
-
         driver = driver_select()
         driver.get(url)
 
         try:
-
             exit_code = cloudflare_wait(driver)
             user_agent = driver.execute_script("return navigator.userAgent;")
             cookies = driver.get_cookies()
             text = driver.page_source
             driver.close()
-            if exit_code == 0:
-                pass
-            else:
+
+            if exit_code != 0:
                 return SeleResponse(url, request_type, None, cookies, user_agent)
 
-            seleResponse = SeleResponse(url, request_type, text, cookies, user_agent)
+            seleResponse = SeleResponse(
+                url, request_type,
+                text, cookies,
+                user_agent
+            )
+
             cache_request(seleResponse)
             return seleResponse
 
         except:
-            driver.save_screenshot(f"{get_data_dir()}/screenshot.png");
+            driver.save_screenshot(f"{get_data_dir()}/screenshot.png")
             driver.close()
             logger.error(f'There was a problem getting the page: {url}.' +
                          '\nSee the screenshot for more info:\t{get_data_dir()}/screenshot.png')
