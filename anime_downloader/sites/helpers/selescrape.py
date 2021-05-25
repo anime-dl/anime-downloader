@@ -156,7 +156,7 @@ def driver_select():
         fireFox_Options = webdriver.FirefoxOptions()
         ops = [
             "--width=1920", "--height=1080",
-            "headless", "--log fatal"
+            "-headless", "--log fatal"
         ]
 
         for option in ops:
