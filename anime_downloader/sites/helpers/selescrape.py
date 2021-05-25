@@ -61,15 +61,14 @@ def get_browser_config():
 def get_browser_executable():
     value = data['dl']['selescrape_browser_executable_path']
     executable_value = value.lower() if value else value
-    return executable_value
+    if executable_value:
+        return executable_value
 
 
 def get_driver_binary():
     value = data['dl']['selescrape_driver_binary_path']
     if value:
         return value
-
-    return None
 
 
 def cache_request(sele_response):
@@ -172,7 +171,9 @@ def driver_select():
             firefox_profile=fireFox_Profile,
             # sets various firefox settings
             options=fireFox_Options,
-            # by default it will be None, if a chromedriver location is in the config then it will use that
+            # by default it will be None, if a binary location is in the config then it will use that
+            firefox_binary=None if not executable else executable,
+            # by default it will be "geckodriver", if a geckodriver location is in the config then it will use that
             executable_path=(binary if binary else "geckodriver"),
             # an attempt at stopping selenium from printing a pile of garbage to the console.
             service_log_path=os.path.devnull
@@ -195,7 +196,7 @@ def driver_select():
 
         cap = None
 
-        if not binary:
+        if executable:
             from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
             cap = DesiredCapabilities.CHROME
@@ -204,8 +205,8 @@ def driver_select():
         driver = webdriver.Chrome(
             # sets user-agent, and various chrome settings
             options=chrome_options,
-            # by default it will be None, if a chromedriver location is in the config then it will use that
-            executable_path=binary,
+            # by default it will be "chromedriver", if a chromedriver location is in the config then it will use that
+            executable_path=(binary if binary else "chromedriver"),
             # by default it will be None, if a binary location is in the config then it will use that
             desired_capabilities=cap,
             # an attempt at stopping selenium from printing a pile of garbage to the console.
