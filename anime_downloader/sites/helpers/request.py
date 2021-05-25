@@ -46,6 +46,8 @@ def setup(func):
         cf : bool
             cf if True performs the request through cfscrape.
             For cloudflare protected sites.
+        sel : bool
+            sel if True perfroms the request through selescrape (selenium).
         referer : str
             a url sent as referer in request headers
         '''
@@ -108,6 +110,8 @@ def get(url: str,
     cf : bool
         cf if True performs the request through cfscrape.
         For cloudflare protected sites.
+    sel : bool
+        sel if True perfroms the request through selescrape (selenium).
     referer : str
         a url sent as referer in request headers
     '''
