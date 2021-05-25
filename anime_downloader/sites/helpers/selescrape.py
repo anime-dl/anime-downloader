@@ -16,6 +16,7 @@ def open_config():
     return Config
 
 
+cache = False
 serverLogger.setLevel(logging.ERROR)
 logger = logging.getLogger(__name__)
 TEMP_FOLDER = os.path.join(tempfile.gettempdir(), 'AnimeDL-SeleniumCache')
@@ -76,6 +77,8 @@ def cache_request(sele_response):
     This function saves the response from a Selenium request in a json.
     It uses timestamps to can know if the cache has expired or not.
     """
+    if not cache:
+        return
 
     file = os.path.join(TEMP_FOLDER, 'selenium_cached_requests.json')
 
@@ -105,11 +108,13 @@ def check_cache(url):
     """
     This function checks if the cache file exists,
     if it exists then it will read the file
-    And it will verify if the cache is less than or equal to 30 mins ago
+    And it will verify if the cache is less than or equal to 30 mins old
     If it is, it will return it as it is.
     If it isn't, it will delete the expired cache from the file and return None
     If the file doesn't exist at all it will return None
     """
+    if not cache:
+        return
     file = os.path.join(TEMP_FOLDER, 'selenium_cached_requests.json')
     if os.path.isfile(file):
 
