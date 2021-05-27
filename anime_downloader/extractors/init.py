@@ -1,4 +1,6 @@
 from importlib import import_module
+import re
+
 
 ALL_EXTRACTORS = [
     {
@@ -186,7 +188,7 @@ ALL_EXTRACTORS = [
 
 def get_extractor(name):
     for extractor in ALL_EXTRACTORS:
-        if extractor['regex'] in name.lower():
+        if re.match(extractor['regex'], name.lower()):
             module = import_module(
                 'anime_downloader.extractors.{}'.format(
                     extractor['modulename'])
