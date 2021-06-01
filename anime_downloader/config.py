@@ -133,6 +133,10 @@ DEFAULT_CONFIG = {
             'servers': ['vidstream', 'gcloud', 'yourupload', 'hydrax'],
             'version': 'subbed',
         },
+        'wcostream': {
+            'servers': ['vidstreampro', 'mcloud'],
+            'version': 'subbed',
+        },
         'animeflix': {
             'server': 'AUEngine',
             'fallback_servers': ['FastStream'],

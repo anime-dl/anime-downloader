@@ -1,4 +1,6 @@
 from importlib import import_module
+import re
+
 
 ALL_EXTRACTORS = [
     {
@@ -66,6 +68,12 @@ ALL_EXTRACTORS = [
         'modulename': 'yourupload',
         'regex': 'yourupload',
         'class': 'Yourupload'
+    },
+    {
+        'sitename': 'wcostream',
+        'modulename': 'wcostream',
+        'regex': 'wcostream',
+        'class': 'WcoStream'
     },
     {
         'sitename': 'vidstream',
@@ -180,7 +188,7 @@ ALL_EXTRACTORS = [
 
 def get_extractor(name):
     for extractor in ALL_EXTRACTORS:
-        if extractor['regex'] in name.lower():
+        if re.match(extractor['regex'], name.lower()):
             module = import_module(
                 'anime_downloader.extractors.{}'.format(
                     extractor['modulename'])
