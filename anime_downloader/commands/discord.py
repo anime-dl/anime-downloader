@@ -1,6 +1,7 @@
 import click
 import logging
 
+
 @click.command()
 def command():
     logger = logging.getLogger(__name__)
