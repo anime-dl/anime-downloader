@@ -15,7 +15,7 @@ class Yourupload(BaseExtractor):
             response = helpers.get(self.url)
         except HTTPError:
             logger.error('File not found.')
-            raise
+            return {'stream_url': ''}
 
         file = re.search(regex, response.text).group(1)
         return {
