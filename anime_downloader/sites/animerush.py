@@ -56,7 +56,7 @@ class AnimeRushEpisode(AnimeEpisode, sitename='animerush'):
                 continue
 
             sources_list.append({
-                'extractor': i[0],
+                'extractor': domain,
                 'url': i[0],
                 'server': i[1],
                 'version': 'subbed'
