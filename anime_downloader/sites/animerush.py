@@ -46,10 +46,10 @@ class AnimeRushEpisode(AnimeEpisode, sitename='animerush'):
         domain_regex = r"\/\/(?:\w{3,6}\.)?(.*?)\."
         for i in sources:
             found = False
-            domain = re.findall(domain_regex, i[0])[0]
+            domain = re.findall(domain_regex, i[0])[0].lower()
 
             for extractor in ALL_EXTRACTORS:
-                if re.match(extractor['regex'], domain.lower()):
+                if re.match(extractor['regex'], domain):
                     found = True
 
             if not found:
