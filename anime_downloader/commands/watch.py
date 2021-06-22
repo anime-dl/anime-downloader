@@ -5,7 +5,7 @@ import re
 
 from anime_downloader import util
 from anime_downloader.__version__ import __version__
-from anime_downloader.players.mpv import mpv
+from anime_downloader.players import Players
 from anime_downloader import watch as _watch
 from anime_downloader.config import Config
 from anime_downloader.sites import get_anime_class, ALL_ANIME_SITES
@@ -208,6 +208,9 @@ def list_animes(watcher, quality, download_dir, imp=None, _filter=None):
         elif inp == 'watch':
             anime.quality = quality
             watch_anime(watcher, anime, quality, download_dir)
+        elif inp.startswith('watch '):
+            anime.quality = quality
+            watch_anime(watcher, anime, quality, download_dir, player_class=inp.split('watch ')[-1])
 
         elif inp.startswith('download'):
             # You can use download 3:10 for selected episodes
@@ -285,7 +288,7 @@ def list_animes(watcher, quality, download_dir, imp=None, _filter=None):
                     watcher.update(anime)
 
 
-def watch_anime(watcher, anime, quality, download_dir):
+def watch_anime(watcher, anime, quality, download_dir, player_name=Config['watch']['default_player']):
     autoplay = Config['watch']['autoplay_next']
     to_watch = anime[anime.episodes_done:]
     logger.debug('Sliced episodes: {}'.format(to_watch._episode_urls))
@@ -299,30 +302,31 @@ def watch_anime(watcher, anime, quality, download_dir):
                 'Playing episode {}'.format(episode.ep_no)
             )
             try:
-                player = mpv(episode)
+                player = Players[player_name](episode)
+
+                returncode = player.play()
+                if returncode == player.STOP:
+                    # Returns to watch.
+                    return
+
+                elif returncode == player.CONNECT_ERR:
+                    logger.warning("Couldn't connect. Retrying. "
+                                   "Attempt #{}".format(tries + 1))
+                    continue
+
+                elif returncode == player.PREV:
+                    anime.episodes_done -= 2
+                    watcher.update(anime)
+                    break
+                # If no other return codes, basically when the player finishes.
+                # Can't find the returncode for success.
+                elif autoplay:
+                    break
+                else:
+                    return
             except Exception as e:
                 anime.episodes_done -= 1
                 watcher.update(anime)
                 logger.error(str(e))
                 sys.exit(1)
 
-            returncode = player.play()
-            if returncode == player.STOP:
-                # Returns to watch.
-                return
-
-            elif returncode == player.CONNECT_ERR:
-                logger.warning("Couldn't connect. Retrying. "
-                               "Attempt #{}".format(tries + 1))
-                continue
-
-            elif returncode == player.PREV:
-                anime.episodes_done -= 2
-                watcher.update(anime)
-                break
-            # If no other return codes, basically when the player finishes.
-            # Can't find the returncode for success.
-            elif autoplay:
-                break
-            else:
-                return
