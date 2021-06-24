@@ -58,6 +58,7 @@ Yeah. Me too! That's why this tool exists.
 - 4Anime
 - AnimTime
 - AnimeBinge
+- AnimeBatchDDL
 - Animedaisuki
 - Animeflix
 - Animeflv

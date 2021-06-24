@@ -23,6 +23,7 @@ Supported Sites
 
 - 4Anime
 - AnimeBinge
+- AnimeBatchDDL
 - Animedaisuki
 - Animeflix
 - Animeflv
