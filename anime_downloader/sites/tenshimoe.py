@@ -10,13 +10,21 @@ class TenshiMoe(Anime, sitename='tenshi.moe'):
     @classmethod
     def search(cls, query):
         soup = helpers.soupify(
-            helpers.get('https://tenshi.moe/anime', params={'q': query}))
-        results = soup.select('ul.loop.anime-loop.list > li > a')
+            helpers.get(
+                'https://tenshi.moe/anime',
+                params={'q': query},
+                cookies={'loop-view': 'thumb'},
+                cache=False
+            )
+        )
+
+        results = soup.select('ul.thumb > li > a')
 
         return [
             SearchResult(
                 title=x['title'],
                 url=x['href'],
+                poster=x.find('img')['src']
             )
             for x in results
         ]
