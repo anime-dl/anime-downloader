@@ -34,7 +34,7 @@ def get_session(custom_session=None, cache=True):
 
     cachefile = os.path.join(tempfile.gettempdir(), cachefilename)
     # requests_cache.install_cache(cachefile, backend='sqlite', expire_after=3600)
-    _session = requests_cache.CachedSession(cachefile, backend='sqlite', expire_after=expire_time)
+    _session = requests_cache.session.CachedSession(cachefile, backend='sqlite', expire_after=expire_time)
     _session.hooks = {'response': cacheinfo_hook}
 
     if custom_session:
