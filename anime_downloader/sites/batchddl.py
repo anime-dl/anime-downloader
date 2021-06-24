@@ -22,7 +22,7 @@ class Batchddl(Anime, sitename='batchddl'):
         for a in jsonify["data"]["files"]:
             if a["mimeType"] == "application/vnd.google-apps.folder":
                 i += 1
-                if i >= 10:
+                if i >= 30:
                     break
                 postURL = "https://animebatchddl.excalibur-morgan.workers.dev/0:id2path"
                 data = json.dumps({"id":a["id"]})
