@@ -45,6 +45,7 @@ ALL_ANIME_SITES = [
     # ('voiranime', 'voiranime', 'VoirAnime'),
     ('vostfree', 'vostfree', 'VostFree'),
     ('wcostream', 'wcostream', 'WcoStream'),
+    ('batchddl','batchddl','Batchddl')
 ]
 
 
