@@ -19,12 +19,13 @@ class Anime4(Anime, sitename='4anime'):
             "options": "qtranslate_lang=0&set_intitle=None&customset%5B%5D=anime"
         }
         soup = helpers.soupify(helpers.post(
-            "https://4anime.to/wp-admin/admin-ajax.php", data=data)).select('div.info > a')
+            "https://4anime.to/wp-admin/admin-ajax.php", data=data)).select('.item')
 
         search_results = [
             SearchResult(
-                title=i.text,
-                url=i['href']
+                title=i.select_one('.info > a').text,
+                url=i.select_one('.info > a').get('href', ''),
+                poster="https://4anime.to" + i.find('img').get('src', '')
             )
             for i in soup
         ]
@@ -41,6 +42,19 @@ class Anime4(Anime, sitename='4anime'):
         for i in soup.select('.detail > a'):
             if 'year' in i.get('href', ''):
                 self.meta['year'] = int(i.text) if i.text.isnumeric() else None
+            elif 'status' in i.get('href', ''):
+                self.meta['airing_status'] = i.text.strip()
+
+        desc_soup = soup.select_one("#description-mob")
+        if "READ MORE" in str(desc_soup):
+            desc = desc_soup.select('#fullcontent p')
+            self.meta['description'] = "\n".join([x.text for x in desc])
+        else:
+            self.meta['description'] = desc_soup.select_one('p:nth-child(2)').text
+
+        self.meta['poster'] = "https://4anime.to" + soup.select_one("#details > div.cover > img").get('src', '')
+        self.meta['total_eps'] = len(soup.select('ul.episodes.range.active > li > a'))
+        self.meta['cover'] = "https://4anime.to/static/Dr1FzAv.jpg"
 
 
 class Anime4Episode(AnimeEpisode, sitename='4anime'):
