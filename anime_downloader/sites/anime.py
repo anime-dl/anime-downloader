@@ -143,7 +143,7 @@ class Anime:
         the necessary data about the anime and it's episodes.
 
         This function calls
-        :py:class:`~anime_downloader.sites.anime.BaseAnime._scarpe_episodes`
+        :py:class:`~anime_downloader.sites.anime.BaseAnime._scrape_episodes`
         and
         :py:class:`~anime_downloader.sites.anime.BaseAnime._scrape_metadata`
 
