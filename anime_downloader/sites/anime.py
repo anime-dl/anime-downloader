@@ -165,6 +165,9 @@ class Anime:
         except Exception as e:
             logger.debug('Metadata scraping error: {}'.format(e))
 
+        # TODO: Standartize metadata
+        logger.debug(f'{self.sitename} meta: {self.meta}')
+
         self._episode_urls = self._scrape_episodes()
         self._len = len(self._episode_urls)
 

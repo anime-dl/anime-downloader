@@ -8,6 +8,7 @@ from anime_downloader import session, util
 from anime_downloader.__version__ import __version__
 from anime_downloader.sites import get_anime_class, ALL_ANIME_SITES, exceptions
 from anime_downloader import animeinfo
+from anime_downloader.players import get_player
 from anime_downloader.config import Config
 
 logger = logging.getLogger(__name__)
@@ -24,7 +25,7 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     '--episodes', '-e', 'episode_range', metavar='<int>:<int>',
     help="Range of anime you want to download in the form <start>:<end>")
 @click.option(
-    '--play', 'player', metavar='PLAYER',
+    '--play', metavar='PLAYER',
     help="Streams in the specified player")
 @click.option(
     '--force-download', '-f', is_flag=True,
@@ -52,7 +53,7 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     help='Download additional metadata')
 @click.option("--skip-fillers", is_flag=True, help="Skip downloading of fillers.")
 @click.pass_context
-def command(ctx, anime_url, episode_range, player,
+def command(ctx, anime_url, episode_range, play,
             force_download, provider,
             skip_fillers, ratio, url, choice, download_metadata):
     """
@@ -163,7 +164,7 @@ def command(ctx, anime_url, episode_range, player,
             # Two types of plugins:
             #   - Aime plugin: Pass the whole anime
             #   - Ep plugin: Pass each episode
-            if url or player:
+            if url or play:
                 skip_download = True
 
             if download_dir and not skip_download:
@@ -182,8 +183,8 @@ def command(ctx, anime_url, episode_range, player,
                 if url:
                     util.print_episodeurl(episode)
 
-                if player:
-                    util.play_episode(episode, player=player, title=f'{anime.title} - Episode {episode.ep_no}')
+                if play:
+                    get_player(play).play(episode=episode)
 
                 if not skip_download:
                     if external_downloader:

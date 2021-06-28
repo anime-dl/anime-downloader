@@ -35,8 +35,7 @@ __all__ = [
     'parse_episode_range',
     'parse_ep_str',
     'print_episodeurl',
-    'play_episode',
-    'print_info',
+    'print_info'
 ]
 
 
@@ -235,23 +234,6 @@ def print_episodeurl(episode):
     url = episode.url if episode.url.startswith(
         "magnet") else episode.source().stream_url
     print(unquote(url))
-
-
-def play_episode(episode, *, player, title, episodes="0:0"):
-    if player == 'mpv':
-        p = subprocess.Popen([player,
-                              f'--title={title}',
-                              f'--referrer={episode.source().referer}',
-                              f'--user-agent={get_random_header()["user-agent"]}',
-                              episode.source().stream_url])
-    elif player == "android":
-        p = subprocess.Popen(['am', 'start', '-a', 'android.intent.action.VIEW',
-                              '-t', 'video/*', '-d', f'{episode.source().stream_url}'])
-        if episodes == None or ':' in episodes and episodes != "0:1":
-            input("Press enter to continue\n")
-    else:
-        p = subprocess.Popen([player, episode.source().stream_url])
-    p.wait()
 
 
 def print_info(version):

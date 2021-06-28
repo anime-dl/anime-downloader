@@ -7,6 +7,7 @@ import requests_cache
 from anime_downloader import session, util
 from anime_downloader.__version__ import __version__
 from anime_downloader.sites import get_anime_class, ALL_ANIME_SITES, exceptions
+from anime_downloader.players import get_player, PlayerOptions
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     '--url', '-u', type=bool, is_flag=True,
     help="If flag is set, prints the stream url instead of downloading")
 @click.option(
-    '--play', 'player', metavar='PLAYER',
+    '--play', metavar='PLAYER',
     help="Streams in the specified player")
 @click.option(
     '--skip-download', is_flag=True,
@@ -86,7 +87,7 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     "--dub", "-d", type=bool, is_flag=True,
     help="If flag is set, it downloads the dubbed version of anime if the provider supports it. Must not be used with the --sub/-s flag")
 @click.pass_context
-def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
+def command(ctx, anime_url, episode_range, url, play, skip_download, quality,
             force_download, download_dir, file_format, provider,
             external_downloader, chunk_size, disable_ssl, fallback_qualities, choice, skip_fillers, speed_limit, sub, dub):
     """ Download the anime using the url or search for it.
@@ -128,7 +129,7 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
     # Two types of plugins:
     #   - Aime plugin: Pass the whole anime
     #   - Ep plugin: Pass each episode
-    if url or player:
+    if url or play:
         skip_download = True
 
     if download_dir and not skip_download:
@@ -147,10 +148,10 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
         if url:
             util.print_episodeurl(episode)
 
-        if player:
+        if play:
             episode_range = f"0:{len(animes)}" if not episode_range else episode_range
-            util.play_episode(
-                episode, player=player, title=f'{anime.title} - Episode {episode.ep_no}', episodes=episode_range)
+            get_player(play).play(opts=PlayerOptions(ep_range=episode_range),
+                                  episode=episode)
 
         if not skip_download:
             if external_downloader:

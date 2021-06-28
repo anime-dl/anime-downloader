@@ -5,6 +5,7 @@ from anime_downloader import session, util
 from anime_downloader.commands import dl
 from anime_downloader.config import Config
 from anime_downloader.sites import get_anime_class, ALL_ANIME_SITES, exceptions
+from anime_downloader.players import get_player, PlayerOptions
 import os
 import tempfile
 import subprocess
@@ -78,7 +79,7 @@ class Window(QtWidgets.QMainWindow):
         self.animeEpisodeStart.setPlaceholderText('Anime Episode Start:')
         self.animeEpisodeEnd.setPlaceholderText('Anime Episode End:')
         self.downloadDirectory.setPlaceholderText('Download Directory:')
-        
+
         layout = QtWidgets.QVBoxLayout()
         central_widget = QtWidgets.QWidget()
         central_widget.setLayout(layout)
@@ -173,8 +174,7 @@ class Window(QtWidgets.QMainWindow):
 
         self.progressBar.setMaximum(len(animes._episode_urls))
         file = self.generate_m3u8(animes)
-        p = subprocess.Popen([Config["gui"]["player"], file])
-        p.wait()
+        get_player(Config["players"]["active"]).play(file, opts=PlayerOptions(title=anime_title))
 
     def get_animes(self):
         # if nothing is selected it returns -1

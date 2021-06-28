@@ -5,7 +5,7 @@ import re
 
 from anime_downloader import util
 from anime_downloader.__version__ import __version__
-from anime_downloader.players.mpv import mpv
+from anime_downloader.players import get_player, PlayerOptions
 from anime_downloader import watch as _watch
 from anime_downloader.config import Config
 from anime_downloader.sites import get_anime_class, ALL_ANIME_SITES
@@ -299,23 +299,26 @@ def watch_anime(watcher, anime, quality, download_dir):
                 'Playing episode {}'.format(episode.ep_no)
             )
             try:
-                player = mpv(episode)
+                player = get_player(Config['players']['active'])
+                popen = player.play(opts=PlayerOptions(start=True), episode=episode)
             except Exception as e:
                 anime.episodes_done -= 1
                 watcher.update(anime)
                 logger.error(str(e))
                 sys.exit(1)
 
-            returncode = player.play()
+            if player.name != 'mpv':
+                return
+
+            returncode = popen.wait()
+
             if returncode == player.STOP:
                 # Returns to watch.
                 return
-
             elif returncode == player.CONNECT_ERR:
                 logger.warning("Couldn't connect. Retrying. "
                                "Attempt #{}".format(tries + 1))
                 continue
-
             elif returncode == player.PREV:
                 anime.episodes_done -= 2
                 watcher.update(anime)

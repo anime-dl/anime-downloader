@@ -1,15 +1,16 @@
-from anime_downloader.players.baseplayer import BasePlayer
+from anime_downloader.players.player import Player, PlayerOptions, _fmt_headers
 from anime_downloader import config
 from anime_downloader.config import Config
 
 import os
 
 
-class mpv(BasePlayer):
+class MPV(Player):
     name = 'mpv'
 
     STOP = 50
     NEXT = 51
+    PREV = 52
     CONNECT_ERR = 2
 
     def _get_executable_windows(self):
@@ -18,17 +19,18 @@ class mpv(BasePlayer):
     def _get_executable_posix(self):
         return 'mpv'
 
-    @property
-    def args(self):
-        # Doesnt use the referer if it's none
-        launchArgs = Config['watch']['mpv_arguments']
-        if self.episode.source().referer:
-            return ['--input-conf=' + get_mpv_configfile(),
-                    '--http-header-fields=referer: ' + str(self.episode.source().referer),
-                    self.episode.source().stream_url, launchArgs]
-        else:
-            return ['--input-conf=' + get_mpv_configfile(),
-                    self.episode.source().stream_url, launchArgs]
+    def args(self, file='', opts=PlayerOptions()):
+        a = list()
+        for i, j in (('--http-header-fields=', _fmt_headers(opts.headers)),
+                     ('--title=', opts.title),
+                     ('--input-conf=', get_mpv_configfile())):
+            if j: a.append(i + j)
+
+        try:
+            b = Config['players'][self.name]['arguments']
+            if b: return a + [b.strip().split(' ')] + [file]
+        except KeyError: pass
+        return a + [file]
 
 
 def get_mpv_home():
