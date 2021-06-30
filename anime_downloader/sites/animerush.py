@@ -25,7 +25,7 @@ class AnimeRush(Anime, sitename='animerush'):
 
     def _scrape_episodes(self):
         soup = helpers.soupify(helpers.get(self.url)).select('div.episode_list > a')
-        return ['https:' + i.get('href') for i in soup[::-1]]
+        return ['https:' + i.get('href') for i in soup[::-1] if "Coming soon" not in str(i)]
 
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url))
