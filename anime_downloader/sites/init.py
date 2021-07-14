@@ -20,6 +20,7 @@ ALL_ANIME_SITES = [
     ('animeout', 'animeout', 'AnimeOut'),
     ('animerush', 'animerush', 'AnimeRush'),
     ('animesimple', 'animesimple', 'AnimeSimple'),
+    ('animestar', 'animestar', 'AnimeStar'),
     ('animesuge', 'animesuge', 'AnimeSuge'),
     ('animevibe', 'animevibe', 'AnimeVibe'),
     ('animixplay', 'animixplay', 'AniMixPlay'),

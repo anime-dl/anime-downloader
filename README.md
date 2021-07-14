@@ -67,6 +67,7 @@ Yeah. Me too! That's why this tool exists.
 - animeout
 - Animerush
 - Animesimple
+- AnimeStar
 - AnimeSuge - requires Node.js
 - Animevibe
 - AnimeTake
