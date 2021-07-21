@@ -146,9 +146,10 @@ def soupify(res):
     -------
     BeautifulSoup.Soup
     """
-    if isinstance(res, requests.Response):
-        res = res.text
-    soup = BeautifulSoup(res, 'html.parser')
+    if isinstance(res, str):
+        soup = BeautifulSoup(res, 'html.parser')
+    else:
+        soup = BeautifulSoup(res.text, 'html.parser')
     return soup
 
 
