@@ -17,7 +17,7 @@ def check_for_update():
     import re
 
     version_file = "https://raw.githubusercontent.com/anime-dl/anime-downloader/master/anime_downloader/__version__.py"
-    regex = r"__version__\s+=\s+[\"'](\d+\.\d+\.\d+)[\"']"
+    regex = r"__version__\s*=\s*[\"'](\d+\.\d+\.\d+)[\"']"
     r = requests.get(version_file)
 
     if not r.ok:
