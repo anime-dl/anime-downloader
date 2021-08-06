@@ -3,10 +3,12 @@ import re
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 from anime_downloader.const import HEADERS
+from anime_downloader.sites.helpers.util import not_working
 
 logger = logging.getLogger(__name__)
 
 
+@not_working("4anime has been shut down")
 class Anime4(Anime, sitename='4anime'):
     sitename = '4anime'
 
