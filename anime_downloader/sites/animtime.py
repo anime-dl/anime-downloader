@@ -38,7 +38,7 @@ def get_title_dict(script):
     title_function = re.search("tm=.*?}", script_text).group()
     titles_dict = {
         x[0]: format_title_case(x[1].replace('-', ' '))
-        for x in re.findall(r"qd\[tm\.(.*?)\]=.*?\".*?/animtime/(.*?)/", script_text)
+        for x in re.findall(r"\[tm\.([a-zA-Z0-9]+?)\]=function\(\w\)\{return\"[a-zA-Z0-9\.\:/-]+?\/animtime\/([a-zA-Z-]+?)\/", script_text)
     }
     id_dict = {
         x[0]: x[1]
