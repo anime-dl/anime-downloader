@@ -11,6 +11,29 @@ from anime_downloader import util
 echo = click.echo
 
 
+def check_for_update():
+    from pkg_resources import parse_version
+    import requests
+    import re
+
+    version_file = "https://raw.githubusercontent.com/anime-dl/anime-downloader/master/anime_downloader/__version__.py"
+    regex = r"__version__\s*=\s*[\"'](\d+\.\d+\.\d+)[\"']"
+    r = requests.get(version_file)
+
+    if not r.ok:
+        return
+
+    current_ver = parse_version(__version__)
+    remote_ver = parse_version(re.match(regex, r.text).group(1))
+
+    if remote_ver > current_ver:
+        print(
+            "New version (on GitHub) is available: {} -> {}\n".format(
+                current_ver, remote_ver
+            )
+        )
+
+
 class CLIClass(click.MultiCommand):
 
     def list_commands(self, ctx):
@@ -49,6 +72,11 @@ def cli(log_level):
 
 
 def main():
+    try:
+        check_for_update()
+    except Exception:
+        pass
+
     try:
         cli()
     except Exception as e:
