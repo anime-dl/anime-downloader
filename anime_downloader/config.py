@@ -73,6 +73,9 @@ DEFAULT_CONFIG = {
         'anistream.xyz': {
             'version': 'subbed',
         },
+        'animepahe': {
+            'version': 'subbed',
+        },
         'animeflv': {
             'version': 'subbed',
             'servers': [
