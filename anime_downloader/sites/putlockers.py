@@ -46,7 +46,7 @@ class PutLockers(Anime, sitename="putlockers"):
 class PutLockersEpisode(AnimeEpisode, sitename="putlockers"):
     def _get_sources(self):
         self.headers = {
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/56.0"}
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0.1) Gecko/20100101 Firefox/88.0.1"}
         text = helpers.get(self.url).text
 
         sources_list = []
