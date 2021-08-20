@@ -91,18 +91,17 @@ class AnimePaheEpisode(AnimeEpisode, sitename='animepahe'):
             else:
                 raise NotFoundError
 
-        episode_data = helpers.get(self.url, cf=True).json()
+        episode_data = helpers.get(self.url).json()
 
-        episode_data = episode_data['data']
-        sources_list = []
+        data = episode_data['data']
+        qualities = [x + 'p' for f in data for x in f]
 
-        for info in range(len(episode_data)):
-            quality = list(episode_data[info].keys())[0]
-            sources_list.append({
-                'extractor': 'kwik',
-                'url': episode_data[info][quality]['kwik'],
-                'server': 'kwik',
-                'version': 'subbed'
-            })
+        sources_list = [
+           f[x]['kwik_adfly'] for f in data for x in f
+        ]
 
-        return self.sort_sources(sources_list)
+        for i, quality in enumerate(qualities):
+            if self.quality == quality:
+                return [("kwik", sources_list[i])]
+
+        return [("kwik", x) for x in sources_list]
