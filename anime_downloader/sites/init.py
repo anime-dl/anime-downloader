@@ -18,6 +18,7 @@ ALL_ANIME_SITES = [
     ('animetake','animetake','AnimeTake'),
     ('animeonline','animeonline360','AnimeOnline'),
     ('animeout', 'animeout', 'AnimeOut'),
+    ('animepahe', 'animepahe', 'AnimePahe'),
     ('animerush', 'animerush', 'AnimeRush'),
     ('animesimple', 'animesimple', 'AnimeSimple'),
     ('animestar', 'animestar', 'AnimeStar'),

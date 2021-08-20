@@ -1,72 +1,122 @@
+from base64 import b64decode
+import requests
 import logging
 import re
-import requests
 
 from anime_downloader.extractors.base_extractor import BaseExtractor
 from anime_downloader.sites import helpers
-from anime_downloader import util
 from subprocess import CalledProcessError
+from anime_downloader import util
 
 logger = logging.getLogger(__name__)
 
 
 class Kwik(BaseExtractor):
-    '''Extracts video url from kwik pages, Kwik has some `security`
-       which allows to access kwik pages when only referred by something
-       and the kwik video stream when referred through the corresponding
-       kwik video page.
-    '''
+    YTSM = re.compile(r"ysmm = '([^']+)")
+
+    KWIK_PARAMS_RE = re.compile(r'\("(\w+)",\d+,"(\w+)",(\d+),(\d+),\d+\)')
+    KWIK_D_URL = re.compile(r'action="([^"]+)"')
+    KWIK_D_TOKEN = re.compile(r'value="([^"]+)"')
+
+    CHARACTER_MAP = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/"
+
+    def get_string(self, content: str, s1: int, s2: int) -> str:
+        slice_2 = self.CHARACTER_MAP[0:s2]
+
+        acc = 0
+        for n, i in enumerate(content[::-1]):
+            acc += int(i if i.isdigit() else 0) * s1**n
+
+        k = ''
+        while acc > 0:
+            k = slice_2[int(acc % s2)] + k
+            acc = (acc - (acc % s2)) / s2
+
+        return k or '0'
+
+    def decrypt(self, full_string: str, key: str, v1: int, v2: int) -> str:
+        v1, v2 = int(v1), int(v2)
+        r, i = "", 0
+
+        while i < len(full_string):
+            s = ""
+            while (full_string[i] != key[v2]):
+                s += full_string[i]
+                i += 1
+            j = 0
+            while j < len(key):
+                s = s.replace(key[j], str(j))
+                j += 1
+            r += chr(int(self.get_string(s, v2, 10)) - v1)
+            i += 1
+        return r
+
+    def decode_adfly(self, coded_key: str) -> str:
+        r, j = '', ''
+        for n, l in enumerate(coded_key):
+            if not n % 2:
+                r += l
+            else:
+                j = l + j
+
+        encoded_uri = list(r + j)
+        numbers = ((i, n) for i, n in enumerate(encoded_uri) if str.isdigit(n))
+        for first, second in zip(numbers, numbers):
+            xor = int(first[1]) ^ int(second[1])
+            if xor < 10:
+                encoded_uri[first[0]] = str(xor)
+
+        return b64decode(("".join(encoded_uri)).encode("utf-8")
+                         )[16:-16].decode('utf-8', errors='ignore')
+
+    def bypass_adfly(self, adfly_url):
+        session = requests.session()
+
+        response_code = 302
+        while response_code != 200:
+            adfly_content = session.get(
+                session.get(
+                    adfly_url,
+                    allow_redirects=False).headers.get('location'),
+                allow_redirects=False)
+            response_code = adfly_content.status_code
+        return self.decode_adfly(self.YTSM.search(adfly_content.text).group(1))
+
+    def get_stream_url_from_kwik(self, adfly_url):
+        session = requests.session()
+
+        f_content = requests.get(
+            self.bypass_adfly(adfly_url),
+            headers={
+                'referer': 'https://kwik.cx/'
+            }
+        )
+        decrypted = self.decrypt(
+            *
+            self.KWIK_PARAMS_RE.search(
+                f_content.text
+            ).group(
+                1, 2,
+                3, 4
+            )
+        )
+
+        code = 419
+        while code != 302:
+            content = session.post(
+                self.KWIK_D_URL.search(decrypted).group(1),
+                allow_redirects=False,
+                data={
+                    '_token': self.KWIK_D_TOKEN.search(decrypted).group(1)},
+                headers={
+                    'referer': str(f_content.url),
+                    'cookie': f_content.headers.get('set-cookie')})
+            code = content.status_code
+
+        return content.headers.get('location')
 
     def _get_data(self):
-        # Kwik servers don't have direct link access you need to be referred
-        # from somewhere, I will just use the url itself. We then
-        # have to rebuild the url. Hopefully kwik doesn't block this too
-
-        # Necessary
-        self.url = self.url.replace(".cx/e/", ".cx/f/")
-        self.headers.update({"referer": self.url})
-
-        cookies = util.get_hcaptcha_cookies(self.url)
-
-        if not cookies:
-            resp = util.bypass_hcaptcha(self.url)
-        else:
-            resp = requests.get(self.url, cookies=cookies)
-
-        title_re = re.compile(r'title>(.*)<')
-
-        kwik_text = resp.text
-        deobfuscated = None
-
-        loops = 0
-        while not deobfuscated and loops < 6:
-            try:
-                deobfuscated = helpers.soupify(util.deobfuscate_packed_js(re.search(r'<(script).*(var\s+_.*escape.*?)</\1>(?s)', kwik_text).group(2)))
-            except (AttributeError, CalledProcessError) as e:
-                if type(e) == AttributeError:
-                    resp = util.bypass_hcaptcha(self.url)
-                    kwik_text = resp.text
-
-                if type(e) == CalledProcessError:
-                    resp = requests.get(self.url, cookies=cookies)
-            finally:
-                cookies = resp.cookies
-                title = title_re.search(kwik_text).group(1)
-                loops += 1
-
-        post_url = deobfuscated.form["action"]
-        token = deobfuscated.input["value"]
-
-        resp = helpers.post(post_url, headers=self.headers, params={"_token": token}, cookies=cookies, allow_redirects=False)
-        stream_url = resp.headers["Location"]
-
-        logger.debug('Stream URL: %s' % stream_url)
-
         return {
-            'stream_url': stream_url,
-            'meta': {
-                'title': title,
-                'thumbnail': ''
-            },
+            'stream_url': self.get_stream_url_from_kwik(self.url),
             'referer': None
         }
