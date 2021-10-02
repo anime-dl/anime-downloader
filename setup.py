@@ -18,7 +18,7 @@ setup(
     author_email='vishnunarayan6105@gmail.com',
     description='Download your favourite anime',
     packages=find_packages(),
-    url='https://github.com/vn-ki/anime-downloader',
+    url='https://github.com/anime-dl/anime-downloader',
     keywords=['anime', 'downloader', '9anime', 'download', 'kissanime'],
     install_requires=[
         'pySmartDL>=1.3.4',
