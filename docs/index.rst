@@ -16,7 +16,7 @@ Features
 - Search and download.
 - Save yourselves from those malicious ads.
 - Download using external downloader ([aria2](https://aria2.github.io/) recommended).
-- Configurable using `config.json`. See [doc](https://github.com/vn-ki/anime-downloader/wiki/Config).
+- Configurable using `config.json`. See [doc](https://github.com/anime-dl/anime-downloader/wiki/Config).
 
 Supported Sites
 ---------------

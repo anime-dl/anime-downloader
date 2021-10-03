@@ -68,7 +68,7 @@ def cli(log_level):
     """
     util.setup_logger(log_level)
     # if not util.check_in_path('aria2c'):
-    #    raise logger.ERROR("Aria2 is not in path. Please follow installation instructions: https://github.com/vn-ki/anime-downloader/wiki/Installation")
+    #    raise logger.ERROR("Aria2 is not in path. Please follow installation instructions: https://github.com/anime-dl/anime-downloader/wiki/Installation")
 
 
 def main():

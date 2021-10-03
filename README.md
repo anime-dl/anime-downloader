@@ -4,11 +4,11 @@
 <strong><i>A simple yet powerful tool for downloading anime.</i></strong>
 <br>
 <br>
-<a href="https://travis-ci.com/vn-ki/anime-downloader">
-<img src="https://img.shields.io/travis/com/vn-ki/anime-downloader.svg?style=for-the-badge&logo=Travis%20CI">
+<a href="https://travis-ci.com/anime-dl/anime-downloader">
+<img src="https://img.shields.io/travis/com/anime-dl/anime-downloader.svg?style=for-the-badge&logo=Travis%20CI">
 </a>
-<a href="https://codecov.io/gh/vn-ki/anime-downloader">
-<img src="https://img.shields.io/codecov/c/github/vn-ki/anime-downloader.svg?logo=codecov&style=for-the-badge">
+<a href="https://codecov.io/gh/anime-dl/anime-downloader">
+<img src="https://img.shields.io/codecov/c/github/anime-dl/anime-downloader.svg?logo=codecov&style=for-the-badge">
 </a>
 <a href="https://pypi.org/project/anime-downloader/">
 <img src="https://img.shields.io/pypi/v/anime-downloader.svg?logo=python&style=for-the-badge">
@@ -52,7 +52,7 @@ Yeah. Me too! That's why this tool exists.
   * Instructions for Mobile Operating Systems can be found in the [Installation Documentation Page](https://anime-downlader.readthedocs.io/en/latest/usage/installation.html)
 
 ## Supported Sites
-**Details about the sites can be found in [FAQ](https://github.com/vn-ki/anime-downloader/wiki/FAQ)**
+**Details about the sites can be found in [FAQ](https://github.com/anime-dl/anime-downloader/wiki/FAQ)**
 
 
 - AnimePahe
