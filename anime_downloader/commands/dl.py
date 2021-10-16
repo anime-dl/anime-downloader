@@ -3,6 +3,7 @@ import os
 
 import click
 import requests_cache
+import re
 
 from anime_downloader import session, util
 from anime_downloader.__version__ import __version__
@@ -91,6 +92,13 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             external_downloader, chunk_size, disable_ssl, fallback_qualities, choice, skip_fillers, speed_limit, sub, dub):
     """ Download the anime using the url or search for it.
     """
+
+    if episode_range:
+        regexed_range = re.compile("^:?(\d+)?:?(\d+)?$").search(episode_range)
+        # Prevent such cases as: :5: and :1:1
+        if not regexed_range or (len(regexed_range.groups()) >= episode_range.count(":") and episode_range.count(":") != 1):
+            raise click.UsageError(
+                "Invalid value for '--episode' / '-e': {} is not a valid range".format(episode_range))
 
     if sub and dub:
         raise click.UsageError(
