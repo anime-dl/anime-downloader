@@ -9,12 +9,11 @@ APP_DIR = click.get_app_dir(APP_NAME)
 DEFAULT_CONFIG = {
     'dl': {
         'url': False,
-        'player': None,
         'skip_download': False,
         'download_dir': '.',
         'quality': '1080p',
         'chunk_size': '10',
-        'fallback_qualities': ['720p', '480p', '360p'],
+        'fallback_qualities': ['720p', '540p', '480p', '360p'],
         'force_download': False,
         'file_format': '{anime_title}/{anime_title}_{ep_no}',
         'provider': 'twist.moe',
@@ -35,14 +34,25 @@ DEFAULT_CONFIG = {
     },
     'watch': {
         'quality': '1080p',
-        'fallback_qualities': ['720p', '480p', '360p'],
+        'fallback_qualities': ['720p', '540p', '480p', '360p'],
         'log_level': 'INFO',
         'provider': 'twist.moe',
-        'autoplay_next': True,
-        'mpv_arguments': ''
+        'autoplay_next': True
     },
-    'gui': {
-        'player': 'mpv'
+    'players': {
+        'active': 'mpv',
+        'mpv': {
+            'path': '',
+            'arguments': ''
+        },
+        'potplayer': {
+            'path': '',
+            'arguments': ''
+        },
+        'vlc': {
+            'path': '',
+            'arguments': ''
+        }
     },
     'siteconfig': {
         'egyanime': {
