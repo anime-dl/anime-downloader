@@ -46,6 +46,8 @@ def setup(func):
         cf : bool
             cf if True performs the request through cfscrape.
             For cloudflare protected sites.
+        sel : bool
+            sel if True perfroms the request through selescrape (selenium).
         referer : str
             a url sent as referer in request headers
         '''
@@ -57,6 +59,7 @@ def setup(func):
                 from selenium import webdriver
                 from anime_downloader.sites.helpers import selescrape
                 sess = selescrape
+                sess.cache = cache
             except ImportError:
                 sess = cf_session
                 logger.warning("This provider may not work correctly because it requires selenium to work.\nIf you want to install it then run:  'pip install selenium' .")
@@ -107,6 +110,8 @@ def get(url: str,
     cf : bool
         cf if True performs the request through cfscrape.
         For cloudflare protected sites.
+    sel : bool
+        sel if True perfroms the request through selescrape (selenium).
     referer : str
         a url sent as referer in request headers
     '''
@@ -146,9 +151,10 @@ def soupify(res):
     -------
     BeautifulSoup.Soup
     """
-    if isinstance(res, requests.Response):
-        res = res.text
-    soup = BeautifulSoup(res, 'html.parser')
+    if isinstance(res, str):
+        soup = BeautifulSoup(res, 'html.parser')
+    else:
+        soup = BeautifulSoup(res.text, 'html.parser')
     return soup
 
 

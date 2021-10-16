@@ -13,7 +13,7 @@ class VoirAnime(Anime, sitename='voiranime'):
 
     @classmethod
     def search(cls, query):
-        search_results = helpers.soupify(helpers.get(cls.url, params={'s': query})).select('div.item-head > h3 > a')
+        search_results = helpers.soupify(helpers.get(cls.url, params={'s': query})).select('.post-title > h3 > a')
         search_results = [
             SearchResult(
                 title=i.text,
@@ -23,21 +23,27 @@ class VoirAnime(Anime, sitename='voiranime'):
         return search_results
 
     def _scrape_episodes(self):
-        soup = helpers.soupify(helpers.get(self.url))
-        next_page = soup.select('a.ct-btn')[0].get('href')
-        soup = helpers.soupify(helpers.get(next_page))
-        episodes = soup.select('ul.video-series-list > li > a.btn-default')
-        return [i.get('href') for i in episodes]
+        html = helpers.get(self.url).text
+        episodes = list(re.findall(r"<li class=[\"']wp-manga-chapter *[\"']>\n<a href=[\"'](.*?)[\"']>", html))
+        return episodes[::-1]
 
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url))
-        self.title = soup.select('div.container > h1')[0].text
+        self.title = soup.select_one('.post-title > h1').text
 
 
 class VoirAnimeEpisode(AnimeEpisode, sitename='voiranime'):
     def _get_sources(self):
+        base_url = 'https://voiranime.com/'
         soup = helpers.soupify(helpers.get(self.url))
+        servers = [
+            base_url + x['data-redirect']
+            for x in soup.select('.host-select > option')
+        ]
         """These could probably be condensed down to one, but would look too spooky"""
+
+        # code below doesnt work anymore, since voiranime introduced captcha
+
         multilinks_regex = r'var\s*multilinks\s*=\s*\[\[{(.*?)}]];'
         mutilinks_iframe_regex = r"iframe\s*src=\\(\"|')([^(\"|')]*)"
         multilinks = re.search(multilinks_regex, str(soup)).group(1)

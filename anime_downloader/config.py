@@ -73,6 +73,9 @@ DEFAULT_CONFIG = {
         'anistream.xyz': {
             'version': 'subbed',
         },
+        'animepahe': {
+            'version': 'subbed',
+        },
         'animeflv': {
             'version': 'subbed',
             'servers': [
@@ -117,7 +120,12 @@ DEFAULT_CONFIG = {
         },
         'ryuanime': {
             'version': 'subbed',
-            'server': 'trollvid',
+            'servers': [
+                'vidstream',
+                'mp4upload',
+                'xstreamcdn',
+                'trollvid'
+            ]
         },
         'animekisa': {
             'server': 'gcloud',
@@ -126,6 +134,10 @@ DEFAULT_CONFIG = {
 
         'watchmovie': {
             'servers': ['vidstream', 'gcloud', 'yourupload', 'hydrax'],
+            'version': 'subbed',
+        },
+        'wcostream': {
+            'servers': ['vidstreampro', 'mcloud'],
             'version': 'subbed',
         },
         'animeflix': {

@@ -77,6 +77,14 @@ def format_search_results(search_results):
     table = '\n'.join(table.split('\n')[::-1])
     return table
 
+def format_matches(matches):
+    if matches:
+        table = [[[p], [sr]] for p, sr, r in sorted(matches, key = lambda x: x[2], reverse=True)]
+        table = [a for b in table for a in b]
+    else:
+        table = [["None"]]
+    table = tabulate(table, ['RESULTS'], tablefmt='grid', colalign=("center",))
+    return table
 
 def search(query, provider, val=None, season_info=None, ratio=50):
     # Will use animeinfo sync if season_info is provided
@@ -207,11 +215,11 @@ def parse_ep_str(anime, grammar):
         else:
             from anime_downloader.sites.anime import AnimeEpisode
 
-            if grammar == '0':
+            if episode_grammar == '0':
                 ep = sorted(anime._episode_urls)[-1]
             else:
                 ep = [x for x in anime._episode_urls if x[0]
-                      == int(grammar)][0]
+                      == int(episode_grammar)][0]
 
             ep_cls = AnimeEpisode.subclasses[anime.sitename]
 
@@ -305,7 +313,8 @@ def format_command(cmd, episode, file_format, speed_limit, path):
                    '--check-certificate=false --user-agent={useragent} --max-overall-download-limit={speed_limit} '
                    '--console-log-level={log_level}',
         '{idm}': 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4',
-        '{wget}': 'wget {stream_url} --referer={referer} --user-agent={useragent} -O {download_dir}/{file_format}.mp4 -c'
+        '{wget}': 'wget {stream_url} --referer={referer} --user-agent={useragent} -O {download_dir}/{file_format}.mp4 -c',
+        '{uget}': '/CMD/ --http-referer={referer} --http-user-agent={useragent} --folder={download_dir} --filename={file_format}.mp4 {stream_url}'
     }
 
     # Allows for passing the user agent with self.headers in the site.
@@ -313,7 +322,7 @@ def format_command(cmd, episode, file_format, speed_limit, path):
     if episode.headers.get('user-agent'):
         useragent = episode.headers['user-agent']
     else:
-        useragent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36'
+        useragent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/605.1.15 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/605.1.15'
 
     stream_url = episode.source().stream_url if not episode.url.startswith(
         'magnet:?xt=urn:btih:') else episode.url
@@ -341,6 +350,9 @@ def format_command(cmd, episode, file_format, speed_limit, path):
 
     if cmd == "{idm}":
         rep_dict['file_format'] = rep_dict['file_format'].replace('/', '\\')
+
+    if cmd == '{uget}':
+        cmd_dict['{uget}'] = cmd_dict['{uget}'].replace('/CMD/', 'uget-gtk' if check_in_path('uget-gtk') else 'uget')
 
     if cmd in cmd_dict:
         cmd = cmd_dict[cmd]
