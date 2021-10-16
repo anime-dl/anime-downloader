@@ -47,6 +47,10 @@ DEFAULT_CONFIG = {
         'player': 'mpv'
     },
     'siteconfig': {
+        'animefrenzy': {
+            'version': 'subbed',
+            'servers': ['trollvideo', 'mp4upload']
+        },
         'egyanime': {
             'version': 'subbed',
             'servers': [

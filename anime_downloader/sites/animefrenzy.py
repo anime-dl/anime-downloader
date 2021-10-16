@@ -1,10 +1,8 @@
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
+from anime_downloader.extractors import get_extractor
 import json
 import re
-import logging
-
-logger = logging.getLogger(__name__)
 
 
 def get_token():
