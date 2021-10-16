@@ -39,7 +39,9 @@ DEFAULT_CONFIG = {
         'log_level': 'INFO',
         'provider': 'twist.moe',
         'autoplay_next': True,
-        'mpv_arguments': ''
+        'mpv_arguments': '',
+        'iina_arguments': '',
+        'default_player': 'mpv'
     },
     'gui': {
         'player': 'mpv'
