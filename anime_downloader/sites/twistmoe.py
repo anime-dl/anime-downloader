@@ -55,6 +55,7 @@ class TwistMoe(Anime, sitename='twist.moe'):
             animes.append(SearchResult(
                 title=anime['title'],
                 url='https://twist.moe/a/' + anime['slug']['slug'] + '/',
+                poster=f"https://media.kitsu.io/anime/poster_images/{anime['hb_id']}/large.jpg"
             ))
         animes = [ani[0] for ani in process.extract(query, animes)]
         return animes
@@ -80,6 +81,28 @@ class TwistMoe(Anime, sitename='twist.moe'):
         self._len = len(self._episode_urls)
         return self._episode_urls
 
+
+    def _scrape_metadata(self):
+        slug = self.url.split('a/')[-1][:-1]
+        api_url = "https://api.twist.moe/api/anime/" + slug
+        res = helpers.get(
+            api_url,
+            headers={
+                'x-access-token': '0df14814b9e590a1f26d3071a4ed7974'
+            }
+        ).json()
+        if 'hb_id' in res:
+            kitsu_api_url = "https://kitsu.io/api/edge/anime/" + str(res['hb_id'])
+            kitsu_data = helpers.get(kitsu_api_url).json()
+            attributes = kitsu_data['data']['attributes']
+
+            self.meta['title'] = attributes['canonicalTitle']
+            self.meta['year'] = attributes['startDate'].split('-')[0]
+            self.meta['airing_status'] = attributes['status']
+            self.meta['poster'] = attributes['posterImage']['original']
+            self.meta['cover'] = attributes['coverImage']['original']
+            self.meta['total_eps'] = attributes['episodeCount']
+            self.meta['desc'] = attributes['description']
 
 # From stackoverflow https://stackoverflow.com/questions/36762098/how-to-decrypt-password-from-javascript-cryptojs-aes-encryptpassword-passphras
 def pad(data):

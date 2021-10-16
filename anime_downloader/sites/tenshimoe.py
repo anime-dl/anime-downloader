@@ -1,5 +1,6 @@
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
+import re
 
 
 def parse_search_page(soup):
@@ -55,7 +56,13 @@ class TenshiMoe(Anime, sitename='tenshi.moe'):
 
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url).text)
-        self.title = soup.title.text.split('—')[0].strip()
+        self.title = soup.select_one('span.value > span[title="English"]').parent.text.strip()
+        self.meta['year'] = int(re.findall(r"(\d{4})", soup.select_one('li.release-date .value').text)[0])
+        self.meta['airing_status'] = soup.select_one('li.status > .value').text.strip()
+        self.meta['total_eps'] = int(soup.select_one('.entry-episodes > h2 > span').text.strip())
+        self.meta['desc'] = soup.select_one('.entry-description > .card-body').text.strip()
+        self.meta['poster'] = soup.select_one('img.cover-image').get('src', '')
+        self.meta['cover'] = ''
 
 
 class TenshiMoeEpisode(AnimeEpisode, sitename='tenshi.moe'):
@@ -75,4 +82,3 @@ class TenshiMoeEpisode(AnimeEpisode, sitename='tenshi.moe'):
 
         if self.quality in qualities_:
             return [sources[qualities_.index(self.quality)]]
-
