@@ -481,7 +481,7 @@ def getAllProcesses_Win32():
     ).split('\n')[::2][1:]
     for line in out:
         f = line.split()
-        if bool(f):
+        if f:
             if len(f) > 2:
                 placeholder.append(
                     Process(name=f[0], cmdline=f[1:-1], pid=int(f[-1])))
@@ -535,7 +535,7 @@ def is_running(regex, expected_matches):
     if os.getpid() in dict_pids:
         del dict_pids[os.getpid()]
     for key, value in dict_pids.items():
-        if bool(value[1]):
+        if value[1]:
             list_of_matches = re.findall(regex, ' '.join(value[1]))
             if list_of_matches and len(list_of_matches) >= expected_matches:
                 already_running = True
