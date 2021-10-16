@@ -1,7 +1,9 @@
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
-from anime_downloader.extractors import get_extractor
+from anime_downloader.extractors.init import ALL_EXTRACTORS
+
 import logging
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +25,7 @@ class AnimeRush(Anime, sitename='animerush'):
 
     def _scrape_episodes(self):
         soup = helpers.soupify(helpers.get(self.url)).select('div.episode_list > a')
-        return ['https:' + i.get('href') for i in soup[::-1]]
+        return ['https:' + i.get('href') for i in soup[::-1] if "Coming soon" not in str(i)]
 
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url))
@@ -41,12 +43,20 @@ class AnimeRushEpisode(AnimeEpisode, sitename='animerush'):
         sources_list = []
         # Sources [0] is the url [1] is the name of the source
         # eg: [['https://mp4upload.com/embed-r07potgdvbkr-650x370.html', 'Mp4upload Video']]
+        domain_regex = r"\/\/(?:\w{3,6}\.)?(.*?)\."
         for i in sources:
-            # Not exactly ideal setup for more extractors
-            # If more advanced sources needs to get added look at watchmovie or darkanime
-            server = 'yourupload' if 'yourupload' in i[0] else 'mp4upload'
+            found = False
+            domain = re.findall(domain_regex, i[0])[0].lower()
+
+            for extractor in ALL_EXTRACTORS:
+                if re.match(extractor['regex'], domain):
+                    found = True
+
+            if not found:
+                continue
+
             sources_list.append({
-                'extractor': server,
+                'extractor': domain,
                 'url': i[0],
                 'server': i[1],
                 'version': 'subbed'

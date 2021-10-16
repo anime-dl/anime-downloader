@@ -18,7 +18,7 @@ setup(
     author_email='vishnunarayan6105@gmail.com',
     description='Download your favourite anime',
     packages=find_packages(),
-    url='https://github.com/vn-ki/anime-downloader',
+    url='https://github.com/anime-dl/anime-downloader',
     keywords=['anime', 'downloader', '9anime', 'download', 'kissanime'],
     install_requires=[
         'pySmartDL>=1.3.4',
@@ -30,10 +30,11 @@ setup(
         'cfscrape>=2.0.5',
         'requests-cache>=0.4.13',
         'tabulate>=0.8.3',
-        'pycryptodome>=3.8.2',
+        'pycryptodome>=3.8.2'
     ],
     extras_require={
         'selescrape': ['selenium'],
+        'unpacker': ['jsbeautifier==1.11.0'],
         'gui': ['PyQt5>=5.15.1', 'selenium'],
         'dev': [
             'pytest',

@@ -20,7 +20,7 @@ class AnimeSimple(Anime, sitename='animesimple'):
         return [
             SearchResult(
                 title=i.get('title') if i.get('title') else i.select('img')[0].get('alt'),
-                url=i.get('href'))
+                url=("https:" if i.get('href')[0] == '/' else "") + i.get('href'))
             for i in search_results
         ]
 
@@ -34,7 +34,7 @@ class AnimeSimple(Anime, sitename='animesimple'):
                                                    'top': 10000,  # max 10 000 episodes
                                                    'bottom': 0,
                                                }))
-        return [i.get('href') for i in elements]
+        return [("https:" if i.get('href')[0] == '/' else "") + i.get('href') for i in elements]
 
     def _scrape_metadata(self):
         self.title = helpers.soupify(helpers.get(self.url)).select('li.breadcrumb-item.active')[0].text

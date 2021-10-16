@@ -4,11 +4,11 @@
 <strong><i>A simple yet powerful tool for downloading anime.</i></strong>
 <br>
 <br>
-<a href="https://travis-ci.com/vn-ki/anime-downloader">
-<img src="https://img.shields.io/travis/com/vn-ki/anime-downloader.svg?style=for-the-badge&logo=Travis%20CI">
+<a href="https://travis-ci.com/anime-dl/anime-downloader">
+<img src="https://img.shields.io/travis/com/anime-dl/anime-downloader.svg?style=for-the-badge&logo=Travis%20CI">
 </a>
-<a href="https://codecov.io/gh/vn-ki/anime-downloader">
-<img src="https://img.shields.io/codecov/c/github/vn-ki/anime-downloader.svg?logo=codecov&style=for-the-badge">
+<a href="https://codecov.io/gh/anime-dl/anime-downloader">
+<img src="https://img.shields.io/codecov/c/github/anime-dl/anime-downloader.svg?logo=codecov&style=for-the-badge">
 </a>
 <a href="https://pypi.org/project/anime-downloader/">
 <img src="https://img.shields.io/pypi/v/anime-downloader.svg?logo=python&style=for-the-badge">
@@ -52,9 +52,11 @@ Yeah. Me too! That's why this tool exists.
   * Instructions for Mobile Operating Systems can be found in the [Installation Documentation Page](https://anime-downlader.readthedocs.io/en/latest/usage/installation.html)
 
 ## Supported Sites
-**Details about the sites can be found in [FAQ](https://github.com/vn-ki/anime-downloader/wiki/FAQ)**
+**Details about the sites can be found in [FAQ](https://github.com/anime-dl/anime-downloader/wiki/FAQ)**
 
-- 4Anime
+
+- AnimePahe
+- AnimTime
 - AnimeBinge
 - Animedaisuki
 - Animeflix
@@ -65,6 +67,8 @@ Yeah. Me too! That's why this tool exists.
 - animeout
 - Animerush
 - Animesimple
+- AnimeStar
+- AnimeSuge - requires Node.js
 - Animevibe
 - AnimeTake
 - AniTube
@@ -74,7 +78,7 @@ Yeah. Me too! That's why this tool exists.
 - Dbanimes 
 - EraiRaws
 - EgyAnime - usually m3u8 (good for streaming, not so much for downloading)
-- FastAni
+- GenoAnime
 - GurminderBoparai (AnimeChameleon)
 - itsaturday
 - Justdubs
@@ -90,6 +94,7 @@ Yeah. Me too! That's why this tool exists.
 - Vidstream
 - Voiranime
 - Vostfree
+- Wcostream
 
 Sites that require Selenium **DO NOT** and **WILL NOT** work on mobile operating systems
 
@@ -104,8 +109,9 @@ If you have trouble installing, see extended installation instructions [here](ht
 **Note**:
 - For Cloudflare scraping either [cfscrape](https://github.com/Anorov/cloudflare-scrape) or [selenium](https://www.selenium.dev/) is used. [Cfscrape](https://github.com/Anorov/cloudflare-scrape) depends on [`node-js`](https://nodejs.org/en/) and [selenium](https://www.selenium.dev/) utilizes an automated invisible instance of a browser (chrome/firefox). So, if you want to use Cloudflare enabled sites, make sure you have [node-js](https://nodejs.org/en/) and a [webdriver](https://www.selenium.dev/selenium/docs/api/py/index.html#drivers) installed.
 - You might have to use pip3 depending on your system
-- To install this project with gui and all its dependencies, add `#egg=anime-downloader[gui]` to the pip command you are using to install it. Example: `pip install -U git+https://github.com/anime-dl/anime-downloader#egg=anime_downloader[gui]`
+- To install this project with gui and all its dependencies, add `#egg=anime-downloader[gui]` to the pip command you are using to install it. Example: `pip install --force-reinstall -U git+https://github.com/anime-dl/anime-downloader#egg=anime_downloader[gui]`
 - To install this project with selescrape (if you are using GUI, ignore this line), do the same as above - but with `#egg=anime-downloader[selescrape]`
+- To install this project with jsbeautifier run `pip install --force-reinstall -U git+https://github.com/anime-dl/anime-downloader#egg=anime-downloader[unpacker]`
 
 ## Usage
 

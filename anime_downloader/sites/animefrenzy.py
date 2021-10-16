@@ -5,65 +5,73 @@ import json
 import re
 
 
+def get_token():
+    r = helpers.get('https://animefrenzy.org').text
+    script = 'https://animefrenzy.org' + re.search(r'src\=\"(\/static\/js\/main\..*?)\"', r)[1]  # noqa
+    script = helpers.get(script).text
+    token = re.search(r'token\:\"(.*?)\"', script)[1]
+    return token
+
+
 class AnimeFrenzy(Anime, sitename='animefrenzy'):
     sitename = 'animefrenzy'
+    token = get_token()
 
     @classmethod
     def search(cls, query):
-        r = helpers.get("https://old.animefrenzy.org/search",
-                        params={"term": query})
-        soup = helpers.soupify(r)
-        # Warning, assuming only these links!
-        # Can cause errors in the future.
-        results = soup.select('a[href^="https://old.animefrenzy.org/anime/"]')
-        search_results = [
-            SearchResult(
-                title=results[i].text,
-                url=results[i]['href']
-            )
-            # Skips the first result as it's "Random".
-            for i in range(len(results)) if i and results[i].text.strip()
-        ]
-        return search_results
+        results = helpers.get("https://moo.yare.wtf/advanced", params={"search": query, "token": cls.token}).json()['data']  # noqa
+        if 'nav' in results:
+            results = results['nav']['currentPage']['items']
+            search_results = [
+                SearchResult(
+                    title=i['name'],
+                    url='https://animefrenzy.org/anime/' + i['slug'],
+                    poster='https://moo.yare.wtf/' + i['image'],
+                    meta={'year': i['year']},
+                    meta_info={
+                        'version_key_dubbed': '(Sub)' if i['language'] == 'subbed' else '(Dub)'  # noqa
+                    }
+                )
+                for i in results
+            ]
+            search_results = sorted(search_results, key=lambda x: int(x.meta['year']))
+            return search_results
+        else:
+            return []
 
     def _scrape_episodes(self):
-        soup = helpers.soupify(helpers.get(self.url))
-        eps = [x['href'] for x in soup.select('div.ani-epi > a')]
+        self.token = get_token()
+        slug = self.url.split('/')[-1]
+        if 'episode' in slug:
+            api_link = 'https://moo.yare.wtf/anime-episode/slug/' + slug
+            r = helpers.get(api_link, params={'token': self.token}).json()
+            slug = r['data']['anime_slug']
 
-        return eps[::-1]
+        api_link = 'https://moo.yare.wtf/anime/slug/' + slug
+        r = helpers.get(api_link, params={'token': self.token}).json()
+        if r['status'] == 'Found':
+            episodes = r['data']['episodes']
+            episodes = [
+                'https://moo.yare.wtf/vidstreaming/animefrenzy/' + x['videos'][0]['video_id']  # noqa
+                for x in episodes
+            ]
+            return episodes
+        else:
+            return []
 
     def _scrape_metadata(self):
-        soup = helpers.soupify(helpers.get(self.url))
-        self.title = soup.title.text.split('- Watch Anime')[0].strip()
+        slug = self.url.split('/')[-1]
+        if 'episode' in slug:
+            api_link = 'https://moo.yare.wtf/anime-episode/slug/' + slug
+            r = helpers.get(api_link, params={'token': self.token}).json()
+            slug = r['data']['anime_slug']
+        api_link = 'https://moo.yare.wtf/anime/slug/' + slug
+        r = helpers.get(api_link, params={'token': self.token}).json()
+        self.title = r['data']['name']
 
 
 class AnimeFrenzyEpisode(AnimeEpisode, sitename='animefrenzy'):
     def _get_sources(self):
-
-        mappings = {
-            'mp4upload': 'https://www.mp4upload.com/embed-{}.html',
-            'trollvid': 'https://trollvid.net/embed/{}',
-            'xstreamcdn': 'https://xstreamcdn.com/v/{}'
-        }
-
-        soup = helpers.soupify(helpers.get(self.url))
-        scripts = soup.select('script')
-
-        for i in scripts:
-            if 'var episode_videos' in str(i):
-                sources = json.loads(
-                    re.search(r"\[.*host.*id.*?\]", str(i)).group())
-
-        sources_list = []
-        for i in sources:
-            if mappings.get(i.get('host')):
-                extractor = 'no_extractor' if not get_extractor(
-                    i['host']) else i['host']
-                sources_list.append({
-                    'extractor': extractor,
-                    'url': mappings[i['host']].format(i['id']),
-                    'server': i['host'],
-                    'version': i.get('type', 'subbed')
-                })
-
-        return self.sort_sources(sources_list)
+        r = helpers.get(self.url).text
+        link = re.search(r'\"file\"\:\"(.*?)\"', r)[1]
+        return [('no_extractor', link)]

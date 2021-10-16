@@ -1,3 +1,8 @@
+from anime_downloader.util import is_running
+if is_running(regex=r'python|anime|watch', expected_matches=3):
+    raise Exception('Another instance of "anime watch" is already running!')
+
+
 import click
 import logging
 import sys
@@ -5,7 +10,7 @@ import re
 
 from anime_downloader import util
 from anime_downloader.__version__ import __version__
-from anime_downloader.players.mpv import mpv
+from anime_downloader.players import Players
 from anime_downloader import watch as _watch
 from anime_downloader.config import Config
 from anime_downloader.sites import get_anime_class, ALL_ANIME_SITES
@@ -90,17 +95,21 @@ def command(anime_name, new, update_all, _list, quality, remove,
             watcher.update_anime(anime)
 
     if mal_import:
-        PATH = anime_name  # Hack, but needed to prompt the user. Uses the anime name as parameter.
+        # Hack, but needed to prompt the user. Uses the anime name as
+        # parameter.
+        PATH = anime_name
         if PATH:
             query = PATH
         else:
-            query = click.prompt('Enter the file path for the MAL .xml file', type=str)
+            query = click.prompt(
+                'Enter the file path for the MAL .xml file', type=str)
 
         if query.endswith('.xml'):
             watcher._import_from_MAL(query)
             sys.exit(0)
         else:
-            logging.error("Either the file selected was not an .xml or no file was selected.")
+            logging.error(
+                "Either the file selected was not an .xml or no file was selected.")
             sys.exit(1)
 
     # Defaults the command to anime watch -l all.
@@ -128,13 +137,15 @@ def command(anime_name, new, update_all, _list, quality, remove,
 
 def command_parser(command):
     # Returns<kUp> a list of the commands
-    # new "no neverland" --provider vidstream > ['new', '--provider', 'no neverland', 'vidstream']
+    # new "no neverland" --provider vidstream > ['new', '--provider', 'no
+    # neverland', 'vidstream']
 
     # Better than split(' ') because it accounts for quoutes.
     # Group 3 for quoted command
     command_regex = r'(("|\')(.*?)("|\')|.*?\s)'
     matches = re.findall(command_regex, command + " ")
-    commands = [i[0].strip('"').strip("'").strip() for i in matches if i[0].strip()]
+    commands = [i[0].strip('"').strip("'").strip()
+                for i in matches if i[0].strip()]
     return commands
 
 
@@ -159,8 +170,10 @@ def list_animes(watcher, quality, download_dir, imp=None, _filter=None):
                 watcher.new(url)
 
             if key == 'swap':
-                if vals[0] in ['all', 'watching', 'completed', 'planned', 'dropped', 'hold']:
-                    return list_animes(watcher, quality, download_dir, imp=imp, _filter=vals[0])
+                if vals[0] in ['all', 'watching', 'completed',
+                               'planned', 'dropped', 'hold']:
+                    return list_animes(
+                        watcher, quality, download_dir, imp=imp, _filter=vals[0])
 
             return list_animes(watcher, quality, download_dir, imp=imp)
         else:
@@ -208,6 +221,9 @@ def list_animes(watcher, quality, download_dir, imp=None, _filter=None):
         elif inp == 'watch':
             anime.quality = quality
             watch_anime(watcher, anime, quality, download_dir)
+        elif inp.startswith('watch '):
+            anime.quality = quality
+            watch_anime(watcher, anime, quality, download_dir, player_class=inp.split('watch ')[-1])
 
         elif inp.startswith('download'):
             # You can use download 3:10 for selected episodes
@@ -272,7 +288,8 @@ def list_animes(watcher, quality, download_dir, imp=None, _filter=None):
                 watcher.update(anime)
 
             elif key == 'watch_status':
-                if val in ['watching', 'completed', 'dropped', 'planned', 'all']:
+                if val in ['watching', 'completed',
+                           'dropped', 'planned', 'all']:
                     colours = {
                         'watching': 'cyan',
                         'completed': 'green',
@@ -285,7 +302,7 @@ def list_animes(watcher, quality, download_dir, imp=None, _filter=None):
                     watcher.update(anime)
 
 
-def watch_anime(watcher, anime, quality, download_dir):
+def watch_anime(watcher, anime, quality, download_dir, player_name=Config['watch']['default_player']):
     autoplay = Config['watch']['autoplay_next']
     to_watch = anime[anime.episodes_done:]
     logger.debug('Sliced episodes: {}'.format(to_watch._episode_urls))
@@ -299,30 +316,31 @@ def watch_anime(watcher, anime, quality, download_dir):
                 'Playing episode {}'.format(episode.ep_no)
             )
             try:
-                player = mpv(episode)
+                player = Players[player_name](episode)
+
+                returncode = player.play()
+                if returncode == player.STOP:
+                    # Returns to watch.
+                    return
+
+                elif returncode == player.CONNECT_ERR:
+                    logger.warning("Couldn't connect. Retrying. "
+                                   "Attempt #{}".format(tries + 1))
+                    continue
+
+                elif returncode == player.PREV:
+                    anime.episodes_done -= 2
+                    watcher.update(anime)
+                    break
+                # If no other return codes, basically when the player finishes.
+                # Can't find the returncode for success.
+                elif autoplay:
+                    break
+                else:
+                    return
             except Exception as e:
                 anime.episodes_done -= 1
                 watcher.update(anime)
                 logger.error(str(e))
                 sys.exit(1)
 
-            returncode = player.play()
-            if returncode == player.STOP:
-                # Returns to watch.
-                return
-
-            elif returncode == player.CONNECT_ERR:
-                logger.warning("Couldn't connect. Retrying. "
-                               "Attempt #{}".format(tries + 1))
-                continue
-
-            elif returncode == player.PREV:
-                anime.episodes_done -= 2
-                watcher.update(anime)
-                break
-            # If no other return codes, basically when the player finishes.
-            # Can't find the returncode for success.
-            elif autoplay:
-                break
-            else:
-                return

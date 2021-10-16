@@ -3,6 +3,7 @@ import os
 
 import click
 import requests_cache
+import re
 
 from anime_downloader import session, util
 from anime_downloader.__version__ import __version__
@@ -33,7 +34,7 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     '--download-dir', metavar='PATH',
     help="Specify the directory to download to")
 @click.option(
-    '--quality', '-q', type=click.Choice(['360p', '480p', '720p', '1080p']),
+    '--quality', '-q', type=click.Choice(['360p', '480p', '540p', '720p', '1080p']),
     help='Specify the quality of episode. Default-720p')
 @click.option(
     '--fallback-qualities', '-fq', cls=util.ClickListOption,
@@ -72,19 +73,38 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     '--choice', '-c', type=int,
     help='Choice to start downloading given anime number '
 )
-@click.option("--skip-fillers", is_flag=True, help="Skip downloading of fillers.")
+@click.option("--skip-fillers", is_flag=True,
+              help="Skip downloading of fillers.")
 @click.option(
     "--speed-limit",
     type=str,
     help="Set the speed limit (in KB/s or MB/s) for downloading when using aria2c",
     metavar='<int>K/M'
 )
+@click.option(
+    "--sub", "-s", type=bool, is_flag=True,
+    help="If flag is set, it downloads the subbed version of an anime if the provider supports it. Must not be used with the --dub/-d flag")
+@click.option(
+    "--dub", "-d", type=bool, is_flag=True,
+    help="If flag is set, it downloads the dubbed version of anime if the provider supports it. Must not be used with the --sub/-s flag")
 @click.pass_context
 def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
             force_download, download_dir, file_format, provider,
-            external_downloader, chunk_size, disable_ssl, fallback_qualities, choice, skip_fillers, speed_limit):
+            external_downloader, chunk_size, disable_ssl, fallback_qualities, choice, skip_fillers, speed_limit, sub, dub):
     """ Download the anime using the url or search for it.
     """
+
+    if episode_range:
+        regexed_range = re.compile("^:?(\d+)?:?(\d+)?$").search(episode_range)
+        # Prevent such cases as: :5: and :1:1
+        if not regexed_range or (len(regexed_range.groups()) >= episode_range.count(":") and episode_range.count(":") != 1):
+            raise click.UsageError(
+                "Invalid value for '--episode' / '-e': {} is not a valid range".format(episode_range))
+
+    if sub and dub:
+        raise click.UsageError(
+            "--dub/-d and --sub/-s flags cannot be used together")
+
     query = anime_url[:]
 
     util.print_info(__version__)
@@ -98,8 +118,14 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
         anime_url, _ = util.search(anime_url, provider, choice)
         cls = get_anime_class(anime_url)
 
+    subbed = None
+
+    if sub or dub:
+        subbed = subbed is not None
+
     anime = cls(anime_url, quality=quality,
-                fallback_qualities=fallback_qualities)
+                fallback_qualities=fallback_qualities,
+                subbed=subbed)
     logger.info('Found anime: {}'.format(anime.title))
 
     animes = util.parse_ep_str(anime, episode_range)
@@ -124,16 +150,18 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
         if skip_fillers and fillers:
             if episode.ep_no in fillers:
                 logger.info(
-                    "Skipping episode {} because it is a filler.".format(episode.ep_no))
+                    "Skipping episode {} because it is a filler.".format(
+                        episode.ep_no))
                 continue
 
         if url:
             util.print_episodeurl(episode)
 
         if player:
-            episode_range = f"0:{len(animes)}" if not episode_range else episode_range
             util.play_episode(
-                episode, player=player, title=f'{anime.title} - Episode {episode.ep_no}', episodes=episode_range)
+                episode,
+                player=player,
+                title=f'{anime.title} - Episode {episode.ep_no}')
 
         if not skip_download:
             if external_downloader:

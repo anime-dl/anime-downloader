@@ -50,7 +50,8 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
 @click.option(
     '--download-metadata', '-dm', is_flag=True,
     help='Download additional metadata')
-@click.option("--skip-fillers", is_flag=True, help="Skip downloading of fillers.")
+@click.option("--skip-fillers", is_flag=True,
+              help="Skip downloading of fillers.")
 @click.pass_context
 def command(ctx, anime_url, episode_range, player,
             force_download, provider,
@@ -94,11 +95,13 @@ def command(ctx, anime_url, episode_range, player,
         raise exceptions.NotFoundError('No episodes found within index.')
 
     # Stores the choices for each provider, to prevent re-prompting search.
-    # As the current setup runs episode wise without this a 12 episode series would give 12+ prompts.
+    # As the current setup runs episode wise without this a 12 episode series
+    # would give 12+ prompts.
     choice_dict = {}
 
     # Doesn't work on nyaa since it only returns one episode.
-    for episode_range in range(int(episode_range_split[0]), int(episode_range_split[-1]) + 1):
+    for episode_range in range(int(episode_range_split[0]), int(
+            episode_range_split[-1]) + 1):
         # Exits if all providers are skipped.
         if [choice_dict[i] for i in choice_dict] == [0] * len(providers):
             logger.info('All providers skipped, exiting')
@@ -115,7 +118,8 @@ def command(ctx, anime_url, episode_range, player,
 
             # To make the downloads use the correct name if URL:s are used.
             real_provider = cls.sitename if cls else provider
-            # This will allow for animeinfo metadata in filename and one filename for multiple providers.
+            # This will allow for animeinfo metadata in filename and one
+            # filename for multiple providers.
             rep_dict = {
                 'animeinfo_anime_title': util.slugify(info.title),
                 'provider': util.slugify(real_provider),
@@ -128,11 +132,13 @@ def command(ctx, anime_url, episode_range, player,
             disable_ssl = False
             session.get_session().verify = not disable_ssl
 
-            # This is just to make choices in providers presistent between searches.
+            # This is just to make choices in providers presistent between
+            # searches.
             choice_provider = choice_dict.get(provider)
 
             if not cls:
-                _anime_url, choice_provider = util.search(anime_url, provider, val=choice_provider, season_info=info, ratio=ratio)
+                _anime_url, choice_provider = util.search(
+                    anime_url, provider, val=choice_provider, season_info=info, ratio=ratio)
                 choice_dict[provider] = choice_provider
                 if choice_provider == 0 or not _anime_url:
                     logger.info('Skipped')
@@ -145,7 +151,7 @@ def command(ctx, anime_url, episode_range, player,
                             fallback_qualities=fallback_qualities)
             # I have yet to investigate all errors this can output
             # No sources found gives error which exits the script
-            except:
+            except BaseException:
                 continue
 
             logger.debug('Found anime: {}'.format(anime.title))
@@ -153,7 +159,8 @@ def command(ctx, anime_url, episode_range, player,
             try:
                 animes = util.parse_ep_str(anime, str(episode_range))
             except RuntimeError:
-                logger.error('No episode found with index {}'.format(episode_range))
+                logger.error(
+                    'No episode found with index {}'.format(episode_range))
                 continue
             except:
                 logger.error('Unknown provider error')
@@ -167,23 +174,31 @@ def command(ctx, anime_url, episode_range, player,
                 skip_download = True
 
             if download_dir and not skip_download:
-                logger.info('Downloading to {}'.format(os.path.abspath(download_dir)))
+                logger.info(
+                    'Downloading to {}'.format(
+                        os.path.abspath(download_dir)))
             if skip_fillers:
                 fillers = util.get_filler_episodes(query)
             for episode in animes:
                 if skip_fillers and fillers:
                     if episode.ep_no in fillers:
-                        logger.info("Skipping episode {} because it is a filler.".format(episode.ep_no))
+                        logger.info(
+                            "Skipping episode {} because it is a filler.".format(
+                                episode.ep_no))
                         continue
 
                 if download_metadata:
-                    util.download_metadata(fixed_file_format, info.metadata, episode)
+                    util.download_metadata(
+                        fixed_file_format, info.metadata, episode)
 
                 if url:
                     util.print_episodeurl(episode)
 
                 if player:
-                    util.play_episode(episode, player=player, title=f'{anime.title} - Episode {episode.ep_no}')
+                    util.play_episode(
+                        episode,
+                        player=player,
+                        title=f'{anime.title} - Episode {episode.ep_no}')
 
                 if not skip_download:
                     if external_downloader:

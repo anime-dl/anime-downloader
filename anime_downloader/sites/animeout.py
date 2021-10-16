@@ -13,7 +13,8 @@ class AnimeOut(Anime, sitename='animeout'):
 
     @classmethod
     def search(cls, query):
-        search_results = helpers.soupify(helpers.get(cls.url, params={'s': query})).select('h3.post-title > a')
+        search_results = helpers.soupify(helpers.get(
+            cls.url, params={'s': query})).select('h3.post-title > a')
         # Removes the unneded metadata from the title
         # Used by MAL matcher
         clean_title_regex = r'\(.*?\)'
@@ -31,7 +32,19 @@ class AnimeOut(Anime, sitename='animeout'):
         # Only uses the direct download links for consistency.
         soup = helpers.soupify(helpers.get(self.url))
         elements = soup.select('article.post a')
-        return [i.get('href') for i in elements if 'Direct Download' in i.text]
+        episodes = [i.get('href')
+                    for i in elements if 'Direct Download' in i.text]
+
+        filters = [self.quality, "1080p", "720p"]
+        quality_filtered = []
+
+        for _filter in filters:
+            if not quality_filtered:
+                quality_filtered = [x for x in episodes if _filter in x]
+            else:
+                break
+
+        return episodes if not quality_filtered else quality_filtered
 
     def _scrape_metadata(self):
         soup = helpers.soupify(helpers.get(self.url))

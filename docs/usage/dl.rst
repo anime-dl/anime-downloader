@@ -16,7 +16,7 @@ Search and download
 
    anime dl 'code geass'
 
-To search on kissanime,
+To search on animepahe,
 
 .. code:: bash
 
