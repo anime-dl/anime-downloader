@@ -162,7 +162,7 @@ def command(ctx, anime_url, episode_range, player,
                 logger.error(
                     'No episode found with index {}'.format(episode_range))
                 continue
-            except BaseException:
+            except:
                 logger.error('Unknown provider error')
                 continue
 
