@@ -75,7 +75,7 @@ def get_driver_binary():
 def cache_request(sele_response):
     """
     This function saves the response from a Selenium request in a json.
-    It uses timestamps to can know if the cache has expired or not.
+    It uses timestamps to know if the cache has expired or not.
     """
     if not cache:
         return
