@@ -38,14 +38,19 @@ DEFAULT_CONFIG = {
         'fallback_qualities': ['720p', '480p', '360p'],
         'log_level': 'INFO',
         'provider': 'twist.moe',
-        'autoplay_next': True
+        'autoplay_next': True,
+        'mpv_arguments': ''
     },
     'gui': {
         'player': 'mpv'
     },
     'siteconfig': {
-        'animefrenzy': {
-            'version': 'subbed'
+        'egyanime': {
+            'version': 'subbed',
+            'servers': [
+                'clipwatching',
+                'streamtape'
+            ]
         },
         'animebinge': {
             'version': 'subbed',
@@ -66,6 +71,9 @@ DEFAULT_CONFIG = {
             'domain_extension': 'to'
         },
         'anistream.xyz': {
+            'version': 'subbed',
+        },
+        'animepahe': {
             'version': 'subbed',
         },
         'animeflv': {
@@ -112,7 +120,12 @@ DEFAULT_CONFIG = {
         },
         'ryuanime': {
             'version': 'subbed',
-            'server': 'trollvid',
+            'servers': [
+                'vidstream',
+                'mp4upload',
+                'xstreamcdn',
+                'trollvid'
+            ]
         },
         'animekisa': {
             'server': 'gcloud',
@@ -121,6 +134,10 @@ DEFAULT_CONFIG = {
 
         'watchmovie': {
             'servers': ['vidstream', 'gcloud', 'yourupload', 'hydrax'],
+            'version': 'subbed',
+        },
+        'wcostream': {
+            'servers': ['vidstreampro', 'mcloud'],
             'version': 'subbed',
         },
         'animeflix': {

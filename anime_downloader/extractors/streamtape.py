@@ -7,9 +7,12 @@ import re
 class StreamTape(BaseExtractor):
     def _get_data(self):
         resp = helpers.get(self.url, cache=False).text
-        url = "https:" + \
-            re.search(
-                "document\.getElementById\([\"']videolink[\"']\)\.innerHTML.*?=.*?[\"'](.*?)[\"']", resp).group(1)
+        groups = re.search(
+            r"document\.getElementById\(.*?\)\.innerHTML = [\"'](.*?)[\"'] \+ [\"'](.*?)[\"']",
+            resp
+        )
+        url = "https:" + groups[1] + groups[2]
+            
 
         return {
             'stream_url': url,

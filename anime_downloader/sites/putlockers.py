@@ -11,7 +11,8 @@ class PutLockers(Anime, sitename="putlockers"):
 
     @classmethod
     def search(cls, query):
-        search_url = "http://putlockers.fm/search-movies/{}.html".format(quote_plus(query))
+        search_url = "http://putlockers.fm/search-movies/{}.html".format(
+            quote_plus(query))
         soup = helpers.soupify(helpers.get(search_url))
 
         search_results = [
@@ -44,14 +45,16 @@ class PutLockers(Anime, sitename="putlockers"):
 
 class PutLockersEpisode(AnimeEpisode, sitename="putlockers"):
     def _get_sources(self):
-        self.headers = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/56.0"}
+        self.headers = {
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0.1) Gecko/20100101 Firefox/88.0.1"}
         text = helpers.get(self.url).text
 
         sources_list = []
         regexed = re.search(r'Base64.decode\("(.*)"\)', text)
 
         if regexed:
-            link = helpers.soupify(base64.b64decode(regexed.group(1)).decode()).iframe.get("src")
+            link = helpers.soupify(base64.b64decode(
+                regexed.group(1)).decode()).iframe.get("src")
             sources_list.append({
                 "extractor": "eplay",
                 "url": link,
@@ -60,7 +63,8 @@ class PutLockersEpisode(AnimeEpisode, sitename="putlockers"):
             })
 
         soup = helpers.soupify(text)
-        servers = soup.select("p.server_version a")
+        # Cap at 10 servers for the sake of speed
+        servers = soup.select("p.server_version a")[:10]
 
         for server in servers:
             page_link = server.get("href")
@@ -70,13 +74,17 @@ class PutLockersEpisode(AnimeEpisode, sitename="putlockers"):
                 soup = helpers.soupify(text)
                 regexed = re.search(r'Base64.decode\("(.*)"\)', text)
                 if regexed:
-                    link = helpers.soupify(base64.b64decode(regexed.group(1)).decode()).iframe.get("src")
-                    sources_list.append({
-                        "extractor": "eplay",
-                        "url": link,
-                        "server": "eplay",
-                        "version": "dubbed"
-                    })
+                    iframe = helpers.soupify(base64.b64decode(
+                        regexed.group(1)).decode()).iframe
+                    if iframe:
+                        link = iframe.get("src")
+
+                        sources_list.append({
+                            "extractor": "eplay",
+                            "url": link,
+                            "server": "eplay",
+                            "version": "dubbed"
+                        })
 
                 link_node = soup.select("div.mediaplayer a")
                 if link_node:

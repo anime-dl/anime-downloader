@@ -1,9 +1,11 @@
 from anime_downloader.extractors.base_extractor import BaseExtractor
+from anime_downloader.sites import helpers
 
 
-class AnimeVideo(BaseExtractor):
+class Wasabisys(BaseExtractor):
     def _get_data(self):
+
         return {
             'stream_url': self.url,
-            'referer': self._referer if self._referer else self.url 
+            'referer': 'https://animtime.com/'
         }

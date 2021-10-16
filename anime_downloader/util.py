@@ -22,7 +22,7 @@ from urllib.parse import urlparse, unquote
 
 from anime_downloader import session
 from anime_downloader.sites import get_anime_class, helpers
-from anime_downloader.const import desktop_headers
+from anime_downloader.const import desktop_headers, get_random_header
 
 logger = logging.getLogger(__name__)
 
@@ -77,6 +77,14 @@ def format_search_results(search_results):
     table = '\n'.join(table.split('\n')[::-1])
     return table
 
+def format_matches(matches):
+    if matches:
+        table = [[[p], [sr]] for p, sr, r in sorted(matches, key = lambda x: x[2], reverse=True)]
+        table = [a for b in table for a in b]
+    else:
+        table = [["None"]]
+    table = tabulate(table, ['RESULTS'], tablefmt='grid', colalign=("center",))
+    return table
 
 def search(query, provider, val=None, season_info=None, ratio=50):
     # Will use animeinfo sync if season_info is provided
@@ -165,9 +173,14 @@ def download_metadata(file_format, metdata, episode, filename='metdata.json'):
 
 
 def split_anime(anime, episode_range):
+    from anime_downloader.sites.anime import AnimeEpisode
     try:
         start, end = [int(x) for x in episode_range.split(':')]
-        anime = anime[start - 1:end - 1]
+        ep_range = [x for x in range(start, end)]
+        eps = [x for x in anime._episode_urls if x[0] in ep_range]
+
+        anime._episode_urls = [(x[0], x[1]) for x in eps]
+        anime._len = len(anime._episode_urls)
     except ValueError:
         # Only one episode specified
         episode = int(episode_range)
@@ -180,7 +193,8 @@ def parse_episode_range(max_range, episode_range):
     if not episode_range:
         episode_range = '1:'
     if episode_range.endswith(':'):
-        length = max_range if type(max_range) == int else len(max_range)
+        length = max_range if type(max_range) == int else (
+            int(max_range._episode_urls[-1][0]))
         episode_range += str(length + 1)
     if episode_range.startswith(':'):
         episode_range = '1' + episode_range
@@ -199,7 +213,17 @@ def parse_ep_str(anime, grammar):
             for episode in split_anime(anime, episode_grammar):
                 episodes.append(episode)
         else:
-            episodes.append(anime[int(episode_grammar) - 1])
+            from anime_downloader.sites.anime import AnimeEpisode
+
+            if episode_grammar == '0':
+                ep = sorted(anime._episode_urls)[-1]
+            else:
+                ep = [x for x in anime._episode_urls if x[0]
+                      == int(episode_grammar)][0]
+
+            ep_cls = AnimeEpisode.subclasses[anime.sitename]
+
+            episodes.append(ep_cls(ep[1], parent=anime, ep_no=ep[0]))
     return episodes
 
 
@@ -213,17 +237,20 @@ def print_episodeurl(episode):
     print(unquote(url))
 
 
-def play_episode(episode, *, player, title):
+def play_episode(episode, *, player, title, episodes="0:0"):
     if player == 'mpv':
-        p = subprocess.Popen([
-            player,
-            '--title={}'.format(title),
-            '--referrer="{}"'.format(episode.source().referer),
-            episode.source().stream_url
-        ])
+        p = subprocess.Popen([player,
+                              f'--title={title}',
+                              f'--referrer={episode.source().referer}',
+                              f'--user-agent={get_random_header()["user-agent"]}',
+                              episode.source().stream_url])
+    elif player == "android":
+        p = subprocess.Popen(['am', 'start', '-a', 'android.intent.action.VIEW',
+                              '-t', 'video/*', '-d', f'{episode.source().stream_url}'])
+        if episodes == None or ':' in episodes and episodes != "0:1":
+            input("Press enter to continue\n")
     else:
-        p = subprocess.Popen([player, episode.source().stream_url
-                              ])
+        p = subprocess.Popen([player, episode.source().stream_url])
     p.wait()
 
 
@@ -265,8 +292,9 @@ def format_filename(filename, episode):
 def format_command(cmd, episode, file_format, speed_limit, path):
     from anime_downloader.config import Config
     if not Config._CONFIG['dl']['aria2c_for_torrents'] and (episode.url.startswith('magnet:?xt=urn:btih:') or episode.source().stream_url.startswith('https://magnet:?xt=urn:btih:')):
-        url = episode.url if episode.url.startswith("magnet") else episode.source().stream_url
-        url = url.replace("https://","")
+        url = episode.url if episode.url.startswith(
+            "magnet") else episode.source().stream_url
+        url = url.replace("https://", "")
         return ['open', url]
 
     # For aria2c.
@@ -285,7 +313,8 @@ def format_command(cmd, episode, file_format, speed_limit, path):
                    '--check-certificate=false --user-agent={useragent} --max-overall-download-limit={speed_limit} '
                    '--console-log-level={log_level}',
         '{idm}': 'idman.exe /n /d {stream_url} /p {download_dir} /f {file_format}.mp4',
-        '{wget}': 'wget {stream_url} --referer={referer} --user-agent={useragent} -O {download_dir}/{file_format}.mp4 -c'
+        '{wget}': 'wget {stream_url} --referer={referer} --user-agent={useragent} -O {download_dir}/{file_format}.mp4 -c',
+        '{uget}': '/CMD/ --http-referer={referer} --http-user-agent={useragent} --folder={download_dir} --filename={file_format}.mp4 {stream_url}'
     }
 
     # Allows for passing the user agent with self.headers in the site.
@@ -293,10 +322,12 @@ def format_command(cmd, episode, file_format, speed_limit, path):
     if episode.headers.get('user-agent'):
         useragent = episode.headers['user-agent']
     else:
-        useragent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36'
+        useragent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/605.1.15 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/605.1.15'
 
-    stream_url = episode.source().stream_url if not episode.url.startswith('magnet:?xt=urn:btih:') else episode.url
-    stream_url = stream_url if 'magnet:?xt=urn:btih:' not in stream_url else stream_url.replace('https://', '')
+    stream_url = episode.source().stream_url if not episode.url.startswith(
+        'magnet:?xt=urn:btih:') else episode.url
+    stream_url = stream_url if 'magnet:?xt=urn:btih:' not in stream_url else stream_url.replace(
+        'https://', '')
 
     rep_dict = {
         'stream_url': stream_url,
@@ -319,6 +350,9 @@ def format_command(cmd, episode, file_format, speed_limit, path):
 
     if cmd == "{idm}":
         rep_dict['file_format'] = rep_dict['file_format'].replace('/', '\\')
+
+    if cmd == '{uget}':
+        cmd_dict['{uget}'] = cmd_dict['{uget}'].replace('/CMD/', 'uget-gtk' if check_in_path('uget-gtk') else 'uget')
 
     if cmd in cmd_dict:
         cmd = cmd_dict[cmd]

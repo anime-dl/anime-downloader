@@ -26,16 +26,17 @@ class Trollvid(BaseExtractor):
 
         elif token:
             token = token.group(1)
-            trollvid_id = self.url.split('/')[-1]  # something like: 084df78d215a
+            # something like: 084df78d215a
+            trollvid_id = self.url.split('/')[-1]
             post = helpers.post(f'https://mp4.sh/v/{trollvid_id}',
                                 data={'token': token},
                                 referer=self.url,
                                 ).json()
 
             # {'success':True} on success.
-            if post.get('success') and post.get('data'):
+            if post.get('success') and post.get('file'):
                 return {
-                    'stream_url': post['data']
+                    'stream_url': post['file']
                 }
 
         # In case neither methods work.

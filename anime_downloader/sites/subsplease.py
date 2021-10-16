@@ -1,6 +1,9 @@
 
+import logging
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
+
+logger = logging.getLogger(__name__)
 
 
 class SubsPlease(Anime, sitename="subsplease"):
@@ -13,6 +16,9 @@ class SubsPlease(Anime, sitename="subsplease"):
         # Tz for time zone - the parameter is required, but the value does not matter
         resp = helpers.get(cls.api_url, params={
                            "f": "search", "tz": "", "s": query}).json()
+
+        if type(resp) is list:
+            return
 
         # Using to deduplicate
         slug_to_title_dict = dict(
@@ -38,7 +44,7 @@ class SubsPlease(Anime, sitename="subsplease"):
 
         episodes = []
 
-        for episode in resp.keys():
+        for episode in resp["episode"].keys():
             # Construct a fake url for AnimeEpisode to use
             episodes.append(f"{self.url}/episode/{sid}/{episode}")
 
@@ -55,7 +61,7 @@ class SubsPleaseEpisode(AnimeEpisode, sitename="subsplease"):
         resp = helpers.get(SubsPlease.api_url, params={
                            "f": "show", "tz": "", "sid": sid}).json()
 
-        downloads = resp[episode_name]["downloads"]
+        downloads = resp["episode"][episode_name]["downloads"]
 
         # dict of quality-magnet
         magnets = dict([(x["res"] + 'p', x["magnet"]) for x in downloads])

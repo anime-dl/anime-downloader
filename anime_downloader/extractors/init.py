@@ -1,4 +1,6 @@
 from importlib import import_module
+import re
+
 
 ALL_EXTRACTORS = [
     {
@@ -6,6 +8,12 @@ ALL_EXTRACTORS = [
         'modulename': 'rapidvideo',
         'regex': 'rapidvideo',
         'class': 'RapidVideo'
+    },
+    {
+        'sitename': 'clipwatching',
+        'modulename': 'clipwatching',
+        'regex': 'clipwatching',
+        'class': 'clipwatching'
     },
     {
         'sitename': 'no_extractor',
@@ -60,6 +68,12 @@ ALL_EXTRACTORS = [
         'modulename': 'yourupload',
         'regex': 'yourupload',
         'class': 'Yourupload'
+    },
+    {
+        'sitename': 'wcostream',
+        'modulename': 'wcostream',
+        'regex': 'wcostream',
+        'class': 'WcoStream'
     },
     {
         'sitename': 'vidstream',
@@ -162,13 +176,19 @@ ALL_EXTRACTORS = [
         'modulename': 'streamium',
         'regex': 'streamium',
         'class': 'Streamium'
+    },
+    {
+        'sitename': 'wasabisys',
+        'modulename': 'wasabisys',
+        'regex': 'wasabisys',
+        'class': 'Wasabisys'
     }
 ]
 
 
 def get_extractor(name):
     for extractor in ALL_EXTRACTORS:
-        if extractor['regex'] in name.lower():
+        if re.match(extractor['regex'], name.lower()):
             module = import_module(
                 'anime_downloader.extractors.{}'.format(
                     extractor['modulename'])

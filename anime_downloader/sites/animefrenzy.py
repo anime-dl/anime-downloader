@@ -7,52 +7,73 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def get_token():
+    r = helpers.get('https://animefrenzy.org').text
+    script = 'https://animefrenzy.org' + re.search(r'src\=\"(\/static\/js\/main\..*?)\"', r)[1]  # noqa
+    script = helpers.get(script).text
+    token = re.search(r'token\:\"(.*?)\"', script)[1]
+    return token
+
+
 class AnimeFrenzy(Anime, sitename='animefrenzy'):
     sitename = 'animefrenzy'
+    token = get_token()
 
     @classmethod
     def search(cls, query):
-        r = helpers.get("https://animefrenzy.net/search", params={"q": query})
-        soup = helpers.soupify(r)
-        titleName = soup.select("div.conm > a.cona")
-        search_results = [
-            SearchResult(
-                title=a.text,
-                url='https://animefrenzy.net/' + a.get('href')
-            )
-            for a in titleName
-        ]
-        return(search_results)
+        results = helpers.get("https://moo.yare.wtf/advanced", params={"search": query, "token": cls.token}).json()['data']  # noqa
+        if 'nav' in results:
+            results = results['nav']['currentPage']['items']
+            search_results = [
+                SearchResult(
+                    title=i['name'],
+                    url='https://animefrenzy.org/anime/' + i['slug'],
+                    poster='https://moo.yare.wtf/' + i['image'],
+                    meta={'year': i['year']},
+                    meta_info={
+                        'version_key_dubbed': '(Sub)' if i['language'] == 'subbed' else '(Dub)'  # noqa
+                    }
+                )
+                for i in results
+            ]
+            search_results = sorted(search_results, key=lambda x: int(x.meta['year']))
+            return search_results
+        else:
+            return []
 
     def _scrape_episodes(self):
-        soup = helpers.soupify(helpers.get(self.url))
-        lang = self.config.get("version")
-        if lang == "subbed":
-            ep_list = [x for x in soup.select("div.sub1 > a")]
-        elif lang == "dubbed":
-            ep_list = [x for x in soup.select("div.dub1 > a")]
+        self.token = get_token()
+        slug = self.url.split('/')[-1]
+        if 'episode' in slug:
+            api_link = 'https://moo.yare.wtf/anime-episode/slug/' + slug
+            r = helpers.get(api_link, params={'token': self.token}).json()
+            slug = r['data']['anime_slug']
+
+        api_link = 'https://moo.yare.wtf/anime/slug/' + slug
+        r = helpers.get(api_link, params={'token': self.token}).json()
+        if r['status'] == 'Found':
+            episodes = r['data']['episodes']
+            episodes = [
+                'https://moo.yare.wtf/vidstreaming/animefrenzy/' + x['videos'][0]['video_id']  # noqa
+                for x in episodes
+            ]
+            return episodes
         else:
-            logger.warning("Wrong Language Setting, Defaulting to Subbed")
-            ep_list = [x for x in soup.select("div.sub1 > a")]
-
-        episodes = ["https://animefrenzy.net" + x.get("href") for x in ep_list]
-
-        if len(episodes) == 0:
-            logger.warning("No Episodes available, if lang is \"dubbed\" try switching to subbed")
-
-        return episodes[::-1]
-#        raise NotImplementedError
+            return []
 
     def _scrape_metadata(self):
-        soup = helpers.soupify(helpers.get(self.url))
-        self.title = soup.select_one("div.infodes > h1").text
+        slug = self.url.split('/')[-1]
+        if 'episode' in slug:
+            api_link = 'https://moo.yare.wtf/anime-episode/slug/' + slug
+            r = helpers.get(api_link, params={'token': self.token}).json()
+            slug = r['data']['anime_slug']
+        api_link = 'https://moo.yare.wtf/anime/slug/' + slug
+        r = helpers.get(api_link, params={'token': self.token}).json()
+        self.title = r['data']['name']
 
 
 class AnimeFrenzyEpisode(AnimeEpisode, sitename='animefrenzy'):
     def _get_sources(self):
-        logger.debug(self.url)
-        soup = helpers.soupify(helpers.get(self.url))
-        link = soup.select_one("div.host > a.btn-video")
-        logger.debug(link)
-        return [("vidstreaming", link.get("data-video-link"))]
-#        raise NotImplementedError
+        r = helpers.get(self.url).text
+        link = re.search(r'\"file\"\:\"(.*?)\"', r)[1]
+        return [('no_extractor', link)]
