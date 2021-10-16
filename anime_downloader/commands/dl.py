@@ -73,7 +73,8 @@ sitenames = [v[1] for v in ALL_ANIME_SITES]
     '--choice', '-c', type=int,
     help='Choice to start downloading given anime number '
 )
-@click.option("--skip-fillers", is_flag=True, help="Skip downloading of fillers.")
+@click.option("--skip-fillers", is_flag=True,
+              help="Skip downloading of fillers.")
 @click.option(
     "--speed-limit",
     type=str,
@@ -149,16 +150,18 @@ def command(ctx, anime_url, episode_range, url, player, skip_download, quality,
         if skip_fillers and fillers:
             if episode.ep_no in fillers:
                 logger.info(
-                    "Skipping episode {} because it is a filler.".format(episode.ep_no))
+                    "Skipping episode {} because it is a filler.".format(
+                        episode.ep_no))
                 continue
 
         if url:
             util.print_episodeurl(episode)
 
         if player:
-            episode_range = f"0:{len(animes)}" if not episode_range else episode_range
             util.play_episode(
-                episode, player=player, title=f'{anime.title} - Episode {episode.ep_no}', episodes=episode_range)
+                episode,
+                player=player,
+                title=f'{anime.title} - Episode {episode.ep_no}')
 
         if not skip_download:
             if external_downloader:

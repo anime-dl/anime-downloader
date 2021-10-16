@@ -1,7 +1,11 @@
-import click
+from anime_downloader.util import is_running
+if is_running(regex=r'python|anime|config', expected_matches=3):
+    raise Exception('Another instance of "anime config" is already running!')
+
 import os
+import click
 from tabulate import tabulate
-from anime_downloader.config import APP_DIR, Config
+from anime_downloader.config import APP_DIR, Config  # noqa
 
 data = Config._CONFIG
 
@@ -20,7 +24,7 @@ def traverse_json(data, previous=''):
     click.echo(create_table(keys, previous))
     val = click.prompt("Select Option", type=int, default=1) - 1
 
-    if type(data[keys[val]]) == dict:
+    if isinstance(data[keys[val]], dict):
         traverse_json(data[keys[val]], keys[val])
     else:
         click.echo(f"Current value: {data[keys[val]]}")
@@ -32,8 +36,9 @@ def traverse_json(data, previous=''):
         except (SyntaxError, NameError) as e:
             pass
 
-        if type(newVal) != type(data[keys[val]]):
-            choice = click.confirm(f"{newVal} appears to be of an incorrect type. Continue")
+        if not isinstance(newVal, type(data[keys[val]])):
+            choice = click.confirm(
+                f"{newVal} appears to be of an incorrect type. Continue")
 
             if not choice:
                 exit()
@@ -41,7 +46,8 @@ def traverse_json(data, previous=''):
                 try:
                     newVal = type(data[keys[val]])(newVal)
                 except TypeError:
-                    click.echo(f"'{newVal}' could not be converted to the correct type")
+                    click.echo(
+                        f"'{newVal}' could not be converted to the correct type")
                     exit()
 
         data[keys[val]] = newVal

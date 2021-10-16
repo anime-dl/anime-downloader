@@ -1,3 +1,8 @@
+from anime_downloader.util import is_running
+if is_running(regex=r'python|anime|watch', expected_matches=3):
+    raise Exception('Another instance of "anime watch" is already running!')
+
+
 import click
 import logging
 import sys
@@ -90,17 +95,21 @@ def command(anime_name, new, update_all, _list, quality, remove,
             watcher.update_anime(anime)
 
     if mal_import:
-        PATH = anime_name  # Hack, but needed to prompt the user. Uses the anime name as parameter.
+        # Hack, but needed to prompt the user. Uses the anime name as
+        # parameter.
+        PATH = anime_name
         if PATH:
             query = PATH
         else:
-            query = click.prompt('Enter the file path for the MAL .xml file', type=str)
+            query = click.prompt(
+                'Enter the file path for the MAL .xml file', type=str)
 
         if query.endswith('.xml'):
             watcher._import_from_MAL(query)
             sys.exit(0)
         else:
-            logging.error("Either the file selected was not an .xml or no file was selected.")
+            logging.error(
+                "Either the file selected was not an .xml or no file was selected.")
             sys.exit(1)
 
     # Defaults the command to anime watch -l all.
@@ -128,13 +137,15 @@ def command(anime_name, new, update_all, _list, quality, remove,
 
 def command_parser(command):
     # Returns<kUp> a list of the commands
-    # new "no neverland" --provider vidstream > ['new', '--provider', 'no neverland', 'vidstream']
+    # new "no neverland" --provider vidstream > ['new', '--provider', 'no
+    # neverland', 'vidstream']
 
     # Better than split(' ') because it accounts for quoutes.
     # Group 3 for quoted command
     command_regex = r'(("|\')(.*?)("|\')|.*?\s)'
     matches = re.findall(command_regex, command + " ")
-    commands = [i[0].strip('"').strip("'").strip() for i in matches if i[0].strip()]
+    commands = [i[0].strip('"').strip("'").strip()
+                for i in matches if i[0].strip()]
     return commands
 
 
@@ -159,8 +170,10 @@ def list_animes(watcher, quality, download_dir, imp=None, _filter=None):
                 watcher.new(url)
 
             if key == 'swap':
-                if vals[0] in ['all', 'watching', 'completed', 'planned', 'dropped', 'hold']:
-                    return list_animes(watcher, quality, download_dir, imp=imp, _filter=vals[0])
+                if vals[0] in ['all', 'watching', 'completed',
+                               'planned', 'dropped', 'hold']:
+                    return list_animes(
+                        watcher, quality, download_dir, imp=imp, _filter=vals[0])
 
             return list_animes(watcher, quality, download_dir, imp=imp)
         else:
@@ -272,7 +285,8 @@ def list_animes(watcher, quality, download_dir, imp=None, _filter=None):
                 watcher.update(anime)
 
             elif key == 'watch_status':
-                if val in ['watching', 'completed', 'dropped', 'planned', 'all']:
+                if val in ['watching', 'completed',
+                           'dropped', 'planned', 'all']:
                     colours = {
                         'watching': 'cyan',
                         'completed': 'green',
