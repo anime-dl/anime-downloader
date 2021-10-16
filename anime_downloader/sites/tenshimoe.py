@@ -3,6 +3,18 @@ from anime_downloader.sites import helpers
 import re
 
 
+def parse_search_page(soup):
+    results = soup.select('ul.thumb > li > a')
+    return [
+            SearchResult(
+                title=x['title'],
+                url=x['href'],
+                poster=x.find('img')['src']
+            )
+            for x in results
+        ]
+
+
 class TenshiMoe(Anime, sitename='tenshi.moe'):
 
     sitename = 'tenshi.moe'
@@ -13,21 +25,26 @@ class TenshiMoe(Anime, sitename='tenshi.moe'):
             helpers.get(
                 'https://tenshi.moe/anime',
                 params={'q': query},
-                cookies={'loop-view': 'thumb'},
-                cache=False
+                cookies={'loop-view': 'thumb'}
             )
         )
 
-        results = soup.select('ul.thumb > li > a')
+        results = parse_search_page(soup)
 
-        return [
-            SearchResult(
-                title=x['title'],
-                url=x['href'],
-                poster=x.find('img')['src']
-            )
-            for x in results
-        ]
+        while soup.select_one(".pagination"):
+            link = soup.select_one('a.page-link[rel="next"]')
+            if link:
+                soup = helpers.soupify(
+                    helpers.get(
+                        link['href'],
+                        cookies={'loop-view': 'thumb'}
+                    )
+                )
+                results.extend(parse_search_page(soup))
+            else:
+                break
+
+        return results
 
     def _scrape_episodes(self):
         soup = helpers.soupify(helpers.get(self.url))

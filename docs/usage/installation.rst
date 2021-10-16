@@ -19,14 +19,14 @@ Add the following to a file named install.bat and then run it as Administrator;
    @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command " [System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
 
    choco install -y git mpv python3 aria2 nodejs
-   refreshenv && pip3 install -U git+https://github.com/vn-ki/anime-downloader.git && echo Testing providers, the install is done && anime test
+   refreshenv && pip3 install -U git+https://github.com/anime-dl/anime-downloader.git && echo Testing providers, the install is done && anime test
 
 
 Windows via ``choco``
 ~~~~~~~~~~~~~~~~~~~~~
 
  Contributed by @CodaTheOtaku
-**NOTE** Ensure the Command Prompt (cmd) is being ran as Administrator.
+**NOTE:** Ensure the Command Prompt (cmd) is being ran as Administrator.
 
 - Install `Chocolatey`_ Package manager.
 
@@ -35,7 +35,7 @@ Windows via ``choco``
        choco install -y git mpv python3 aria2 nodejs
 -  Once these are installed; ::
 
-        pip3 install -U git+https://github.com/vn-ki/anime-downloader.git
+        pip3 install -U git+https://github.com/anime-dl/anime-downloader.git
 
 -  Then, the commands to view a show would be; ::
 
@@ -65,7 +65,7 @@ all the following ``pip`` with ``pip3``.
 
 -  To install the bleeding-edge version of Anime-Downloader use this alternative command;:
 
-        pip3 install -U git+https://github.com/vn-ki/anime-downloader.git
+        pip3 install -U git+https://github.com/anime-dl/anime-downloader.git
 -  Enjoy.
 
 
@@ -86,7 +86,7 @@ This does not require a rooted device to work.
 
 - Install Aria2c via the following command if using Termux; ::
 
-   pkg install aria2c
+   pkg install aria2
    
 - Install Python via the following command if using Termux; ::
 
@@ -98,7 +98,7 @@ This does not require a rooted device to work.
    
 - Install Anime-Downloader via the following command after python and git are installed; ::
 
-   pip3 install -U git+https://github.com/vn-ki/anime-downloader.git
+   pip3 install -U git+https://github.com/anime-dl/anime-downloader.git
  
 - The usage commands should now match the commands used on PC.
 
@@ -123,7 +123,7 @@ The following steps install Anime-Downloader;
 
 - Firstly, clone the repository via this command; ::
 
-   git clone https://github.com/vn-ki/anime-downloader.git
+   git clone https://github.com/anime-dl/anime-downloader.git
    
 - Next, change your directory into the cloned repo. To do so, use the following case-sensitive command; ::
 

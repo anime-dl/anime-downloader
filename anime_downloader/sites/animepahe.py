@@ -8,57 +8,9 @@ from anime_downloader.sites import helpers
 logger = logging.getLogger(__name__)
 
 
-class AnimePaheEpisode(AnimeEpisode, sitename='animepahe'):
-    QUALITIES = ['360p', '480p', '720p', '1080p']
-
-    def _get_source(self, episode_id, server, session_id):
-        # We will extract the episodes data through the animepahe api
-        # which returns the available qualities and the episode sources.
-        params = {
-            'id': episode_id,
-            'm': 'embed',
-            'p': server,
-            'session': session_id
-        }
-
-        episode_data = helpers.get('https://animepahe.com/api', params=params).json()
-        episode_data = episode_data['data']
-        sources = {}
-
-        for info in range(len(episode_data)):
-            quality = list(episode_data[info].keys())[0]
-            sources[f'{quality}p'] = episode_data[info][quality]['kwik']
-
-        if self.quality in sources:
-            return (server, sources[self.quality])
-        return
-
-    def _get_sources(self):
-        supported_servers = ['kwik', 'mp4upload', 'rapidvideo']
-        source_text = helpers.get(self.url, cf=True).text
-        sources = []
-
-        server_list = re.findall(r'data-provider="([^"]+)', source_text)
-        episode_id, session_id = re.search("getUrls\((\d+?), \"(.*)?\"", source_text).groups()
-
-        for server in server_list:
-            if server not in supported_servers:
-                continue
-            source = self._get_source(episode_id, server, session_id)
-            if source:
-                sources.append(source)
-
-        if sources:
-            return sources
-        raise NotFoundError
-
-
 class AnimePahe(Anime, sitename='animepahe'):
     sitename = 'animepahe'
     api_url = 'https://animepahe.com/api'
-    base_anime_url = 'https://animepahe.com/anime/'
-    QUALITIES = ['360p', '480p', '720p', '1080p']
-    _episodeClass = AnimePaheEpisode
 
     @classmethod
     def search(cls, query):
@@ -69,68 +21,87 @@ class AnimePahe(Anime, sitename='animepahe'):
         }
 
         search_results = helpers.get(cls.api_url, params=params).json()
-        results = []
+        if search_results['total'] == []:
+            return []
 
-        for search_result in search_results['data']:
-            search_result_info = SearchResult(
-                title=search_result['title'],
-                url=cls.base_anime_url + search_result['slug'],
-                poster=search_result['poster']
+        return [
+            SearchResult(
+                title=result['title'] + " (" + result['type'] + ")",
+                url="https://animepahe.com/anime/TITLE!" + result['title'] + " (" + result['type'] + ")" + '!TITLE/' + result['session'] + "/" + str(result['id']),  # noqa
+                poster=result['poster']
             )
+            for result in search_results['data']
+        ]
 
-            logger.debug(search_result_info)
-            results.append(search_result_info)
+    def _scrape_episodes(self):
+        attr = self.url.split('/')
+        session = attr[-2]
+        id_ = attr[-1]
+        page = 1
+        headers = {'referer': 'https://animepahe.com/'}
 
-        return results
+        apiUri = self.api_url + '?m=release&id=' + id_ + '&sort=episode_asc&page='
+        jsonResponse = helpers.get(apiUri + str(page), headers=headers).json()
+        lastPage = jsonResponse['last_page']
+        perPage = jsonResponse['per_page']
+        total = jsonResponse['total']
+        ep = 1
+        episodes = []
 
-    def get_data(self):
-        page = helpers.get(self.url, cf=True).text
-        anime_id = re.search(r'&id=(\d+)', page).group(1)
-
-        self.params = {
-            'm': 'release',
-            'id': anime_id,
-            'sort': 'episode_asc',
-            'page': 1
-        }
-
-        json_resp = helpers.get(self.api_url, params=self.params).json()
-        self._scrape_metadata(page)
-        self._episode_urls = self._scrape_episodes(json_resp)
-        self._len = len(self._episode_urls)
-        return self._episode_urls
-
-    def _collect_episodes(self, ani_json, episodes=[]):
-        # Avoid changing original list
-        episodes = episodes[:]
-
-        # If episodes is not an empty list we ensure that we start off
-        # from the length of the episodes list to get correct episode
-        # numbers
-        for no, anime_ep in enumerate(ani_json, len(episodes)):
-            episodes.append((no + 1, f'{self.url}/{anime_ep["id"]}',))
-
-        return episodes
-
-    def _scrape_episodes(self, ani_json):
-        episodes = self._collect_episodes(ani_json['data'])
-
-        if not episodes:
-            raise NotFoundError(f'No episodes found for {self.url}')
+        if (lastPage == 1 and perPage > total):
+            for epi in jsonResponse['data']:
+                episodes.append(
+                    f'{self.api_url}?m=links&id={epi["anime_id"]}&session={epi["session"]}&p=kwik!!TRUE!!')
         else:
-            # Check if other pages exist since animepahe only loads
-            # first page and make subsequent calls to the api for every
-            # page
-            start_page = ani_json['current_page'] + 1
-            end_page = ani_json['last_page'] + 1
-
-            for i in range(start_page, end_page):
-                self.params['page'] = i
-                resp = helpers.get(self.api_url, params=self.params).json()
-
-                episodes = self._collect_episodes(resp['data'], episodes)
-
+            stop = False
+            for page in range(lastPage):
+                if stop:
+                    break
+                for i in range(perPage):
+                    if ep <= total:
+                        episodes.append(
+                            f'{self.api_url}?m=release&id={id_}&sort=episode_asc&page={page+1}&ep={ep}!!FALSE!!')
+                        ep += 1
+                    else:
+                        stop = True
+                        break
         return episodes
 
-    def _scrape_metadata(self, data):
-        self.title = re.search(r'<h1>([^<]+)', data).group(1)
+    def _scrape_metadata(self):
+        self.title = re.findall(r"TITLE!(.*?)!TITLE", self.url)[0]
+
+
+class AnimePaheEpisode(AnimeEpisode, sitename='animepahe'):
+    def _get_sources(self):
+        if '!!TRUE!!' in self.url:
+            self.url = self.url.replace('!!TRUE!!', '')
+        else:
+            headers = {'referer': 'https://animepahe.com/'}
+            regex = r"\&ep\=(\d+)\!\!FALSE\!\!"
+            episodeNum = int(re.findall(regex, self.url)[0])
+            self.url = re.sub(regex, '', self.url)
+            jsonResponse = helpers.get(self.url, headers=headers).json()
+
+            ep = None
+            for episode in jsonResponse['data']:
+                if int(episode['episode']) == episodeNum:
+                    ep = episode
+            if ep:
+                self.url = 'https://animepahe.com/api?m=links&id=' + str(ep['anime_id']) + '&session=' + ep['session'] + '&p=kwik'  # noqa
+            else:
+                raise NotFoundError
+
+        episode_data = helpers.get(self.url).json()
+
+        data = episode_data['data']
+        qualities = [x + 'p' for f in data for x in f]
+
+        sources_list = [
+           f[x]['kwik_adfly'] for f in data for x in f
+        ]
+
+        for i, quality in enumerate(qualities):
+            if self.quality == quality:
+                return [("kwik", sources_list[i])]
+
+        return [("kwik", x) for x in sources_list]

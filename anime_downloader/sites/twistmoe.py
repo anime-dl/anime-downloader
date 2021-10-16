@@ -37,7 +37,7 @@ class TwistMoe(Anime, sitename='twist.moe'):
     @classmethod
     def search(self, query):
         headers = {
-            'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.46 Safari/537.36',
+            'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/605.1.15 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/605.1.15',
             'x-access-token': '0df14814b9e590a1f26d3071a4ed7974'
         }
         # soup = helpers.soupify(helpers.get('https://twist.moe/', allow_redirects=True, headers=headers))

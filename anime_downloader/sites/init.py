@@ -2,8 +2,9 @@ from importlib import import_module
 
 ALL_ANIME_SITES = [
     # ('filename', 'sitename', 'classname')
-    ('_4anime', '4anime', 'Anime4'),
+    # ('_4anime', '4anime', 'Anime4'),
     ('anitube', 'anitube', 'AniTube'),
+    ('animtime', 'animtime', 'AnimTime'),
     ('anime8', 'anime8', 'Anime8'),
     ('animebinge', 'animebinge', 'AnimeBinge'),
     ('animechameleon', 'gurminder', 'AnimeChameleon'),
@@ -17,8 +18,10 @@ ALL_ANIME_SITES = [
     ('animetake','animetake','AnimeTake'),
     ('animeonline','animeonline360','AnimeOnline'),
     ('animeout', 'animeout', 'AnimeOut'),
+    # ('animepahe', 'animepahe', 'AnimePahe'),
     ('animerush', 'animerush', 'AnimeRush'),
     ('animesimple', 'animesimple', 'AnimeSimple'),
+    ('animestar', 'animestar', 'AnimeStar'),
     ('animesuge', 'animesuge', 'AnimeSuge'),
     ('animevibe', 'animevibe', 'AnimeVibe'),
     ('animixplay', 'animixplay', 'AniMixPlay'),
@@ -26,7 +29,6 @@ ALL_ANIME_SITES = [
     ('dbanimes', 'dbanimes', 'DBAnimes'),
     ('erairaws', 'erai-raws', 'EraiRaws'),
     ('egyanime', 'egyanime', 'EgyAnime'),
-    ('fastani', 'fastani', 'FastAni'),
     ('genoanime', 'genoanime', 'GenoAnime'),
     ('itsaturday', 'itsaturday', 'Itsaturday'),
     ('justdubs', 'justdubs', 'JustDubs'),
@@ -42,8 +44,9 @@ ALL_ANIME_SITES = [
     ('twistmoe', 'twist.moe', 'TwistMoe'),
     ('tenshimoe', 'tenshi.moe', 'TenshiMoe'),
     ('vidstream', 'vidstream', 'VidStream'),
-    ('voiranime', 'voiranime', 'VoirAnime'),
+    # ('voiranime', 'voiranime', 'VoirAnime'),
     ('vostfree', 'vostfree', 'VostFree'),
+    ('wcostream', 'wcostream', 'WcoStream'),
 ]
 
 

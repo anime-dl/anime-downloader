@@ -3,10 +3,12 @@ import re
 from anime_downloader.sites.anime import Anime, AnimeEpisode, SearchResult
 from anime_downloader.sites import helpers
 from anime_downloader.const import HEADERS
+from anime_downloader.sites.helpers.util import not_working
 
 logger = logging.getLogger(__name__)
 
 
+@not_working("4anime has been shut down")
 class Anime4(Anime, sitename='4anime'):
     sitename = '4anime'
 
@@ -63,12 +65,7 @@ class Anime4Episode(AnimeEpisode, sitename='4anime'):
             'user-agent': HEADERS[self.hash_url(self.url, len(HEADERS))]}
         resp = helpers.get(self.url, headers=self.headers)
 
-        # E.g.  document.write( '<a class=\"mirror_dl\" href=\"https://v3.4animu.me/One-Piece/One-Piece-Episode-957-1080p.mp4\"><i class=\"fa fa-download\"></i> Download</a>' );
-        stream_url = helpers.soupify(
-            re.search("(<a.*?mirror_dl.*?)'", resp.text).group(1)).find("a").get("href")
-
-        # Otherwise we end up with "url" and barring that, url\
-        stream_url = re.search('"(.*?)\\\\"', stream_url).group(1)
+        stream_url = helpers.soupify(resp).source['src']
         return [('no_extractor', stream_url)]
 
     """
