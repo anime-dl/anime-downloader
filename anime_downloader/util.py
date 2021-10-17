@@ -493,3 +493,84 @@ class ClickListOption(click.Option):
             return ast.literal_eval(value)
         except:
             raise click.BadParameter(value)
+
+
+class Process:
+    def __init__(self, name, cmdline, pid):
+        self.name = name
+        self.pid = pid
+        self.cmdline = cmdline
+
+    def __str__(self):
+        return str({
+            'name': self.name,
+            'pid': self.pid,
+            'cmdline': self.cmdline
+        })
+
+
+def getAllProcesses_Win32():
+    placeholder = list()
+    out = os.popen('WMIC path win32_process get Caption,Processid,Commandline').read(
+    ).split('\n')[::2][1:]
+    for line in out:
+        f = line.split()
+        if f:
+            if len(f) > 2:
+                placeholder.append(
+                    Process(name=f[0], cmdline=f[1:-1], pid=int(f[-1])))
+            else:
+                placeholder.append(
+                    Process(name=f[0], cmdline=None, pid=int(f[-1])))
+    return placeholder
+
+
+def getAllProcesses_unix():
+    if sys.platform.startswith('darwin'):
+        cmd = 'ps -Ao user,pid,%cpu,%mem,vsz,rss,tt,stat,start,time,command'
+        return []
+    elif sys.platform.startswith('linux'):
+        cmd = 'ps aux'
+    out = os.popen(cmd).read()
+    out = out.split('\n')[1:]
+    placeholder = list()
+    for line in out:
+        try:
+            line_list = line.lower().split()
+            PID = line_list[1]
+            NAME = line_list[10:][0]
+            CMD = line_list[10:]
+            placeholder.append(Process(name=NAME, cmdline=CMD, pid=PID))
+        except IndexError:
+            continue
+    return placeholder
+
+
+def get_all_processes():
+    if sys.platform.startswith('win'):
+        return getAllProcesses_Win32()
+    else:
+        return getAllProcesses_unix()
+
+
+def is_running(regex, expected_matches):
+    """
+    Iterates through all the processes that are running
+    and returns a boolean if a process matches the regex passed
+    and the groups matched are equal to or more than the expected_matches.
+    """
+
+    already_running = False
+    dict_pids = {
+        p.pid: [p.name, p.cmdline]
+        for p in get_all_processes()
+    }
+
+    if os.getpid() in dict_pids:
+        del dict_pids[os.getpid()]
+    for key, value in dict_pids.items():
+        if value[1]:
+            list_of_matches = re.findall(regex, ' '.join(value[1]))
+            if list_of_matches and len(list_of_matches) >= expected_matches:
+                already_running = True
+    return already_running
