@@ -531,6 +531,7 @@ def getAllProcesses_unix():
         return []
     elif sys.platform.startswith('linux'):
         cmd = 'ps aux'
+        return []
     out = os.popen(cmd).read()
     out = out.split('\n')[1:]
     placeholder = list()
