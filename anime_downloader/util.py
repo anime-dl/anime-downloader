@@ -548,6 +548,7 @@ def getAllProcesses_unix():
 
 
 def get_all_processes():
+    return []
     if sys.platform.startswith('win'):
         return getAllProcesses_Win32()
     else:
