@@ -393,18 +393,48 @@ def external_download(cmd, episode, file_format, speed_limit, path=''):
     cmd = format_command(cmd, episode, file_format, speed_limit, path=path)
 
     logger.debug('formatted cmd: ' + ' '.join(cmd))
-
+    
     if cmd[0] == 'open':  # for torrents
         open_magnet(cmd[1])
+    
     else:
-        p = subprocess.Popen(cmd)
-        return_code = p.wait()
-
-        if return_code != 0:
-            # Sleep for a while to make sure downloader exits correctly
-            time.sleep(2)
-            sys.exit(1)
-
+        
+        # This loop structure should allow fixing and retries of the command
+        
+        retry_count = 0 # This is here for future use if required
+        retry = True
+        
+        # Loop through while trying to fix the problem
+        while retry:
+            
+            retry = False
+            
+            # Run the process
+            process = subprocess.Popen(cmd)            
+            return_code = process.wait()
+            
+            logger.debug('return code: ' + str(return_code))
+            
+            # Please use https://aria2.github.io/manual/en/html/aria2c.html#exit-status to find the exit status
+            # Here we can handle the return codes if they can be handled that is
+            # Handle aria2c
+            if 'aria2c' in cmd and return_code != 0:
+                
+                # Here we will handle the linux based aria2c issues
+                if sys.platform.startswith('linux'):
+                    
+                    # This obviously isn't a complete list of errors and they are only fixes. Please feel free to edit and fix up this stuff 
+                    # Here's some help with an issue starting with the system not starting in root
+                    if return_code in [15, 16, 17, 18]:
+                        
+                        cmd.insert(0, 'sudo') # Upgrading to sudo with root should fix most problems
+                        retry = True
+        
+            # Here if we are not retrying and there is an error
+            if retry == False and return_code != 0:
+                # Sleep for a while to make sure downloader exits correctly
+                time.sleep(2)
+                sys.exit(1)
 
 def make_dir(path):
     try:
