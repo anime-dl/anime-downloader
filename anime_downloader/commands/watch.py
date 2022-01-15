@@ -66,6 +66,13 @@ def command(anime_name, new, update_all, _list, quality, remove,
     util.print_info(__version__)
     watcher = _watch.Watcher()
 
+    with open(watcher.WATCH_FILE, "r") as f:
+            contents = f.read()
+            # print(contents)
+            if "[]" in contents or "[{}]" in contents:
+                logger.error("Add something to the watch list using `anime watch --new`")
+                sys.exit(1)
+
     if new:
         if anime_name:
             query = anime_name
