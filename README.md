@@ -55,44 +55,25 @@ Yeah. Me too! That's why this tool exists.
 **Details about the sites can be found in [FAQ](https://github.com/anime-dl/anime-downloader/wiki/FAQ)**
 
 
-- AnimePahe
 - AnimTime
 - AnimeBinge
-- Animedaisuki
-- Animeflix
 - Animeflv
-- Animefreak
-- AnimeKisa
 - AnimeOnline360
-- animeout
 - Animerush
-- Animesimple
 - AnimeStar
-- AnimeSuge - requires Node.js
 - Animevibe
-- AnimeTake
-- AniTube
-- Animixplay
-- Anistream
-- Darkanime
 - Dbanimes 
 - EraiRaws
 - EgyAnime - usually m3u8 (good for streaming, not so much for downloading)
 - GenoAnime
-- GurminderBoparai (AnimeChameleon)
 - itsaturday
-- Justdubs
-- Kissanimefree
+- Justdubs?
 - KissanimeX
 - Nyaa.si
-- PutLockers
-- RyuAnime
-- Shiro.is
 - SubsPlease
 - twist.moe - requires Node.js
 - tenshi.moe
 - Vidstream
-- Voiranime
 - Vostfree
 - Wcostream
 
