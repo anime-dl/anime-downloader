@@ -5,41 +5,41 @@ ALL_ANIME_SITES = [
     # ('_4anime', '4anime', 'Anime4'),
     ('anitube', 'anitube', 'AniTube'),
     ('animtime', 'animtime', 'AnimTime'),
-    ('anime8', 'anime8', 'Anime8'),
+    # ('anime8', 'anime8', 'Anime8'),
     ('animebinge', 'animebinge', 'AnimeBinge'),
-    ('animechameleon', 'gurminder', 'AnimeChameleon'),
-    ('animedaisuki', 'animedaisuki', 'Animedaisuki'),
-    ('animeflix', 'animeflix', 'AnimeFlix'),
-    ('animeflv', 'animeflv', 'Animeflv'),
-    ('animefreak', 'animefreak', 'AnimeFreak'),
+    # ('animechameleon', 'gurminder', 'AnimeChameleon'), # Gone
+    # ('animedaisuki', 'animedaisuki', 'Animedaisuki'), # Under maintenance?
+    # ('animeflix', 'animeflix', 'AnimeFlix'),
+    ('animeflv', 'animeflv', 'Animeflv'), # Shows as timed out, but loads in the browser
+    # ('animefreak', 'animefreak', 'AnimeFreak'), # Gone, Problem loading page
     ('animefree','animefree','AnimeFree'),
     # ('animefrenzy','animefrenzy','AnimeFrenzy'),
     ('animekisa','animekisa','AnimeKisa'),
-    ('animetake','animetake','AnimeTake'),
+    # ('animetake','animetake','AnimeTake'), # Cloudflare
     ('animeonline','animeonline360','AnimeOnline'),
-    ('animeout', 'animeout', 'AnimeOut'),
+    # ('animeout', 'animeout', 'AnimeOut'), # Cloudflare
     # ('animepahe', 'animepahe', 'AnimePahe'),
-    ('animerush', 'animerush', 'AnimeRush'),
-    ('animesimple', 'animesimple', 'AnimeSimple'),
+    ('animerush', 'animerush', 'AnimeRush'), 
+    # ('animesimple', 'animesimple', 'AnimeSimple'), # Needs some work, might still work
     ('animestar', 'animestar', 'AnimeStar'),
-    ('animesuge', 'animesuge', 'AnimeSuge'),
+    # ('animesuge', 'animesuge', 'AnimeSuge'), # Gone, Problem loading page
     ('animevibe', 'animevibe', 'AnimeVibe'),
-    ('animixplay', 'animixplay', 'AniMixPlay'),
-    ('darkanime', 'darkanime', 'DarkAnime'),
+    # ('animixplay', 'animixplay', 'AniMixPlay'), # Needs much work to fix I assume, links are prob not the same
+    # ('darkanime', 'darkanime', 'DarkAnime'), # It No Load
     ('dbanimes', 'dbanimes', 'DBAnimes'),
-    ('erairaws', 'erai-raws', 'EraiRaws'),
-    ('egyanime', 'egyanime', 'EgyAnime'),
+    ('erairaws', 'erai-raws', 'EraiRaws'), # Currently under maitenance
+    ('egyanime', 'egyanime', 'EgyAnime'), 
     ('genoanime', 'genoanime', 'GenoAnime'),
     ('itsaturday', 'itsaturday', 'Itsaturday'),
-    ('justdubs', 'justdubs', 'JustDubs'),
+    ('justdubs', 'justdubs', 'JustDubs'), # Blocked on my VPN
     # ('kickass', 'kickass', 'KickAss'),
     ('kissanimex', 'kissanimex', 'KissAnimeX'),
     # ('kisscartoon', 'kisscartoon', 'KissCartoon'),
     # ('nineanime', '9anime', 'NineAnime'),
     ('nyaa', 'nyaa', 'Nyaa'),
-    ('putlockers', 'putlockers', 'PutLockers'),
-    ('ryuanime', 'ryuanime', 'RyuAnime'),
-    ('shiro', 'shiro', 'Shiro'),
+    # ('putlockers', 'putlockers', 'PutLockers'), # Cloudflare
+    ('ryuanime', 'ryuanime', 'RyuAnime'), # Needs updating links and prob just a rework of scraper
+    # ('shiro', 'shiro', 'Shiro'), # Requires Login
     ('subsplease', 'subsplease', 'SubsPlease'),
     ('twistmoe', 'twist.moe', 'TwistMoe'),
     ('tenshimoe', 'tenshi.moe', 'TenshiMoe'),
