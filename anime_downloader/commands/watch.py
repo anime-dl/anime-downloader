@@ -66,6 +66,10 @@ def command(anime_name, new, update_all, _list, quality, remove,
     util.print_info(__version__)
     watcher = _watch.Watcher()
 
+    if not os.path.exists(watcher.WATCH_FILE):
+        with open(watcer.WATCH_FILE, "w") as f:
+            f.write("[]")
+
     with open(watcher.WATCH_FILE, "r") as f:
             contents = f.read()
             # print(contents)
