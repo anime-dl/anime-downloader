@@ -7,6 +7,7 @@ import click
 import logging
 import sys
 import re
+import os
 
 from anime_downloader import util
 from anime_downloader.__version__ import __version__
