@@ -4,9 +4,6 @@
 <strong><i>A simple yet powerful tool for downloading anime.</i></strong>
 <br>
 <br>
-<a href="https://travis-ci.com/anime-dl/anime-downloader">
-<img src="https://img.shields.io/travis/com/anime-dl/anime-downloader.svg?style=for-the-badge&logo=Travis%20CI">
-</a>
 <a href="https://codecov.io/gh/anime-dl/anime-downloader">
 <img src="https://img.shields.io/codecov/c/github/anime-dl/anime-downloader.svg?logo=codecov&style=for-the-badge">
 </a>
@@ -62,7 +59,7 @@ Yeah. Me too! That's why this tool exists.
 - Animerush
 - AnimeStar
 - Animevibe
-- Dbanimes 
+- Dbanimes
 - EraiRaws
 - EgyAnime - usually m3u8 (good for streaming, not so much for downloading)
 - GenoAnime
