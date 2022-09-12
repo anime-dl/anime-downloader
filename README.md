@@ -1,3 +1,7 @@
+# Warning
+## This project has been semi-abandoned, and it is in a non-working state, <br />that might change in the future but for now please look at [related projects](#related-projects).
+
+<br /> <br />
 <div align="center">
 <img src="https://i.imgur.com/7De34Nh.png">
 <br>
@@ -116,6 +120,7 @@ See [development instructions](https://anime-downlader.readthedocs.io/en/latest/
 
 ## Related Projects
 
+- [animdl](https://github.com/justfoolingaround/animdl) - a command-line tool for watching anime, it is maintained and in a better state than this project.
 - [adl](https://github.com/RaitaroH/adl) - a command-line tool for watching anime that makes use of anime-downloader.
 - [Cloudstream](https://github.com/LagradOst/CloudStream-2) - mobile gui for pirating anime and movies.
 
